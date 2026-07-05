@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  logo     String?
+
+  vehicles Vehicle[]
+}
+
+model Vehicle {
+  id            String   @id @default(cuid())
+
+  brandId       String
+  brand         Brand    @relation(fields: [brandId], references: [id])
+
+  model         String
+  version       String?
+
+  year          Int
+  mileage       Int
+
+  fuel          String
+  transmission  String
+
+  drivetrain    String?
+  engine        String?
+  power         Int?
+  color         String?
+
+  price         Decimal  @db.Decimal(12, 2)
+
+  featured      Boolean  @default(false)
+  status        String   @default("AVAILABLE")
+
+  description   String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  images        VehicleImage[]
+  contacts      ContactRequest[]
+}
+
+model VehicleImage {
+  id         String   @id @default(cuid())
+
+  vehicleId  String
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  url        String
+  alt        String?
+
+  sortOrder  Int      @default(0)
+
+  createdAt  DateTime @default(now())
+}
+
+model ContactRequest {
+  id         String   @id @default(cuid())
+
+  vehicleId  String
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  name       String
+  email      String
+  phone      String?
+
+  message    String
+
+  createdAt  DateTime @default(now())
+}
