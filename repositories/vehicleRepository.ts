@@ -12,7 +12,7 @@ export async function getVehicles() {
   });
 }
 
-export async function getVehicle(id: number) {
+export async function getVehicle(id: string) {
   return prisma.vehicle.findUnique({
     where: { id },
     include: {
