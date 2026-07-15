@@ -1,19 +1,16 @@
 "use server";
 
-import {
-  mkdir,
-  unlink,
-  writeFile,
-} from "node:fs/promises";
 import path from "node:path";
 
+import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
 
 const MAX_IMAGES = 8;
-const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
+const MAX_UPLOAD_TOTAL_SIZE = 4 * 1024 * 1024;
 
 const ALLOWED_IMAGE_TYPES = new Set([
   "image/jpeg",
@@ -308,7 +305,7 @@ function validateImageFile(file: File) {
 
   if (file.size > MAX_IMAGE_SIZE) {
     throw new Error(
-      `La imagen “${file.name}” supera los 8 MB.`,
+      `La imagen “${file.name}” supera los 4 MB.`,
     );
   }
 }
@@ -326,16 +323,20 @@ async function saveVehicleImages({
     return;
   }
 
-  const uploadDirectory = path.join(
-    process.cwd(),
-    "public",
-    "uploads",
-    "vehicles",
+  const totalSize = files.reduce(
+    (sum, file) => sum + file.size,
+    0,
   );
 
-  await mkdir(uploadDirectory, {
-    recursive: true,
-  });
+  if (totalSize > MAX_UPLOAD_TOTAL_SIZE) {
+    throw new Error(
+      "El conjunto de imágenes supera los 4 MB. Súbelas de una en una.",
+    );
+  }
+
+  for (const file of files) {
+    validateImageFile(file);
+  }
 
   const currentMaximum =
     await prisma.vehicleImage.aggregate({
@@ -351,6 +352,7 @@ async function saveVehicleImages({
     (currentMaximum._max.sortOrder ?? -1) +
     1;
 
+  const uploadedUrls: string[] = [];
   const imageRecords: Array<{
     vehicleId: string;
     url: string;
@@ -358,48 +360,69 @@ async function saveVehicleImages({
     sortOrder: number;
   }> = [];
 
-  for (
-    let index = 0;
-    index < files.length;
-    index += 1
-  ) {
-    const file = files[index];
+  try {
+    for (
+      let index = 0;
+      index < files.length;
+      index += 1
+    ) {
+      const file = files[index];
 
-    validateImageFile(file);
+      const originalExtension = path
+        .extname(file.name)
+        .toLowerCase();
 
-    const originalExtension = path
-      .extname(file.name)
-      .toLowerCase();
+      const extension =
+        originalExtension || ".jpg";
 
-    const extension =
-      originalExtension || ".jpg";
+      const baseName =
+        path.basename(
+          file.name,
+          originalExtension,
+        ) || "vehiculo";
 
-    const fileName = safeFileName(
-      `${vehicleId}-${Date.now()}-${index}${extension}`,
-    );
+      const pathname =
+        `vehicles/${vehicleId}/` +
+        safeFileName(
+          `${baseName}${extension}`,
+        );
 
-    const destination = path.join(
-      uploadDirectory,
-      fileName,
-    );
+      const blob = await put(
+        pathname,
+        file,
+        {
+          access: "public",
+          addRandomSuffix: true,
+        },
+      );
 
-    const buffer = Buffer.from(
-      await file.arrayBuffer(),
-    );
+      uploadedUrls.push(blob.url);
 
-    await writeFile(destination, buffer);
+      imageRecords.push({
+        vehicleId,
+        url: blob.url,
+        alt,
+        sortOrder: firstSortOrder + index,
+      });
+    }
 
-    imageRecords.push({
-      vehicleId,
-      url: `/uploads/vehicles/${fileName}`,
-      alt,
-      sortOrder: firstSortOrder + index,
+    await prisma.vehicleImage.createMany({
+      data: imageRecords,
     });
-  }
+  } catch (error) {
+    if (uploadedUrls.length > 0) {
+      try {
+        await del(uploadedUrls);
+      } catch (cleanupError) {
+        console.error(
+          "No se pudieron limpiar algunas imágenes de Vercel Blob:",
+          cleanupError,
+        );
+      }
+    }
 
-  await prisma.vehicleImage.createMany({
-    data: imageRecords,
-  });
+    throw error;
+  }
 }
 
 async function normalizeImageOrder(
@@ -438,46 +461,33 @@ async function normalizeImageOrder(
   );
 }
 
-async function removeLocalImageFile(
+async function removeStoredImage(
   imageUrl: string,
 ) {
   if (
-    !imageUrl.startsWith(
-      "/uploads/vehicles/",
-    )
-  ) {
-    return;
-  }
-
-  const publicDirectory = path.join(
-    process.cwd(),
-    "public",
-  );
-
-  const uploadsDirectory = path.join(
-    publicDirectory,
-    "uploads",
-    "vehicles",
-  );
-
-  const filePath = path.join(
-    publicDirectory,
-    imageUrl.replace(/^\/+/, ""),
-  );
-
-  if (
-    !filePath.startsWith(
-      uploadsDirectory,
-    )
+    !imageUrl ||
+    imageUrl.startsWith("/")
   ) {
     return;
   }
 
   try {
-    await unlink(filePath);
-  } catch {
-    // El archivo físico puede haber sido
-    // eliminado anteriormente.
+    const parsedUrl = new URL(imageUrl);
+
+    if (
+      !parsedUrl.hostname.endsWith(
+        ".blob.vercel-storage.com",
+      )
+    ) {
+      return;
+    }
+
+    await del(imageUrl);
+  } catch (error) {
+    console.error(
+      "No se pudo eliminar la imagen de Vercel Blob:",
+      error,
+    );
   }
 }
 
@@ -487,7 +497,13 @@ function refreshVehiclePages(
   revalidatePath("/admin");
   revalidatePath("/admin/vehicles");
   revalidatePath(
+    `/admin/vehicles/${vehicleId}`,
+  );
+  revalidatePath(
     `/admin/vehicles/${vehicleId}/edit`,
+  );
+  revalidatePath(
+    `/admin/vehicles/${vehicleId}/images`,
   );
   revalidatePath("/coleccion");
   revalidatePath(
@@ -874,7 +890,7 @@ export async function deleteVehicleImage(
     },
   });
 
-  await removeLocalImageFile(image.url);
+  await removeStoredImage(image.url);
 
   await normalizeImageOrder(vehicleId);
 
