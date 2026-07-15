@@ -1,6 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import styles from "./musica.module.css";
 
@@ -9,6 +13,7 @@ export type MusicTrack = {
   title: string;
   subtitle: string;
   src: string;
+  coverUrl?: string | null;
   format: string;
 };
 
@@ -34,6 +39,7 @@ const translations = {
     progress: "Progreso de la canción",
     volume: "Volumen",
     playing: "SONANDO",
+    coverAlt: "Portada de",
   },
 
   en: {
@@ -50,6 +56,7 @@ const translations = {
     progress: "Track progress",
     volume: "Volume",
     playing: "PLAYING",
+    coverAlt: "Cover artwork for",
   },
 } as const;
 
@@ -59,32 +66,56 @@ function formatTime(seconds: number): string {
   }
 
   const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
+  const remainingSeconds = Math.floor(
+    seconds % 60,
+  );
 
-  return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
+  return `${minutes}:${String(
+    remainingSeconds,
+  ).padStart(2, "0")}`;
 }
 
 export default function MusicPlayer({
   tracks,
   language = "es",
 }: MusicPlayerProps) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const resumeAfterChangeRef = useRef(false);
+  const audioRef =
+    useRef<HTMLAudioElement>(null);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.8);
-  const [error, setError] = useState<string | null>(null);
+  const resumeAfterChangeRef =
+    useRef(false);
+
+  const [currentIndex, setCurrentIndex] =
+    useState(0);
+
+  const [isPlaying, setIsPlaying] =
+    useState(false);
+
+  const [currentTime, setCurrentTime] =
+    useState(0);
+
+  const [duration, setDuration] =
+    useState(0);
+
+  const [volume, setVolume] =
+    useState(0.8);
+
+  const [error, setError] = useState<
+    string | null
+  >(null);
+
+  const [coverError, setCoverError] =
+    useState(false);
 
   const content = translations[language];
-  const currentTrack = tracks[currentIndex];
+
+  const currentTrack =
+    tracks[currentIndex] ?? tracks[0];
 
   useEffect(() => {
     const audio = audioRef.current;
 
-    if (!audio) {
+    if (!audio || !currentTrack) {
       return;
     }
 
@@ -104,7 +135,7 @@ export default function MusicPlayer({
           setIsPlaying(false);
         });
     }
-  }, [currentIndex]);
+  }, [currentTrack?.src]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -114,10 +145,16 @@ export default function MusicPlayer({
     }
   }, [volume]);
 
+  useEffect(() => {
+    setCoverError(false);
+  }, [currentTrack?.coverUrl]);
+
   if (!currentTrack) {
     return (
       <section className={styles.player}>
-        <p className={styles.error}>{content.empty}</p>
+        <p className={styles.error}>
+          {content.empty}
+        </p>
       </section>
     );
   }
@@ -126,7 +163,10 @@ export default function MusicPlayer({
     index: number,
     autoplay = true,
   ) {
-    if (index < 0 || index >= tracks.length) {
+    if (
+      index < 0 ||
+      index >= tracks.length
+    ) {
       return;
     }
 
@@ -171,14 +211,17 @@ export default function MusicPlayer({
 
   function playNext() {
     const nextIndex =
-      currentIndex === tracks.length - 1
+      currentIndex ===
+      tracks.length - 1
         ? 0
         : currentIndex + 1;
 
     selectTrack(nextIndex);
   }
 
-  function changeProgress(value: number) {
+  function changeProgress(
+    value: number,
+  ) {
     const audio = audioRef.current;
 
     if (!audio) {
@@ -193,6 +236,10 @@ export default function MusicPlayer({
     setVolume(value);
   }
 
+  const showCover =
+    Boolean(currentTrack.coverUrl) &&
+    !coverError;
+
   return (
     <section className={styles.player}>
       <audio
@@ -205,7 +252,9 @@ export default function MusicPlayer({
           );
         }}
         onLoadedMetadata={(event) => {
-          setDuration(event.currentTarget.duration);
+          setDuration(
+            event.currentTarget.duration,
+          );
         }}
         onPlay={() => {
           setIsPlaying(true);
@@ -216,6 +265,7 @@ export default function MusicPlayer({
         onEnded={playNext}
         onError={() => {
           setIsPlaying(false);
+
           setError(
             content.audioNotFound(
               currentTrack.title,
@@ -225,29 +275,75 @@ export default function MusicPlayer({
       />
 
       <div className={styles.nowPlaying}>
-        <div className={styles.cover}>
-          <span>V</span>
+        <div
+          className={styles.cover}
+          style={
+            showCover
+              ? {
+                  padding: 0,
+                  overflow: "hidden",
+                }
+              : undefined
+          }
+        >
+          {showCover ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                key={currentTrack.coverUrl}
+                src={
+                  currentTrack.coverUrl ??
+                  undefined
+                }
+                alt={`${content.coverAlt} ${currentTrack.title}`}
+                onError={() => {
+                  setCoverError(true);
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  minHeight: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+            </>
+          ) : (
+            <>
+              <span>V</span>
 
-          <div>
-            <small>VANMOTION</small>
-            <strong>MUSIC</strong>
-          </div>
+              <div>
+                <small>VANMOTION</small>
+                <strong>MUSIC</strong>
+              </div>
+            </>
+          )}
         </div>
 
-        <div className={styles.trackInformation}>
+        <div
+          className={
+            styles.trackInformation
+          }
+        >
           <p>{content.nowPlaying}</p>
 
           <h2>{currentTrack.title}</h2>
 
-          <span>{currentTrack.subtitle}</span>
+          <span>
+            {currentTrack.subtitle}
+          </span>
         </div>
       </div>
 
-      <div className={styles.playerControls}>
+      <div
+        className={styles.playerControls}
+      >
         <button
           type="button"
           onClick={playPrevious}
-          aria-label={content.previousTrack}
+          aria-label={
+            content.previousTrack
+          }
           title={content.previousTrack}
         >
           ←
@@ -281,8 +377,12 @@ export default function MusicPlayer({
         </button>
       </div>
 
-      <div className={styles.progressSection}>
-        <span>{formatTime(currentTime)}</span>
+      <div
+        className={styles.progressSection}
+      >
+        <span>
+          {formatTime(currentTime)}
+        </span>
 
         <input
           type="range"
@@ -325,12 +425,15 @@ export default function MusicPlayer({
       </div>
 
       {error && (
-        <p className={styles.error}>{error}</p>
+        <p className={styles.error}>
+          {error}
+        </p>
       )}
 
       <div className={styles.trackList}>
         {tracks.map((track, index) => {
-          const active = index === currentIndex;
+          const active =
+            index === currentIndex;
 
           return (
             <button
@@ -340,23 +443,42 @@ export default function MusicPlayer({
                 selectTrack(index, true);
               }}
               className={
-                active ? styles.activeTrack : ""
+                active
+                  ? styles.activeTrack
+                  : ""
               }
               aria-label={`${content.play}: ${track.title}`}
             >
-              <span className={styles.trackNumber}>
+              <span
+                className={
+                  styles.trackNumber
+                }
+              >
                 {String(index + 1).padStart(
                   2,
                   "0",
                 )}
               </span>
 
-              <span className={styles.trackName}>
-                <strong>{track.title}</strong>
-                <small>{track.subtitle}</small>
+              <span
+                className={
+                  styles.trackName
+                }
+              >
+                <strong>
+                  {track.title}
+                </strong>
+
+                <small>
+                  {track.subtitle}
+                </small>
               </span>
 
-              <span className={styles.trackFormat}>
+              <span
+                className={
+                  styles.trackFormat
+                }
+              >
                 {active && isPlaying
                   ? content.playing
                   : track.format}
