@@ -603,8 +603,8 @@ export default async function EditVehiclePage({
                   id="images"
                   name="images"
                   type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif"
                   multiple
+                  accept="image/jpeg,image/png,image/webp,image/avif"
                   className="sr-only"
                 />
               </label>

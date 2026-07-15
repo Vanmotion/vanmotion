@@ -213,9 +213,9 @@ export default function NuevoVehiculoPage() {
               <input
                 className={styles.fileInput}
                 type="file"
+                multiple
                 name="images"
                 accept="image/jpeg,image/png,image/webp,image/avif"
-                multiple
               />
 
               <small>
