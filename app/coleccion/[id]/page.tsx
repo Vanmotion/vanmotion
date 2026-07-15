@@ -445,6 +445,14 @@ export default async function PublicVehiclePage({
   const messagePlaceholder =
     `${content.contact.messagePlaceholder} ${vehicleName}.`;
 
+  const vehicleDescription =
+    language === "en"
+      ? vehicle.descriptionEn ??
+        vehicle.description ??
+        content.information.fallback
+      : vehicle.description ??
+        content.information.fallback;
+
   return (
     <main className="min-h-screen bg-black pb-36 text-white">
       <header className="border-b border-white/10 px-6 py-6">
@@ -737,9 +745,7 @@ export default async function PublicVehiclePage({
             </h2>
 
             <p className="mt-6 whitespace-pre-line text-lg leading-8 text-white/60">
-              {vehicle.description ||
-                content.information
-                  .fallback}
+              {vehicleDescription}
             </p>
           </section>
         </div>

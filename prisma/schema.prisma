@@ -41,7 +41,9 @@ model Vehicle {
   featured Boolean @default(false)
   status   String  @default("AVAILABLE")
 
-  description String?
+  // La descripción existente se conserva como español.
+  description   String?
+  descriptionEn String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

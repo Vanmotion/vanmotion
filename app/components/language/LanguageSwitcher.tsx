@@ -55,10 +55,11 @@ export default function LanguageSwitcher({
               ? styles.active
               : ""
           }
+          aria-label="Español"
           aria-pressed={currentLanguage === "es"}
           title="Español"
         >
-          ES
+          <span aria-hidden="true">🇪🇸</span>
         </button>
       </form>
 
@@ -84,10 +85,11 @@ export default function LanguageSwitcher({
               ? styles.active
               : ""
           }
+          aria-label="English"
           aria-pressed={currentLanguage === "en"}
           title="English"
         >
-          EN
+          <span aria-hidden="true">🇬🇧</span>
         </button>
       </form>
     </div>

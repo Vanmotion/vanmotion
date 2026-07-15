@@ -531,7 +531,7 @@ export default async function EditVehiclePage({
                   htmlFor="description"
                   className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-white/45"
                 >
-                  Descripción
+                  Descripción en español
                 </label>
 
                 <textarea
@@ -541,9 +541,34 @@ export default async function EditVehiclePage({
                   defaultValue={
                     vehicle.description ?? ""
                   }
-                  placeholder="Describe el estado, mantenimiento, equipamiento y características del vehículo."
+                  placeholder="Describe el estado, mantenimiento, equipamiento y características del vehículo en español."
                   className={`${inputClasses} resize-y py-4`}
                 />
+              </div>
+
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="descriptionEn"
+                  className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-white/45"
+                >
+                  Descripción en inglés
+                </label>
+
+                <textarea
+                  id="descriptionEn"
+                  name="descriptionEn"
+                  rows={7}
+                  defaultValue={
+                    vehicle.descriptionEn ?? ""
+                  }
+                  placeholder="Describe the condition, maintenance, equipment and special features of the vehicle in English."
+                  className={`${inputClasses} resize-y py-4`}
+                />
+
+                <p className="mt-2 text-xs leading-5 text-white/30">
+                  Si se deja vacía, la ficha inglesa mostrará temporalmente
+                  la descripción en español.
+                </p>
               </div>
 
               <label className="flex min-h-16 cursor-pointer items-center gap-4 border border-white/10 bg-black/30 px-5 md:col-span-2">

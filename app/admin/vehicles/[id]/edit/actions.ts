@@ -582,6 +582,11 @@ export async function updateVehicle(
     "description",
   );
 
+  const descriptionEn = optionalString(
+    formData,
+    "descriptionEn",
+  );
+
   const featured = checkboxValue(
     formData,
     "featured",
@@ -658,6 +663,7 @@ export async function updateVehicle(
       power,
       color,
       description,
+      descriptionEn,
       featured,
       status,
     },
