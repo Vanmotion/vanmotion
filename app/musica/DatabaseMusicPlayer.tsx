@@ -22,6 +22,7 @@ export default async function DatabaseMusicPlayer({
         title: track.title,
         subtitle: track.subtitle,
         src: track.src,
+        coverUrl: track.coverUrl,
         format: track.format,
       }))}
     />
