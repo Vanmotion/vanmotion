@@ -1,20 +1,21 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { unlink } from "node:fs/promises";
 import { basename, join } from "node:path";
 
+import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
 
-const MAX_IMAGE_SIZE_BYTES = 8 * 1024 * 1024;
+const MAX_IMAGE_SIZE_BYTES = 4 * 1024 * 1024;
 
 const ALLOWED_IMAGE_TYPES = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
+  "image/avif": "avif",
 } as const;
 
 function getText(formData: FormData, field: string): string {
@@ -104,13 +105,13 @@ function getImageFile(formData: FormData): File {
 
   if (!(value.type in ALLOWED_IMAGE_TYPES)) {
     throw new Error(
-      "La imagen debe estar en formato JPG, PNG o WebP.",
+      "La imagen debe estar en formato JPG, PNG, WebP o AVIF.",
     );
   }
 
   if (value.size > MAX_IMAGE_SIZE_BYTES) {
     throw new Error(
-      "La imagen no puede superar los 8 MB.",
+      "La imagen no puede superar los 4 MB.",
     );
   }
 
@@ -126,9 +127,34 @@ function getUploadsDirectory(): string {
   );
 }
 
-async function removeLocalVehicleImage(
+function isVercelBlobUrl(imageUrl: string): boolean {
+  try {
+    const parsedUrl = new URL(imageUrl);
+
+    return parsedUrl.hostname.endsWith(
+      ".blob.vercel-storage.com",
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function removeStoredVehicleImage(
   imageUrl: string,
 ): Promise<void> {
+  if (isVercelBlobUrl(imageUrl)) {
+    try {
+      await del(imageUrl);
+    } catch (error) {
+      console.error(
+        "No se ha podido eliminar la imagen de Vercel Blob:",
+        error,
+      );
+    }
+
+    return;
+  }
+
   const prefix = "/uploads/vehicles/";
 
   if (!imageUrl.startsWith(prefix)) {
@@ -363,7 +389,7 @@ export async function deleteVehicle(formData: FormData) {
 
   await Promise.all(
     images.map((image) =>
-      removeLocalVehicleImage(image.url),
+      removeStoredVehicleImage(image.url),
     ),
   );
 
@@ -425,39 +451,38 @@ export async function addVehicleImage(
       imageFile.type as keyof typeof ALLOWED_IMAGE_TYPES
     ];
 
-  const filename =
-    `${vehicleId}-${randomUUID()}.${extension}`;
+  const normalizedModel = vehicle.model
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
-  const uploadDirectory = getUploadsDirectory();
-  const filePath = join(uploadDirectory, filename);
-  const publicUrl = `/uploads/vehicles/${filename}`;
+  const pathname =
+    `vehicles/${vehicleId}/` +
+    `${normalizedModel || "vehiculo"}.${extension}`;
 
   const defaultAlt =
     `${vehicle.brand.name} ${vehicle.model}` +
     `${vehicle.version ? ` ${vehicle.version}` : ""}`;
 
-  await mkdir(uploadDirectory, {
-    recursive: true,
+  const blob = await put(pathname, imageFile, {
+    access: "public",
+    addRandomSuffix: true,
+    contentType: imageFile.type,
   });
-
-  const bytes = await imageFile.arrayBuffer();
-
-  await writeFile(
-    filePath,
-    Buffer.from(bytes),
-  );
 
   try {
     await prisma.vehicleImage.create({
       data: {
         vehicleId,
-        url: publicUrl,
+        url: blob.url,
         alt: alt ?? defaultAlt,
         sortOrder: nextOrder,
       },
     });
   } catch (error) {
-    await removeLocalVehicleImage(publicUrl);
+    await removeStoredVehicleImage(blob.url);
     throw error;
   }
 
@@ -564,7 +589,7 @@ export async function deleteVehicleImage(
     },
   });
 
-  await removeLocalVehicleImage(image.url);
+  await removeStoredVehicleImage(image.url);
 
   const remainingImages =
     await prisma.vehicleImage.findMany({
