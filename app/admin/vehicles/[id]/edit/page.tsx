@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
 
 import { updateVehicle } from "./actions";
+import DirectVehicleImageUpload from "./DirectVehicleImageUpload";
 
 export const dynamic = "force-dynamic";
 
@@ -581,33 +582,12 @@ export default async function EditVehiclePage({
             </div>
 
             <div className="p-6">
-              <label
-                htmlFor="images"
-                className="flex min-h-44 cursor-pointer flex-col items-center justify-center border border-dashed border-white/20 bg-black/25 px-6 text-center transition hover:border-white/40 hover:bg-white/[0.03]"
-              >
-                <span className="text-3xl">
-                  ＋
-                </span>
-
-                <strong className="mt-4 text-sm">
-                  Seleccionar fotografías
-                </strong>
-
-                <small className="mt-2 max-w-lg text-xs leading-6 text-white/35">
-                  Puedes subir hasta 8 imágenes JPG,
-                  PNG, WebP o AVIF. Cada archivo puede
-                  ocupar un máximo de 8 MB.
-                </small>
-
-                <input
-                  id="images"
-                  name="images"
-                  type="file"
-                  multiple
-                  accept="image/jpeg,image/png,image/webp,image/avif"
-                  className="sr-only"
-                />
-              </label>
+              <DirectVehicleImageUpload
+                vehicleId={vehicle.id}
+                existingImageCount={
+                  vehicle.images.length
+                }
+              />
 
               {vehicle.images.length > 0 && (
                 <div className="mt-7">
