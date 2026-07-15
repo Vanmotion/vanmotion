@@ -63,12 +63,6 @@ function getText(
     : "";
 }
 
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-    email,
-  );
-}
-
 function normaliseText(
   value: string,
   maximumLength: number,
@@ -79,11 +73,37 @@ function normaliseText(
     .slice(0, maximumLength);
 }
 
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+    email,
+  );
+}
+
+function isContactStatus(
+  value: string,
+): value is ContactStatus {
+  return allowedStatuses.includes(
+    value as ContactStatus,
+  );
+}
+
+/*
+ * Crea una solicitud desde la ficha pública.
+ *
+ * 1. Valida los datos.
+ * 2. Comprueba que el vehículo esté disponible.
+ * 3. Guarda la solicitud en PostgreSQL.
+ * 4. Envía el aviso a VANMOTION.
+ * 5. Envía una confirmación automática al cliente.
+ */
 export async function createContactRequest(
   formData: FormData,
 ): Promise<void> {
-  const language = await getCurrentLanguage();
-  const errors = translations[language];
+  const language =
+    await getCurrentLanguage();
+
+  const errors =
+    translations[language];
 
   const vehicleId = getText(
     formData,
@@ -96,7 +116,10 @@ export async function createContactRequest(
   );
 
   const email = normaliseText(
-    getText(formData, "email").toLowerCase(),
+    getText(
+      formData,
+      "email",
+    ).toLowerCase(),
     180,
   );
 
@@ -116,11 +139,15 @@ export async function createContactRequest(
     !email ||
     !message
   ) {
-    throw new Error(errors.requiredFields);
+    throw new Error(
+      errors.requiredFields,
+    );
   }
 
   if (!isValidEmail(email)) {
-    throw new Error(errors.invalidEmail);
+    throw new Error(
+      errors.invalidEmail,
+    );
   }
 
   const vehicle =
@@ -141,6 +168,11 @@ export async function createContactRequest(
     );
   }
 
+  /*
+   * La solicitud se guarda primero.
+   * De esta forma no se pierde aunque
+   * posteriormente falle el correo.
+   */
   await prisma.contactRequest.create({
     data: {
       vehicleId: vehicle.id,
@@ -153,9 +185,13 @@ export async function createContactRequest(
   });
 
   /*
-   * El contacto queda guardado en PostgreSQL
-   * aunque Resend todavía no esté configurado
-   * o el envío del correo falle.
+   * Envía:
+   *
+   * - Aviso interno a vanmotion@hotmail.com.
+   * - Confirmación automática al cliente.
+   *
+   * Si Resend falla, la solicitud permanece
+   * guardada en PostgreSQL.
    */
   try {
     await sendContactNotification({
@@ -164,25 +200,44 @@ export async function createContactRequest(
       email,
       phone: phone || null,
       message,
+      language,
     });
   } catch (error) {
     console.error(
-      "La solicitud se guardó, pero el correo no pudo enviarse:",
+      "La solicitud se guardó, pero uno de los correos no pudo enviarse:",
       error,
     );
   }
 
-  revalidatePath("/admin/contacts");
-  revalidatePath("/admin/contactos");
+  revalidatePath(
+    "/admin/contacts",
+  );
+
+  revalidatePath(
+    "/admin/contactos",
+  );
 
   redirect(
     `/coleccion/${vehicle.id}?enviado=1`,
   );
 }
 
+/*
+ * Cambia una solicitud entre:
+ *
+ * - PENDING
+ * - CONTACTED
+ * - CLOSED
+ */
 export async function updateContactStatus(
   formData: FormData,
 ): Promise<void> {
+  const language =
+    await getCurrentLanguage();
+
+  const errors =
+    translations[language];
+
   const contactId = getText(
     formData,
     "contactId",
@@ -195,17 +250,13 @@ export async function updateContactStatus(
 
   if (!contactId) {
     throw new Error(
-      "No se ha recibido el identificador de la solicitud.",
+      errors.invalidContact,
     );
   }
 
-  if (
-    !allowedStatuses.includes(
-      status as ContactStatus,
-    )
-  ) {
+  if (!isContactStatus(status)) {
     throw new Error(
-      "El estado seleccionado no es válido.",
+      errors.invalidStatus,
     );
   }
 
@@ -219,13 +270,27 @@ export async function updateContactStatus(
     },
   });
 
-  revalidatePath("/admin/contacts");
-  revalidatePath("/admin/contactos");
+  revalidatePath(
+    "/admin/contacts",
+  );
+
+  revalidatePath(
+    "/admin/contactos",
+  );
 }
 
+/*
+ * Elimina una solicitud del panel privado.
+ */
 export async function deleteContactRequest(
   formData: FormData,
 ): Promise<void> {
+  const language =
+    await getCurrentLanguage();
+
+  const errors =
+    translations[language];
+
   const contactId = getText(
     formData,
     "contactId",
@@ -233,7 +298,7 @@ export async function deleteContactRequest(
 
   if (!contactId) {
     throw new Error(
-      "No se ha recibido el identificador de la solicitud.",
+      errors.invalidContact,
     );
   }
 
@@ -243,6 +308,11 @@ export async function deleteContactRequest(
     },
   });
 
-  revalidatePath("/admin/contacts");
-  revalidatePath("/admin/contactos");
+  revalidatePath(
+    "/admin/contacts",
+  );
+
+  revalidatePath(
+    "/admin/contactos",
+  );
 }

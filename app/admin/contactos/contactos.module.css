@@ -1,0 +1,401 @@
+.page {
+  min-height: 100vh;
+  padding: 0 48px 100px;
+  overflow-x: hidden;
+  background: #080808;
+  color: #f4f4f1;
+}
+
+.page,
+.page * {
+  box-sizing: border-box;
+}
+
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.header {
+  width: min(100%, 1440px);
+  min-height: 90px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.logo {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.36em;
+}
+
+.sectionName {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.navigation a {
+  padding: 12px 0;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.navigation a:hover,
+.navigation .active {
+  color: #ffffff;
+}
+
+.active {
+  border-bottom: 1px solid #ffffff;
+}
+
+.hero {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding: 90px 0 70px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 60px;
+  align-items: end;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.eyebrow {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 22px 0 0;
+  font-size: clamp(58px, 7vw, 108px);
+  font-weight: 650;
+  line-height: 0.82;
+  letter-spacing: -0.065em;
+  text-transform: uppercase;
+}
+
+.description {
+  max-width: 640px;
+  margin: 34px 0 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+.counter {
+  min-width: 230px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #0d0d0d;
+}
+
+.counter strong {
+  display: block;
+  font-size: 52px;
+  line-height: 1;
+}
+
+.counter span {
+  display: block;
+  margin-top: 13px;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.content {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding-top: 55px;
+}
+
+.requests {
+  display: grid;
+  gap: 18px;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0d0d0d;
+}
+
+.cardNumber {
+  padding: 30px;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.cardMain {
+  padding: 32px;
+}
+
+.cardHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.date {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.cardHeading h2 {
+  margin: 12px 0 0;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
+.status {
+  padding: 9px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.vehicle {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #111111;
+}
+
+.vehicle span,
+.contactGrid span,
+.message span {
+  display: block;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.vehicle a {
+  display: inline-block;
+  margin-top: 9px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.contactGrid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.contactGrid > div {
+  min-height: 100px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contactGrid a,
+.contactGrid p {
+  display: block;
+  margin: 13px 0 0;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.contactGrid p {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.message {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.message p {
+  margin: 14px 0 0;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 14px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.actions {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.primaryAction,
+.secondaryAction {
+  min-height: 46px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.primaryAction {
+  background: #ffffff;
+  color: #080808 !important;
+}
+
+.secondaryAction {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.emptyState {
+  min-height: 430px;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0d0d0d;
+}
+
+.emptyState span {
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 72px;
+  font-weight: 700;
+}
+
+.emptyState h2 {
+  margin: 28px 0 0;
+  font-size: 38px;
+  letter-spacing: -0.04em;
+}
+
+.emptyState p {
+  max-width: 540px;
+  margin: 18px 0 0;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.emptyState a {
+  width: fit-content;
+  margin-top: 32px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 850px) {
+  .page {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .navigation {
+    gap: 16px;
+  }
+
+  .navigation a {
+    font-size: 8px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .counter {
+    width: 100%;
+  }
+
+  .card {
+    grid-template-columns: 1fr;
+  }
+
+  .cardNumber {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    padding: 20px 0;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navigation {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .hero {
+    padding-top: 65px;
+  }
+
+  .hero h1 {
+    font-size: 55px;
+  }
+
+  .cardMain {
+    padding: 22px;
+  }
+
+  .cardHeading {
+    flex-direction: column;
+  }
+
+  .contactGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    width: 100%;
+  }
+
+  .emptyState {
+    padding: 30px 22px;
+  }
+}

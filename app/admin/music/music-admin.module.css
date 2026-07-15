@@ -1,0 +1,356 @@
+.page {
+  padding-bottom: 70px;
+  color: #111111;
+}
+
+.page,
+.page * {
+  box-sizing: border-box;
+}
+
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero {
+  min-height: 340px;
+  padding: 48px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 45px;
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(255, 255, 255, 0.12),
+      transparent 30%
+    ),
+    #090909;
+  color: #ffffff;
+}
+
+.eyebrow {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 22px 0 0;
+  font-size: clamp(55px, 6vw, 90px);
+  line-height: 0.86;
+  letter-spacing: -0.065em;
+  text-transform: uppercase;
+}
+
+.hero p:last-child {
+  max-width: 650px;
+  margin: 28px 0 0;
+  color: rgba(255, 255, 255, 0.46);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.publicButton {
+  min-width: 230px;
+  min-height: 54px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-left: 1px solid #dedede;
+}
+
+.stats article {
+  min-height: 130px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #dedede;
+  border-bottom: 1px solid #dedede;
+  background: #ffffff;
+}
+
+.stats strong {
+  font-size: 40px;
+}
+
+.stats span {
+  color: #777777;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.emptyState {
+  min-height: 420px;
+  margin-top: 60px;
+  padding: 45px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  border: 1px solid #dddddd;
+  background: #ffffff;
+}
+
+.emptyState > span {
+  font-size: 70px;
+  font-weight: 750;
+}
+
+.emptyState h2 {
+  margin: 25px 0 0;
+  font-size: 35px;
+}
+
+.emptyState p {
+  max-width: 600px;
+  margin: 16px 0 0;
+  color: #777777;
+  line-height: 1.8;
+}
+
+.emptyState button,
+.syncButton {
+  min-height: 48px;
+  margin-top: 25px;
+  padding: 0 18px;
+  border: 0;
+  background: #111111;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.trackSection {
+  padding-top: 70px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.sectionHeading .eyebrow {
+  color: #8a8a8a;
+}
+
+.sectionHeading h2 {
+  margin: 13px 0 0;
+  font-size: 38px;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+.syncButton {
+  margin-top: 0;
+}
+
+.trackList {
+  margin-top: 30px;
+  display: grid;
+  gap: 18px;
+}
+
+.trackCard {
+  border: 1px solid #dddddd;
+  background: #ffffff;
+}
+
+.trackHeader {
+  min-height: 125px;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 55px minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.trackNumber {
+  color: #aaaaaa;
+  font-size: 14px;
+}
+
+.trackTitle span {
+  color: #767676;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.trackTitle h3 {
+  margin: 9px 0 0;
+  font-size: 25px;
+}
+
+.trackTitle p {
+  margin: 8px 0 0;
+  color: #999999;
+  font-size: 9px;
+}
+
+.orderButtons {
+  display: flex;
+  gap: 7px;
+}
+
+.orderButtons button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #dddddd;
+  background: transparent;
+  cursor: pointer;
+}
+
+.orderButtons button:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.audioPreview {
+  padding: 20px 22px;
+  border-bottom: 1px solid #e2e2e2;
+  background: #0b0b0b;
+}
+
+.audioPreview audio {
+  width: 100%;
+  display: block;
+}
+
+.editForm {
+  padding: 25px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.editForm label {
+  display: grid;
+  gap: 9px;
+}
+
+.editForm label > span {
+  color: #777777;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.editForm input,
+.editForm select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 13px;
+  border: 1px solid #d8d8d8;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+}
+
+.editForm input[type="file"] {
+  padding: 12px;
+}
+
+.editForm small {
+  color: #929292;
+  font-size: 9px;
+}
+
+.fullField {
+  grid-column: 1 / -1;
+}
+
+.checkbox {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px !important;
+}
+
+.checkbox input {
+  width: 18px;
+  min-height: 18px;
+}
+
+.checkbox span {
+  color: #111111 !important;
+}
+
+.saveButton {
+  min-height: 50px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  background: #111111;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+@media (max-width: 800px) {
+  .hero {
+    padding: 35px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .publicButton {
+    width: 100%;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHeading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trackHeader {
+    grid-template-columns: 40px 1fr;
+  }
+
+  .orderButtons {
+    grid-column: 2;
+  }
+
+  .editForm {
+    grid-template-columns: 1fr;
+  }
+
+  .fullField {
+    grid-column: auto;
+  }
+}

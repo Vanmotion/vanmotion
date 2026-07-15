@@ -1,89 +1,483 @@
 import Link from "next/link";
 
-import { getVehicles } from "@/repositories/vehicleRepository";
+import { prisma } from "@/app/lib/prisma";
+import styles from "./admin-dashboard.module.css";
 
-export default async function VehiclesPage() {
-  const vehicles = await getVehicles();
+export const dynamic = "force-dynamic";
+
+function formatPrice(value: unknown): string {
+  const amount = Number(value);
+
+  if (!Number.isFinite(amount)) {
+    return "Consultar";
+  }
+
+  return new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+function formatDate(value: Date): string {
+  return new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(value);
+}
+
+function statusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    AVAILABLE: "Disponible",
+    RESERVED: "Reservado",
+    SOLD: "Vendido",
+  };
+
+  return labels[status] ?? status;
+}
+
+export default async function AdminDashboardPage() {
+  const [
+    totalVehicles,
+    availableVehicles,
+    reservedVehicles,
+    soldVehicles,
+    totalBrands,
+    totalContacts,
+    recentVehicles,
+    recentContacts,
+    settings,
+  ] = await Promise.all([
+    prisma.vehicle.count(),
+
+    prisma.vehicle.count({
+      where: {
+        status: "AVAILABLE",
+      },
+    }),
+
+    prisma.vehicle.count({
+      where: {
+        status: "RESERVED",
+      },
+    }),
+
+    prisma.vehicle.count({
+      where: {
+        status: "SOLD",
+      },
+    }),
+
+    prisma.brand.count(),
+
+    prisma.contactRequest.count(),
+
+    prisma.vehicle.findMany({
+      take: 5,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        brand: true,
+        images: {
+          take: 1,
+          orderBy: {
+            sortOrder: "asc",
+          },
+        },
+      },
+    }),
+
+    prisma.contactRequest.findMany({
+      take: 5,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        vehicle: {
+          include: {
+            brand: true,
+          },
+        },
+      },
+    }),
+
+    prisma.siteSettings.findUnique({
+      where: {
+        id: "main",
+      },
+    }),
+  ]);
+
+  const businessName =
+    settings?.businessName ?? "VANMOTION";
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-start justify-between">
+    <div className={styles.page}>
+      <section className={styles.hero}>
         <div>
-          <h1 className="text-5xl font-light tracking-wide">
-            Vehículos
+          <p className={styles.eyebrow}>
+            Panel de administración
+          </p>
+
+          <h1>
+            Buenos días,
+            <br />
+            {businessName}.
           </h1>
 
-          <p className="mt-2 text-white/50">
-            Gestiona el catálogo de Vanmotion.
+          <p className={styles.heroText}>
+            Controla vehículos, contactos, marcas,
+            música y configuración desde un único
+            espacio.
           </p>
         </div>
 
-        <Link
-          href="/admin/vehicles/new"
-          className="rounded-lg border border-white/20 px-5 py-3 transition hover:bg-white hover:text-black"
-        >
-          + Nuevo vehículo
-        </Link>
-      </div>
+        <div className={styles.heroActions}>
+          <Link
+            href="/admin/vehicles/nuevo"
+            className={styles.primaryButton}
+          >
+            Añadir vehículo <span>＋</span>
+          </Link>
 
-      <div className="overflow-hidden rounded-2xl border border-white/10">
-        <table className="w-full">
-          <thead className="border-b border-white/10 bg-white/5">
-            <tr className="text-left">
-              <th className="px-6 py-4 font-medium">Marca</th>
-              <th className="px-6 py-4 font-medium">Modelo</th>
-              <th className="px-6 py-4 font-medium">Año</th>
-              <th className="px-6 py-4 font-medium">Precio</th>
-              <th className="px-6 py-4 font-medium">Estado</th>
-            </tr>
-          </thead>
+          <Link
+            href="/"
+            target="_blank"
+            className={styles.secondaryButton}
+          >
+            Ver página pública <span>↗</span>
+          </Link>
+        </div>
+      </section>
 
-          <tbody>
-            {vehicles.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={5}
-                  className="px-6 py-10 text-center text-white/40"
-                >
-                  No hay vehículos registrados.
-                </td>
-              </tr>
-            ) : (
-              vehicles.map((vehicle) => (
-                <tr
-                  key={vehicle.id}
-                  className="border-t border-white/5 transition hover:bg-white/5"
-                >
-                  <td className="px-6 py-5">
-                    {vehicle.brand.name}
-                  </td>
+      <section className={styles.statsGrid}>
+        <article>
+          <span className={styles.statNumber}>
+            {totalVehicles}
+          </span>
 
-                  <td className="px-6 py-5">
-                    {vehicle.model}
-                  </td>
+          <div>
+            <strong>Vehículos</strong>
+            <small>Total registrado</small>
+          </div>
+        </article>
 
-                  <td className="px-6 py-5">
-                    {vehicle.year}
-                  </td>
+        <article>
+          <span className={styles.statNumber}>
+            {availableVehicles}
+          </span>
 
-                  <td className="px-6 py-5">
-                    {Number(vehicle.price).toLocaleString("es-ES", {
-                      style: "currency",
-                      currency: "EUR",
-                    })}
-                  </td>
+          <div>
+            <strong>Disponibles</strong>
+            <small>Publicados para venta</small>
+          </div>
+        </article>
 
-                  <td className="px-6 py-5">
-                    <span className="rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1 text-xs text-green-400">
-                      {vehicle.status}
+        <article>
+          <span className={styles.statNumber}>
+            {reservedVehicles}
+          </span>
+
+          <div>
+            <strong>Reservados</strong>
+            <small>Operaciones en proceso</small>
+          </div>
+        </article>
+
+        <article>
+          <span className={styles.statNumber}>
+            {soldVehicles}
+          </span>
+
+          <div>
+            <strong>Vendidos</strong>
+            <small>Vehículos completados</small>
+          </div>
+        </article>
+
+        <article>
+          <span className={styles.statNumber}>
+            {totalContacts}
+          </span>
+
+          <div>
+            <strong>Contactos</strong>
+            <small>Solicitudes recibidas</small>
+          </div>
+        </article>
+
+        <article>
+          <span className={styles.statNumber}>
+            {totalBrands}
+          </span>
+
+          <div>
+            <strong>Marcas</strong>
+            <small>Fabricantes registrados</small>
+          </div>
+        </article>
+      </section>
+
+      <section className={styles.quickActions}>
+        <div className={styles.sectionHeading}>
+          <div>
+            <p className={styles.eyebrow}>
+              Accesos rápidos
+            </p>
+
+            <h2>Gestiona VANMOTION.</h2>
+          </div>
+        </div>
+
+        <div className={styles.actionGrid}>
+          <Link href="/admin/vehicles">
+            <span>01</span>
+            <strong>Vehículos</strong>
+            <small>
+              Añadir, editar, ordenar imágenes y
+              cambiar el estado.
+            </small>
+            <b>Entrar →</b>
+          </Link>
+
+          <Link href="/admin/brands">
+            <span>02</span>
+            <strong>Marcas</strong>
+            <small>
+              Gestionar fabricantes y organizar el
+              catálogo.
+            </small>
+            <b>Entrar →</b>
+          </Link>
+
+          <Link href="/admin/contactos">
+            <span>03</span>
+            <strong>Contactos</strong>
+            <small>
+              Consultar solicitudes de personas
+              interesadas.
+            </small>
+            <b>Entrar →</b>
+          </Link>
+
+          <Link href="/admin/settings">
+            <span>04</span>
+            <strong>Configuración</strong>
+            <small>
+              Teléfono, dirección, WhatsApp, horario y
+              redes.
+            </small>
+            <b>Entrar →</b>
+          </Link>
+        </div>
+      </section>
+
+      <section className={styles.contentGrid}>
+        <div className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <p className={styles.eyebrow}>
+                Inventario
+              </p>
+
+              <h2>Últimos vehículos</h2>
+            </div>
+
+            <Link href="/admin/vehicles">
+              Ver todos →
+            </Link>
+          </div>
+
+          {recentVehicles.length === 0 ? (
+            <div className={styles.emptyState}>
+              <strong>
+                Todavía no hay vehículos.
+              </strong>
+
+              <p>
+                Añade el primero para comenzar la
+                colección pública.
+              </p>
+
+              <Link href="/admin/vehicles/nuevo">
+                Añadir vehículo
+              </Link>
+            </div>
+          ) : (
+            <div className={styles.vehicleList}>
+              {recentVehicles.map((vehicle) => {
+                const image = vehicle.images[0];
+
+                return (
+                  <article key={vehicle.id}>
+                    <div className={styles.vehicleImage}>
+                      {image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={image.url}
+                          alt={
+                            image.alt ??
+                            `${vehicle.brand.name} ${vehicle.model}`
+                          }
+                        />
+                      ) : (
+                        <span>Sin imagen</span>
+                      )}
+                    </div>
+
+                    <div
+                      className={
+                        styles.vehicleInformation
+                      }
+                    >
+                      <span>
+                        {vehicle.year} ·{" "}
+                        {vehicle.mileage.toLocaleString(
+                          "es-ES",
+                        )}{" "}
+                        km
+                      </span>
+
+                      <strong>
+                        {vehicle.brand.name}{" "}
+                        {vehicle.model}
+                      </strong>
+
+                      <small>
+                        {formatPrice(vehicle.price)}
+                      </small>
+                    </div>
+
+                    <div className={styles.vehicleStatus}>
+                      <span
+                        data-status={vehicle.status}
+                      >
+                        {statusLabel(vehicle.status)}
+                      </span>
+
+                      <Link
+                        href={`/admin/vehicles/${vehicle.id}/edit`}
+                      >
+                        Editar
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className={styles.panel}>
+          <div className={styles.panelHeader}>
+            <div>
+              <p className={styles.eyebrow}>
+                Interesados
+              </p>
+
+              <h2>Últimos contactos</h2>
+            </div>
+
+            <Link href="/admin/contactos">
+              Ver todos →
+            </Link>
+          </div>
+
+          {recentContacts.length === 0 ? (
+            <div className={styles.emptyState}>
+              <strong>
+                No hay solicitudes nuevas.
+              </strong>
+
+              <p>
+                Los contactos recibidos desde las
+                fichas aparecerán aquí.
+              </p>
+            </div>
+          ) : (
+            <div className={styles.contactList}>
+              {recentContacts.map((contact) => (
+                <article key={contact.id}>
+                  <div className={styles.contactAvatar}>
+                    {contact.name
+                      .trim()
+                      .charAt(0)
+                      .toUpperCase()}
+                  </div>
+
+                  <div
+                    className={
+                      styles.contactInformation
+                    }
+                  >
+                    <strong>{contact.name}</strong>
+
+                    <span>{contact.email}</span>
+
+                    <small>
+                      {contact.vehicle
+                        ? `${contact.vehicle.brand.name} ${contact.vehicle.model}`
+                        : "Consulta general"}
+                    </small>
+                  </div>
+
+                  <div className={styles.contactDate}>
+                    <span>
+                      {formatDate(contact.createdAt)}
                     </span>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+
+                    <Link href="/admin/contactos">
+                      Abrir
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className={styles.statusSection}>
+        <div>
+          <p className={styles.eyebrow}>
+            Estado del proyecto
+          </p>
+
+          <h2>
+            VANMOTION sigue
+            <br />
+            avanzando.
+          </h2>
+        </div>
+
+        <div className={styles.statusList}>
+          <div>
+            <span />
+            <strong>Página pública</strong>
+            <small>Activa</small>
+          </div>
+
+          <div>
+            <span />
+            <strong>Base de datos</strong>
+            <small>Conectada</small>
+          </div>
+
+          <div>
+            <span />
+            <strong>Reproductor musical</strong>
+            <small>Activo</small>
+          </div>
+
+          <div>
+            <span />
+            <strong>Panel administrativo</strong>
+            <small>Operativo</small>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

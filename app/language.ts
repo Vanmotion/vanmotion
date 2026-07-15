@@ -1,9 +1,24 @@
-import es from "./locales/es";
-import en from "./locales/en";
+export const SUPPORTED_LANGUAGES = [
+  "es",
+  "en",
+] as const;
 
-export const languages = {
-  es,
-  en,
-};
+export type Language =
+  (typeof SUPPORTED_LANGUAGES)[number];
 
-export type Language = keyof typeof languages;
+export const DEFAULT_LANGUAGE: Language =
+  "es";
+
+export const LANGUAGE_COOKIE =
+  "vanmotion-language";
+
+export function isLanguage(
+  value: unknown,
+): value is Language {
+  return (
+    typeof value === "string" &&
+    SUPPORTED_LANGUAGES.includes(
+      value as Language,
+    )
+  );
+}

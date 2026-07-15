@@ -1,0 +1,339 @@
+.page {
+  padding-bottom: 70px;
+  color: #111111;
+}
+
+.page,
+.page * {
+  box-sizing: border-box;
+}
+
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero {
+  min-height: 350px;
+  padding: 48px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 45px;
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(255, 255, 255, 0.12),
+      transparent 32%
+    ),
+    #090909;
+  color: #ffffff;
+}
+
+.eyebrow,
+.darkEyebrow {
+  margin: 0;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.darkEyebrow {
+  color: #8a8a8a;
+}
+
+.hero h1 {
+  margin: 22px 0 0;
+  font-size: clamp(55px, 6vw, 92px);
+  line-height: 0.86;
+  letter-spacing: -0.065em;
+  text-transform: uppercase;
+}
+
+.description {
+  max-width: 650px;
+  margin: 28px 0 0;
+  color: rgba(255, 255, 255, 0.46);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.backButton {
+  min-width: 220px;
+  min-height: 54px;
+  padding: 0 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-left: 1px solid #dedede;
+}
+
+.stats article {
+  min-height: 130px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #dedede;
+  border-bottom: 1px solid #dedede;
+  background: #ffffff;
+}
+
+.stats strong {
+  font-size: 40px;
+  letter-spacing: -0.05em;
+}
+
+.stats span {
+  color: #777777;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.library {
+  padding-top: 70px;
+}
+
+.heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.heading h2 {
+  margin: 13px 0 0;
+  font-size: 38px;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+.heading > span {
+  color: #8a8a8a;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.grid {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.card {
+  min-width: 0;
+  border: 1px solid #dddddd;
+  background: #ffffff;
+}
+
+.cover {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.cover img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.coverPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-content: center;
+  gap: 14px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.coverPlaceholder strong {
+  font-size: 90px;
+  line-height: 1;
+}
+
+.coverPlaceholder span {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+
+.number {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  padding: 9px 11px;
+  background: rgba(0, 0, 0, 0.76);
+  color: #ffffff;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  backdrop-filter: blur(10px);
+}
+
+.information {
+  min-height: 125px;
+  padding: 22px;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.information > span {
+  color: #888888;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.information h3 {
+  margin: 11px 0 0;
+  font-size: 25px;
+  letter-spacing: -0.035em;
+}
+
+.information p {
+  margin: 8px 0 0;
+  color: #888888;
+  font-size: 10px;
+}
+
+.uploadForm {
+  padding: 22px;
+  display: grid;
+  gap: 15px;
+}
+
+.uploadForm label {
+  display: grid;
+  gap: 10px;
+}
+
+.uploadForm label > span {
+  color: #777777;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.uploadForm input {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px;
+  border: 1px solid #d8d8d8;
+  background: #ffffff;
+}
+
+.uploadForm button {
+  min-height: 51px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  background: #111111;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.removeForm {
+  padding: 0 22px 22px;
+}
+
+.removeForm button {
+  width: 100%;
+  min-height: 43px;
+  border: 1px solid #e0a7a7;
+  background: transparent;
+  color: #b23434;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.empty {
+  min-height: 400px;
+  margin-top: 60px;
+  padding: 45px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  border: 1px solid #dddddd;
+  background: #ffffff;
+}
+
+.empty h2 {
+  margin: 0;
+  font-size: 35px;
+}
+
+.empty p {
+  max-width: 550px;
+  color: #777777;
+  line-height: 1.8;
+}
+
+.empty a {
+  margin-top: 20px;
+  padding: 14px 18px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 850px) {
+  .hero {
+    padding: 35px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .backButton {
+    width: 100%;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

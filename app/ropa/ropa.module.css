@@ -1,0 +1,603 @@
+.page {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #080808;
+  color: #f5f5f2;
+}
+
+.page,
+.page * {
+  box-sizing: border-box;
+}
+
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.header {
+  width: min(100% - 48px, 1440px);
+  min-height: 82px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+  font-size: 17px;
+  font-weight: 750;
+  letter-spacing: 0.36em;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.navigation a {
+  padding: 13px 0;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.navigation a:hover,
+.navigation .active {
+  color: #ffffff;
+}
+
+.active {
+  border-bottom: 1px solid #ffffff;
+}
+
+.headerButton {
+  min-height: 43px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero {
+  width: min(100% - 48px, 1440px);
+  min-height: 690px;
+  margin: 0 auto;
+  padding: 95px 0 85px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 75px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.34);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 27px 0 0;
+  font-size: clamp(65px, 7vw, 112px);
+  font-weight: 650;
+  line-height: 0.83;
+  letter-spacing: -0.07em;
+  text-transform: uppercase;
+}
+
+.description {
+  max-width: 680px;
+  margin: 38px 0 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.heroActions {
+  margin-top: 38px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 54px;
+  padding: 0 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.primaryButton {
+  background: #ffffff;
+  color: #080808 !important;
+}
+
+.secondaryButton {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.heroVisual {
+  min-height: 530px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    radial-gradient(
+      circle at 80% 15%,
+      rgba(255, 255, 255, 0.13),
+      transparent 34%
+    ),
+    #0d0d0d;
+}
+
+.visualTop,
+.visualBottom {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+}
+
+.shirt {
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shirtBody {
+  position: relative;
+  width: 265px;
+  min-height: 340px;
+  padding: 70px 26px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #030303;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  clip-path: polygon(
+    22% 0,
+    38% 8%,
+    62% 8%,
+    78% 0,
+    100% 16%,
+    86% 35%,
+    80% 27%,
+    80% 100%,
+    20% 100%,
+    20% 27%,
+    14% 35%,
+    0 16%
+  );
+}
+
+.neck {
+  position: absolute;
+  top: 12px;
+  width: 64px;
+  height: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-top: 0;
+  border-radius: 0 0 40px 40px;
+}
+
+.shirtMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.shirtMessage strong {
+  font-size: 41px;
+  line-height: 0.9;
+  letter-spacing: 0.13em;
+}
+
+.shirtBody small {
+  margin-top: auto;
+  color: rgba(255, 255, 255, 0.34);
+  font-size: 7px;
+  letter-spacing: 0.24em;
+}
+
+.dropSection,
+.philosophySection,
+.productionSection,
+.contactSection {
+  width: min(100% - 48px, 1440px);
+  margin: 0 auto;
+  padding: 110px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sectionHeading {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 75px;
+  align-items: end;
+}
+
+.sectionHeading h2,
+.philosophyTitle h2,
+.productionCopy h2,
+.contactSection h2 {
+  margin: 20px 0 0;
+  font-size: clamp(48px, 5vw, 80px);
+  line-height: 0.92;
+  letter-spacing: -0.06em;
+  text-transform: uppercase;
+}
+
+.sectionHeading > p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.43);
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.productGrid {
+  margin-top: 70px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr 0.9fr;
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+  border-left: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.productMain,
+.productDetail {
+  min-height: 480px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.11);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  background: #0c0c0c;
+}
+
+.productLabel {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.backDesign {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.backDesign span,
+.backDesign strong {
+  font-size: clamp(63px, 7vw, 105px);
+  line-height: 0.76;
+  letter-spacing: -0.06em;
+}
+
+.backDesign span {
+  color: rgba(255, 255, 255, 0.12);
+}
+
+.productMain > p,
+.productDetail > p {
+  margin: auto 0 0;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.smallLogo,
+.material {
+  margin: auto 0;
+}
+
+.smallLogo strong,
+.smallLogo span,
+.material span,
+.material strong,
+.material small {
+  display: block;
+}
+
+.smallLogo strong {
+  font-size: 28px;
+  letter-spacing: 0.18em;
+}
+
+.smallLogo span {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.material span {
+  color: rgba(255, 255, 255, 0.12);
+  font-size: 65px;
+  font-weight: 700;
+}
+
+.material strong {
+  font-size: 31px;
+  line-height: 1;
+}
+
+.material small {
+  margin-top: 14px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+
+.philosophySection {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 80px;
+}
+
+.principles {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.principles article {
+  min-height: 190px;
+  padding: 28px 0;
+  display: grid;
+  grid-template-columns: 55px 0.7fr 1.3fr;
+  gap: 25px;
+  align-items: start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.principles article > span {
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 10px;
+}
+
+.principles h3 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.principles p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.productionSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 75px;
+  align-items: center;
+}
+
+.productionVisual {
+  min-height: 520px;
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(255, 255, 255, 0.11),
+      transparent 35%
+    ),
+    #0d0d0d;
+}
+
+.productionTop {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+}
+
+.productionWord {
+  display: flex;
+  flex-direction: column;
+}
+
+.productionWord span,
+.productionWord strong {
+  font-size: clamp(69px, 7vw, 110px);
+  line-height: 0.76;
+  letter-spacing: -0.075em;
+}
+
+.productionWord span {
+  color: rgba(255, 255, 255, 0.08);
+}
+
+.productionLines {
+  height: 100px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.productionLines span {
+  width: 100%;
+  max-height: 100%;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.productionCopy > p:last-child {
+  max-width: 610px;
+  margin: 34px 0 0;
+  color: rgba(255, 255, 255, 0.43);
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.contactSection {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 75px;
+  align-items: end;
+}
+
+.contactCopy p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.43);
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.contactCopy a {
+  min-height: 55px;
+  margin-top: 30px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  color: #080808 !important;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.footer {
+  width: min(100% - 48px, 1440px);
+  min-height: 90px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.footer strong {
+  letter-spacing: 0.3em;
+}
+
+.footer span {
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1050px) {
+  .hero,
+  .sectionHeading,
+  .philosophySection,
+  .productionSection,
+  .contactSection {
+    grid-template-columns: 1fr;
+  }
+
+  .productGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .productMain,
+  .productDetail {
+    min-height: 390px;
+  }
+}
+
+@media (max-width: 720px) {
+  .header,
+  .hero,
+  .dropSection,
+  .philosophySection,
+  .productionSection,
+  .contactSection,
+  .footer {
+    width: min(100% - 30px, 1440px);
+  }
+
+  .header {
+    padding: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .navigation {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .navigation a {
+    font-size: 7px;
+  }
+
+  .headerButton {
+    font-size: 7px;
+  }
+
+  .hero h1 {
+    font-size: 57px;
+  }
+
+  .heroVisual {
+    min-height: 450px;
+    padding: 22px;
+  }
+
+  .heroActions {
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .principles article {
+    grid-template-columns: 40px 1fr;
+  }
+
+  .principles p {
+    grid-column: 2;
+  }
+
+  .footer {
+    padding: 30px 0;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

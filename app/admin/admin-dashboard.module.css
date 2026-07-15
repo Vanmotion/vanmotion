@@ -1,0 +1,512 @@
+.page {
+  padding: 4px 0 60px;
+  color: #151515;
+}
+
+.page,
+.page * {
+  box-sizing: border-box;
+}
+
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero {
+  min-height: 310px;
+  padding: 48px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  background:
+    radial-gradient(
+      circle at 85% 18%,
+      rgba(255, 255, 255, 0.13),
+      transparent 30%
+    ),
+    #0a0a0a;
+  color: #ffffff;
+}
+
+.eyebrow {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 22px 0 0;
+  font-size: clamp(48px, 5vw, 78px);
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}
+
+.heroText {
+  max-width: 630px;
+  margin: 26px 0 0;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.heroActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-width: 210px;
+  min-height: 52px;
+  padding: 0 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.primaryButton {
+  background: #ffffff;
+  color: #090909 !important;
+}
+
+.secondaryButton {
+  border: 1px solid rgba(255, 255, 255, 0.17);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-left: 1px solid #dedede;
+}
+
+.statsGrid article {
+  min-height: 145px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #dedede;
+  border-bottom: 1px solid #dedede;
+  background: #ffffff;
+}
+
+.statNumber {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+
+.statsGrid strong,
+.statsGrid small {
+  display: block;
+}
+
+.statsGrid strong {
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.statsGrid small {
+  margin-top: 6px;
+  color: #8a8a8a;
+  font-size: 9px;
+}
+
+.quickActions {
+  padding: 70px 0 0;
+}
+
+.sectionHeading h2 {
+  margin: 13px 0 0;
+  font-size: 35px;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.quickActions .eyebrow,
+.panel .eyebrow,
+.statusSection .eyebrow {
+  color: #8b8b8b;
+}
+
+.actionGrid {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid #dedede;
+  border-left: 1px solid #dedede;
+}
+
+.actionGrid > a {
+  min-height: 260px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #dedede;
+  border-bottom: 1px solid #dedede;
+  background: #ffffff;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.actionGrid > a:hover {
+  background: #f3f3f3;
+  transform: translateY(-3px);
+}
+
+.actionGrid > a > span {
+  color: #a6a6a6;
+  font-size: 10px;
+}
+
+.actionGrid strong {
+  margin-top: 50px;
+  font-size: 27px;
+  letter-spacing: -0.04em;
+}
+
+.actionGrid small {
+  margin-top: 15px;
+  color: #777777;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.actionGrid b {
+  margin-top: auto;
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.contentGrid {
+  margin-top: 70px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 18px;
+}
+
+.panel {
+  min-width: 0;
+  border: 1px solid #dedede;
+  background: #ffffff;
+}
+
+.panelHeader {
+  min-height: 115px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  border-bottom: 1px solid #dedede;
+}
+
+.panelHeader h2 {
+  margin: 10px 0 0;
+  font-size: 25px;
+  letter-spacing: -0.035em;
+}
+
+.panelHeader > a {
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.vehicleList article,
+.contactList article {
+  min-height: 105px;
+  padding: 15px;
+  display: grid;
+  align-items: center;
+  gap: 17px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.vehicleList article {
+  grid-template-columns: 115px minmax(0, 1fr) auto;
+}
+
+.contactList article {
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+}
+
+.vehicleList article:last-child,
+.contactList article:last-child {
+  border-bottom: 0;
+}
+
+.vehicleImage {
+  height: 75px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #ededed;
+  color: #999999;
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.vehicleImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vehicleInformation,
+.contactInformation {
+  min-width: 0;
+}
+
+.vehicleInformation span,
+.vehicleInformation strong,
+.vehicleInformation small,
+.contactInformation strong,
+.contactInformation span,
+.contactInformation small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vehicleInformation span {
+  color: #959595;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.vehicleInformation strong {
+  margin-top: 7px;
+  font-size: 15px;
+}
+
+.vehicleInformation small {
+  margin-top: 6px;
+  color: #555555;
+  font-size: 11px;
+}
+
+.vehicleStatus,
+.contactDate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.vehicleStatus > span {
+  padding: 7px 9px;
+  background: #ededed;
+  font-size: 7px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.vehicleStatus > span[data-status="AVAILABLE"] {
+  background: #e3f4e6;
+  color: #277037;
+}
+
+.vehicleStatus > span[data-status="RESERVED"] {
+  background: #fff2d8;
+  color: #8a5c00;
+}
+
+.vehicleStatus > span[data-status="SOLD"] {
+  background: #ececec;
+  color: #555555;
+}
+
+.vehicleStatus a,
+.contactDate a {
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.contactAvatar {
+  width: 45px;
+  height: 45px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #111111;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.contactInformation strong {
+  font-size: 13px;
+}
+
+.contactInformation span {
+  margin-top: 5px;
+  color: #777777;
+  font-size: 10px;
+}
+
+.contactInformation small {
+  margin-top: 7px;
+  color: #9b9b9b;
+  font-size: 9px;
+}
+
+.contactDate span {
+  color: #999999;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.emptyState {
+  min-height: 310px;
+  padding: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.emptyState strong {
+  font-size: 20px;
+}
+
+.emptyState p {
+  max-width: 380px;
+  margin: 13px 0 0;
+  color: #777777;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.emptyState a {
+  margin-top: 24px;
+  padding: 13px 16px;
+  background: #111111;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.statusSection {
+  margin-top: 70px;
+  padding: 50px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 70px;
+  align-items: center;
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+.statusSection h2 {
+  margin: 17px 0 0;
+  font-size: clamp(40px, 4vw, 63px);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}
+
+.statusList {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.statusList > div {
+  min-height: 65px;
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: 13px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.statusList > div > span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #73d08a;
+  box-shadow: 0 0 14px rgba(115, 208, 138, 0.55);
+}
+
+.statusList strong {
+  font-size: 11px;
+}
+
+.statusList small {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1200px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .actionGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding: 32px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heroActions,
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .actionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .vehicleList article {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+
+  .vehicleStatus {
+    grid-column: 2;
+    align-items: flex-start;
+    flex-direction: row;
+  }
+
+  .statusSection {
+    padding: 35px 24px;
+    grid-template-columns: 1fr;
+  }
+}

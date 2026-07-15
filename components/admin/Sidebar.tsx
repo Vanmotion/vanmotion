@@ -1,50 +1,82 @@
 import Link from "next/link";
 
-const links = [
-  {
-    name: "Dashboard",
-    href: "/admin",
-  },
-  {
-    name: "Vehículos",
-    href: "/admin/vehicles",
-  },
-  {
-    name: "Marcas",
-    href: "/admin/brands",
-  },
-  {
-    name: "Contactos",
-    href: "/admin/contacts",
-  },
-  {
-    name: "Configuración",
-    href: "/admin/settings",
-  },
-];
+import LogoutButton from "@/app/admin/LogoutButton";
+
+import SidebarNav from "./SidebarNav";
+import styles from "./Sidebar.module.css";
 
 export default function Sidebar() {
   return (
-    <aside className="w-72 border-r border-white/10 bg-black">
-      <div className="px-8 py-10">
+    <aside className={styles.sidebar}>
+      <div className={styles.top}>
+        <Link href="/admin" className={styles.brand}>
+          <span className={styles.brandName}>
+            VANMOTION
+          </span>
 
-        <h1 className="text-2xl tracking-[0.35em] font-light">
-          VANMOTION
-        </h1>
+          <span className={styles.brandSubtitle}>
+            Administración
+          </span>
+        </Link>
 
-        <div className="mt-16 flex flex-col gap-2">
+        <div className={styles.status}>
+          <span className={styles.statusLight} />
 
-          {links.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-lg px-4 py-3 text-sm text-white/60 transition hover:bg-white/5 hover:text-white"
-            >
-              {item.name}
-            </Link>
-          ))}
-
+          <div>
+            <strong>Sistema activo</strong>
+            <small>Panel operativo</small>
+          </div>
         </div>
+      </div>
+
+      <div className={styles.navigationArea}>
+        <p className={styles.sectionLabel}>
+          Gestión
+        </p>
+
+        <SidebarNav />
+      </div>
+
+      <div className={styles.bottom}>
+        <div className={styles.publicArea}>
+          <p className={styles.sectionLabel}>
+            Página pública
+          </p>
+
+          <Link
+            href="/"
+            target="_blank"
+            className={styles.publicLink}
+          >
+            <span className={styles.publicIcon}>
+              ↗
+            </span>
+
+            <span>
+              <strong>Ver página pública</strong>
+              <small>Abrir VANMOTION</small>
+            </span>
+          </Link>
+        </div>
+
+        <div className={styles.profile}>
+          <div className={styles.avatar}>
+            VM
+          </div>
+
+          <div className={styles.profileText}>
+            <strong>Administrador</strong>
+            <small>Acceso protegido</small>
+          </div>
+        </div>
+
+        <div className={styles.logout}>
+          <LogoutButton />
+        </div>
+
+        <p className={styles.version}>
+          VANMOTION · BUILD 2026
+        </p>
       </div>
     </aside>
   );
