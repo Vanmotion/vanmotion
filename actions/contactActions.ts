@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { sendContactNotification } from "@/app/lib/contact-email";
@@ -15,6 +16,21 @@ const allowedStatuses = [
 
 type ContactStatus =
   (typeof allowedStatuses)[number];
+
+const allowedTopics = [
+  "GENERAL",
+  "VEHICLES",
+  "MUSIC",
+  "CLOTHING",
+  "PROJECTS",
+] as const;
+
+type ContactTopic =
+  (typeof allowedTopics)[number];
+
+type AdminContactPath =
+  | "/admin/contacts"
+  | "/admin/contactos";
 
 const translations = {
   es: {
@@ -32,6 +48,14 @@ const translations = {
 
     invalidStatus:
       "El estado seleccionado no es válido.",
+
+    topics: {
+      GENERAL: "Consulta general",
+      VEHICLES: "Vehículos",
+      MUSIC: "Música",
+      CLOTHING: "Ropa",
+      PROJECTS: "Proyectos y colaboraciones",
+    },
   },
 
   en: {
@@ -49,6 +73,14 @@ const translations = {
 
     invalidStatus:
       "The selected status is not valid.",
+
+    topics: {
+      GENERAL: "General enquiry",
+      VEHICLES: "Vehicles",
+      MUSIC: "Music",
+      CLOTHING: "Clothing",
+      PROJECTS: "Projects and collaborations",
+    },
   },
 } as const;
 
@@ -87,14 +119,52 @@ function isContactStatus(
   );
 }
 
+function isContactTopic(
+  value: string,
+): value is ContactTopic {
+  return allowedTopics.includes(
+    value as ContactTopic,
+  );
+}
+
 /*
- * Crea una solicitud desde la ficha pública.
+ * Detecta desde qué panel se ha enviado el formulario.
+ * Tras guardar o eliminar, fuerza una navegación nueva
+ * para que el estado mostrado no vuelva al valor anterior.
+ */
+async function getAdminContactPath(): Promise<AdminContactPath> {
+  const headerList = await headers();
+  const referer = headerList.get("referer");
+
+  if (!referer) {
+    return "/admin/contactos";
+  }
+
+  try {
+    const pathname = new URL(referer).pathname;
+
+    if (pathname === "/admin/contacts") {
+      return "/admin/contacts";
+    }
+
+    if (pathname === "/admin/contactos") {
+      return "/admin/contactos";
+    }
+  } catch {
+    // Si la cabecera no es una URL válida,
+    // utilizamos el panel principal en español.
+  }
+
+  return "/admin/contactos";
+}
+
+/*
+ * Crea una solicitud desde:
  *
- * 1. Valida los datos.
- * 2. Comprueba que el vehículo esté disponible.
- * 3. Guarda la solicitud en PostgreSQL.
- * 4. Envía el aviso a VANMOTION.
- * 5. Envía una confirmación automática al cliente.
+ * - La ficha pública de un vehículo disponible.
+ * - El formulario general de /contacto.
+ *
+ * La solicitud se guarda antes de intentar enviar los correos.
  */
 export async function createContactRequest(
   formData: FormData,
@@ -102,12 +172,12 @@ export async function createContactRequest(
   const language =
     await getCurrentLanguage();
 
-  const errors =
+  const content =
     translations[language];
 
-  const vehicleId = getText(
-    formData,
-    "vehicleId",
+  const vehicleId = normaliseText(
+    getText(formData, "vehicleId"),
+    120,
   );
 
   const name = normaliseText(
@@ -134,48 +204,68 @@ export async function createContactRequest(
   );
 
   if (
-    !vehicleId ||
     !name ||
     !email ||
     !message
   ) {
     throw new Error(
-      errors.requiredFields,
+      content.requiredFields,
     );
   }
 
   if (!isValidEmail(email)) {
     throw new Error(
-      errors.invalidEmail,
+      content.invalidEmail,
     );
   }
 
-  const vehicle =
-    await prisma.vehicle.findFirst({
-      where: {
-        id: vehicleId,
-        status: "AVAILABLE",
-      },
+  let vehicle: {
+    id: string;
+  } | null = null;
 
-      select: {
-        id: true,
-      },
-    });
+  if (vehicleId) {
+    vehicle =
+      await prisma.vehicle.findFirst({
+        where: {
+          id: vehicleId,
+          status: "AVAILABLE",
+        },
 
-  if (!vehicle) {
-    throw new Error(
-      errors.unavailableVehicle,
-    );
+        select: {
+          id: true,
+        },
+      });
+
+    if (!vehicle) {
+      throw new Error(
+        content.unavailableVehicle,
+      );
+    }
   }
 
-  /*
-   * La solicitud se guarda primero.
-   * De esta forma no se pierde aunque
-   * posteriormente falle el correo.
-   */
+  const rawTopic = getText(
+    formData,
+    "topic",
+  ).toUpperCase();
+
+  const topic: ContactTopic =
+    isContactTopic(rawTopic)
+      ? rawTopic
+      : "GENERAL";
+
+  const subject = vehicle
+    ? null
+    : content.topics[topic];
+
   await prisma.contactRequest.create({
     data: {
-      vehicleId: vehicle.id,
+      ...(vehicle
+        ? {
+            vehicleId: vehicle.id,
+          }
+        : {}),
+
+      subject,
       name,
       email,
       phone: phone || null,
@@ -184,18 +274,10 @@ export async function createContactRequest(
     },
   });
 
-  /*
-   * Envía:
-   *
-   * - Aviso interno a vanmotion@hotmail.com.
-   * - Confirmación automática al cliente.
-   *
-   * Si Resend falla, la solicitud permanece
-   * guardada en PostgreSQL.
-   */
   try {
     await sendContactNotification({
-      vehicleId: vehicle.id,
+      vehicleId: vehicle?.id ?? null,
+      subject,
       name,
       email,
       phone: phone || null,
@@ -217,8 +299,16 @@ export async function createContactRequest(
     "/admin/contactos",
   );
 
+  if (vehicle) {
+    redirect(
+      `/coleccion/${vehicle.id}?enviado=1`,
+    );
+  }
+
+  revalidatePath("/contacto");
+
   redirect(
-    `/coleccion/${vehicle.id}?enviado=1`,
+    "/contacto?enviado=1#formulario",
   );
 }
 
@@ -228,6 +318,9 @@ export async function createContactRequest(
  * - PENDING
  * - CONTACTED
  * - CLOSED
+ *
+ * Después redirige al panel para obligar a Next.js
+ * a leer de nuevo el estado guardado en PostgreSQL.
  */
 export async function updateContactStatus(
   formData: FormData,
@@ -260,6 +353,9 @@ export async function updateContactStatus(
     );
   }
 
+  const returnPath =
+    await getAdminContactPath();
+
   await prisma.contactRequest.update({
     where: {
       id: contactId,
@@ -277,10 +373,13 @@ export async function updateContactStatus(
   revalidatePath(
     "/admin/contactos",
   );
+
+  redirect(returnPath);
 }
 
 /*
  * Elimina una solicitud del panel privado.
+ * También fuerza la recarga del panel.
  */
 export async function deleteContactRequest(
   formData: FormData,
@@ -302,6 +401,9 @@ export async function deleteContactRequest(
     );
   }
 
+  const returnPath =
+    await getAdminContactPath();
+
   await prisma.contactRequest.delete({
     where: {
       id: contactId,
@@ -315,4 +417,6 @@ export async function deleteContactRequest(
   revalidatePath(
     "/admin/contactos",
   );
+
+  redirect(returnPath);
 }

@@ -32,19 +32,20 @@ function formatDate(date: Date): string {
 }
 
 export default async function ContactsPage() {
-  const contacts = await prisma.contactRequest.findMany({
-    include: {
-      vehicle: {
-        include: {
-          brand: true,
+  const contacts =
+    await prisma.contactRequest.findMany({
+      include: {
+        vehicle: {
+          include: {
+            brand: true,
+          },
         },
       },
-    },
 
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
   const totalContacts = contacts.length;
 
@@ -53,7 +54,8 @@ export default async function ContactsPage() {
   ).length;
 
   const contactedContacts = contacts.filter(
-    (contact) => contact.status === "CONTACTED",
+    (contact) =>
+      contact.status === "CONTACTED",
   ).length;
 
   const closedContacts = contacts.filter(
@@ -92,16 +94,18 @@ export default async function ContactsPage() {
           </h1>
 
           <p className="mt-3 max-w-2xl text-white/50">
-            Gestiona las solicitudes de información recibidas desde
-            el catálogo público de VANMOTION.
+            Gestiona las consultas generales y las
+            solicitudes de información recibidas desde
+            las fichas públicas de los vehículos
+            VANMOTION.
           </p>
         </div>
 
         <Link
-          href="/coleccion"
+          href="/contacto"
           className="inline-flex items-center justify-center rounded-xl border border-white/10 px-5 py-3 text-sm font-medium text-white/60 transition hover:bg-white/5 hover:text-white"
         >
-          Ver catálogo público
+          Ver contacto público
         </Link>
       </div>
 
@@ -153,27 +157,36 @@ export default async function ContactsPage() {
             </h3>
 
             <p className="mt-2 text-sm text-white/40">
-              Las consultas enviadas desde la web pública aparecerán
+              Las consultas generales y las solicitudes
+              enviadas desde la web pública aparecerán
               aquí.
             </p>
 
             <Link
-              href="/coleccion"
+              href="/contacto"
               className="mt-6 inline-flex rounded-xl bg-white px-5 py-3 text-sm font-semibold !text-black transition hover:bg-white/80"
             >
-              Ver catálogo público
+              Ver contacto público
             </Link>
           </div>
         ) : (
           <div className="divide-y divide-white/10">
             {contacts.map((contact) => {
-              const vehicleName = [
-                contact.vehicle.brand.name,
-                contact.vehicle.model,
-                contact.vehicle.version,
-              ]
-                .filter(Boolean)
-                .join(" ");
+              const vehicle = contact.vehicle;
+
+              const vehicleName = vehicle
+                ? [
+                    vehicle.brand.name,
+                    vehicle.model,
+                    vehicle.version,
+                  ]
+                    .filter(Boolean)
+                    .join(" ")
+                : null;
+
+              const subject =
+                contact.subject?.trim() ||
+                "Consulta general";
 
               return (
                 <section
@@ -185,16 +198,27 @@ export default async function ContactsPage() {
                       <div className="flex flex-wrap items-center gap-3">
                         <span
                           className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${
-                            statusClasses[contact.status] ??
+                            statusClasses[
+                              contact.status
+                            ] ??
                             "border-white/10 bg-white/5 text-white/50"
                           }`}
                         >
-                          {statusLabels[contact.status] ??
-                            contact.status}
+                          {statusLabels[
+                            contact.status
+                          ] ?? contact.status}
                         </span>
 
                         <span className="text-xs text-white/30">
-                          {formatDate(contact.createdAt)}
+                          {formatDate(
+                            contact.createdAt,
+                          )}
+                        </span>
+
+                        <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/45">
+                          {vehicle
+                            ? "Consulta de vehículo"
+                            : "Consulta general"}
                         </span>
                       </div>
 
@@ -203,23 +227,33 @@ export default async function ContactsPage() {
                       </h3>
 
                       <p className="mt-2 text-sm text-white/40">
-                        Interesado en:
+                        {vehicle
+                          ? "Interesado en:"
+                          : "Tipo de consulta:"}
                       </p>
 
-                      <Link
-                        href={`/admin/vehicles/${contact.vehicleId}`}
-                        className="mt-1 inline-block font-medium text-white transition hover:text-white/60"
-                      >
-                        {vehicleName} →
-                      </Link>
+                      {vehicle && vehicleName ? (
+                        <Link
+                          href={`/admin/vehicles/${vehicle.id}`}
+                          className="mt-1 inline-block font-medium text-white transition hover:text-white/60"
+                        >
+                          {vehicleName} →
+                        </Link>
+                      ) : (
+                        <p className="mt-1 font-medium text-white">
+                          {subject}
+                        </p>
+                      )}
                     </div>
 
-                    <Link
-                      href={`/admin/vehicles/${contact.vehicleId}`}
-                      className="inline-flex w-fit items-center justify-center rounded-xl border border-white/10 px-4 py-3 text-sm font-medium text-white/60 transition hover:bg-white/5 hover:text-white"
-                    >
-                      Ver vehículo
-                    </Link>
+                    {vehicle && (
+                      <Link
+                        href={`/admin/vehicles/${vehicle.id}`}
+                        className="inline-flex w-fit items-center justify-center rounded-xl border border-white/10 px-4 py-3 text-sm font-medium text-white/60 transition hover:bg-white/5 hover:text-white"
+                      >
+                        Ver vehículo
+                      </Link>
+                    )}
                   </div>
 
                   <div className="mt-7 grid gap-4 md:grid-cols-2">

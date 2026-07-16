@@ -69,8 +69,13 @@ model VehicleImage {
 model ContactRequest {
   id String @id @default(cuid())
 
-  vehicleId String
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  // Opcional para permitir consultas generales.
+  // SetNull conserva el contacto si se elimina el vehículo.
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  // Asunto de las consultas generales.
+  subject String?
 
   name  String
   email String

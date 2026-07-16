@@ -3,7 +3,8 @@ import { Resend } from "resend";
 import { prisma } from "@/app/lib/prisma";
 
 type ContactNotificationInput = {
-  vehicleId: string;
+  vehicleId?: string | null;
+  subject?: string | null;
   name: string;
   email: string;
   phone: string | null;
@@ -49,23 +50,24 @@ export async function sendContactNotification(
     return;
   }
 
-  const vehicle =
-    await prisma.vehicle.findUnique({
-      where: {
-        id: input.vehicleId,
-      },
+  const vehicle = input.vehicleId
+    ? await prisma.vehicle.findUnique({
+        where: {
+          id: input.vehicleId,
+        },
 
-      select: {
-        model: true,
-        version: true,
+        select: {
+          model: true,
+          version: true,
 
-        brand: {
-          select: {
-            name: true,
+          brand: {
+            select: {
+              name: true,
+            },
           },
         },
-      },
-    });
+      })
+    : null;
 
   const vehicleName = vehicle
     ? [
@@ -75,10 +77,22 @@ export async function sendContactNotification(
       ]
         .filter(Boolean)
         .join(" ")
-    : "Vehículo VANMOTION";
+    : null;
 
-  const safeVehicle =
-    escapeHtml(vehicleName);
+  const isVehicleEnquiry =
+    Boolean(vehicleName);
+
+  const generalSubject =
+    input.subject?.trim() ||
+    (input.language === "es"
+      ? "Consulta general"
+      : "General enquiry");
+
+  const reference =
+    vehicleName ?? generalSubject;
+
+  const safeReference =
+    escapeHtml(reference);
 
   const safeName =
     escapeHtml(input.name);
@@ -88,7 +102,11 @@ export async function sendContactNotification(
 
   const safePhone =
     escapeHtml(
-      input.phone || "No indicado",
+      input.phone || (
+        input.language === "es"
+          ? "No indicado"
+          : "Not provided"
+      ),
     );
 
   const safeMessage =
@@ -98,6 +116,21 @@ export async function sendContactNotification(
     );
 
   const resend = new Resend(apiKey);
+
+  const notificationType =
+    isVehicleEnquiry
+      ? "SOLICITUD DE VEHÍCULO"
+      : "CONSULTA GENERAL";
+
+  const notificationTitle =
+    isVehicleEnquiry
+      ? "Nueva solicitud de información"
+      : "Nuevo contacto desde la web";
+
+  const referenceLabel =
+    isVehicleEnquiry
+      ? "Vehículo"
+      : "Asunto";
 
   /*
    * 1. Aviso privado para VANMOTION.
@@ -114,7 +147,7 @@ export async function sendContactNotification(
     replyTo: input.email,
 
     subject:
-      `Nueva solicitud VANMOTION · ${vehicleName}`,
+      `Nueva solicitud VANMOTION · ${reference}`,
 
     html: `
       <div
@@ -141,7 +174,7 @@ export async function sendContactNotification(
               color:#888888;
             "
           >
-            VANMOTION · SOLICITUD DE VEHÍCULO
+            VANMOTION · ${notificationType}
           </p>
 
           <h1
@@ -150,12 +183,12 @@ export async function sendContactNotification(
               font-size:25px;
             "
           >
-            Nueva solicitud de información
+            ${notificationTitle}
           </h1>
 
           <p>
-            <strong>Vehículo:</strong><br>
-            ${safeVehicle}
+            <strong>${referenceLabel}:</strong><br>
+            ${safeReference}
           </p>
 
           <p>
@@ -231,8 +264,8 @@ export async function sendContactNotification(
     input.language === "es";
 
   const confirmationSubject = isSpanish
-    ? `Hemos recibido tu solicitud · ${vehicleName}`
-    : `We received your enquiry · ${vehicleName}`;
+    ? `Hemos recibido tu solicitud · ${reference}`
+    : `We received your enquiry · ${reference}`;
 
   const confirmationTitle = isSpanish
     ? "Hemos recibido tu solicitud"
@@ -242,19 +275,33 @@ export async function sendContactNotification(
     ? `Hola ${safeName},`
     : `Hello ${safeName},`;
 
-  const confirmationText = isSpanish
-    ? `
-        Gracias por contactar con VANMOTION.
-        Hemos recibido tu solicitud sobre el vehículo
-        <strong>${safeVehicle}</strong>.
-        Revisaremos la información y contactaremos contigo personalmente.
-      `
-    : `
-        Thank you for contacting VANMOTION.
-        We received your enquiry regarding
-        <strong>${safeVehicle}</strong>.
-        We will review the information and contact you personally.
-      `;
+  const confirmationText = isVehicleEnquiry
+    ? isSpanish
+      ? `
+          Gracias por contactar con VANMOTION.
+          Hemos recibido tu solicitud sobre el vehículo
+          <strong>${safeReference}</strong>.
+          Revisaremos la información y contactaremos contigo personalmente.
+        `
+      : `
+          Thank you for contacting VANMOTION.
+          We received your enquiry regarding
+          <strong>${safeReference}</strong>.
+          We will review the information and contact you personally.
+        `
+    : isSpanish
+      ? `
+          Gracias por contactar con VANMOTION.
+          Hemos recibido tu consulta sobre
+          <strong>${safeReference}</strong>.
+          Revisaremos tu mensaje y contactaremos contigo personalmente.
+        `
+      : `
+          Thank you for contacting VANMOTION.
+          We received your enquiry about
+          <strong>${safeReference}</strong>.
+          We will review your message and contact you personally.
+        `;
 
   const confirmationMessageLabel =
     isSpanish

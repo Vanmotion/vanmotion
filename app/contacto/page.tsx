@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { createContactRequest } from "@/actions/contactActions";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
 
 import styles from "./contacto.module.css";
 
 export const dynamic = "force-dynamic";
+
+type ContactoPageProps = {
+  searchParams: Promise<{
+    enviado?: string;
+  }>;
+};
 
 const translations = {
   es: {
@@ -31,6 +38,55 @@ const translations = {
         "Vehículos, producción musical, diseño y proyectos con identidad. Contacta directamente con VANMOTION para recibir información.",
       visualFirst: "REAL",
       visualSecond: "CONTACTO",
+    },
+
+    success: {
+      title: "Mensaje enviado correctamente",
+      description:
+        "Hemos recibido tu consulta. VANMOTION se pondrá en contacto contigo.",
+    },
+
+    form: {
+      label: "Formulario general",
+      titleFirst: "Cuéntanos",
+      titleSecond: "qué necesitas.",
+      description:
+        "Utiliza este formulario para consultas sobre vehículos, música, ropa, colaboraciones o cualquier proyecto relacionado con VANMOTION.",
+      topic: "Motivo de contacto *",
+      name: "Nombre *",
+      namePlaceholder: "Tu nombre",
+      email: "Correo electrónico *",
+      emailPlaceholder: "correo@ejemplo.com",
+      phone: "Teléfono",
+      phonePlaceholder: "+34 600 000 000",
+      message: "Mensaje *",
+      messagePlaceholder:
+        "Cuéntanos con claridad en qué podemos ayudarte.",
+      submit: "Enviar mensaje",
+      privacy:
+        "Tus datos se utilizarán únicamente para responder a esta consulta.",
+      topics: [
+        {
+          value: "GENERAL",
+          label: "Consulta general",
+        },
+        {
+          value: "VEHICLES",
+          label: "Vehículos",
+        },
+        {
+          value: "MUSIC",
+          label: "Música",
+        },
+        {
+          value: "CLOTHING",
+          label: "Ropa",
+        },
+        {
+          value: "PROJECTS",
+          label: "Proyectos y colaboraciones",
+        },
+      ],
     },
 
     contactCards: {
@@ -70,7 +126,7 @@ const translations = {
       titleFirst: "¿Buscas un vehículo",
       titleSecond: "con personalidad?",
       description:
-        "Consulta los vehículos disponibles y utiliza el formulario de cada ficha para solicitar información concreta.",
+        "Consulta nuestra colección. Los vehículos disponibles incluyen un formulario específico para solicitar información.",
       action: "Explorar colección",
     },
 
@@ -100,6 +156,55 @@ const translations = {
         "Vehicles, music production, design and projects with identity. Contact VANMOTION directly to receive further information.",
       visualFirst: "REAL",
       visualSecond: "CONTACT",
+    },
+
+    success: {
+      title: "Message sent successfully",
+      description:
+        "We received your enquiry. VANMOTION will contact you shortly.",
+    },
+
+    form: {
+      label: "General contact form",
+      titleFirst: "Tell us",
+      titleSecond: "what you need.",
+      description:
+        "Use this form for enquiries about vehicles, music, clothing, collaborations or any project related to VANMOTION.",
+      topic: "Reason for contact *",
+      name: "Name *",
+      namePlaceholder: "Your name",
+      email: "Email address *",
+      emailPlaceholder: "email@example.com",
+      phone: "Phone",
+      phonePlaceholder: "+34 600 000 000",
+      message: "Message *",
+      messagePlaceholder:
+        "Tell us clearly how we can help.",
+      submit: "Send message",
+      privacy:
+        "Your details will only be used to answer this enquiry.",
+      topics: [
+        {
+          value: "GENERAL",
+          label: "General enquiry",
+        },
+        {
+          value: "VEHICLES",
+          label: "Vehicles",
+        },
+        {
+          value: "MUSIC",
+          label: "Music",
+        },
+        {
+          value: "CLOTHING",
+          label: "Clothing",
+        },
+        {
+          value: "PROJECTS",
+          label: "Projects and collaborations",
+        },
+      ],
     },
 
     contactCards: {
@@ -139,7 +244,7 @@ const translations = {
       titleFirst: "Looking for a vehicle",
       titleSecond: "with personality?",
       description:
-        "Browse the available vehicles and use the form on each listing to request specific information.",
+        "Browse our collection. Available vehicles include a dedicated form for requesting information.",
       action: "Explore collection",
     },
 
@@ -166,8 +271,14 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function ContactoPage() {
-  const [settings, language] = await Promise.all([
+export default async function ContactoPage({
+  searchParams,
+}: ContactoPageProps) {
+  const [
+    settings,
+    language,
+    { enviado },
+  ] = await Promise.all([
     prisma.siteSettings.findUnique({
       where: {
         id: "main",
@@ -175,6 +286,8 @@ export default async function ContactoPage() {
     }),
 
     getCurrentLanguage(),
+
+    searchParams,
   ]);
 
   const content = translations[language];
@@ -415,6 +528,160 @@ export default async function ContactoPage() {
             </p>
           </article>
         </div>
+
+        <section
+          className={styles.formSection}
+          id="formulario"
+        >
+          <div className={styles.formIntro}>
+            <p className={styles.sectionLabel}>
+              {content.form.label}
+            </p>
+
+            <h2>
+              {content.form.titleFirst}
+              <br />
+              {content.form.titleSecond}
+            </h2>
+
+            <p>
+              {content.form.description}
+            </p>
+          </div>
+
+          <div>
+            {enviado === "1" && (
+              <div
+                className={styles.success}
+                role="status"
+              >
+                <strong>
+                  {content.success.title}
+                </strong>
+
+                <p>
+                  {content.success.description}
+                </p>
+              </div>
+            )}
+
+            <form
+              action={createContactRequest}
+              className={styles.form}
+            >
+              <div className={styles.formFieldFull}>
+                <label htmlFor="topic">
+                  {content.form.topic}
+                </label>
+
+                <select
+                  id="topic"
+                  name="topic"
+                  required
+                  defaultValue="GENERAL"
+                >
+                  {content.form.topics.map(
+                    (topic) => (
+                      <option
+                        key={topic.value}
+                        value={topic.value}
+                      >
+                        {topic.label}
+                      </option>
+                    ),
+                  )}
+                </select>
+              </div>
+
+              <div className={styles.formGrid}>
+                <div className={styles.formField}>
+                  <label htmlFor="name">
+                    {content.form.name}
+                  </label>
+
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    maxLength={120}
+                    autoComplete="name"
+                    placeholder={
+                      content.form
+                        .namePlaceholder
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label htmlFor="email">
+                    {content.form.email}
+                  </label>
+
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    maxLength={180}
+                    autoComplete="email"
+                    placeholder={
+                      content.form
+                        .emailPlaceholder
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className={styles.formFieldFull}>
+                <label htmlFor="phone">
+                  {content.form.phone}
+                </label>
+
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  maxLength={40}
+                  autoComplete="tel"
+                  placeholder={
+                    content.form
+                      .phonePlaceholder
+                  }
+                />
+              </div>
+
+              <div className={styles.formFieldFull}>
+                <label htmlFor="message">
+                  {content.form.message}
+                </label>
+
+                <textarea
+                  id="message"
+                  name="message"
+                  required
+                  maxLength={3000}
+                  rows={7}
+                  placeholder={
+                    content.form
+                      .messagePlaceholder
+                  }
+                />
+              </div>
+
+              <div className={styles.formFooter}>
+                <p>
+                  {content.form.privacy}
+                </p>
+
+                <button type="submit">
+                  {content.form.submit}
+                  <span>→</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
 
         <div className={styles.informationGrid}>
           <section className={styles.schedule}>
