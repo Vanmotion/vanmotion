@@ -13,7 +13,8 @@
   transition:
     width 220ms ease,
     border-color 220ms ease,
-    box-shadow 220ms ease;
+    box-shadow 220ms ease,
+    opacity 180ms ease;
 }
 
 .player:hover {
@@ -270,21 +271,63 @@
   line-height: 1.4;
 }
 
+/* Móvil: reproductor mínimo para no tapar fotografías ni contenido. */
 @media (max-width: 640px) {
-  :global(body) {
-    padding-bottom: calc(82px + env(safe-area-inset-bottom));
+  .player {
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    left: auto;
+    border-radius: 999px;
   }
 
-  .player,
-  .expanded {
-    right: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
-    left: 10px;
+  .player:not(.expanded) {
+    width: 76px;
+  }
+
+  .player:not(.expanded) .mainRow {
+    display: grid;
+    grid-template-columns: 34px 30px;
+    gap: 4px;
+    min-height: 44px;
+    padding: 5px 4px;
+  }
+
+  .player:not(.expanded) .trackButton,
+  .player:not(.expanded) .centerLogo {
+    display: none;
+  }
+
+  .player:not(.expanded) .controls {
+    justify-content: center;
+  }
+
+  .player:not(.expanded) .controls button:first-child,
+  .player:not(.expanded) .controls button:last-child {
+    display: none;
+  }
+
+  .player:not(.expanded) .controls .playButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  .player:not(.expanded) .expandButton {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+  }
+
+  .player.expanded {
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    left: 8px;
     width: auto;
+    max-height: calc(100dvh - 16px - env(safe-area-inset-bottom));
+    overflow-y: auto;
     border-radius: 14px;
   }
 
-  .mainRow {
+  .player.expanded .mainRow {
     grid-template-columns:
       minmax(0, 1fr)
       46px
@@ -295,88 +338,52 @@
     padding: 5px 6px 5px 9px;
   }
 
-  .centerLogo {
+  .player.expanded .centerLogo {
     width: 46px;
     height: 38px;
   }
 
-  .centerLogo img {
+  .player.expanded .centerLogo img {
     width: 38px;
     max-height: 30px;
   }
 
-  .trackText strong {
+  .player.expanded .trackText strong {
     font-size: 11px;
   }
 
-  .controls button {
-    width: 25px;
-    height: 25px;
-  }
-
-  .controls .playButton {
-    width: 31px;
-    height: 31px;
-  }
-
-  .player.expanded {
-    max-height: calc(
-      100dvh - 20px - env(safe-area-inset-bottom)
-    );
-    overflow-y: auto;
-  }
-}
-
-/* VANMOTION — reproductor compacto en móvil */
-@media (max-width: 640px) {
-  .player:not(.expanded) {
-    right: 8px;
-    bottom: calc(8px + env(safe-area-inset-bottom));
-    left: auto;
-    width: 142px;
-  }
-
-  .player:not(.expanded) .mainRow {
-    grid-template-columns: minmax(0, 1fr) 30px;
-    gap: 5px;
-    min-height: 48px;
-    padding: 5px 6px;
-  }
-
-  .player:not(.expanded) .trackButton,
-  .player:not(.expanded) .centerLogo {
-    display: none;
-  }
-
-  .player:not(.expanded) .controls {
-    justify-content: flex-end;
-  }
-
-  .player:not(.expanded) .controls button {
+  .player.expanded .controls button {
     display: inline-flex;
     width: 25px;
     height: 25px;
   }
 
-  .player:not(.expanded) .controls .playButton {
+  .player.expanded .controls .playButton {
     width: 31px;
     height: 31px;
   }
 
-  .player:not(.expanded) .expandButton {
-    width: 29px;
-    height: 29px;
+  .expandedContent {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
   }
 }
 
 @media (max-width: 390px) {
-  .player:not(.expanded) {
-    width: 138px;
+  .player.expanded {
+    right: 6px;
+    left: 6px;
   }
 
-  .player.expanded {
-    right: 8px;
-    left: 8px;
+  .player.expanded .mainRow {
+    grid-template-columns:
+      minmax(0, 1fr)
+      40px
+      auto
+      28px;
+  }
+
+  .player.expanded .centerLogo {
+    width: 40px;
   }
 }
 
