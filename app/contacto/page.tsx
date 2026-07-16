@@ -742,6 +742,25 @@ export default async function ContactoPage({
                   </span>
                 </div>
               )}
+
+              {settings?.tiktok ? (
+                <a
+                  href={externalUrl(
+                    settings.tiktok,
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  TikTok <span>↗</span>
+                </a>
+              ) : (
+                <div>
+                  TikTok
+                  <span>
+                    {content.social.comingSoon}
+                  </span>
+                </div>
+              )}
             </div>
           </section>
         </div>

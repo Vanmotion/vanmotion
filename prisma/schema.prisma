@@ -20,7 +20,7 @@ model Vehicle {
   id String @id @default(cuid())
 
   brandId String
-  brand   Brand  @relation(fields: [brandId], references: [id])
+  brand   Brand @relation(fields: [brandId], references: [id])
 
   model   String
   version String?
@@ -100,6 +100,7 @@ model SiteSettings {
   postalCode   String?
   instagram    String?
   youtube      String?
+  tiktok       String?
   openingHours String?
   updatedAt    DateTime @updatedAt
 }

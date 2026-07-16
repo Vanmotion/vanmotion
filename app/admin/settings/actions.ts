@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
 
@@ -30,20 +31,59 @@ function optionalText(
   return value.trim();
 }
 
-export async function saveSiteSettings(formData: FormData) {
+export async function saveSiteSettings(
+  formData: FormData,
+): Promise<void> {
   const businessName = requiredText(
     formData,
     "businessName",
   );
 
-  const email = optionalText(formData, "email");
-  const phone = optionalText(formData, "phone");
-  const whatsapp = optionalText(formData, "whatsapp");
-  const address = optionalText(formData, "address");
-  const city = optionalText(formData, "city");
-  const postalCode = optionalText(formData, "postalCode");
-  const instagram = optionalText(formData, "instagram");
-  const youtube = optionalText(formData, "youtube");
+  const email = optionalText(
+    formData,
+    "email",
+  );
+
+  const phone = optionalText(
+    formData,
+    "phone",
+  );
+
+  const whatsapp = optionalText(
+    formData,
+    "whatsapp",
+  );
+
+  const address = optionalText(
+    formData,
+    "address",
+  );
+
+  const city = optionalText(
+    formData,
+    "city",
+  );
+
+  const postalCode = optionalText(
+    formData,
+    "postalCode",
+  );
+
+  const instagram = optionalText(
+    formData,
+    "instagram",
+  );
+
+  const youtube = optionalText(
+    formData,
+    "youtube",
+  );
+
+  const tiktok = optionalText(
+    formData,
+    "tiktok",
+  );
+
   const openingHours = optionalText(
     formData,
     "openingHours",
@@ -64,6 +104,7 @@ export async function saveSiteSettings(formData: FormData) {
       postalCode,
       instagram,
       youtube,
+      tiktok,
       openingHours,
     },
 
@@ -78,13 +119,17 @@ export async function saveSiteSettings(formData: FormData) {
       postalCode,
       instagram,
       youtube,
+      tiktok,
       openingHours,
     },
   });
 
   revalidatePath("/");
+  revalidatePath("/contacto");
   revalidatePath("/coleccion");
   revalidatePath("/admin");
   revalidatePath("/admin/settings");
   revalidatePath("/admin/configuracion");
+
+  redirect("/admin/settings");
 }

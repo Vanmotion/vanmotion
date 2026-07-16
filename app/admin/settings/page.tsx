@@ -216,14 +216,14 @@ export default async function SettingsPage() {
             </div>
           </div>
 
-          <div className="mt-7 grid gap-5 md:grid-cols-2">
+          <div className="mt-7 grid gap-5 md:grid-cols-3">
             <label className="flex flex-col gap-3">
               <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
                 Instagram
               </span>
 
               <input
-                type="text"
+                type="url"
                 name="instagram"
                 defaultValue={settings?.instagram ?? ""}
                 placeholder="https://instagram.com/vanmotion"
@@ -237,10 +237,24 @@ export default async function SettingsPage() {
               </span>
 
               <input
-                type="text"
+                type="url"
                 name="youtube"
                 defaultValue={settings?.youtube ?? ""}
                 placeholder="https://youtube.com/@vanmotion"
+                className="min-h-14 rounded-xl border border-white/10 bg-[#111111] px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/50"
+              />
+            </label>
+
+            <label className="flex flex-col gap-3">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
+                TikTok
+              </span>
+
+              <input
+                type="url"
+                name="tiktok"
+                defaultValue={settings?.tiktok ?? ""}
+                placeholder="https://tiktok.com/@vanmotion"
                 className="min-h-14 rounded-xl border border-white/10 bg-[#111111] px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/50"
               />
             </label>
