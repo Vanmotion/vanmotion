@@ -31,6 +31,7 @@ const ALLOWED_STATUSES = new Set([
   "AVAILABLE",
   "RESERVED",
   "SOLD",
+  "EMBLEM",
 ]);
 
 function requiredString(

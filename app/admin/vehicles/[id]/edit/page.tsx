@@ -82,6 +82,10 @@ const statusOptions: SelectOption[] = [
     label: "Disponible",
   },
   {
+    value: "EMBLEM",
+    label: "Vehículo emblema",
+  },
+  {
     value: "RESERVED",
     label: "Reservado",
   },
@@ -168,6 +172,12 @@ export default async function EditVehiclePage({
     optionsWithCurrentValue(
       drivetrainOptions,
       vehicle.drivetrain,
+    );
+
+  const vehicleStatusOptions =
+    optionsWithCurrentValue(
+      statusOptions,
+      vehicle.status,
     );
 
   return (
@@ -515,7 +525,7 @@ export default async function EditVehiclePage({
                   defaultValue={vehicle.status}
                   className={inputClasses}
                 >
-                  {statusOptions.map((option) => (
+                  {vehicleStatusOptions.map((option) => (
                     <option
                       key={option.value}
                       value={option.value}

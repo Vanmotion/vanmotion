@@ -12,20 +12,22 @@ const translations = {
     collection: "Colección VANMOTION",
     inventory: "Inventario",
     comingSoon: "Próximamente",
-    preparing:
-      "Estamos preparando nuevos vehículos",
+    preparing: "Estamos preparando nuevos vehículos",
     featured: "Vehículo destacado",
     available: "Vehículo disponible",
+    emblem: "Vehículo emblema",
+    notForSale: "No disponible para la venta",
   },
 
   en: {
     collection: "VANMOTION Collection",
     inventory: "Inventory",
     comingSoon: "Coming soon",
-    preparing:
-      "We are preparing new vehicles",
+    preparing: "We are preparing new vehicles",
     featured: "Featured vehicle",
     available: "Available vehicle",
+    emblem: "Emblem vehicle",
+    notForSale: "Not available for sale",
   },
 } as const;
 
@@ -33,41 +35,41 @@ export default async function FeaturedVehicle() {
   const language = await getCurrentLanguage();
   const content = translations[language];
 
-  const locale =
-    language === "es" ? "es-ES" : "en-GB";
+  const locale = language === "es" ? "es-ES" : "en-GB";
 
-  const vehicle =
-    await prisma.vehicle.findFirst({
-      where: {
-        status: "AVAILABLE",
+  const vehicle = await prisma.vehicle.findFirst({
+    where: {
+      status: {
+        in: ["AVAILABLE", "EMBLEM"],
       },
+    },
 
-      orderBy: [
-        {
-          featured: "desc",
-        },
-        {
-          createdAt: "desc",
-        },
-      ],
-
-      include: {
-        brand: true,
-
-        images: {
-          orderBy: [
-            {
-              sortOrder: "asc",
-            },
-            {
-              createdAt: "asc",
-            },
-          ],
-
-          take: 1,
-        },
+    orderBy: [
+      {
+        featured: "desc",
       },
-    });
+      {
+        createdAt: "desc",
+      },
+    ],
+
+    include: {
+      brand: true,
+
+      images: {
+        orderBy: [
+          {
+            sortOrder: "asc",
+          },
+          {
+            createdAt: "asc",
+          },
+        ],
+
+        take: 1,
+      },
+    },
+  });
 
   if (!vehicle) {
     return (
@@ -106,27 +108,22 @@ export default async function FeaturedVehicle() {
     );
   }
 
-  const vehicleName =
-    `${vehicle.brand.name} ${vehicle.model}`;
+  const vehicleName = `${vehicle.brand.name} ${vehicle.model}`;
+  const isEmblem = vehicle.status === "EMBLEM";
 
-  const mileage = new Intl.NumberFormat(
-    locale,
-  ).format(vehicle.mileage);
+  const mileage = new Intl.NumberFormat(locale).format(
+    vehicle.mileage,
+  );
 
-  const price = new Intl.NumberFormat(
-    locale,
-    {
-      style: "currency",
-      currency: "EUR",
-      maximumFractionDigits: 0,
-    },
-  ).format(Number(vehicle.price));
+  const price = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(Number(vehicle.price));
 
   const imageUrl = vehicle.images[0]?.url;
 
-  const cardStyle:
-    | CSSProperties
-    | undefined = imageUrl
+  const cardStyle: CSSProperties | undefined = imageUrl
     ? {
         backgroundImage: `
           linear-gradient(
@@ -143,9 +140,15 @@ export default async function FeaturedVehicle() {
       }
     : undefined;
 
-  const vehicleStatus = vehicle.featured
-    ? content.featured
-    : content.available;
+  const vehicleStatus = isEmblem
+    ? content.emblem
+    : vehicle.featured
+      ? content.featured
+      : content.available;
+
+  const commercialText = isEmblem
+    ? content.notForSale
+    : price;
 
   return (
     <Link
@@ -161,13 +164,9 @@ export default async function FeaturedVehicle() {
       </div>
 
       <div className={styles.vehicleWord}>
-        <span>
-          {vehicle.brand.name.toUpperCase()}
-        </span>
+        <span>{vehicle.brand.name.toUpperCase()}</span>
 
-        <strong>
-          {vehicle.model.toUpperCase()}
-        </strong>
+        <strong>{vehicle.model.toUpperCase()}</strong>
       </div>
 
       <div className={styles.vehicleCardBottom}>
@@ -175,8 +174,7 @@ export default async function FeaturedVehicle() {
           <h3>{vehicleName}</h3>
 
           <p>
-            {vehicle.year} · {mileage} km ·{" "}
-            {price}
+            {vehicle.year} · {mileage} km · {commercialText}
           </p>
         </div>
 

@@ -152,6 +152,9 @@ const translations = {
     metadataDescription:
       "Consulta las fotografías, características y precio de este vehículo disponible en VANMOTION.",
 
+    emblemMetadataDescription:
+      "Descubre el vehículo emblema de VANMOTION, una unidad que representa la historia y la identidad de la marca.",
+
     navigation: {
       home: "Inicio",
       collection: "Colección",
@@ -197,6 +200,14 @@ const translations = {
       submit: "Enviar solicitud",
     },
 
+    emblem: {
+      badge: "Vehículo emblema",
+      title: "Vehículo emblema de VANMOTION",
+      description:
+        "Esta unidad representa la historia, el trabajo y la identidad de VANMOTION. Se muestra como parte de la marca y no está disponible para la venta.",
+      notForSale: "No disponible para la venta",
+    },
+
     information: {
       label: "Información",
       title: "Descripción del vehículo",
@@ -208,6 +219,9 @@ const translations = {
   en: {
     metadataDescription:
       "View the photographs, specifications and price of this vehicle available from VANMOTION.",
+
+    emblemMetadataDescription:
+      "Discover the VANMOTION emblem vehicle, a unit that represents the history and identity of the brand.",
 
     navigation: {
       home: "Home",
@@ -252,6 +266,14 @@ const translations = {
       messagePlaceholder:
         "I am interested in the",
       submit: "Send enquiry",
+    },
+
+    emblem: {
+      badge: "Emblem vehicle",
+      title: "VANMOTION emblem vehicle",
+      description:
+        "This unit represents the history, work and identity of VANMOTION. It is displayed as part of the brand and is not available for sale.",
+      notForSale: "Not available for sale",
     },
 
     information: {
@@ -311,12 +333,15 @@ export async function generateMetadata({
       prisma.vehicle.findFirst({
         where: {
           id,
-          status: "AVAILABLE",
+          status: {
+            in: ["AVAILABLE", "EMBLEM"],
+          },
         },
 
         select: {
           model: true,
           version: true,
+          status: true,
 
           brand: {
             select: {
@@ -347,8 +372,11 @@ export async function generateMetadata({
   return {
     title: vehicleName,
     description:
-      translations[language]
-        .metadataDescription,
+      vehicle.status === "EMBLEM"
+        ? translations[language]
+            .emblemMetadataDescription
+        : translations[language]
+            .metadataDescription,
   };
 }
 
@@ -378,7 +406,9 @@ export default async function PublicVehiclePage({
     await prisma.vehicle.findFirst({
       where: {
         id,
-        status: "AVAILABLE",
+        status: {
+          in: ["AVAILABLE", "EMBLEM"],
+        },
       },
 
       include: {
@@ -400,6 +430,9 @@ export default async function PublicVehiclePage({
   if (!vehicle) {
     notFound();
   }
+
+  const isEmblem =
+    vehicle.status === "EMBLEM";
 
   const vehicleName = [
     vehicle.brand.name,
@@ -501,7 +534,7 @@ export default async function PublicVehiclePage({
             ← {content.back}
           </Link>
 
-          {enviado === "1" && (
+          {!isEmblem && enviado === "1" && (
             <div
               className="mt-8 rounded-2xl border border-green-500/30 bg-green-500/10 p-5"
               role="status"
@@ -559,12 +592,24 @@ export default async function PublicVehiclePage({
                 </p>
               )}
 
-              <p className="mt-8 text-4xl font-bold">
-                {formatPrice(
-                  vehicle.price,
-                  locale,
-                )}
-              </p>
+              {isEmblem ? (
+                <div className="mt-8">
+                  <span className="inline-flex rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-amber-100">
+                    {content.emblem.badge}
+                  </span>
+
+                  <p className="mt-5 text-3xl font-bold text-white">
+                    {content.emblem.notForSale}
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-8 text-4xl font-bold">
+                  {formatPrice(
+                    vehicle.price,
+                    locale,
+                  )}
+                </p>
+              )}
 
               <div className="mt-8 grid grid-cols-2 gap-4 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
                 <VehicleDetail
@@ -639,99 +684,119 @@ export default async function PublicVehiclePage({
                 />
               </div>
 
-              <form
-                action={createContactRequest}
-                className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6"
-              >
-                <input
-                  type="hidden"
-                  name="vehicleId"
-                  value={vehicle.id}
-                />
+              {isEmblem ? (
+                <section className="mt-8 rounded-3xl border border-amber-300/20 bg-amber-300/[0.06] p-6">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-100/70">
+                    {content.emblem.badge}
+                  </p>
 
-                <h2 className="text-2xl font-semibold">
-                  {content.contact.title}
-                </h2>
+                  <h2 className="mt-3 text-2xl font-semibold">
+                    {content.emblem.title}
+                  </h2>
 
-                <p className="mt-2 text-sm text-white/50">
-                  {
-                    content.contact
-                      .description
-                  }
-                </p>
+                  <p className="mt-3 text-sm leading-7 text-white/55">
+                    {content.emblem.description}
+                  </p>
 
-                <div className="mt-6 space-y-4">
-                  <ContactField
-                    id="name"
-                    label={
-                      content.contact.name
-                    }
-                    type="text"
-                    placeholder={
-                      content.contact
-                        .namePlaceholder
-                    }
-                  />
-
-                  <ContactField
-                    id="email"
-                    label={
-                      content.contact.email
-                    }
-                    type="email"
-                    placeholder={
-                      content.contact
-                        .emailPlaceholder
-                    }
-                  />
-
-                  <ContactField
-                    id="phone"
-                    label={
-                      content.contact.phone
-                    }
-                    type="tel"
-                    placeholder={
-                      content.contact
-                        .phonePlaceholder
-                    }
-                    required={false}
-                  />
-
-                  <div>
-                    <label
-                      htmlFor="message"
-                      className="mb-2 block text-sm text-white/60"
-                    >
-                      {
-                        content.contact
-                          .message
-                      }
-                    </label>
-
-                    <textarea
-                      id="message"
-                      name="message"
-                      required
-                      rows={5}
-                      placeholder={
-                        messagePlaceholder
-                      }
-                      className="w-full resize-y rounded-xl border border-white/10 bg-black p-4 text-white"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="mt-5 w-full rounded-xl bg-white px-6 py-4 font-bold transition hover:opacity-80"
-                  style={{
-                    color: "#000000",
-                  }}
+                  <p className="mt-5 border-t border-amber-300/15 pt-5 text-sm font-semibold text-amber-100">
+                    {content.emblem.notForSale}
+                  </p>
+                </section>
+              ) : (
+                <form
+                  action={createContactRequest}
+                  className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6"
                 >
-                  {content.contact.submit}
-                </button>
-              </form>
+                  <input
+                    type="hidden"
+                    name="vehicleId"
+                    value={vehicle.id}
+                  />
+
+                  <h2 className="text-2xl font-semibold">
+                    {content.contact.title}
+                  </h2>
+
+                  <p className="mt-2 text-sm text-white/50">
+                    {
+                      content.contact
+                        .description
+                    }
+                  </p>
+
+                  <div className="mt-6 space-y-4">
+                    <ContactField
+                      id="name"
+                      label={
+                        content.contact.name
+                      }
+                      type="text"
+                      placeholder={
+                        content.contact
+                          .namePlaceholder
+                      }
+                    />
+
+                    <ContactField
+                      id="email"
+                      label={
+                        content.contact.email
+                      }
+                      type="email"
+                      placeholder={
+                        content.contact
+                          .emailPlaceholder
+                      }
+                    />
+
+                    <ContactField
+                      id="phone"
+                      label={
+                        content.contact.phone
+                      }
+                      type="tel"
+                      placeholder={
+                        content.contact
+                          .phonePlaceholder
+                      }
+                      required={false}
+                    />
+
+                    <div>
+                      <label
+                        htmlFor="message"
+                        className="mb-2 block text-sm text-white/60"
+                      >
+                        {
+                          content.contact
+                            .message
+                        }
+                      </label>
+
+                      <textarea
+                        id="message"
+                        name="message"
+                        required
+                        rows={5}
+                        placeholder={
+                          messagePlaceholder
+                        }
+                        className="w-full resize-y rounded-xl border border-white/10 bg-black p-4 text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="mt-5 w-full rounded-xl bg-white px-6 py-4 font-bold transition hover:opacity-80"
+                    style={{
+                      color: "#000000",
+                    }}
+                  >
+                    {content.contact.submit}
+                  </button>
+                </form>
+              )}
             </aside>
           </section>
 

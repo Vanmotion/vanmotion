@@ -65,7 +65,7 @@ const translations = {
   es: {
     metadataTitle: "Colección de vehículos",
     metadataDescription:
-      "Descubre los coches y furgonetas disponibles en VANMOTION. Vehículos seleccionados, imágenes ilustrativas e información clara.",
+      "Descubre los coches y furgonetas disponibles y el vehículo emblema de VANMOTION. Vehículos seleccionados, imágenes ilustrativas e información clara.",
 
     navigation: {
       home: "Inicio",
@@ -91,6 +91,8 @@ const translations = {
     card: {
       featured: "Destacado",
       available: "Disponible",
+      emblem: "Vehículo emblema",
+      notForSale: "No disponible para la venta",
       photoSoon: "Fotografía próximamente",
       year: "Año",
       mileage: "Kilómetros",
@@ -124,7 +126,7 @@ const translations = {
   en: {
     metadataTitle: "Vehicle collection",
     metadataDescription:
-      "Discover the cars and vans available from VANMOTION. Selected vehicles, illustrative images and clear information.",
+      "Discover the cars and vans available from VANMOTION and the VANMOTION emblem vehicle. Selected vehicles, illustrative images and clear information.",
 
     navigation: {
       home: "Home",
@@ -150,6 +152,8 @@ const translations = {
     card: {
       featured: "Featured",
       available: "Available",
+      emblem: "Emblem vehicle",
+      notForSale: "Not available for sale",
       photoSoon: "Photography coming soon",
       year: "Year",
       mileage: "Mileage",
@@ -223,7 +227,9 @@ export default async function CollectionPage() {
 
   const vehicles = await prisma.vehicle.findMany({
     where: {
-      status: "AVAILABLE",
+      status: {
+        in: ["AVAILABLE", "EMBLEM"],
+      },
     },
 
     orderBy: [
@@ -252,6 +258,10 @@ export default async function CollectionPage() {
       },
     },
   });
+
+  const availableVehicleCount = vehicles.filter(
+    (vehicle) => vehicle.status === "AVAILABLE",
+  ).length;
 
   const navigation = [
     {
@@ -377,14 +387,14 @@ export default async function CollectionPage() {
 
             <div className="mt-5 sm:mt-14 lg:mt-20">
               <strong className="block text-[clamp(90px,13vw,190px)] font-semibold leading-[0.75] tracking-[-0.08em]">
-                {String(vehicles.length).padStart(
+                {String(availableVehicleCount).padStart(
                   2,
                   "0",
                 )}
               </strong>
 
               <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.22em] text-white/40">
-                {content.hero.count(vehicles.length)}
+                {content.hero.count(availableVehicleCount)}
               </p>
             </div>
           </div>
@@ -442,14 +452,21 @@ export default async function CollectionPage() {
               const mileage =
                 vehicle.mileage.toLocaleString(locale);
 
-              const price = formatPrice(
-                vehicle.price,
-                locale,
-              );
+              const isEmblem =
+                vehicle.status === "EMBLEM";
 
-              const status = vehicle.featured
-                ? content.card.featured
-                : content.card.available;
+              const price = isEmblem
+                ? content.card.notForSale
+                : formatPrice(
+                    vehicle.price,
+                    locale,
+                  );
+
+              const status = isEmblem
+                ? content.card.emblem
+                : vehicle.featured
+                  ? content.card.featured
+                  : content.card.available;
 
               const rightBorder =
                 index % 3 !== 2
