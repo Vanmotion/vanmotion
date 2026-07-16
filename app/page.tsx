@@ -84,8 +84,8 @@ const translations = {
       titleFirst: "Vehículos",
       titleSecond: "con historia.",
       description:
-        "Seleccionamos coches y furgonetas con personalidad. Cada vehículo dispone de una ficha completa, fotografías reales y un formulario de contacto directo.",
-      action: "Ver vehículos disponibles",
+        "Seleccionamos coches y furgonetas con personalidad. Cada unidad dispone de una ficha completa y fotografías reales; cuando está disponible, puedes solicitar información directamente.",
+      action: "Ver colección de vehículos",
     },
 
     studio: {
@@ -234,8 +234,8 @@ const translations = {
       titleFirst: "Vehicles",
       titleSecond: "with a story.",
       description:
-        "We select cars and vans with personality. Every vehicle includes a complete listing, real photographs and a direct contact form.",
-      action: "View available vehicles",
+        "We select cars and vans with personality. Every vehicle includes a complete listing and real photographs; when available, you can request information directly.",
+      action: "View vehicle collection",
     },
 
     studio: {
