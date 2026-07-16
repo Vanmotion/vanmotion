@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 32px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
 }
 
 .logo {
@@ -40,7 +40,7 @@
 
 .navigation a {
   padding: 13px 0;
-  color: rgba(255, 255, 255, 0.42);
+  color: rgb(255 255 255 / 42%);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -49,11 +49,11 @@
 
 .navigation a:hover,
 .navigation .active {
-  color: #ffffff;
+  color: #fff;
 }
 
 .active {
-  border-bottom: 1px solid #ffffff;
+  border-bottom: 1px solid #fff;
 }
 
 .headerButton {
@@ -62,10 +62,19 @@
   display: inline-flex;
   align-items: center;
   gap: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.17);
+  border: 1px solid rgb(255 255 255 / 17%);
   font-size: 9px;
   font-weight: 750;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  margin: 0;
+  color: rgb(255 255 255 / 36%);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
 }
 
@@ -73,40 +82,31 @@
   width: min(100% - 48px, 1440px);
   min-height: 690px;
   margin: 0 auto;
-  padding: 95px 0 85px;
+  padding: 86px 0 82px;
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 75px;
+  grid-template-columns: 0.88fr 1.12fr;
+  gap: 62px;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+    linear-gradient(rgb(255 255 255 / 2.2%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 2.2%) 1px, transparent 1px);
   background-size: 80px 80px;
-}
-
-.eyebrow {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.34);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
 }
 
 .hero h1 {
   margin: 27px 0 0;
-  font-size: clamp(65px, 7vw, 112px);
+  font-size: clamp(64px, 7vw, 112px);
   font-weight: 650;
-  line-height: 0.83;
+  line-height: 0.82;
   letter-spacing: -0.07em;
   text-transform: uppercase;
 }
 
 .description {
-  max-width: 680px;
-  margin: 38px 0 0;
-  color: rgba(255, 255, 255, 0.45);
+  max-width: 650px;
+  margin: 36px 0 0;
+  color: rgb(255 255 255 / 48%);
   font-size: 16px;
   line-height: 1.9;
 }
@@ -133,112 +133,333 @@
 }
 
 .primaryButton {
-  background: #ffffff;
+  background: #fff;
   color: #080808 !important;
 }
 
 .secondaryButton {
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgb(255 255 255 / 18%);
 }
 
 .heroVisual {
-  min-height: 530px;
-  padding: 32px;
+  min-height: 570px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  border: 1px solid rgb(255 255 255 / 12%);
   background:
-    radial-gradient(
-      circle at 80% 15%,
-      rgba(255, 255, 255, 0.13),
-      transparent 34%
-    ),
+    radial-gradient(circle at 80% 15%, rgb(255 210 0 / 12%), transparent 30%),
     #0d0d0d;
 }
 
 .visualTop,
 .visualBottom {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgb(255 255 255 / 38%);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.17em;
 }
 
-.shirt {
-  min-height: 360px;
+.heroImage {
+  min-height: 450px;
+  margin: 18px 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  background: #f5f5f3;
 }
 
-.shirtBody {
-  position: relative;
-  width: 265px;
-  min-height: 340px;
-  padding: 70px 26px 28px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #030303;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  clip-path: polygon(
-    22% 0,
-    38% 8%,
-    62% 8%,
-    78% 0,
-    100% 16%,
-    86% 35%,
-    80% 27%,
-    80% 100%,
-    20% 100%,
-    20% 27%,
-    14% 35%,
-    0 16%
-  );
+.heroImage img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
-.neck {
-  position: absolute;
-  top: 12px;
-  width: 64px;
-  height: 32px;
-  border: 2px solid rgba(255, 255, 255, 0.18);
-  border-top: 0;
-  border-radius: 0 0 40px 40px;
-}
-
-.shirtMessage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.shirtMessage strong {
-  font-size: 41px;
-  line-height: 0.9;
-  letter-spacing: 0.13em;
-}
-
-.shirtBody small {
-  margin-top: auto;
-  color: rgba(255, 255, 255, 0.34);
-  font-size: 7px;
-  letter-spacing: 0.24em;
-}
-
-.dropSection,
+.productSection,
+.detailsSection,
 .philosophySection,
-.productionSection,
 .contactSection {
   width: min(100% - 48px, 1440px);
   margin: 0 auto;
   padding: 110px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+}
+
+.productSection {
+  display: grid;
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 68px;
+  align-items: start;
+}
+
+.productGallery {
+  display: grid;
+  gap: 14px;
+}
+
+.galleryMain,
+.gallerySecondary figure {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 12%);
+  background: #f5f5f3;
+}
+
+.galleryMain {
+  position: relative;
+  min-height: 620px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.galleryMain img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.galleryMain figcaption,
+.gallerySecondary figcaption {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  padding: 8px 10px;
+  background: #080808;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.gallerySecondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.gallerySecondary figure {
+  position: relative;
+  min-height: 330px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallerySecondary img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.designFigure {
+  background:
+    radial-gradient(circle at 50% 48%, rgb(255 210 0 / 8%), transparent 40%),
+    #020202 !important;
+}
+
+.designFigure img {
+  object-fit: contain;
+  padding: 20px;
+}
+
+.productInformation {
+  position: sticky;
+  top: 28px;
+  padding: 18px 0 0;
+}
+
+.productInformation h2 {
+  max-width: 700px;
+  margin: 24px 0 0;
+  font-size: clamp(52px, 5vw, 78px);
+  font-weight: 650;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}
+
+.productEdition {
+  margin: 15px 0 0;
+  color: #ffd200;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.productDescription {
+  max-width: 640px;
+  margin: 32px 0 0;
+  color: rgb(255 255 255 / 47%);
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.purchasePanel {
+  margin-top: 42px;
+  padding: 26px;
+  border: 1px solid rgb(255 255 255 / 13%);
+  background: #0d0d0d;
+}
+
+.purchaseStatus {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: rgb(255 255 255 / 55%);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.purchaseStatus span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffd200;
+  box-shadow: 0 0 18px rgb(255 210 0 / 45%);
+}
+
+.priceRow,
+.quantityRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.priceRow {
+  margin-top: 25px;
+  padding: 21px 0;
+  border-top: 1px solid rgb(255 255 255 / 9%);
+  border-bottom: 1px solid rgb(255 255 255 / 9%);
+}
+
+.priceRow span,
+.quantityRow > span {
+  color: rgb(255 255 255 / 38%);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.priceRow strong {
+  font-size: 18px;
+  text-align: right;
+}
+
+.sizeSelector {
+  margin: 25px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.sizeSelector legend {
+  margin-bottom: 14px;
+  color: rgb(255 255 255 / 38%);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sizeSelector > div {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.sizeSelector label {
+  position: relative;
+  cursor: pointer;
+}
+
+.sizeSelector input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sizeSelector span {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(255 255 255 / 14%);
+  color: rgb(255 255 255 / 65%);
+  font-size: 12px;
+  font-weight: 750;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.sizeSelector label:hover span,
+.sizeSelector input:checked + span {
+  border-color: #ffd200;
+  background: rgb(255 210 0 / 8%);
+  color: #fff;
+}
+
+.quantityRow {
+  margin-top: 22px;
+}
+
+.quantityControl {
+  display: grid;
+  grid-template-columns: 36px 46px 36px;
+  align-items: center;
+  border: 1px solid rgb(255 255 255 / 14%);
+}
+
+.quantityControl button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.quantityControl strong {
+  text-align: center;
+  font-size: 13px;
+}
+
+.purchaseButton {
+  min-height: 56px;
+  margin-top: 24px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  color: #080808 !important;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.purchaseNote {
+  margin: 16px 0 0;
+  color: rgb(255 255 255 / 34%);
+  font-size: 11px;
+  line-height: 1.7;
 }
 
 .sectionHeading {
@@ -250,7 +471,6 @@
 
 .sectionHeading h2,
 .philosophyTitle h2,
-.productionCopy h2,
 .contactSection h2 {
   margin: 20px 0 0;
   font-size: clamp(48px, 5vw, 80px);
@@ -261,107 +481,103 @@
 
 .sectionHeading > p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.43);
+  color: rgb(255 255 255 / 45%);
   font-size: 15px;
   line-height: 1.9;
 }
 
-.productGrid {
-  margin-top: 70px;
+.specificationGrid {
+  margin-top: 65px;
   display: grid;
-  grid-template-columns: 1.2fr 0.9fr 0.9fr;
-  border-top: 1px solid rgba(255, 255, 255, 0.11);
-  border-left: 1px solid rgba(255, 255, 255, 0.11);
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgb(255 255 255 / 11%);
+  border-left: 1px solid rgb(255 255 255 / 11%);
 }
 
-.productMain,
-.productDetail {
-  min-height: 480px;
-  padding: 30px;
+.specificationGrid article {
+  min-height: 310px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba(255, 255, 255, 0.11);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  border-right: 1px solid rgb(255 255 255 / 11%);
+  border-bottom: 1px solid rgb(255 255 255 / 11%);
   background: #0c0c0c;
 }
 
-.productLabel {
-  display: flex;
-  justify-content: space-between;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.specificationGrid article > span {
+  color: rgb(255 255 255 / 22%);
+  font-size: 11px;
 }
 
-.backDesign {
-  margin: auto 0;
-  display: flex;
-  flex-direction: column;
+.specificationGrid h3 {
+  margin: 62px 0 0;
+  font-size: 24px;
+  letter-spacing: -0.03em;
 }
 
-.backDesign span,
-.backDesign strong {
-  font-size: clamp(63px, 7vw, 105px);
-  line-height: 0.76;
-  letter-spacing: -0.06em;
-}
-
-.backDesign span {
-  color: rgba(255, 255, 255, 0.12);
-}
-
-.productMain > p,
-.productDetail > p {
+.specificationGrid p {
   margin: auto 0 0;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgb(255 255 255 / 42%);
   font-size: 13px;
   line-height: 1.8;
 }
 
-.smallLogo,
-.material {
-  margin: auto 0;
+.palettePanel {
+  margin-top: 18px;
+  padding: 36px;
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 60px;
+  align-items: center;
+  border: 1px solid rgb(255 255 255 / 11%);
+  background:
+    radial-gradient(circle at 82% 10%, rgb(255 210 0 / 8%), transparent 28%),
+    #0d0d0d;
 }
 
-.smallLogo strong,
-.smallLogo span,
-.material span,
-.material strong,
-.material small {
+.palettePanel > div:first-child > strong {
+  display: block;
+  margin-top: 18px;
+  font-size: clamp(31px, 4vw, 56px);
+  letter-spacing: -0.055em;
+}
+
+.colorList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.colorList > div {
+  min-height: 82px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgb(255 255 255 / 10%);
+}
+
+.colorSwatch {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgb(255 255 255 / 18%);
+}
+
+.colorList strong,
+.colorList small {
   display: block;
 }
 
-.smallLogo strong {
-  font-size: 28px;
-  letter-spacing: 0.18em;
+.colorList strong {
+  font-size: 12px;
 }
 
-.smallLogo span {
-  margin-top: 12px;
-  color: rgba(255, 255, 255, 0.35);
+.colorList small {
+  margin-top: 6px;
+  color: rgb(255 255 255 / 38%);
   font-size: 9px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-
-.material span {
-  color: rgba(255, 255, 255, 0.12);
-  font-size: 65px;
-  font-weight: 700;
-}
-
-.material strong {
-  font-size: 31px;
-  line-height: 1;
-}
-
-.material small {
-  margin-top: 14px;
-  color: rgba(255, 255, 255, 0.35);
-  font-size: 9px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
 }
 
 .philosophySection {
@@ -371,7 +587,7 @@
 }
 
 .principles {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgb(255 255 255 / 10%);
 }
 
 .principles article {
@@ -381,11 +597,11 @@
   grid-template-columns: 55px 0.7fr 1.3fr;
   gap: 25px;
   align-items: start;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
 }
 
 .principles article > span {
-  color: rgba(255, 255, 255, 0.22);
+  color: rgb(255 255 255 / 22%);
   font-size: 10px;
 }
 
@@ -396,77 +612,9 @@
 
 .principles p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgb(255 255 255 / 42%);
   font-size: 13px;
   line-height: 1.8;
-}
-
-.productionSection {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 75px;
-  align-items: center;
-}
-
-.productionVisual {
-  min-height: 520px;
-  padding: 34px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  background:
-    radial-gradient(
-      circle at 20% 80%,
-      rgba(255, 255, 255, 0.11),
-      transparent 35%
-    ),
-    #0d0d0d;
-}
-
-.productionTop {
-  display: flex;
-  justify-content: space-between;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 9px;
-  letter-spacing: 0.18em;
-}
-
-.productionWord {
-  display: flex;
-  flex-direction: column;
-}
-
-.productionWord span,
-.productionWord strong {
-  font-size: clamp(69px, 7vw, 110px);
-  line-height: 0.76;
-  letter-spacing: -0.075em;
-}
-
-.productionWord span {
-  color: rgba(255, 255, 255, 0.08);
-}
-
-.productionLines {
-  height: 100px;
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.productionLines span {
-  width: 100%;
-  max-height: 100%;
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.productionCopy > p:last-child {
-  max-width: 610px;
-  margin: 34px 0 0;
-  color: rgba(255, 255, 255, 0.43);
-  font-size: 15px;
-  line-height: 1.9;
 }
 
 .contactSection {
@@ -478,7 +626,7 @@
 
 .contactCopy p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.43);
+  color: rgb(255 255 255 / 45%);
   font-size: 15px;
   line-height: 1.9;
 }
@@ -490,7 +638,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #ffffff;
+  background: #fff;
   color: #080808 !important;
   font-size: 9px;
   font-weight: 750;
@@ -513,37 +661,46 @@
 }
 
 .footer span {
-  color: rgba(255, 255, 255, 0.28);
+  color: rgb(255 255 255 / 28%);
   font-size: 9px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-@media (max-width: 1050px) {
+@media (max-width: 1120px) {
   .hero,
+  .productSection,
   .sectionHeading,
   .philosophySection,
-  .productionSection,
   .contactSection {
     grid-template-columns: 1fr;
   }
 
-  .productGrid {
+  .productInformation {
+    position: static;
+  }
+
+  .specificationGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 820px) {
+  .palettePanel {
     grid-template-columns: 1fr;
   }
 
-  .productMain,
-  .productDetail {
-    min-height: 390px;
+  .galleryMain {
+    min-height: auto;
   }
 }
 
 @media (max-width: 720px) {
   .header,
   .hero,
-  .dropSection,
+  .productSection,
+  .detailsSection,
   .philosophySection,
-  .productionSection,
   .contactSection,
   .footer {
     width: min(100% - 30px, 1440px);
@@ -561,21 +718,26 @@
     gap: 10px;
   }
 
-  .navigation a {
-    font-size: 7px;
-  }
-
+  .navigation a,
   .headerButton {
     font-size: 7px;
   }
 
+  .hero {
+    padding: 68px 0 60px;
+  }
+
   .hero h1 {
-    font-size: 57px;
+    font-size: 55px;
   }
 
   .heroVisual {
-    min-height: 450px;
-    padding: 22px;
+    min-height: 410px;
+    padding: 18px;
+  }
+
+  .heroImage {
+    min-height: 320px;
   }
 
   .heroActions {
@@ -585,6 +747,42 @@
   .primaryButton,
   .secondaryButton {
     width: 100%;
+  }
+
+  .productSection,
+  .detailsSection,
+  .philosophySection,
+  .contactSection {
+    padding: 78px 0;
+  }
+
+  .gallerySecondary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .gallerySecondary figure {
+    min-height: 230px;
+  }
+
+  .productInformation h2 {
+    font-size: 50px;
+  }
+
+  .purchasePanel,
+  .palettePanel {
+    padding: 22px;
+  }
+
+  .specificationGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .specificationGrid article {
+    min-height: 250px;
+  }
+
+  .colorList {
+    grid-template-columns: 1fr;
   }
 
   .principles article {
@@ -599,5 +797,34 @@
     padding: 30px 0;
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 450px) {
+  .gallerySecondary {
+    grid-template-columns: 1fr;
+  }
+
+  .gallerySecondary figure {
+    min-height: 300px;
+  }
+
+  .sizeSelector > div {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .priceRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .priceRow strong {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sizeSelector span {
+    transition: none;
   }
 }

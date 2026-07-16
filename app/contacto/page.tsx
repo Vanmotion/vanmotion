@@ -12,6 +12,11 @@ export const dynamic = "force-dynamic";
 type ContactoPageProps = {
   searchParams: Promise<{
     enviado?: string;
+    motivo?: string;
+    producto?: string;
+    nombreProducto?: string;
+    talla?: string;
+    cantidad?: string;
   }>;
 };
 
@@ -277,7 +282,7 @@ export default async function ContactoPage({
   const [
     settings,
     language,
-    { enviado },
+    contactParams,
   ] = await Promise.all([
     prisma.siteSettings.findUnique({
       where: {
@@ -291,6 +296,44 @@ export default async function ContactoPage({
   ]);
 
   const content = translations[language];
+
+  const {
+    enviado,
+    motivo,
+    nombreProducto,
+    talla,
+    cantidad,
+  } = contactParams;
+
+  const defaultTopic =
+    motivo === "ropa"
+      ? "CLOTHING"
+      : "GENERAL";
+
+  const defaultMessage =
+    motivo === "ropa"
+      ? language === "es"
+        ? [
+            `Hola VANMOTION, estoy interesado en ${
+              nombreProducto || "la camiseta CARPE DIEM"
+            }.`,
+            talla ? `Talla: ${talla}.` : "",
+            cantidad ? `Cantidad: ${cantidad}.` : "",
+            "Me gustaría confirmar disponibilidad, precio y condiciones de compra.",
+          ]
+            .filter(Boolean)
+            .join("\n")
+        : [
+            `Hello VANMOTION, I am interested in ${
+              nombreProducto || "the CARPE DIEM T-shirt"
+            }.`,
+            talla ? `Size: ${talla}.` : "",
+            cantidad ? `Quantity: ${cantidad}.` : "",
+            "I would like to confirm availability, price and purchase conditions.",
+          ]
+            .filter(Boolean)
+            .join("\n")
+      : "";
 
   const businessName =
     settings?.businessName ?? "VANMOTION";
@@ -578,7 +621,7 @@ export default async function ContactoPage({
                   id="topic"
                   name="topic"
                   required
-                  defaultValue="GENERAL"
+                  defaultValue={defaultTopic}
                 >
                   {content.form.topics.map(
                     (topic) => (
@@ -662,6 +705,7 @@ export default async function ContactoPage({
                   required
                   maxLength={3000}
                   rows={7}
+                  defaultValue={defaultMessage}
                   placeholder={
                     content.form
                       .messagePlaceholder

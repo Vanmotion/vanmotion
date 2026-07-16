@@ -1,18 +1,25 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentLanguage } from "@/app/lib/language";
 
+import ProductPurchasePanel from "./ProductPurchasePanel";
 import styles from "./ropa.module.css";
 
 export const dynamic = "force-dynamic";
 
+const product = {
+  slug: "carpe-diem-black-edition-drop-01",
+  sizes: ["S", "M", "L", "XL"] as const,
+};
+
 const translations = {
   es: {
     metadata: {
-      title: "Ropa",
+      title: "Ropa · CARPE DIEM Drop 01",
       description:
-        "Diseño, ropa y filosofía VANMOTION. Prendas sencillas con identidad, trabajo y mensaje.",
+        "Primer producto VANMOTION: camiseta CARPE DIEM Black Edition, Drop 01.",
     },
 
     navigation: {
@@ -26,111 +33,119 @@ const translations = {
 
     hero: {
       eyebrow: "VANMOTION Clothing · Drop 01",
-      titleFirst: "Vestir una",
-      titleSecond: "forma de vivir.",
+      titleFirst: "CARPE DIEM",
+      titleSecond: "BLACK EDITION.",
       description:
-        "Diseños sencillos con un mensaje real. Sin aparentar, sin seguir tendencias vacías y sin olvidar de dónde venimos.",
-      primaryAction: "Descubrir Drop 01",
-      secondaryAction: "Solicitar información",
-      blackEdition: "BLACK EDITION",
+        "La primera prenda oficial de VANMOTION. Una camiseta negra, limpia por delante y con el mensaje colocado de forma intencionada en la espalda.",
+      primaryAction: "Ver producto",
+      secondaryAction: "Consultar disponibilidad",
+      visualTopLeft: "PRIMER PRODUCTO",
+      visualTopRight: "2026",
+      visualBottomLeft: "BLACK EDITION",
+      visualBottomRight: "DROP 01",
     },
 
-    drop: {
-      eyebrow: "Primera colección",
-      titleFirst: "CARPE DIEM",
-      titleSecond: "DROP 01.",
+    product: {
+      eyebrow: "Primera tirada",
+      name: "Camiseta CARPE DIEM",
+      edition: "Black Edition · Drop 01",
       description:
-        "Una camiseta negra construida alrededor de una idea sencilla: aprovechar el tiempo, avanzar y trabajar sin dejar que otros decidan tu camino.",
+        "Una prenda sencilla con un mensaje directo. El frontal se mantiene completamente limpio y el diseño aparece en la esquina inferior derecha de la espalda, respetando una identidad discreta y reconocible.",
+      galleryFront: "Vista frontal",
+      galleryBack: "Vista trasera",
+      galleryDetail: "Diseño de impresión",
+      frontAlt:
+        "Parte frontal de la camiseta negra CARPE DIEM VANMOTION, sin impresión",
+      backAlt:
+        "Parte trasera de la camiseta negra con diseño CARPE DIEM en la esquina inferior derecha",
+      designAlt:
+        "Diseño CARPE DIEM con logotipo VANMOTION preparado para impresión",
+    },
 
-      products: [
+    details: {
+      eyebrow: "Especificaciones del producto",
+      titleFirst: "Diseñado para",
+      titleSecond: "llevarlo de verdad.",
+      intro:
+        "El primer drop se plantea como una prenda cotidiana: resistente, cómoda y producida con una impresión profesional que conserve el contraste del blanco, amarillo y gris oscuro.",
+      cards: [
         {
           number: "01",
-          label: "Parte trasera",
-          description:
-            "Diseño principal colocado en la espalda. Limpio, visible y con fuerza, respetando la estética oscura de VANMOTION.",
+          title: "Colocación",
+          text:
+            "Espalda, esquina inferior derecha. Separación aproximada de 4–6 cm del borde inferior y 3–4 cm de la costura lateral.",
         },
         {
           number: "02",
-          label: "Identidad",
-          description:
-            "Logotipo utilizado de forma sutil para que el mensaje sea el protagonista.",
+          title: "Tamaño",
+          text:
+            "Diseño de 18 × 20 cm para M, L y XL. En talla S se adapta a 15 × 17 cm.",
         },
         {
           number: "03",
-          label: "Prenda",
-          description:
-            "Base pensada para impresión profesional y uso cotidiano, con tacto cómodo y construcción resistente.",
+          title: "Tallas",
+          text:
+            "Primera selección prevista: S, M, L y XL. El stock real se configurará antes de activar el pago.",
+        },
+        {
+          number: "04",
+          title: "Impresión",
+          text:
+            "Serigrafía profesional para mantener durabilidad, definición y consistencia entre unidades.",
         },
       ],
-
-      cotton: "ALGODÓN",
-      garment:
-        "NEGRO · MANGA CORTA",
-      identity:
-        "Real work · Real motion",
+      colorTitle: "Paleta oficial",
+      colors: [
+        { name: "CARPE", value: "#FFFFFF" },
+        { name: "DIEM", value: "#FFD200" },
+        { name: "Letras DIEM", value: "#000000" },
+        { name: "Logo VANMOTION", value: "#3A3A3A" },
+      ],
     },
 
     philosophy: {
       eyebrow: "Filosofía VANMOTION",
-      titleFirst: "Menos ruido.",
-      titleSecond: "Más mensaje.",
-
+      titleFirst: "Sin aparentar.",
+      titleSecond: "Con intención.",
       principles: [
         {
           number: "01",
-          title: "Sin aparentar",
+          title: "Frontal limpio",
           description:
-            "La identidad no depende del lujo. Depende de lo que representas y de cómo trabajas.",
+            "La parte delantera no necesita demostrar nada. La identidad aparece cuando la persona se mueve.",
         },
         {
           number: "02",
           title: "Mensaje real",
           description:
-            "Cada diseño nace de una experiencia, una idea y una manera de entender el camino.",
+            "CARPE DIEM no se utiliza como decoración: representa aprovechar el tiempo y seguir construyendo.",
         },
         {
           number: "03",
-          title: "Producción cuidada",
+          title: "Producción responsable",
           description:
-            "Prendas sencillas, resistentes y pensadas para utilizarse cada día.",
+            "Primero se confirmarán calidad, tallaje, coste y unidades. Después se activará el pago seguro.",
         },
       ],
     },
 
-    production: {
-      workshop: "WORKSHOP",
-      location: "MADRID",
-      visualFirst: "REAL",
-      visualSecond: "WORK",
-      eyebrow: "Desarrollo del producto",
-      titleFirst: "Diseñado desde",
-      titleSecond: "el trabajo real.",
-      description:
-        "Cada prenda se desarrolla dentro del mismo universo donde nacen los vehículos, la música y los proyectos de VANMOTION. No son mundos separados: todos representan la misma forma de avanzar.",
-    },
-
     contact: {
-      eyebrow:
-        "Información y disponibilidad",
-      titleFirst:
-        "¿Quieres formar parte",
-      titleSecond:
-        "del primer drop?",
+      eyebrow: "Drop 01 · primeras unidades",
+      titleFirst: "¿Quieres reservar",
+      titleSecond: "la primera camiseta?",
       description:
-        "La venta online se activará más adelante. Mientras tanto puedes contactar directamente para consultar tallas, disponibilidad y próximas unidades.",
-      action:
-        "Contactar con VANMOTION",
+        "Selecciona talla y cantidad en la ficha. La solicitud llegará al panel privado de VANMOTION y confirmaremos personalmente disponibilidad y condiciones antes del pago.",
+      action: "Hablar con VANMOTION",
     },
 
-    footer:
-      "Vehículos · Música · Diseño · Madrid",
+    footer: "Vehículos · Música · Diseño · Madrid",
   },
 
   en: {
     metadata: {
-      title: "Clothing",
+      title: "Clothing · CARPE DIEM Drop 01",
       description:
-        "VANMOTION design, clothing and philosophy. Simple garments with identity, hard work and meaning.",
+        "VANMOTION's first product: the CARPE DIEM Black Edition T-shirt, Drop 01.",
     },
 
     navigation: {
@@ -144,135 +159,133 @@ const translations = {
 
     hero: {
       eyebrow: "VANMOTION Clothing · Drop 01",
-      titleFirst: "Wear a",
-      titleSecond: "way of life.",
+      titleFirst: "CARPE DIEM",
+      titleSecond: "BLACK EDITION.",
       description:
-        "Simple designs with a real message. No pretending, no empty trends and no forgetting where we came from.",
-      primaryAction: "Discover Drop 01",
-      secondaryAction: "Request information",
-      blackEdition: "BLACK EDITION",
+        "The first official VANMOTION garment. A black T-shirt, completely clean on the front, with the message intentionally placed on the back.",
+      primaryAction: "View product",
+      secondaryAction: "Ask about availability",
+      visualTopLeft: "FIRST PRODUCT",
+      visualTopRight: "2026",
+      visualBottomLeft: "BLACK EDITION",
+      visualBottomRight: "DROP 01",
     },
 
-    drop: {
-      eyebrow: "First collection",
-      titleFirst: "CARPE DIEM",
-      titleSecond: "DROP 01.",
+    product: {
+      eyebrow: "First run",
+      name: "CARPE DIEM T-shirt",
+      edition: "Black Edition · Drop 01",
       description:
-        "A black T-shirt built around a simple idea: make the most of your time, keep moving forward and work without allowing others to choose your path.",
+        "A simple garment with a direct message. The front remains completely clean and the design sits in the lower-right corner of the back, creating a discreet and recognisable identity.",
+      galleryFront: "Front view",
+      galleryBack: "Back view",
+      galleryDetail: "Print design",
+      frontAlt:
+        "Front of the black VANMOTION CARPE DIEM T-shirt without a print",
+      backAlt:
+        "Back of the black T-shirt with the CARPE DIEM design in the lower-right corner",
+      designAlt:
+        "CARPE DIEM design with VANMOTION logo prepared for printing",
+    },
 
-      products: [
+    details: {
+      eyebrow: "Product specifications",
+      titleFirst: "Designed to",
+      titleSecond: "be worn for real.",
+      intro:
+        "The first drop is designed as an everyday garment: durable, comfortable and professionally printed to preserve the contrast between white, yellow and dark grey.",
+      cards: [
         {
           number: "01",
-          label: "Back design",
-          description:
-            "The main design is placed on the back. Clean, visible and powerful while respecting the dark VANMOTION aesthetic.",
+          title: "Placement",
+          text:
+            "Back, lower-right corner. Approximately 4–6 cm from the bottom edge and 3–4 cm from the side seam.",
         },
         {
           number: "02",
-          label: "Identity",
-          description:
-            "The logo is used subtly so the message remains the main focus.",
+          title: "Size",
+          text:
+            "18 × 20 cm design for M, L and XL. Adapted to 15 × 17 cm for size S.",
         },
         {
           number: "03",
-          label: "Garment",
-          description:
-            "A base designed for professional printing and everyday use, with a comfortable feel and durable construction.",
+          title: "Sizes",
+          text:
+            "Initial selection: S, M, L and XL. Actual stock will be configured before payment is activated.",
+        },
+        {
+          number: "04",
+          title: "Printing",
+          text:
+            "Professional screen printing to maintain durability, definition and consistency across all units.",
         },
       ],
-
-      cotton: "COTTON",
-      garment:
-        "BLACK · SHORT SLEEVE",
-      identity:
-        "Real work · Real motion",
+      colorTitle: "Official palette",
+      colors: [
+        { name: "CARPE", value: "#FFFFFF" },
+        { name: "DIEM", value: "#FFD200" },
+        { name: "DIEM letters", value: "#000000" },
+        { name: "VANMOTION logo", value: "#3A3A3A" },
+      ],
     },
 
     philosophy: {
       eyebrow: "VANMOTION Philosophy",
-      titleFirst: "Less noise.",
-      titleSecond: "More meaning.",
-
+      titleFirst: "No pretending.",
+      titleSecond: "Built with intent.",
       principles: [
         {
           number: "01",
-          title: "No pretending",
+          title: "Clean front",
           description:
-            "Identity does not depend on luxury. It depends on what you represent and how you work.",
+            "The front does not need to prove anything. The identity appears when the person moves.",
         },
         {
           number: "02",
           title: "Real message",
           description:
-            "Every design begins with an experience, an idea and a particular way of understanding the journey.",
+            "CARPE DIEM is not used as decoration: it represents making use of time and continuing to build.",
         },
         {
           number: "03",
-          title: "Careful production",
+          title: "Responsible production",
           description:
-            "Simple and durable garments designed to be worn every day.",
+            "Quality, sizing, cost and quantities will be confirmed first. Secure payment will then be activated.",
         },
       ],
     },
 
-    production: {
-      workshop: "WORKSHOP",
-      location: "MADRID",
-      visualFirst: "REAL",
-      visualSecond: "WORK",
-      eyebrow: "Product development",
-      titleFirst: "Designed through",
-      titleSecond: "real work.",
-      description:
-        "Every garment is developed inside the same universe where VANMOTION vehicles, music and projects are created. They are not separate worlds: they all represent the same way of moving forward.",
-    },
-
     contact: {
-      eyebrow:
-        "Information and availability",
-      titleFirst:
-        "Do you want to be part",
-      titleSecond:
-        "of the first drop?",
+      eyebrow: "Drop 01 · first units",
+      titleFirst: "Would you like to reserve",
+      titleSecond: "the first T-shirt?",
       description:
-        "Online sales will be activated later. In the meantime, contact us directly to ask about sizes, availability and upcoming units.",
-      action:
-        "Contact VANMOTION",
+        "Choose your size and quantity on the product card. The request will reach the private VANMOTION panel and we will personally confirm availability and conditions before payment.",
+      action: "Talk to VANMOTION",
     },
 
-    footer:
-      "Vehicles · Music · Design · Madrid",
+    footer: "Vehicles · Music · Design · Madrid",
   },
 } as const;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const language =
-    await getCurrentLanguage();
-
-  const content =
-    translations[language];
+  const language = await getCurrentLanguage();
+  const content = translations[language];
 
   return {
     title: content.metadata.title,
-    description:
-      content.metadata.description,
+    description: content.metadata.description,
   };
 }
 
 export default async function RopaPage() {
-  const language =
-    await getCurrentLanguage();
-
-  const content =
-    translations[language];
+  const language = await getCurrentLanguage();
+  const content = translations[language];
 
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <Link
-          href="/"
-          className={styles.logo}
-        >
+        <Link href="/" className={styles.logo}>
           VANMOTION
         </Link>
 
@@ -284,18 +297,13 @@ export default async function RopaPage() {
               : "Main navigation"
           }
         >
-          <Link href="/">
-            {content.navigation.home}
-          </Link>
-
+          <Link href="/">{content.navigation.home}</Link>
           <Link href="/coleccion">
             {content.navigation.collection}
           </Link>
-
           <Link href="/musica">
             {content.navigation.music}
           </Link>
-
           <Link
             href="/ropa"
             className={styles.active}
@@ -303,29 +311,20 @@ export default async function RopaPage() {
           >
             {content.navigation.clothing}
           </Link>
-
           <Link href="/contacto">
             {content.navigation.contact}
           </Link>
         </nav>
 
-        <Link
-          href="/contacto"
-          className={styles.headerButton}
-        >
-          {
-            content.navigation
-              .contactAction
-          }
+        <Link href="/contacto" className={styles.headerButton}>
+          {content.navigation.contactAction}
           <span>→</span>
         </Link>
       </header>
 
       <section className={styles.hero}>
         <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>
-            {content.hero.eyebrow}
-          </p>
+          <p className={styles.eyebrow}>{content.hero.eyebrow}</p>
 
           <h1>
             {content.hero.titleFirst}
@@ -338,323 +337,174 @@ export default async function RopaPage() {
           </p>
 
           <div className={styles.heroActions}>
-            <Link
-              href="#drop-01"
-              className={styles.primaryButton}
-            >
+            <Link href="#producto" className={styles.primaryButton}>
               {content.hero.primaryAction}
               <span>↓</span>
             </Link>
 
-            <Link
-              href="/contacto"
-              className={styles.secondaryButton}
-            >
-              {
-                content.hero
-                  .secondaryAction
-              }
+            <Link href="/contacto" className={styles.secondaryButton}>
+              {content.hero.secondaryAction}
             </Link>
           </div>
         </div>
 
         <div className={styles.heroVisual}>
           <div className={styles.visualTop}>
-            <span>CARPE DIEM</span>
-            <span>2026</span>
+            <span>{content.hero.visualTopLeft}</span>
+            <span>{content.hero.visualTopRight}</span>
           </div>
 
-          <div className={styles.shirt}>
-            <div className={styles.shirtBody}>
-              <span className={styles.neck} />
-
-              <div
-                className={
-                  styles.shirtMessage
-                }
-              >
-                <strong>CARPE</strong>
-                <strong>DIEM</strong>
-              </div>
-
-              <small>VANMOTION</small>
-            </div>
+          <div className={styles.heroImage}>
+            <Image
+              src="/ropa/carpe-diem-black-edition.webp"
+              alt={`${content.product.name} · ${content.product.edition}`}
+              width={1536}
+              height={1024}
+              priority
+              sizes="(max-width: 1050px) 100vw, 48vw"
+            />
           </div>
 
           <div className={styles.visualBottom}>
-            <span>
-              {content.hero.blackEdition}
-            </span>
-
-            <span>DROP 01</span>
+            <span>{content.hero.visualBottomLeft}</span>
+            <span>{content.hero.visualBottomRight}</span>
           </div>
         </div>
       </section>
 
-      <section
-        className={styles.dropSection}
-        id="drop-01"
-      >
+      <section className={styles.productSection} id="producto">
+        <div className={styles.productGallery}>
+          <figure className={styles.galleryMain}>
+            <Image
+              src="/ropa/carpe-diem-trasera.webp"
+              alt={content.product.backAlt}
+              width={768}
+              height={1024}
+              sizes="(max-width: 900px) 100vw, 44vw"
+            />
+            <figcaption>{content.product.galleryBack}</figcaption>
+          </figure>
+
+          <div className={styles.gallerySecondary}>
+            <figure>
+              <Image
+                src="/ropa/carpe-diem-frontal.webp"
+                alt={content.product.frontAlt}
+                width={768}
+                height={1024}
+                sizes="(max-width: 700px) 50vw, 22vw"
+              />
+              <figcaption>{content.product.galleryFront}</figcaption>
+            </figure>
+
+            <figure className={styles.designFigure}>
+              <Image
+                src="/ropa/carpe-diem-diseno.webp"
+                alt={content.product.designAlt}
+                width={1024}
+                height={1536}
+                sizes="(max-width: 700px) 50vw, 22vw"
+              />
+              <figcaption>{content.product.galleryDetail}</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div className={styles.productInformation}>
+          <p className={styles.eyebrow}>{content.product.eyebrow}</p>
+
+          <h2>{content.product.name}</h2>
+          <p className={styles.productEdition}>
+            {content.product.edition}
+          </p>
+
+          <p className={styles.productDescription}>
+            {content.product.description}
+          </p>
+
+          <ProductPurchasePanel
+            language={language}
+            productName={content.product.name}
+            productSlug={product.slug}
+            sizes={product.sizes}
+          />
+        </div>
+      </section>
+
+      <section className={styles.detailsSection}>
         <div className={styles.sectionHeading}>
           <div>
-            <p className={styles.eyebrow}>
-              {content.drop.eyebrow}
-            </p>
-
+            <p className={styles.eyebrow}>{content.details.eyebrow}</p>
             <h2>
-              {content.drop.titleFirst}
+              {content.details.titleFirst}
               <br />
-              {content.drop.titleSecond}
+              {content.details.titleSecond}
             </h2>
           </div>
 
-          <p>{content.drop.description}</p>
+          <p>{content.details.intro}</p>
         </div>
 
-        <div className={styles.productGrid}>
-          <article className={styles.productMain}>
-            <div className={styles.productLabel}>
-              <span>
-                {
-                  content.drop.products[0]
-                    .number
-                }
-              </span>
+        <div className={styles.specificationGrid}>
+          {content.details.cards.map((card) => (
+            <article key={card.number}>
+              <span>{card.number}</span>
+              <h3>{card.title}</h3>
+              <p>{card.text}</p>
+            </article>
+          ))}
+        </div>
 
-              <span>
-                {
-                  content.drop.products[0]
-                    .label
-                }
-              </span>
-            </div>
-
-            <div className={styles.backDesign}>
-              <span>CARPE</span>
-              <strong>DIEM</strong>
-            </div>
-
-            <p>
-              {
-                content.drop.products[0]
-                  .description
-              }
+        <div className={styles.palettePanel}>
+          <div>
+            <p className={styles.eyebrow}>
+              {content.details.colorTitle}
             </p>
-          </article>
+            <strong>CARPE / DIEM / VANMOTION</strong>
+          </div>
 
-          <article
-            className={styles.productDetail}
-          >
-            <div className={styles.productLabel}>
-              <span>
-                {
-                  content.drop.products[1]
-                    .number
-                }
-              </span>
-
-              <span>
-                {
-                  content.drop.products[1]
-                    .label
-                }
-              </span>
-            </div>
-
-            <div className={styles.smallLogo}>
-              <strong>VANMOTION</strong>
-
-              <span>
-                {content.drop.identity}
-              </span>
-            </div>
-
-            <p>
-              {
-                content.drop.products[1]
-                  .description
-              }
-            </p>
-          </article>
-
-          <article
-            className={styles.productDetail}
-          >
-            <div className={styles.productLabel}>
-              <span>
-                {
-                  content.drop.products[2]
-                    .number
-                }
-              </span>
-
-              <span>
-                {
-                  content.drop.products[2]
-                    .label
-                }
-              </span>
-            </div>
-
-            <div className={styles.material}>
-              <span>100%</span>
-
-              <strong>
-                {content.drop.cotton}
-              </strong>
-
-              <small>
-                {content.drop.garment}
-              </small>
-            </div>
-
-            <p>
-              {
-                content.drop.products[2]
-                  .description
-              }
-            </p>
-          </article>
+          <div className={styles.colorList}>
+            {content.details.colors.map((color) => (
+              <div key={color.name}>
+                <span
+                  className={styles.colorSwatch}
+                  style={{ background: color.value }}
+                  aria-hidden="true"
+                />
+                <div>
+                  <strong>{color.name}</strong>
+                  <small>{color.value}</small>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section
-        className={
-          styles.philosophySection
-        }
-      >
+      <section className={styles.philosophySection}>
         <div className={styles.philosophyTitle}>
-          <p className={styles.eyebrow}>
-            {content.philosophy.eyebrow}
-          </p>
-
+          <p className={styles.eyebrow}>{content.philosophy.eyebrow}</p>
           <h2>
-            {
-              content.philosophy
-                .titleFirst
-            }
+            {content.philosophy.titleFirst}
             <br />
-            {
-              content.philosophy
-                .titleSecond
-            }
+            {content.philosophy.titleSecond}
           </h2>
         </div>
 
         <div className={styles.principles}>
-          {content.philosophy.principles.map(
-            (principle) => (
-              <article
-                key={principle.number}
-              >
-                <span>
-                  {principle.number}
-                </span>
-
-                <h3>{principle.title}</h3>
-
-                <p>
-                  {principle.description}
-                </p>
-              </article>
-            ),
-          )}
+          {content.philosophy.principles.map((principle) => (
+            <article key={principle.number}>
+              <span>{principle.number}</span>
+              <h3>{principle.title}</h3>
+              <p>{principle.description}</p>
+            </article>
+          ))}
         </div>
       </section>
 
-      <section
-        className={
-          styles.productionSection
-        }
-      >
-        <div
-          className={styles.productionVisual}
-        >
-          <div className={styles.productionTop}>
-            <span>
-              {content.production.workshop}
-            </span>
-
-            <span>
-              {content.production.location}
-            </span>
-          </div>
-
-          <div
-            className={
-              styles.productionWord
-            }
-          >
-            <span>
-              {
-                content.production
-                  .visualFirst
-              }
-            </span>
-
-            <strong>
-              {
-                content.production
-                  .visualSecond
-              }
-            </strong>
-          </div>
-
-          <div
-            className={
-              styles.productionLines
-            }
-          >
-            {[
-              35,
-              80,
-              50,
-              95,
-              42,
-              72,
-              58,
-              88,
-              45,
-              68,
-            ].map((height, index) => (
-              <span
-                key={`${height}-${index}`}
-                style={{
-                  height: `${height}px`,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.productionCopy}>
-          <p className={styles.eyebrow}>
-            {content.production.eyebrow}
-          </p>
-
-          <h2>
-            {content.production.titleFirst}
-            <br />
-            {
-              content.production
-                .titleSecond
-            }
-          </h2>
-
-          <p>
-            {content.production.description}
-          </p>
-        </div>
-      </section>
-
-      <section
-        className={styles.contactSection}
-      >
+      <section className={styles.contactSection}>
         <div>
-          <p className={styles.eyebrow}>
-            {content.contact.eyebrow}
-          </p>
-
+          <p className={styles.eyebrow}>{content.contact.eyebrow}</p>
           <h2>
             {content.contact.titleFirst}
             <br />
@@ -664,8 +514,7 @@ export default async function RopaPage() {
 
         <div className={styles.contactCopy}>
           <p>{content.contact.description}</p>
-
-          <Link href="/contacto">
+          <Link href="/contacto?motivo=ropa#formulario">
             {content.contact.action}
             <span>→</span>
           </Link>
@@ -674,9 +523,7 @@ export default async function RopaPage() {
 
       <footer className={styles.footer}>
         <strong>VANMOTION</strong>
-
         <span>{content.footer}</span>
-
         <span>© 2026 VANMOTION</span>
       </footer>
     </main>
