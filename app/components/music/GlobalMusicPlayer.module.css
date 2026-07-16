@@ -271,10 +271,14 @@
 }
 
 @media (max-width: 640px) {
+  :global(body) {
+    padding-bottom: calc(82px + env(safe-area-inset-bottom));
+  }
+
   .player,
   .expanded {
     right: 10px;
-    bottom: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
     left: 10px;
     width: auto;
     border-radius: 14px;
@@ -314,20 +318,65 @@
     width: 31px;
     height: 31px;
   }
+
+  .player.expanded {
+    max-height: calc(
+      100dvh - 20px - env(safe-area-inset-bottom)
+    );
+    overflow-y: auto;
+  }
 }
 
-@media (max-width: 390px) {
-  .controls button:first-child,
-  .controls button:last-child {
+/* VANMOTION — reproductor compacto en móvil */
+@media (max-width: 640px) {
+  .player:not(.expanded) {
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    left: auto;
+    width: 142px;
+  }
+
+  .player:not(.expanded) .mainRow {
+    grid-template-columns: minmax(0, 1fr) 30px;
+    gap: 5px;
+    min-height: 48px;
+    padding: 5px 6px;
+  }
+
+  .player:not(.expanded) .trackButton,
+  .player:not(.expanded) .centerLogo {
     display: none;
   }
 
-  .mainRow {
-    grid-template-columns:
-      minmax(0, 1fr)
-      44px
-      34px
-      30px;
+  .player:not(.expanded) .controls {
+    justify-content: flex-end;
+  }
+
+  .player:not(.expanded) .controls button {
+    display: inline-flex;
+    width: 25px;
+    height: 25px;
+  }
+
+  .player:not(.expanded) .controls .playButton {
+    width: 31px;
+    height: 31px;
+  }
+
+  .player:not(.expanded) .expandButton {
+    width: 29px;
+    height: 29px;
+  }
+}
+
+@media (max-width: 390px) {
+  .player:not(.expanded) {
+    width: 138px;
+  }
+
+  .player.expanded {
+    right: 8px;
+    left: 8px;
   }
 }
 
@@ -337,42 +386,5 @@
   .controls button,
   .expandButton {
     transition: none;
-  }
-}
-
-/* VANMOTION — reproductor mínimo en móvil */
-@media (max-width: 640px) {
-  .player:not(.expanded) {
-    right: 10px;
-    bottom: 10px;
-    left: auto;
-    width: 174px;
-  }
-
-  .player:not(.expanded) .mainRow {
-    grid-template-columns: 46px 34px 30px;
-    justify-content: end;
-    min-height: 50px;
-    padding: 5px 6px;
-  }
-
-  .player:not(.expanded) .trackButton {
-    display: none;
-  }
-
-  .player:not(.expanded) .controls button:first-child,
-  .player:not(.expanded) .controls button:last-child {
-    display: none;
-  }
-
-  .player:not(.expanded) .controls {
-    justify-content: center;
-  }
-
-  .player.expanded {
-    right: 10px;
-    bottom: 10px;
-    left: 10px;
-    width: auto;
   }
 }
