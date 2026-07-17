@@ -828,3 +828,63 @@
     transition: none;
   }
 }
+
+/* Estado y stock dinámicos del producto */
+.statusComingSoon span {
+  background: #ffd200;
+  box-shadow: 0 0 18px rgb(255 210 0 / 45%);
+}
+
+.statusAvailable span {
+  background: #55d98a;
+  box-shadow: 0 0 18px rgb(85 217 138 / 45%);
+}
+
+.statusSoldOut span,
+.statusUnavailable span {
+  background: #777;
+  box-shadow: none;
+}
+
+.sizeSelector span {
+  padding: 8px 5px;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sizeSelector span strong {
+  font-size: 12px;
+}
+
+.sizeSelector span small {
+  color: rgb(255 255 255 / 32%);
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sizeDisabled {
+  cursor: not-allowed !important;
+}
+
+.sizeDisabled span {
+  border-color: rgb(255 255 255 / 7%) !important;
+  background: rgb(255 255 255 / 2%) !important;
+  color: rgb(255 255 255 / 22%) !important;
+}
+
+.sizeDisabled span small {
+  color: rgb(255 255 255 / 16%);
+}
+
+.quantityControl button:disabled {
+  cursor: not-allowed;
+  color: rgb(255 255 255 / 20%);
+}
+
+.purchaseButtonDisabled {
+  cursor: not-allowed;
+  background: rgb(255 255 255 / 12%);
+  color: rgb(255 255 255 / 32%) !important;
+}

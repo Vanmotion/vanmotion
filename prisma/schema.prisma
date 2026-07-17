@@ -20,7 +20,7 @@ model Vehicle {
   id String @id @default(cuid())
 
   brandId String
-  brand   Brand @relation(fields: [brandId], references: [id])
+  brand   Brand  @relation(fields: [brandId], references: [id])
 
   model   String
   version String?
@@ -119,4 +119,103 @@ model MusicTrack {
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+/**
+ * Catálogo de productos VANMOTION.
+ * Estados recomendados:
+ * - DRAFT
+ * - COMING_SOON
+ * - AVAILABLE
+ * - SOLD_OUT
+ * - HIDDEN
+ */
+model Product {
+  id String @id @default(cuid())
+
+  slug String @unique
+
+  name        String
+  subtitle    String?
+  collection  String?
+  category    String  @default("CLOTHING")
+  productType String  @default("TSHIRT")
+
+  description   String?
+  descriptionEn String?
+
+  material String?
+  color    String?
+
+  price    Decimal @db.Decimal(10, 2)
+  currency String  @default("EUR")
+
+  status   String  @default("COMING_SOON")
+  featured Boolean @default(false)
+  active   Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants ProductVariant[]
+  images   ProductImage[]
+
+  @@index([status, active])
+  @@index([category])
+  @@index([sortOrder])
+}
+
+/**
+ * Stock independiente por talla.
+ * Para la primera camiseta:
+ * S, M, L y XL.
+ */
+model ProductVariant {
+  id String @id @default(cuid())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  size String
+  sku  String? @unique
+
+  stock  Int     @default(0)
+  active Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, size])
+  @@index([productId])
+  @@index([active])
+}
+
+/**
+ * Galería del producto.
+ * view puede contener:
+ * - FRONT
+ * - BACK
+ * - DETAIL
+ * - LIFESTYLE
+ */
+model ProductImage {
+  id String @id @default(cuid())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  url  String
+  alt  String?
+  view String?
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([sortOrder])
 }

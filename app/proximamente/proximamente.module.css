@@ -1,0 +1,232 @@
+.page {
+  position: relative;
+  min-height: 100svh;
+  padding: 34px clamp(24px, 5vw, 76px);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background:
+    radial-gradient(
+      circle at 78% 30%,
+      rgba(255, 255, 255, 0.055),
+      transparent 30%
+    ),
+    #080808;
+  color: #f4f4f1;
+}
+
+.page,
+.page * {
+  box-sizing: border-box;
+}
+
+.texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    );
+  background-size: 48px 48px;
+  mask-image:
+    linear-gradient(
+      to bottom,
+      black,
+      transparent 82%
+    );
+}
+
+.header,
+.hero,
+.footer {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1540px);
+  margin: 0 auto;
+}
+
+.header {
+  min-height: 82px;
+  padding-bottom: 26px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.brand,
+.brandCaption,
+.location,
+.eyebrow,
+.openingCard p,
+.openingCard span,
+.footer p {
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.brand {
+  font-size: clamp(20px, 2vw, 29px);
+  font-weight: 760;
+  letter-spacing: 0.32em;
+}
+
+.brandCaption,
+.location {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.2em;
+}
+
+.location {
+  text-align: right;
+}
+
+.hero {
+  padding: clamp(58px, 9vh, 112px) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 390px);
+  align-items: end;
+  gap: clamp(50px, 8vw, 120px);
+}
+
+.eyebrow {
+  color: #e4c315;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.28em;
+}
+
+.title {
+  margin: 25px 0 0;
+  display: grid;
+  font-size: clamp(58px, 8.6vw, 142px);
+  font-weight: 650;
+  line-height: 0.82;
+  letter-spacing: -0.065em;
+}
+
+.title span:last-child {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.introduction {
+  max-width: 730px;
+  margin: 38px 0 0;
+  color: rgba(255, 255, 255, 0.56);
+  font-size: clamp(15px, 1.4vw, 19px);
+  line-height: 1.8;
+}
+
+.openingCard {
+  padding: clamp(26px, 3vw, 38px);
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.openingCard p,
+.openingCard span {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.openingCard strong {
+  margin-top: 20px;
+  display: block;
+  font-size: clamp(28px, 3vw, 47px);
+  font-weight: 580;
+  line-height: 1.03;
+  letter-spacing: -0.04em;
+}
+
+.rule {
+  height: 1px;
+  margin: 34px 0 24px;
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.footer {
+  min-height: 68px;
+  padding-top: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.footer a,
+.footer p {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.footer a:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 850px) {
+  .hero {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .openingCard {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 24px 20px;
+  }
+
+  .header {
+    min-height: 72px;
+  }
+
+  .brandCaption {
+    letter-spacing: 0.12em;
+  }
+
+  .location {
+    display: none;
+  }
+
+  .hero {
+    padding: 54px 0;
+    gap: 42px;
+  }
+
+  .title {
+    font-size: clamp(52px, 18vw, 80px);
+    line-height: 0.88;
+  }
+
+  .introduction {
+    margin-top: 28px;
+  }
+
+  .footer {
+    padding-top: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -113,6 +113,20 @@ const navigationItems: NavigationItem[] = [
     ),
   },
   {
+    label: "Ropa",
+    description: "Productos, precios y stock",
+    href: "/admin/ropa",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path d="M8 4 4 6l-2 5 4 2v7h12v-7l4-2-2-5-4-2c-.8 1.3-2.1 2-4 2S8.8 5.3 8 4Z" />
+        <path d="M9 4c.5 1.2 1.5 2 3 2s2.5-.8 3-2" />
+      </svg>
+    ),
+  },
+  {
     label: "Configuración",
     description: "Datos y redes sociales",
     href: "/admin/settings",

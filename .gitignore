@@ -42,3 +42,8 @@ next-env.d.ts
 
 /app/generated/prisma
 .env
+
+# Copias locales de desarrollo
+*.backup
+*.backup.*
+backups/

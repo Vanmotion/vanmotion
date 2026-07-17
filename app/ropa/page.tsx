@@ -3,16 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentLanguage } from "@/app/lib/language";
+import { prisma } from "@/app/lib/prisma";
 
 import ProductPurchasePanel from "./ProductPurchasePanel";
 import styles from "./ropa.module.css";
 
 export const dynamic = "force-dynamic";
 
-const product = {
-  slug: "carpe-diem-black-edition-drop-01",
-  sizes: ["S", "M", "L", "XL"] as const,
-};
+const PRODUCT_SLUG = "carpe-diem-black-edition-drop-01";
+const FALLBACK_SIZES = ["S", "M", "L", "XL"] as const;
 
 const translations = {
   es: {
@@ -282,6 +281,68 @@ export default async function RopaPage() {
   const language = await getCurrentLanguage();
   const content = translations[language];
 
+  const databaseProduct = await prisma.product.findUnique({
+    where: {
+      slug: PRODUCT_SLUG,
+    },
+    include: {
+      variants: {
+        where: {
+          active: true,
+        },
+        orderBy: {
+          sortOrder: "asc",
+        },
+      },
+      images: {
+        orderBy: [
+          {
+            sortOrder: "asc",
+          },
+          {
+            createdAt: "asc",
+          },
+        ],
+      },
+    },
+  });
+
+  const imagesByView = new Map(
+    databaseProduct?.images.map((image) => [image.view, image.url]) ?? [],
+  );
+
+  const frontImage =
+    imagesByView.get("FRONT") ?? "/ropa/carpe-diem-frontal.webp";
+  const backImage =
+    imagesByView.get("BACK") ?? "/ropa/carpe-diem-trasera.webp";
+  const detailImage =
+    imagesByView.get("DETAIL") ?? "/ropa/carpe-diem-diseno.webp";
+
+  const productName = databaseProduct?.name ?? content.product.name;
+  const productDescription =
+    language === "es"
+      ? databaseProduct?.description ?? content.product.description
+      : databaseProduct?.descriptionEn ??
+        databaseProduct?.description ??
+        content.product.description;
+
+  const productStatus =
+    databaseProduct?.active === false
+      ? "HIDDEN"
+      : databaseProduct?.status ?? "COMING_SOON";
+
+  const productVariants = databaseProduct
+    ? databaseProduct.variants.map((variant) => ({
+        size: variant.size,
+        stock: variant.stock,
+        active: variant.active,
+      }))
+    : FALLBACK_SIZES.map((size) => ({
+        size,
+        stock: 0,
+        active: true,
+      }));
+
   return (
     <main className={styles.page}>
       <header className={styles.header}>
@@ -376,7 +437,7 @@ export default async function RopaPage() {
         <div className={styles.productGallery}>
           <figure className={styles.galleryMain}>
             <Image
-              src="/ropa/carpe-diem-trasera.webp"
+              src={backImage}
               alt={content.product.backAlt}
               width={768}
               height={1024}
@@ -388,7 +449,7 @@ export default async function RopaPage() {
           <div className={styles.gallerySecondary}>
             <figure>
               <Image
-                src="/ropa/carpe-diem-frontal.webp"
+                src={frontImage}
                 alt={content.product.frontAlt}
                 width={768}
                 height={1024}
@@ -399,7 +460,7 @@ export default async function RopaPage() {
 
             <figure className={styles.designFigure}>
               <Image
-                src="/ropa/carpe-diem-diseno.webp"
+                src={detailImage}
                 alt={content.product.designAlt}
                 width={1024}
                 height={1536}
@@ -413,20 +474,23 @@ export default async function RopaPage() {
         <div className={styles.productInformation}>
           <p className={styles.eyebrow}>{content.product.eyebrow}</p>
 
-          <h2>{content.product.name}</h2>
+          <h2>{productName}</h2>
           <p className={styles.productEdition}>
             {content.product.edition}
           </p>
 
           <p className={styles.productDescription}>
-            {content.product.description}
+            {productDescription}
           </p>
 
           <ProductPurchasePanel
             language={language}
-            productName={content.product.name}
-            productSlug={product.slug}
-            sizes={product.sizes}
+            productName={productName}
+            productSlug={databaseProduct?.slug ?? PRODUCT_SLUG}
+            price={Number(databaseProduct?.price ?? 34.9)}
+            currency={databaseProduct?.currency ?? "EUR"}
+            status={productStatus}
+            variants={productVariants}
           />
         </div>
       </section>

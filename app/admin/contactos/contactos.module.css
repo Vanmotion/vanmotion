@@ -281,6 +281,93 @@
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
+.management {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.statusForm {
+  display: grid;
+  grid-template-columns: minmax(210px, 280px) auto;
+  align-items: end;
+  gap: 12px;
+  flex: 1 1 470px;
+  max-width: 610px;
+}
+
+.statusForm label {
+  grid-column: 1 / -1;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.statusForm select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 42px 0 15px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0;
+  background: #111111;
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.statusForm select:hover,
+.statusForm select:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.statusForm button,
+.dangerAction {
+  min-height: 46px;
+  padding: 0 18px;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.statusForm button {
+  border: 1px solid #ffffff;
+  background: #ffffff;
+  color: #080808;
+}
+
+.statusForm button:hover {
+  background: #e7e7e7;
+}
+
+.management > form:last-child {
+  margin-left: auto;
+}
+
+.dangerAction {
+  border: 1px solid rgba(255, 104, 104, 0.42);
+  background: rgba(255, 104, 104, 0.08);
+  color: #ff9c9c;
+}
+
+.dangerAction:hover {
+  border-color: rgba(255, 104, 104, 0.86);
+  background: rgba(255, 104, 104, 0.16);
+  color: #ffffff;
+}
+
 .emptyState {
   min-height: 430px;
   padding: 60px;
@@ -352,6 +439,14 @@
     border-right: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
+
+  .management {
+    align-items: stretch;
+  }
+
+  .statusForm {
+    max-width: none;
+  }
 }
 
 @media (max-width: 600px) {
@@ -395,7 +490,136 @@
     width: 100%;
   }
 
+  .statusForm {
+    grid-template-columns: 1fr;
+    flex-basis: 100%;
+  }
+
+  .statusForm label {
+    grid-column: 1;
+  }
+
+  .statusForm button,
+  .dangerAction,
+  .management > form:last-child {
+    width: 100%;
+  }
+
+  .management > form:last-child {
+    margin-left: 0;
+  }
+
   .emptyState {
     padding: 30px 22px;
   }
 }
+
+/* === VANMOTION CONTACTOS FIX START === */
+.management {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.statusForm {
+  display: grid;
+  grid-template-columns: minmax(210px, 280px) auto;
+  align-items: end;
+  gap: 12px;
+  flex: 1 1 470px;
+  max-width: 610px;
+}
+
+.statusForm label {
+  grid-column: 1 / -1;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.statusForm select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 42px 0 15px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #111111;
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.statusForm select:hover,
+.statusForm select:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.statusForm button,
+.dangerAction {
+  min-height: 46px;
+  padding: 0 18px;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.statusForm button {
+  border: 1px solid #ffffff;
+  background: #ffffff;
+  color: #080808;
+}
+
+.statusForm button:hover {
+  background: #e7e7e7;
+}
+
+.management > form:last-child {
+  margin-left: auto;
+}
+
+.dangerAction {
+  border: 1px solid rgba(255, 104, 104, 0.42);
+  background: rgba(255, 104, 104, 0.08);
+  color: #ff9c9c;
+}
+
+.dangerAction:hover {
+  border-color: rgba(255, 104, 104, 0.86);
+  background: rgba(255, 104, 104, 0.16);
+  color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .statusForm {
+    grid-template-columns: 1fr;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .statusForm label {
+    grid-column: 1;
+  }
+
+  .statusForm button,
+  .dangerAction,
+  .management > form:last-child {
+    width: 100%;
+  }
+
+  .management > form:last-child {
+    margin-left: 0;
+  }
+}
+/* === VANMOTION CONTACTOS FIX END === */
