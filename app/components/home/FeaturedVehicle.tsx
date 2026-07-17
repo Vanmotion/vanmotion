@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
 
 import { getCurrentLanguage } from "../../lib/language";
 import { prisma } from "../../lib/prisma";
@@ -123,23 +123,6 @@ export default async function FeaturedVehicle() {
 
   const imageUrl = vehicle.images[0]?.url;
 
-  const cardStyle: CSSProperties | undefined = imageUrl
-    ? {
-        backgroundImage: `
-          linear-gradient(
-            180deg,
-            rgba(5, 5, 5, 0.18) 0%,
-            rgba(5, 5, 5, 0.5) 48%,
-            rgba(5, 5, 5, 0.96) 100%
-          ),
-          url("${imageUrl}")
-        `,
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-      }
-    : undefined;
-
   const vehicleStatus = isEmblem
     ? content.emblem
     : vehicle.featured
@@ -154,9 +137,26 @@ export default async function FeaturedVehicle() {
     <Link
       href={`/coleccion/${vehicle.id}`}
       className={styles.vehicleCard}
-      style={cardStyle}
       aria-label={`${vehicleStatus}: ${vehicleName}`}
     >
+      {imageUrl ? (
+        <>
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            sizes="(max-width: 900px) 100vw, 58vw"
+            quality={75}
+            className={styles.vehicleCardImage}
+          />
+
+          <span
+            className={styles.vehicleCardOverlay}
+            aria-hidden="true"
+          />
+        </>
+      ) : null}
+
       <div className={styles.vehicleCardTop}>
         <span>{vehicleStatus}</span>
 

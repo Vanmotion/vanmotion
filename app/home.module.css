@@ -422,6 +422,8 @@
 }
 
 .vehicleCard {
+  position: relative;
+  isolation: isolate;
   min-height: 520px;
   padding: 36px;
   display: flex;
@@ -437,6 +439,32 @@
     ),
     #131313;
 }
+
+.vehicleCardImage {
+  z-index: 0;
+  object-fit: cover;
+}
+
+.vehicleCardOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 5, 0.18) 0%,
+    rgba(5, 5, 5, 0.5) 48%,
+    rgba(5, 5, 5, 0.96) 100%
+  );
+}
+
+.vehicleCardTop,
+.vehicleWord,
+.vehicleCardBottom {
+  position: relative;
+  z-index: 2;
+}
+
 
 .vehicleCardTop,
 .vehicleCardBottom {
