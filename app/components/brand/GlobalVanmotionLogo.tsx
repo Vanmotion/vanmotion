@@ -10,7 +10,7 @@ export default function GlobalVanmotionLogo() {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/brand/vanmotion-mark.png"
+          src="/brand/vanmotion-mark.webp"
           alt="VANMOTION"
           className="block h-auto w-full object-contain"
         />
