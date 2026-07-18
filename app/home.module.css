@@ -53,7 +53,7 @@
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.58);
+  color: rgba(255, 255, 255, 0.68);
   transition: color 180ms ease;
 }
 
@@ -102,7 +102,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  color: rgba(255, 255, 255, 0.60);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.25em;
@@ -127,13 +127,13 @@
 
 .heroTitle span {
   display: block;
-  color: rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.38);
 }
 
 .heroDescription {
   max-width: 650px;
   margin: 34px 0 0;
-  color: rgba(255, 255, 255, 0.48);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 16px;
   line-height: 1.85;
 }
@@ -258,7 +258,7 @@
 }
 
 .motionTitle span {
-  color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.34);
 }
 
 .heroStats {
@@ -382,7 +382,7 @@
 }
 
 .areaNumber {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 11px;
 }
 
@@ -395,7 +395,7 @@
 .areaCard p {
   max-width: 360px;
   margin: 22px 0;
-  color: rgba(255, 255, 255, 0.60);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -475,7 +475,7 @@
 }
 
 .vehicleCardTop {
-  color: rgba(255, 255, 255, 0.38);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -494,7 +494,7 @@
 }
 
 .vehicleWord span {
-  color: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.34);
 }
 
 .vehicleCardBottom h3 {
@@ -504,7 +504,7 @@
 
 .vehicleCardBottom p {
   margin: 8px 0 0;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 13px;
 }
 
@@ -650,7 +650,7 @@
 
 .storyText p:last-child {
   margin: 28px 0 0;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 15px;
   line-height: 1.9;
 }
@@ -677,7 +677,7 @@
 }
 
 .valuesGrid span {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 10px;
 }
 
@@ -688,7 +688,7 @@
 
 .valuesGrid p {
   margin: 18px 0 0;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -743,7 +743,7 @@
 }
 
 .footerInner span {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.68);
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
