@@ -1,40 +1,19 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 import {
   isLanguage,
   LANGUAGE_COOKIE,
+  type Language,
 } from "@/app/language";
 
-function safePathname(
-  value: FormDataEntryValue | null,
-): string {
-  if (
-    typeof value !== "string" ||
-    !value.startsWith("/") ||
-    value.startsWith("//")
-  ) {
-    return "/";
-  }
-
-  return value;
-}
-
 export async function changeLanguage(
-  formData: FormData,
+  language: Language,
 ): Promise<void> {
-  const language =
-    formData.get("language");
-
   if (!isLanguage(language)) {
-    redirect("/");
+    return;
   }
-
-  const pathname = safePathname(
-    formData.get("pathname"),
-  );
 
   const cookieStore = await cookies();
 
@@ -49,6 +28,4 @@ export async function changeLanguage(
       "production",
     httpOnly: true,
   });
-
-  redirect(pathname);
 }
