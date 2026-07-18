@@ -1,6 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import styles from "./ropa.module.css";
 
@@ -32,8 +36,8 @@ const translations = {
     priceLabel: "Precio",
     sizeLabel: "Selecciona tu talla",
     quantityLabel: "Cantidad",
-    availableStock: "disponibles",
-    pendingStock: "stock por confirmar",
+    availableStock: "disponible",
+    availableStockPlural: "disponibles",
     noStock: "sin stock",
     reserve: "Solicitar reserva",
     availability: "Solicitar disponibilidad",
@@ -63,7 +67,7 @@ const translations = {
     sizeLabel: "Choose your size",
     quantityLabel: "Quantity",
     availableStock: "available",
-    pendingStock: "stock to be confirmed",
+    availableStockPlural: "available",
     noStock: "out of stock",
     reserve: "Request reservation",
     availability: "Ask about availability",
@@ -90,10 +94,15 @@ const supportedStatuses = [
   "HIDDEN",
 ] as const;
 
-type SupportedStatus = (typeof supportedStatuses)[number];
+type SupportedStatus =
+  (typeof supportedStatuses)[number];
 
-function normalizeStatus(status: string): SupportedStatus {
-  return supportedStatuses.includes(status as SupportedStatus)
+function normalizeStatus(
+  status: string,
+): SupportedStatus {
+  return supportedStatuses.includes(
+    status as SupportedStatus,
+  )
     ? (status as SupportedStatus)
     : "COMING_SOON";
 }
@@ -108,55 +117,106 @@ export default function ProductPurchasePanel({
   variants,
 }: ProductPurchasePanelProps) {
   const content = translations[language];
-  const normalizedStatus = normalizeStatus(status);
+  const normalizedStatus =
+    normalizeStatus(status);
 
   const activeVariants = useMemo(
-    () => variants.filter((variant) => variant.active),
+    () =>
+      variants.filter(
+        (variant) => variant.active,
+      ),
     [variants],
   );
 
-  const defaultVariant =
-    activeVariants.find(
-      (variant) =>
-        variant.size === "M" &&
-        (normalizedStatus !== "AVAILABLE" || variant.stock > 0),
-    ) ??
-    activeVariants.find(
-      (variant) =>
-        normalizedStatus !== "AVAILABLE" || variant.stock > 0,
-    ) ??
-    activeVariants.find((variant) => variant.size === "M") ??
-    activeVariants[0];
-
-  const [selectedSize, setSelectedSize] = useState(
-    defaultVariant?.size ?? "",
-  );
-  const [quantity, setQuantity] = useState(1);
-
-  const selectedVariant = activeVariants.find(
-    (variant) => variant.size === selectedSize,
+  const firstAvailableVariant = useMemo(
+    () =>
+      activeVariants.find(
+        (variant) =>
+          variant.size.toUpperCase() === "S" &&
+          variant.stock > 0,
+      ) ??
+      activeVariants.find(
+        (variant) => variant.stock > 0,
+      ),
+    [activeVariants],
   );
 
-  const selectedStock = selectedVariant?.stock ?? 0;
-  const isComingSoon = normalizedStatus === "COMING_SOON";
-  const isAvailable = normalizedStatus === "AVAILABLE";
-  const hasAvailableStock = isAvailable && selectedStock > 0;
-  const canRequest = isComingSoon
-    ? Boolean(selectedVariant)
-    : hasAvailableStock;
+  const [selectedSize, setSelectedSize] =
+    useState(
+      firstAvailableVariant?.size ?? "",
+    );
 
-  const maximumQuantity = isAvailable
-    ? Math.max(1, selectedStock)
-    : 10;
+  const [quantity, setQuantity] =
+    useState(1);
+
+  useEffect(() => {
+    const currentVariant =
+      activeVariants.find(
+        (variant) =>
+          variant.size === selectedSize,
+      );
+
+    if (
+      currentVariant &&
+      currentVariant.stock > 0
+    ) {
+      return;
+    }
+
+    setSelectedSize(
+      firstAvailableVariant?.size ?? "",
+    );
+    setQuantity(1);
+  }, [
+    activeVariants,
+    firstAvailableVariant,
+    selectedSize,
+  ]);
+
+  const selectedVariant =
+    activeVariants.find(
+      (variant) =>
+        variant.size === selectedSize,
+    );
+
+  const selectedStock =
+    selectedVariant?.stock ?? 0;
+
+  const isComingSoon =
+    normalizedStatus === "COMING_SOON";
+
+  const isAvailable =
+    normalizedStatus === "AVAILABLE";
+
+  const statusAllowsRequests =
+    isComingSoon || isAvailable;
+
+  const hasAvailableStock =
+    selectedStock > 0;
+
+  const canRequest =
+    statusAllowsRequests &&
+    Boolean(selectedVariant) &&
+    hasAvailableStock;
+
+  const maximumQuantity =
+    hasAvailableStock
+      ? selectedStock
+      : 1;
 
   const formattedPrice = useMemo(
     () =>
-      new Intl.NumberFormat(language === "es" ? "es-ES" : "en-GB", {
-        style: "currency",
-        currency,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(price),
+      new Intl.NumberFormat(
+        language === "es"
+          ? "es-ES"
+          : "en-GB",
+        {
+          style: "currency",
+          currency,
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        },
+      ).format(price),
     [currency, language, price],
   );
 
@@ -170,14 +230,20 @@ export default function ProductPurchasePanel({
     });
 
     return `/contacto?${params.toString()}#formulario`;
-  }, [productName, productSlug, quantity, selectedSize]);
+  }, [
+    productName,
+    productSlug,
+    quantity,
+    selectedSize,
+  ]);
 
   const statusClass =
     normalizedStatus === "AVAILABLE"
       ? styles.statusAvailable
       : normalizedStatus === "SOLD_OUT"
         ? styles.statusSoldOut
-        : normalizedStatus === "HIDDEN" || normalizedStatus === "DRAFT"
+        : normalizedStatus === "HIDDEN" ||
+            normalizedStatus === "DRAFT"
           ? styles.statusUnavailable
           : styles.statusComingSoon;
 
@@ -186,7 +252,9 @@ export default function ProductPurchasePanel({
       ? content.reserve
       : content.soldOut
     : isComingSoon
-      ? content.availability
+      ? hasAvailableStock
+        ? content.availability
+        : content.soldOut
       : normalizedStatus === "SOLD_OUT"
         ? content.soldOut
         : content.unavailable;
@@ -196,7 +264,9 @@ export default function ProductPurchasePanel({
       ? content.noteAvailable
       : content.noteSoldOut
     : isComingSoon
-      ? content.noteComingSoon
+      ? hasAvailableStock
+        ? content.noteComingSoon
+        : content.noteSoldOut
       : normalizedStatus === "SOLD_OUT"
         ? content.noteSoldOut
         : content.noteUnavailable;
@@ -207,18 +277,31 @@ export default function ProductPurchasePanel({
   }
 
   function decreaseQuantity() {
-    setQuantity((current) => Math.max(1, current - 1));
+    setQuantity((current) =>
+      Math.max(1, current - 1),
+    );
   }
 
   function increaseQuantity() {
-    setQuantity((current) => Math.min(maximumQuantity, current + 1));
+    setQuantity((current) =>
+      Math.min(
+        maximumQuantity,
+        current + 1,
+      ),
+    );
   }
 
   return (
     <div className={styles.purchasePanel}>
-      <div className={`${styles.purchaseStatus} ${statusClass}`}>
+      <div
+        className={`${styles.purchaseStatus} ${statusClass}`}
+      >
         <span aria-hidden="true" />
-        {content.statuses[normalizedStatus]}
+        {
+          content.statuses[
+            normalizedStatus
+          ]
+        }
       </div>
 
       <div className={styles.priceRow}>
@@ -226,57 +309,96 @@ export default function ProductPurchasePanel({
         <strong>{formattedPrice}</strong>
       </div>
 
-      <fieldset className={styles.sizeSelector}>
+      <fieldset
+        className={styles.sizeSelector}
+      >
         <legend>{content.sizeLabel}</legend>
 
         <div>
-          {activeVariants.map((variant) => {
-            const disabled =
-              normalizedStatus === "AVAILABLE"
-                ? variant.stock <= 0
-                : normalizedStatus === "SOLD_OUT" ||
-                  normalizedStatus === "HIDDEN" ||
-                  normalizedStatus === "DRAFT";
+          {activeVariants.map(
+            (variant) => {
+              const statusDisabled =
+                normalizedStatus ===
+                  "SOLD_OUT" ||
+                normalizedStatus ===
+                  "HIDDEN" ||
+                normalizedStatus ===
+                  "DRAFT";
 
-            const stockText = isComingSoon
-              ? content.pendingStock
-              : variant.stock > 0
-                ? `${variant.stock} ${content.availableStock}`
-                : content.noStock;
+              const disabled =
+                statusDisabled ||
+                variant.stock <= 0;
 
-            return (
-              <label
-                key={variant.size}
-                className={disabled ? styles.sizeDisabled : undefined}
-              >
-                <input
-                  type="radio"
-                  name="product-size"
-                  value={variant.size}
-                  checked={selectedSize === variant.size}
-                  disabled={disabled}
-                  onChange={() => selectSize(variant.size)}
-                />
+              const stockText =
+                variant.stock === 1
+                  ? `1 ${content.availableStock}`
+                  : variant.stock > 1
+                    ? `${variant.stock} ${content.availableStockPlural}`
+                    : content.noStock;
 
-                <span>
-                  <strong>{variant.size}</strong>
-                  <small>{stockText}</small>
-                </span>
-              </label>
-            );
-          })}
+              return (
+                <label
+                  key={variant.size}
+                  className={
+                    disabled
+                      ? styles.sizeDisabled
+                      : undefined
+                  }
+                >
+                  <input
+                    type="radio"
+                    name="product-size"
+                    value={variant.size}
+                    checked={
+                      selectedSize ===
+                      variant.size
+                    }
+                    disabled={disabled}
+                    onChange={() =>
+                      selectSize(
+                        variant.size,
+                      )
+                    }
+                  />
+
+                  <span>
+                    <strong>
+                      {variant.size}
+                    </strong>
+
+                    <small>
+                      {stockText}
+                    </small>
+                  </span>
+                </label>
+              );
+            },
+          )}
         </div>
       </fieldset>
 
-      <div className={styles.quantityRow}>
-        <span>{content.quantityLabel}</span>
+      <div
+        className={styles.quantityRow}
+      >
+        <span>
+          {content.quantityLabel}
+        </span>
 
-        <div className={styles.quantityControl}>
+        <div
+          className={
+            styles.quantityControl
+          }
+        >
           <button
             type="button"
             onClick={decreaseQuantity}
-            disabled={!canRequest || quantity <= 1}
-            aria-label={content.decrease}
+            disabled={
+              !canRequest ||
+              quantity <= 1
+            }
+            aria-label={
+              content.decrease
+            }
           >
             −
           </button>
@@ -286,8 +408,14 @@ export default function ProductPurchasePanel({
           <button
             type="button"
             onClick={increaseQuantity}
-            disabled={!canRequest || quantity >= maximumQuantity}
-            aria-label={content.increase}
+            disabled={
+              !canRequest ||
+              quantity >=
+                maximumQuantity
+            }
+            aria-label={
+              content.increase
+            }
           >
             +
           </button>
@@ -295,7 +423,12 @@ export default function ProductPurchasePanel({
       </div>
 
       {canRequest ? (
-        <a href={contactHref} className={styles.purchaseButton}>
+        <a
+          href={contactHref}
+          className={
+            styles.purchaseButton
+          }
+        >
           {buttonText}
           <span>→</span>
         </a>
@@ -309,7 +442,11 @@ export default function ProductPurchasePanel({
         </span>
       )}
 
-      <p className={styles.purchaseNote}>{note}</p>
+      <p
+        className={styles.purchaseNote}
+      >
+        {note}
+      </p>
     </div>
   );
 }
