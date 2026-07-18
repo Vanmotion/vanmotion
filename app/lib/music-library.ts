@@ -16,7 +16,7 @@ export const fallbackTracks: PublicMusicTrack[] = [
     title: "The Cool Ashtray",
     subtitle: "VANMOTION · Single original",
     src: "/music/the-cool-ashtray.mp3",
-    coverUrl: null,
+    coverUrl: "/uploads/music-covers/the-cool-ashtray-1784373940751.png",
     format: "MP3",
     externalUrl:
       "https://open.spotify.com/album/39kirsfmk8K3LVNuOXfGFn",
@@ -115,7 +115,11 @@ export async function getPublicMusicTracks(): Promise<
         track.subtitle ??
         "VANMOTION · Música original",
       src: track.fileUrl,
-      coverUrl: track.coverUrl,
+      coverUrl:
+        track.coverUrl ??
+        (track.slug === "the-cool-ashtray"
+          ? "/uploads/music-covers/the-cool-ashtray-1784373940751.png"
+          : null),
       format: track.format,
       externalUrl: track.externalUrl,
     }));
