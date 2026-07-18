@@ -395,3 +395,41 @@
     transition: none;
   }
 }
+/* Reproductor compacto en la página de ropa */
+:global([data-music-player-mode="compact"])
+  .player:not(.expanded) {
+  width: 76px !important;
+  right: 12px !important;
+  bottom: 12px !important;
+  border-radius: 999px !important;
+}
+
+:global([data-music-player-mode="compact"])
+  .player:not(.expanded)
+  .mainRow {
+  display: grid !important;
+  grid-template-columns: 34px 30px !important;
+  gap: 4px !important;
+  min-height: 44px !important;
+  padding: 5px 4px !important;
+}
+
+:global([data-music-player-mode="compact"])
+  .player:not(.expanded)
+  .trackButton,
+:global([data-music-player-mode="compact"])
+  .player:not(.expanded)
+  .centerLogo {
+  display: none !important;
+}
+
+:global([data-music-player-mode="compact"])
+  .player:not(.expanded)
+  .controls
+  button:first-child,
+:global([data-music-player-mode="compact"])
+  .player:not(.expanded)
+  .controls
+  button:last-child {
+  display: none !important;
+}

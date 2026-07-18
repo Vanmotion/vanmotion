@@ -14,6 +14,10 @@ const HIDDEN_PATHS = [
   "/musica",
 ];
 
+const COMPACT_PATHS = [
+  "/ropa",
+];
+
 export default function RouteAwareMusicPlayer({
   children,
 }: RouteAwareMusicPlayerProps) {
@@ -29,5 +33,21 @@ export default function RouteAwareMusicPlayer({
     return null;
   }
 
-  return <>{children}</>;
+  const shouldUseCompactMode = COMPACT_PATHS.some(
+    (path) =>
+      pathname === path ||
+      pathname.startsWith(`${path}/`),
+  );
+
+  return (
+    <div
+      data-music-player-mode={
+        shouldUseCompactMode
+          ? "compact"
+          : "default"
+      }
+    >
+      {children}
+    </div>
+  );
 }
