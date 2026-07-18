@@ -1,6 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname:
+          "**.blob.vercel-storage.com",
+        pathname: "/**",
+      },
+    ],
+  },
+
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
@@ -11,7 +22,8 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
-          source: "/uploads/vehicles/:filename",
+          source:
+            "/uploads/vehicles/:filename",
           destination:
             "/api/vehicle-images/:filename",
         },
