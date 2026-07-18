@@ -25,7 +25,10 @@ export default async function DatabaseMusicPlayer({
         coverUrl:
           track.title === "Sueños Prestados"
             ? "/uploads/music-covers/suenos-prestados-1784376509559.png"
-            : track.coverUrl,
+            : track.title === "Solo En Mi Mente" ||
+                track.title === "Solo Con Mi Mente"
+              ? "/uploads/music-covers/solo-en-mi-mente-1784377787037.png"
+              : track.coverUrl,
         format: track.format,
       }))}
     />
