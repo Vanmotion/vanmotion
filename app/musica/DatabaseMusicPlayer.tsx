@@ -22,7 +22,10 @@ export default async function DatabaseMusicPlayer({
         title: track.title,
         subtitle: track.subtitle,
         src: track.src,
-        coverUrl: track.coverUrl,
+        coverUrl:
+          track.title === "Sueños Prestados"
+            ? "/uploads/music-covers/suenos-prestados-1784376509559.png"
+            : track.coverUrl,
         format: track.format,
       }))}
     />
