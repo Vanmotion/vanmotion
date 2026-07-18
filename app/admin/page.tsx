@@ -271,6 +271,26 @@ export default async function AdminDashboardPage() {
             </small>
             <b>Entrar →</b>
           </Link>
+
+          <Link href="/admin/music">
+            <span>05</span>
+            <strong>Música</strong>
+            <small>
+              Añadir y gestionar temas, portadas y
+              reproducción.
+            </small>
+            <b>Entrar →</b>
+          </Link>
+
+          <Link href="/admin/ropa">
+            <span>06</span>
+            <strong>Ropa</strong>
+            <small>
+              Gestionar productos, precios, tallas, stock
+              y visibilidad.
+            </small>
+            <b>Entrar →</b>
+          </Link>
         </div>
       </section>
 
