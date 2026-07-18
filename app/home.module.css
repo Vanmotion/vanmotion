@@ -102,7 +102,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  color: rgba(255, 255, 255, 0.42);
+  color: rgba(255, 255, 255, 0.60);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.25em;
@@ -112,7 +112,7 @@
 .eyebrow span {
   width: 48px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.60);
 }
 
 .heroTitle {
@@ -223,7 +223,7 @@
 
 .visualTop p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.62);
   font-size: 10px;
   letter-spacing: 0.25em;
   text-transform: uppercase;
@@ -280,7 +280,7 @@
 .heroStats span {
   display: block;
   margin-top: 7px;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.62);
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -324,11 +324,11 @@
 }
 
 .sectionLabel {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .darkLabel {
-  color: rgba(0, 0, 0, 0.42);
+  color: rgba(0, 0, 0, 0.68);
 }
 
 .sectionHeader h2,
@@ -342,7 +342,7 @@
 
 .sectionIntro,
 .normalText {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.62);
   font-size: 15px;
   line-height: 1.9;
 }
@@ -382,7 +382,7 @@
 }
 
 .areaNumber {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 11px;
 }
 
@@ -395,7 +395,7 @@
 .areaCard p {
   max-width: 360px;
   margin: 22px 0;
-  color: rgba(255, 255, 255, 0.42);
+  color: rgba(255, 255, 255, 0.60);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -538,7 +538,7 @@
 .studioTop {
   display: flex;
   justify-content: space-between;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.62);
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -622,7 +622,7 @@
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.45);
+  color: rgba(0, 0, 0, 0.68);
 }
 
 .lightClothingCard strong {
@@ -677,7 +677,7 @@
 }
 
 .valuesGrid span {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 10px;
 }
 
@@ -719,7 +719,7 @@
 
 .contactCopy p {
   margin: 0 0 28px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.62);
   font-size: 15px;
   line-height: 1.9;
 }
