@@ -28,6 +28,16 @@ function escapeHtml(value: string): string {
   );
 }
 
+function getErrorMessage(
+  value: unknown,
+): string {
+  if (value instanceof Error) {
+    return value.message;
+  }
+
+  return String(value);
+}
+
 export async function sendContactNotification(
   input: ContactNotificationInput,
 ): Promise<void> {
@@ -102,11 +112,10 @@ export async function sendContactNotification(
 
   const safePhone =
     escapeHtml(
-      input.phone || (
-        input.language === "es"
+      input.phone ||
+        (input.language === "es"
           ? "No indicado"
-          : "Not provided"
-      ),
+          : "Not provided"),
     );
 
   const safeMessage =
@@ -132,134 +141,6 @@ export async function sendContactNotification(
       ? "Vehículo"
       : "Asunto";
 
-  /*
-   * 1. Aviso privado para VANMOTION.
-   */
-  const {
-    error: notificationError,
-  } = await resend.emails.send({
-    from: fromEmail,
-
-    to: [
-      notificationEmail,
-    ],
-
-    replyTo: input.email,
-
-    subject:
-      `Nueva solicitud VANMOTION · ${reference}`,
-
-    html: `
-      <div
-        style="
-          background:#080808;
-          color:#ffffff;
-          padding:30px;
-          font-family:Arial,sans-serif;
-        "
-      >
-        <div
-          style="
-            max-width:620px;
-            margin:auto;
-            border:1px solid #333333;
-            padding:28px;
-          "
-        >
-          <p
-            style="
-              margin:0 0 20px;
-              font-size:11px;
-              letter-spacing:3px;
-              color:#888888;
-            "
-          >
-            VANMOTION · ${notificationType}
-          </p>
-
-          <h1
-            style="
-              margin:0 0 28px;
-              font-size:25px;
-            "
-          >
-            ${notificationTitle}
-          </h1>
-
-          <p>
-            <strong>${referenceLabel}:</strong><br>
-            ${safeReference}
-          </p>
-
-          <p>
-            <strong>Nombre:</strong><br>
-            ${safeName}
-          </p>
-
-          <p>
-            <strong>Correo:</strong><br>
-            ${safeEmail}
-          </p>
-
-          <p>
-            <strong>Teléfono:</strong><br>
-            ${safePhone}
-          </p>
-
-          <p>
-            <strong>Mensaje:</strong><br>
-            ${safeMessage}
-          </p>
-
-          <div
-            style="
-              margin-top:30px;
-              padding-top:22px;
-              border-top:1px solid #333333;
-            "
-          >
-            <a
-              href="mailto:${safeEmail}"
-              style="
-                display:inline-block;
-                background:#ffffff;
-                color:#000000;
-                padding:14px 20px;
-                text-decoration:none;
-                font-size:12px;
-                font-weight:bold;
-                letter-spacing:1px;
-              "
-            >
-              RESPONDER AL CLIENTE
-            </a>
-          </div>
-
-          <p
-            style="
-              margin-top:28px;
-              color:#777777;
-              font-size:12px;
-              line-height:18px;
-            "
-          >
-            La solicitud también está guardada
-            en el panel privado de VANMOTION.
-          </p>
-        </div>
-      </div>
-    `,
-  });
-
-  if (notificationError) {
-    throw new Error(
-      `No se pudo enviar el aviso a VANMOTION: ${notificationError.message}`,
-    );
-  }
-
-  /*
-   * 2. Confirmación automática para el cliente.
-   */
   const isSpanish =
     input.language === "es";
 
@@ -312,136 +193,296 @@ export async function sendContactNotification(
     ? "Este es un mensaje automático de confirmación. Puedes responder directamente a este correo."
     : "This is an automatic confirmation message. You can reply directly to this email.";
 
-  const {
-    error: confirmationError,
-  } = await resend.emails.send({
-    from: fromEmail,
+  /*
+   * Ambos correos se intentan de forma independiente.
+   *
+   * Si uno falla, el otro todavía puede enviarse.
+   * La solicitud ya está guardada en PostgreSQL antes
+   * de llegar a esta función.
+   */
+  const [
+    notificationResult,
+    confirmationResult,
+  ] = await Promise.allSettled([
+    resend.emails.send({
+      from: fromEmail,
 
-    to: [
-      input.email,
-    ],
+      to: [
+        notificationEmail,
+      ],
 
-    replyTo: notificationEmail,
+      replyTo: input.email,
 
-    subject: confirmationSubject,
+      subject:
+        `Nueva solicitud VANMOTION · ${reference}`,
 
-    html: `
-      <div
-        style="
-          background:#080808;
-          color:#ffffff;
-          padding:30px;
-          font-family:Arial,sans-serif;
-        "
-      >
+      html: `
         <div
           style="
-            max-width:620px;
-            margin:auto;
-            border:1px solid #333333;
+            background:#080808;
+            color:#ffffff;
             padding:30px;
+            font-family:Arial,sans-serif;
           "
         >
-          <p
-            style="
-              margin:0 0 22px;
-              font-size:11px;
-              letter-spacing:4px;
-              color:#888888;
-            "
-          >
-            VANMOTION · MADRID
-          </p>
-
-          <h1
-            style="
-              margin:0 0 24px;
-              font-size:28px;
-              line-height:34px;
-            "
-          >
-            ${confirmationTitle}
-          </h1>
-
-          <p
-            style="
-              margin:0 0 18px;
-              color:#ffffff;
-              line-height:26px;
-            "
-          >
-            ${confirmationGreeting}
-          </p>
-
-          <p
-            style="
-              margin:0;
-              color:#cccccc;
-              line-height:26px;
-            "
-          >
-            ${confirmationText}
-          </p>
-
           <div
             style="
-              margin-top:28px;
-              padding:20px;
+              max-width:620px;
+              margin:auto;
               border:1px solid #333333;
-              background:#111111;
+              padding:28px;
             "
           >
             <p
               style="
-                margin:0 0 10px;
+                margin:0 0 20px;
                 font-size:11px;
-                letter-spacing:2px;
-                color:#777777;
+                letter-spacing:3px;
+                color:#888888;
               "
             >
-              ${confirmationMessageLabel}
+              VANMOTION · ${notificationType}
+            </p>
+
+            <h1
+              style="
+                margin:0 0 28px;
+                font-size:25px;
+              "
+            >
+              ${notificationTitle}
+            </h1>
+
+            <p>
+              <strong>${referenceLabel}:</strong><br>
+              ${safeReference}
+            </p>
+
+            <p>
+              <strong>Nombre:</strong><br>
+              ${safeName}
+            </p>
+
+            <p>
+              <strong>Correo:</strong><br>
+              ${safeEmail}
+            </p>
+
+            <p>
+              <strong>Teléfono:</strong><br>
+              ${safePhone}
+            </p>
+
+            <p>
+              <strong>Mensaje:</strong><br>
+              ${safeMessage}
+            </p>
+
+            <div
+              style="
+                margin-top:30px;
+                padding-top:22px;
+                border-top:1px solid #333333;
+              "
+            >
+              <a
+                href="mailto:${safeEmail}"
+                style="
+                  display:inline-block;
+                  background:#ffffff;
+                  color:#000000;
+                  padding:14px 20px;
+                  text-decoration:none;
+                  font-size:12px;
+                  font-weight:bold;
+                  letter-spacing:1px;
+                "
+              >
+                RESPONDER AL CLIENTE
+              </a>
+            </div>
+
+            <p
+              style="
+                margin-top:28px;
+                color:#777777;
+                font-size:12px;
+                line-height:18px;
+              "
+            >
+              La solicitud también está guardada
+              en el panel privado de VANMOTION.
+            </p>
+          </div>
+        </div>
+      `,
+    }),
+
+    resend.emails.send({
+      from: fromEmail,
+
+      to: [
+        input.email,
+      ],
+
+      replyTo: notificationEmail,
+
+      subject: confirmationSubject,
+
+      html: `
+        <div
+          style="
+            background:#080808;
+            color:#ffffff;
+            padding:30px;
+            font-family:Arial,sans-serif;
+          "
+        >
+          <div
+            style="
+              max-width:620px;
+              margin:auto;
+              border:1px solid #333333;
+              padding:30px;
+            "
+          >
+            <p
+              style="
+                margin:0 0 22px;
+                font-size:11px;
+                letter-spacing:4px;
+                color:#888888;
+              "
+            >
+              VANMOTION · MADRID
+            </p>
+
+            <h1
+              style="
+                margin:0 0 24px;
+                font-size:28px;
+                line-height:34px;
+              "
+            >
+              ${confirmationTitle}
+            </h1>
+
+            <p
+              style="
+                margin:0 0 18px;
+                color:#ffffff;
+                line-height:26px;
+              "
+            >
+              ${confirmationGreeting}
             </p>
 
             <p
               style="
                 margin:0;
-                color:#ffffff;
-                line-height:24px;
+                color:#cccccc;
+                line-height:26px;
               "
             >
-              ${safeMessage}
+              ${confirmationText}
+            </p>
+
+            <div
+              style="
+                margin-top:28px;
+                padding:20px;
+                border:1px solid #333333;
+                background:#111111;
+              "
+            >
+              <p
+                style="
+                  margin:0 0 10px;
+                  font-size:11px;
+                  letter-spacing:2px;
+                  color:#777777;
+                "
+              >
+                ${confirmationMessageLabel}
+              </p>
+
+              <p
+                style="
+                  margin:0;
+                  color:#ffffff;
+                  line-height:24px;
+                "
+              >
+                ${safeMessage}
+              </p>
+            </div>
+
+            <p
+              style="
+                margin-top:28px;
+                color:#777777;
+                font-size:12px;
+                line-height:19px;
+              "
+            >
+              ${confirmationFooter}
+            </p>
+
+            <p
+              style="
+                margin-top:28px;
+                font-size:12px;
+                letter-spacing:2px;
+                color:#ffffff;
+              "
+            >
+              HUMILDAD · TRABAJO · MOVIMIENTO
             </p>
           </div>
-
-          <p
-            style="
-              margin-top:28px;
-              color:#777777;
-              font-size:12px;
-              line-height:19px;
-            "
-          >
-            ${confirmationFooter}
-          </p>
-
-          <p
-            style="
-              margin-top:28px;
-              font-size:12px;
-              letter-spacing:2px;
-              color:#ffffff;
-            "
-          >
-            HUMILDAD · TRABAJO · MOVIMIENTO
-          </p>
         </div>
-      </div>
-    `,
-  });
+      `,
+    }),
+  ]);
 
-  if (confirmationError) {
+  const errors: string[] = [];
+
+  if (
+    notificationResult.status ===
+    "rejected"
+  ) {
+    errors.push(
+      `Aviso a VANMOTION: ${getErrorMessage(
+        notificationResult.reason,
+      )}`,
+    );
+  } else if (
+    notificationResult.value.error
+  ) {
+    errors.push(
+      `Aviso a VANMOTION: ${notificationResult.value.error.message}`,
+    );
+  }
+
+  if (
+    confirmationResult.status ===
+    "rejected"
+  ) {
+    errors.push(
+      `Confirmación al cliente: ${getErrorMessage(
+        confirmationResult.reason,
+      )}`,
+    );
+  } else if (
+    confirmationResult.value.error
+  ) {
+    errors.push(
+      `Confirmación al cliente: ${confirmationResult.value.error.message}`,
+    );
+  }
+
+  if (errors.length > 0) {
     throw new Error(
-      `No se pudo enviar la confirmación al cliente: ${confirmationError.message}`,
+      errors.join(" | "),
     );
   }
 }

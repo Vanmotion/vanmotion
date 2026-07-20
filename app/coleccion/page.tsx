@@ -259,10 +259,6 @@ export default async function CollectionPage() {
     },
   });
 
-  const availableVehicleCount = vehicles.filter(
-    (vehicle) => vehicle.status === "AVAILABLE",
-  ).length;
-
   const navigation = [
     {
       label: content.navigation.home,
@@ -351,9 +347,9 @@ export default async function CollectionPage() {
           <div className="absolute bottom-[-300px] left-[-200px] h-[600px] w-[600px] rounded-full bg-white/[0.025] blur-[140px]" />
         </div>
 
-        <div className="relative mx-auto grid min-h-0 w-full max-w-[1600px] border-x border-white/10 lg:min-h-[500px] lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="flex flex-col justify-end border-b border-white/10 px-6 py-16 lg:border-b-0 lg:border-r lg:px-14 lg:py-20">
-            <div className="mb-9 flex items-center gap-4">
+        <div className="relative mx-auto grid min-h-0 w-full max-w-[1600px] border-x border-white/10 lg:min-h-[360px] lg:grid-cols-[1.35fr_0.65fr]">
+          <div className="flex flex-col justify-end border-b border-white/10 px-6 py-10 lg:border-b-0 lg:border-r lg:px-14 lg:py-12">
+            <div className="mb-6 flex items-center gap-4">
               <span className="h-px w-12 bg-white/30" />
 
               <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/40">
@@ -361,7 +357,7 @@ export default async function CollectionPage() {
               </p>
             </div>
 
-            <h1 className="max-w-5xl text-[clamp(58px,8vw,135px)] font-semibold uppercase leading-[0.8] tracking-[-0.07em]">
+            <h1 className="max-w-5xl text-[clamp(52px,6.6vw,104px)] font-semibold uppercase leading-[0.82] tracking-[-0.065em]">
               {content.hero.titleFirst}
               <br />
               <span className="text-white/20">
@@ -369,12 +365,12 @@ export default async function CollectionPage() {
               </span>
             </h1>
 
-            <p className="mt-10 max-w-2xl text-sm leading-7 text-white/45">
+            <p className="mt-6 max-w-xl text-sm leading-6 text-white/45">
               {content.hero.description}
             </p>
           </div>
 
-          <div className="flex min-h-0 flex-col justify-between bg-white/[0.015] p-5 sm:min-h-[240px] sm:p-6 lg:min-h-[300px] lg:p-14">
+          <div className="flex min-h-[180px] flex-col justify-between bg-white/[0.015] p-5 sm:min-h-[200px] sm:p-6 lg:min-h-0 lg:p-10">
             <div className="flex items-start justify-between gap-8">
               <p className="text-[9px] font-bold uppercase tracking-[0.23em] text-white/30">
                 {content.hero.inventory}
@@ -385,16 +381,16 @@ export default async function CollectionPage() {
               </span>
             </div>
 
-            <div className="mt-5 sm:mt-14 lg:mt-20">
-              <strong className="block text-[clamp(90px,13vw,190px)] font-semibold leading-[0.75] tracking-[-0.08em]">
-                {String(availableVehicleCount).padStart(
+            <div className="mt-8 sm:mt-10 lg:mt-0">
+              <strong className="block text-[clamp(74px,9vw,128px)] font-semibold leading-[0.78] tracking-[-0.075em]">
+                {String(vehicles.length).padStart(
                   2,
                   "0",
                 )}
               </strong>
 
-              <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.22em] text-white/40">
-                {content.hero.count(availableVehicleCount)}
+              <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
+                {content.hero.count(vehicles.length)}
               </p>
             </div>
           </div>
@@ -425,7 +421,13 @@ export default async function CollectionPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 xl:grid-cols-3">
+          <div
+            className={
+              vehicles.length === 1
+                ? "grid w-full grid-cols-1"
+                : "grid md:grid-cols-2 xl:grid-cols-3"
+            }
+          >
             {vehicles.map((vehicle, index) => {
               const vehicleName = [
                 vehicle.brand.name,
@@ -476,14 +478,28 @@ export default async function CollectionPage() {
               return (
                 <article
                   key={vehicle.id}
-                  className={`border-b border-white/10 ${rightBorder} md:[&:nth-child(odd)]:border-r md:[&:nth-child(3n)]:border-r-0 xl:[&:nth-child(odd)]:border-r-0`}
+                  className={
+                    vehicles.length === 1
+                      ? "border-b border-white/10"
+                      : `border-b border-white/10 ${rightBorder} md:[&:nth-child(odd)]:border-r md:[&:nth-child(3n)]:border-r-0 xl:[&:nth-child(odd)]:border-r-0`
+                  }
                 >
                   <Link
                     href={`/coleccion/${vehicle.id}`}
-                    className="group flex h-full flex-col"
+                    className={
+                      vehicles.length === 1
+                        ? "group grid h-full lg:grid-cols-[3fr_2fr]"
+                        : "group flex h-full flex-col"
+                    }
                     aria-label={`${content.card.viewDetails}: ${vehicleName}`}
                   >
-                    <div className="relative aspect-[16/10] overflow-hidden border-b border-white/10 bg-white/[0.025]">
+                    <div
+                      className={
+                        vehicles.length === 1
+                          ? "relative min-h-[320px] overflow-hidden border-b border-white/10 bg-white/[0.025] sm:min-h-[440px] lg:min-h-[560px] lg:border-b-0 lg:border-r"
+                          : "relative aspect-[16/10] overflow-hidden border-b border-white/10 bg-white/[0.025]"
+                      }
+                    >
                       {image ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -517,12 +533,24 @@ export default async function CollectionPage() {
                       )}
                     </div>
 
-                    <div className="flex flex-1 flex-col p-6 lg:p-8">
+                    <div
+                      className={
+                        vehicles.length === 1
+                          ? "flex flex-1 flex-col p-6 sm:p-10 lg:p-12"
+                          : "flex flex-1 flex-col p-6 lg:p-8"
+                      }
+                    >
                       <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-white/35">
                         {vehicle.brand.name}
                       </p>
 
-                      <h2 className="mt-4 text-3xl font-semibold uppercase leading-[0.95] tracking-[-0.04em]">
+                      <h2
+                        className={`mt-4 font-semibold uppercase leading-[0.95] tracking-[-0.04em] ${
+                          vehicles.length === 1
+                            ? "text-4xl lg:text-5xl"
+                            : "text-3xl"
+                        }`}
+                      >
                         {vehicle.model}
                       </h2>
 

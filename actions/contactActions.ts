@@ -1,12 +1,15 @@
 "use server";
 
+import { cookies, headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { sendContactNotification } from "@/app/lib/contact-email";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
+
+const SESSION_COOKIE_NAME =
+  "vanmotion_admin_session";
 
 const allowedStatuses = [
   "PENDING",
@@ -128,6 +131,33 @@ function isContactTopic(
 }
 
 /*
+ * Comprueba la sesión dentro de cada Server Action privada.
+ *
+ * El proxy protege la navegación hacia /admin, pero esta
+ * validación adicional evita que las acciones administrativas
+ * puedan ejecutarse directamente sin una sesión válida.
+ */
+async function requireAdminSession(): Promise<void> {
+  const expectedToken =
+    process.env.ADMIN_SESSION_TOKEN?.trim();
+
+  const cookieStore = await cookies();
+
+  const currentToken =
+    cookieStore.get(
+      SESSION_COOKIE_NAME,
+    )?.value;
+
+  if (
+    !expectedToken ||
+    !currentToken ||
+    currentToken !== expectedToken
+  ) {
+    redirect("/login-admin");
+  }
+}
+
+/*
  * Detecta desde qué panel se ha enviado el formulario.
  * Tras guardar o eliminar, fuerza una navegación nueva
  * para que el estado mostrado no vuelva al valor anterior.
@@ -141,13 +171,16 @@ async function getAdminContactPath(): Promise<AdminContactPath> {
   }
 
   try {
-    const pathname = new URL(referer).pathname;
+    const pathname =
+      new URL(referer).pathname;
 
     if (pathname === "/admin/contacts") {
       return "/admin/contacts";
     }
 
-    if (pathname === "/admin/contactos") {
+    if (
+      pathname === "/admin/contactos"
+    ) {
       return "/admin/contactos";
     }
   } catch {
@@ -203,11 +236,7 @@ export async function createContactRequest(
     3000,
   );
 
-  if (
-    !name ||
-    !email ||
-    !message
-  ) {
+  if (!name || !email || !message) {
     throw new Error(
       content.requiredFields,
     );
@@ -319,21 +348,23 @@ export async function createContactRequest(
  * - CONTACTED
  * - CLOSED
  *
- * Después redirige al panel para obligar a Next.js
- * a leer de nuevo el estado guardado en PostgreSQL.
+ * La acción comprueba primero que existe una sesión
+ * administrativa válida.
  */
 export async function updateContactStatus(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
+
   const language =
     await getCurrentLanguage();
 
   const errors =
     translations[language];
 
-  const contactId = getText(
-    formData,
-    "contactId",
+  const contactId = normaliseText(
+    getText(formData, "contactId"),
+    120,
   );
 
   const status = getText(
@@ -379,20 +410,23 @@ export async function updateContactStatus(
 
 /*
  * Elimina una solicitud del panel privado.
- * También fuerza la recarga del panel.
+ * La acción comprueba primero que existe una sesión
+ * administrativa válida.
  */
 export async function deleteContactRequest(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
+
   const language =
     await getCurrentLanguage();
 
   const errors =
     translations[language];
 
-  const contactId = getText(
-    formData,
-    "contactId",
+  const contactId = normaliseText(
+    getText(formData, "contactId"),
+    120,
   );
 
   if (!contactId) {

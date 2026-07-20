@@ -15,7 +15,9 @@ const HIDDEN_PATHS = [
 ];
 
 const COMPACT_PATHS = [
+  "/",
   "/ropa",
+  "/coleccion",
 ];
 
 export default function RouteAwareMusicPlayer({

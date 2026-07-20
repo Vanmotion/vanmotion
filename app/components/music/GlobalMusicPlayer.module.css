@@ -1,20 +1,33 @@
 .player {
   position: fixed;
   right: 18px;
-  bottom: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
   z-index: 90;
+
   width: min(390px, calc(100vw - 36px));
   overflow: hidden;
+
   border: 1px solid rgb(255 255 255 / 12%);
   border-radius: 16px;
+
   background: rgb(8 8 8 / 94%);
   box-shadow: 0 16px 44px rgb(0 0 0 / 48%);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  box-sizing: border-box;
+  pointer-events: auto;
+
   transition:
     width 220ms ease,
     border-color 220ms ease,
     box-shadow 220ms ease,
     opacity 180ms ease;
+}
+
+.player,
+.player * {
+  box-sizing: border-box;
 }
 
 .player:hover {
@@ -24,6 +37,9 @@
 
 .expanded {
   width: min(420px, calc(100vw - 36px));
+  max-height: calc(
+    100dvh - 36px - env(safe-area-inset-bottom)
+  );
 }
 
 .mainRow {
@@ -35,15 +51,18 @@
     32px;
   align-items: center;
   gap: 7px;
+
   min-height: 58px;
   padding: 6px 7px 6px 11px;
 }
 
 .trackButton {
   min-width: 0;
+
   border: 0;
   background: transparent;
   color: white;
+
   cursor: pointer;
   text-align: left;
 }
@@ -55,13 +74,17 @@
 
 .trackText small {
   display: block;
+
   margin-bottom: 3px;
   overflow: hidden;
+
   color: rgb(255 255 255 / 43%);
+
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.22em;
   line-height: 1;
+
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -70,10 +93,13 @@
 .trackText strong {
   display: block;
   overflow: hidden;
+
   color: white;
+
   font-size: 12px;
   font-weight: 700;
   line-height: 1.2;
+
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -82,11 +108,15 @@
   display: flex;
   width: 54px;
   height: 42px;
+
   align-items: center;
   justify-content: center;
+
   border-right: 1px solid rgb(255 255 255 / 8%);
   border-left: 1px solid rgb(255 255 255 / 8%);
+
   opacity: 0.82;
+
   transition:
     opacity 180ms ease,
     transform 180ms ease;
@@ -99,8 +129,10 @@
 
 .centerLogo img {
   display: block;
+
   width: 44px;
   max-height: 34px;
+
   object-fit: contain;
 }
 
@@ -115,15 +147,20 @@
   display: inline-flex;
   width: 28px;
   height: 28px;
+
   align-items: center;
   justify-content: center;
+
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 50%;
+
   background: transparent;
   color: rgb(255 255 255 / 78%);
+
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
+
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -139,12 +176,23 @@
   transform: translateY(-1px);
 }
 
+.controls button:focus-visible,
+.expandButton:focus-visible,
+.trackButton:focus-visible,
+.trackList button:focus-visible,
+.centerLogo:focus-visible {
+  outline: 1px solid white;
+  outline-offset: 2px;
+}
+
 .controls .playButton {
   width: 34px;
   height: 34px;
+
   border-color: white;
   background: white;
   color: black;
+
   font-size: 12px;
 }
 
@@ -156,11 +204,14 @@
 .expandButton {
   width: 30px;
   height: 30px;
+
   border-radius: 8px;
   font-size: 18px;
 }
 
 .expandedContent {
+  overflow-y: auto;
+
   border-top: 1px solid rgb(255 255 255 / 9%);
   padding: 10px 12px 12px;
 }
@@ -186,11 +237,13 @@
   grid-template-columns: 30px 1fr;
   align-items: center;
   gap: 8px;
+
   margin-top: 9px;
 }
 
 .volume span {
   color: rgb(255 255 255 / 45%);
+
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -199,6 +252,7 @@
 .trackList {
   display: grid;
   gap: 3px;
+
   max-height: 220px;
   margin-top: 10px;
   overflow-y: auto;
@@ -209,14 +263,19 @@
   grid-template-columns: 24px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
+
   width: 100%;
   padding: 8px;
+
   border: 1px solid transparent;
   border-radius: 9px;
+
   background: transparent;
   color: rgb(255 255 255 / 58%);
+
   cursor: pointer;
   text-align: left;
+
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -243,6 +302,7 @@
 .trackList small {
   display: block;
   overflow: hidden;
+
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -254,6 +314,7 @@
 
 .trackList small {
   margin-top: 2px;
+
   color: rgb(255 255 255 / 38%);
   font-size: 9px;
 }
@@ -266,6 +327,7 @@
 
 .error {
   margin: 9px 0 0;
+
   color: rgb(255 190 190);
   font-size: 10px;
   line-height: 1.4;
@@ -277,6 +339,7 @@
     right: 8px;
     bottom: calc(8px + env(safe-area-inset-bottom));
     left: auto;
+
     border-radius: 999px;
   }
 
@@ -288,6 +351,7 @@
     display: grid;
     grid-template-columns: 34px 30px;
     gap: 4px;
+
     min-height: 44px;
     padding: 5px 4px;
   }
@@ -314,6 +378,7 @@
   .player:not(.expanded) .expandButton {
     width: 28px;
     height: 28px;
+
     border-radius: 50%;
   }
 
@@ -321,9 +386,13 @@
     right: 8px;
     bottom: calc(8px + env(safe-area-inset-bottom));
     left: 8px;
+
     width: auto;
-    max-height: calc(100dvh - 16px - env(safe-area-inset-bottom));
+    max-height: calc(
+      100dvh - 16px - env(safe-area-inset-bottom)
+    );
     overflow-y: auto;
+
     border-radius: 14px;
   }
 
@@ -334,6 +403,7 @@
       auto
       30px;
     gap: 5px;
+
     min-height: 54px;
     padding: 5px 6px 5px 9px;
   }
@@ -364,7 +434,9 @@
   }
 
   .expandedContent {
-    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    padding-bottom: calc(
+      12px + env(safe-area-inset-bottom)
+    );
   }
 }
 
@@ -387,20 +459,15 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .player,
-  .centerLogo,
-  .controls button,
-  .expandButton {
-    transition: none;
-  }
-}
-/* Reproductor compacto en la página de ropa */
+/* Reproductor compacto en Inicio, Ropa y Colección. */
 :global([data-music-player-mode="compact"])
   .player:not(.expanded) {
-  width: 76px !important;
   right: 12px !important;
-  bottom: 12px !important;
+  bottom: calc(
+    12px + env(safe-area-inset-bottom)
+  ) !important;
+
+  width: 76px !important;
   border-radius: 999px !important;
 }
 
@@ -410,6 +477,7 @@
   display: grid !important;
   grid-template-columns: 34px 30px !important;
   gap: 4px !important;
+
   min-height: 44px !important;
   padding: 5px 4px !important;
 }
@@ -425,6 +493,12 @@
 
 :global([data-music-player-mode="compact"])
   .player:not(.expanded)
+  .controls {
+  justify-content: center;
+}
+
+:global([data-music-player-mode="compact"])
+  .player:not(.expanded)
   .controls
   button:first-child,
 :global([data-music-player-mode="compact"])
@@ -432,4 +506,30 @@
   .controls
   button:last-child {
   display: none !important;
+}
+
+/*
+  Escritorio:
+  el reproductor compacto se mantiene pegado al borde.
+  Antes estaba a 96 px y se metía dentro del contenido
+  de las fichas de vehículos.
+*/
+@media (min-width: 641px) {
+  :global([data-music-player-mode="compact"])
+    .player:not(.expanded) {
+    right: 18px !important;
+    bottom: calc(
+      18px + env(safe-area-inset-bottom)
+    ) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player,
+  .centerLogo,
+  .controls button,
+  .expandButton,
+  .trackList button {
+    transition: none;
+  }
 }

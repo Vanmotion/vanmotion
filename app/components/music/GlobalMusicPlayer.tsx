@@ -104,6 +104,10 @@ export default function GlobalMusicPlayer({
     pathname.startsWith("/login-admin");
 
   useEffect(() => {
+    setExpanded(false);
+  }, [pathname]);
+
+  useEffect(() => {
     const savedTrack = window.localStorage.getItem(
       "vanmotion-global-track",
     );

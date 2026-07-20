@@ -487,7 +487,7 @@ export default async function PublicVehiclePage({
         content.information.fallback;
 
   return (
-    <main className="min-h-screen bg-black pb-36 text-white">
+    <main className="min-h-screen bg-black pb-32 text-white sm:pb-36">
       <header className="border-b border-white/10 px-6 py-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link
@@ -552,7 +552,7 @@ export default async function PublicVehiclePage({
             </div>
           )}
 
-          <section className="mt-10 grid gap-10 lg:grid-cols-[1.4fr_0.8fr]">
+          <section className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)] xl:grid-cols-[minmax(0,1.45fr)_minmax(380px,0.75fr)] xl:gap-12">
             <div>
               <div
                 className="mb-4 rounded-2xl border border-amber-300/25 bg-amber-300/10 px-4 py-3 text-sm leading-6 text-amber-100"
@@ -705,7 +705,7 @@ export default async function PublicVehiclePage({
               ) : (
                 <form
                   action={createContactRequest}
-                  className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6"
+                  className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_50px_rgba(0,0,0,0.28)] sm:p-8"
                 >
                   <input
                     type="hidden"
@@ -781,17 +781,14 @@ export default async function PublicVehiclePage({
                         placeholder={
                           messagePlaceholder
                         }
-                        className="w-full resize-y rounded-xl border border-white/10 bg-black p-4 text-white"
+                        className="w-full resize-y rounded-xl border border-white/10 bg-black p-4 text-white transition placeholder:text-white/25 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10"
                       />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="mt-5 w-full rounded-xl bg-white px-6 py-4 font-bold transition hover:opacity-80"
-                    style={{
-                      color: "#000000",
-                    }}
+                    className="mt-5 w-full rounded-xl bg-white px-6 py-4 font-bold text-black transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
                     {content.contact.submit}
                   </button>
@@ -809,7 +806,7 @@ export default async function PublicVehiclePage({
               {content.information.title}
             </h2>
 
-            <p className="mt-6 whitespace-pre-line text-lg leading-8 text-white/60">
+            <p className="mt-6 max-w-5xl whitespace-pre-line text-base leading-8 text-white/75 sm:text-lg">
               {vehicleDescription}
             </p>
           </section>
@@ -867,7 +864,7 @@ function ContactField({
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-white/10 bg-black p-4 text-white"
+        className="w-full rounded-xl border border-white/10 bg-black p-4 text-white transition placeholder:text-white/25 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10"
       />
     </div>
   );
