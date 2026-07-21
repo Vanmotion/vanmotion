@@ -24,6 +24,13 @@ type ProductPurchasePanelProps = {
   variants: readonly ProductVariant[];
 };
 
+type CheckoutResponse = {
+  url?: string;
+  error?: string;
+};
+
+const MAX_CHECKOUT_QUANTITY = 5;
+
 const translations = {
   es: {
     statuses: {
@@ -33,24 +40,36 @@ const translations = {
       SOLD_OUT: "Agotado",
       HIDDEN: "No disponible",
     },
+
     priceLabel: "Precio",
     sizeLabel: "Selecciona tu talla",
     quantityLabel: "Cantidad",
     availableStock: "disponible",
     availableStockPlural: "disponibles",
     noStock: "sin stock",
+
+    checkout: "Comprar ahora",
+    redirecting: "Abriendo pago seguro...",
     reserve: "Solicitar reserva",
     availability: "Solicitar disponibilidad",
     soldOut: "Producto agotado",
     unavailable: "No disponible actualmente",
+
+    checkoutError:
+      "No se ha podido abrir el pago. Inténtalo de nuevo.",
+
     noteAvailable:
-      "Todavía no se realiza ningún cobro. VANMOTION confirmará personalmente la reserva antes de activar el pago seguro.",
+      "El pago se realizará de forma segura mediante Stripe. Podrás revisar el pedido antes de confirmarlo.",
+
     noteComingSoon:
       "La venta está en preparación. Puedes indicar tu talla y cantidad para consultar las primeras unidades.",
+
     noteSoldOut:
       "No quedan unidades disponibles en este momento.",
+
     noteUnavailable:
       "Este producto todavía no está disponible para solicitudes.",
+
     decrease: "Reducir cantidad",
     increase: "Aumentar cantidad",
   },
@@ -63,24 +82,36 @@ const translations = {
       SOLD_OUT: "Sold out",
       HIDDEN: "Unavailable",
     },
+
     priceLabel: "Price",
     sizeLabel: "Choose your size",
     quantityLabel: "Quantity",
     availableStock: "available",
     availableStockPlural: "available",
     noStock: "out of stock",
+
+    checkout: "Buy now",
+    redirecting: "Opening secure checkout...",
     reserve: "Request reservation",
     availability: "Ask about availability",
     soldOut: "Product sold out",
     unavailable: "Currently unavailable",
+
+    checkoutError:
+      "Checkout could not be opened. Please try again.",
+
     noteAvailable:
-      "No payment is taken yet. VANMOTION will personally confirm the reservation before secure payment is activated.",
+      "Payment will be processed securely through Stripe. You can review your order before confirming it.",
+
     noteComingSoon:
       "The sale is being prepared. Choose your size and quantity to ask about the first units.",
+
     noteSoldOut:
       "There are no units available at this time.",
+
     noteUnavailable:
       "This product is not currently available for requests.",
+
     decrease: "Decrease quantity",
     increase: "Increase quantity",
   },
@@ -117,6 +148,7 @@ export default function ProductPurchasePanel({
   variants,
 }: ProductPurchasePanelProps) {
   const content = translations[language];
+
   const normalizedStatus =
     normalizeStatus(status);
 
@@ -149,6 +181,16 @@ export default function ProductPurchasePanel({
   const [quantity, setQuantity] =
     useState(1);
 
+  const [
+    checkoutPending,
+    setCheckoutPending,
+  ] = useState(false);
+
+  const [
+    checkoutError,
+    setCheckoutError,
+  ] = useState("");
+
   useEffect(() => {
     const currentVariant =
       activeVariants.find(
@@ -166,12 +208,17 @@ export default function ProductPurchasePanel({
     setSelectedSize(
       firstAvailableVariant?.size ?? "",
     );
+
     setQuantity(1);
   }, [
     activeVariants,
     firstAvailableVariant,
     selectedSize,
   ]);
+
+  useEffect(() => {
+    setCheckoutError("");
+  }, [selectedSize, quantity]);
 
   const selectedVariant =
     activeVariants.find(
@@ -201,7 +248,10 @@ export default function ProductPurchasePanel({
 
   const maximumQuantity =
     hasAvailableStock
-      ? selectedStock
+      ? Math.min(
+          selectedStock,
+          MAX_CHECKOUT_QUANTITY,
+        )
       : 1;
 
   const formattedPrice = useMemo(
@@ -249,7 +299,9 @@ export default function ProductPurchasePanel({
 
   const buttonText = isAvailable
     ? hasAvailableStock
-      ? content.reserve
+      ? checkoutPending
+        ? content.redirecting
+        : content.checkout
       : content.soldOut
     : isComingSoon
       ? hasAvailableStock
@@ -291,12 +343,72 @@ export default function ProductPurchasePanel({
     );
   }
 
+  async function startCheckout() {
+    if (
+      !isAvailable ||
+      !canRequest ||
+      checkoutPending
+    ) {
+      return;
+    }
+
+    setCheckoutPending(true);
+    setCheckoutError("");
+
+    try {
+      const response = await fetch(
+        "/api/stripe/checkout",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            productSlug,
+            size: selectedSize,
+            quantity,
+          }),
+        },
+      );
+
+      let data: CheckoutResponse = {};
+
+      try {
+        data =
+          (await response.json()) as CheckoutResponse;
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok || !data.url) {
+        throw new Error(
+          data.error ??
+            content.checkoutError,
+        );
+      }
+
+      window.location.assign(data.url);
+    } catch (error) {
+      setCheckoutError(
+        error instanceof Error
+          ? error.message
+          : content.checkoutError,
+      );
+
+      setCheckoutPending(false);
+    }
+  }
+
   return (
     <div className={styles.purchasePanel}>
       <div
         className={`${styles.purchaseStatus} ${statusClass}`}
       >
         <span aria-hidden="true" />
+
         {
           content.statuses[
             normalizedStatus
@@ -306,6 +418,7 @@ export default function ProductPurchasePanel({
 
       <div className={styles.priceRow}>
         <span>{content.priceLabel}</span>
+
         <strong>{formattedPrice}</strong>
       </div>
 
@@ -394,6 +507,7 @@ export default function ProductPurchasePanel({
             onClick={decreaseQuantity}
             disabled={
               !canRequest ||
+              checkoutPending ||
               quantity <= 1
             }
             aria-label={
@@ -410,8 +524,8 @@ export default function ProductPurchasePanel({
             onClick={increaseQuantity}
             disabled={
               !canRequest ||
-              quantity >=
-                maximumQuantity
+              checkoutPending ||
+              quantity >= maximumQuantity
             }
             aria-label={
               content.increase
@@ -422,7 +536,23 @@ export default function ProductPurchasePanel({
         </div>
       </div>
 
-      {canRequest ? (
+      {isAvailable && canRequest ? (
+        <button
+          type="button"
+          onClick={startCheckout}
+          disabled={checkoutPending}
+          className={styles.purchaseButton}
+          aria-busy={checkoutPending}
+        >
+          {buttonText}
+
+          <span>
+            {checkoutPending
+              ? "…"
+              : "→"}
+          </span>
+        </button>
+      ) : isComingSoon && canRequest ? (
         <a
           href={contactHref}
           className={
@@ -430,6 +560,7 @@ export default function ProductPurchasePanel({
           }
         >
           {buttonText}
+
           <span>→</span>
         </a>
       ) : (
@@ -438,9 +569,19 @@ export default function ProductPurchasePanel({
           aria-disabled="true"
         >
           {buttonText}
+
           <span>—</span>
         </span>
       )}
+
+      {checkoutError ? (
+        <p
+          className={styles.purchaseNote}
+          role="alert"
+        >
+          {checkoutError}
+        </p>
+      ) : null}
 
       <p
         className={styles.purchaseNote}

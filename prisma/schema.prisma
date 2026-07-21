@@ -41,7 +41,6 @@ model Vehicle {
   featured Boolean @default(false)
   status   String  @default("AVAILABLE")
 
-  // La descripción existente se conserva como español.
   description   String?
   descriptionEn String?
 
@@ -69,12 +68,9 @@ model VehicleImage {
 model ContactRequest {
   id String @id @default(cuid())
 
-  // Opcional para permitir consultas generales.
-  // SetNull conserva el contacto si se elimina el vehículo.
   vehicleId String?
   vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
 
-  // Asunto de las consultas generales.
   subject String?
 
   name  String
@@ -90,39 +86,52 @@ model ContactRequest {
 }
 
 model SiteSettings {
-  id           String   @id
-  businessName String   @default("VANMOTION")
-  email        String?
-  phone        String?
-  whatsapp     String?
-  address      String?
-  city         String?
-  postalCode   String?
-  instagram    String?
-  youtube      String?
-  tiktok       String?
+  id           String @id
+  businessName String @default("VANMOTION")
+
+  email    String?
+  phone    String?
+  whatsapp String?
+
+  address    String?
+  city       String?
+  postalCode String?
+
+  instagram String?
+  youtube   String?
+  tiktok    String?
+
   openingHours String?
-  updatedAt    DateTime @updatedAt
+
+  updatedAt DateTime @updatedAt
 }
 
 model MusicTrack {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
-  subtitle    String?
-  fileUrl     String
-  coverUrl    String?
+  id String @id @default(cuid())
+
+  slug String @unique
+
+  title    String
+  subtitle String?
+
+  fileUrl  String
+  coverUrl String?
+
   externalUrl String?
-  format      String   @default("MP3")
-  duration    String?
-  active      Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  format   String @default("MP3")
+  duration String?
+
+  active    Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 /**
  * Catálogo de productos VANMOTION.
+ *
  * Estados recomendados:
  * - DRAFT
  * - COMING_SOON
@@ -135,11 +144,12 @@ model Product {
 
   slug String @unique
 
-  name        String
-  subtitle    String?
-  collection  String?
-  category    String  @default("CLOTHING")
-  productType String  @default("TSHIRT")
+  name       String
+  subtitle   String?
+  collection String?
+
+  category    String @default("CLOTHING")
+  productType String @default("TSHIRT")
 
   description   String?
   descriptionEn String?
@@ -169,8 +179,12 @@ model Product {
 
 /**
  * Stock independiente por talla.
+ *
  * Para la primera camiseta:
- * S, M, L y XL.
+ * - S
+ * - M
+ * - L
+ * - XL
  */
 model ProductVariant {
   id String @id @default(cuid())
@@ -196,6 +210,7 @@ model ProductVariant {
 
 /**
  * Galería del producto.
+ *
  * view puede contener:
  * - FRONT
  * - BACK
@@ -218,4 +233,60 @@ model ProductImage {
 
   @@index([productId])
   @@index([sortOrder])
+}
+
+/**
+ * Pedido confirmado mediante Stripe Checkout.
+ */
+model Order {
+  id String @id @default(cuid())
+
+  stripeCheckoutSessionId String  @unique
+  stripePaymentIntentId   String? @unique
+  stripeCustomerId        String?
+
+  paymentStatus     String
+  fulfillmentStatus String @default("PENDING")
+
+  amountTotal Int
+  currency    String @default("eur")
+
+  customerEmail String?
+  customerName  String?
+  customerPhone String?
+
+  shippingName       String?
+  shippingLine1      String?
+  shippingLine2      String?
+  shippingPostalCode String?
+  shippingCity       String?
+  shippingState      String?
+  shippingCountry    String?
+
+  /**
+   * Información del transporte.
+   * Son opcionales para conservar los pedidos anteriores.
+   */
+  shippingCarrier String?
+  trackingNumber  String?
+  trackingUrl     String?
+  shippedAt       DateTime?
+
+  productId   String
+  productSlug String
+  productName String
+
+  variantId String
+  sku       String?
+  size      String
+  quantity  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([paymentStatus])
+  @@index([fulfillmentStatus])
+  @@index([customerEmail])
+  @@index([trackingNumber])
+  @@index([createdAt])
 }

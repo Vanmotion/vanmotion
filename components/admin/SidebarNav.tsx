@@ -127,6 +127,22 @@ const navigationItems: NavigationItem[] = [
     ),
   },
   {
+    label: "Pedidos",
+    description: "Compras y envíos",
+    href: "/admin/pedidos",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path d="M5 4h14v16H5z" />
+        <path d="M8 8h8" />
+        <path d="M8 12h8" />
+        <path d="M8 16h5" />
+      </svg>
+    ),
+  },
+  {
     label: "Configuración",
     description: "Datos y redes sociales",
     href: "/admin/settings",
@@ -173,45 +189,70 @@ export default function SidebarNav() {
       className={styles.navigation}
       aria-label="Navegación del administrador"
     >
-      {navigationItems.map((item, index) => {
-        const active = isActiveRoute(
-          pathname,
-          item.href,
-        );
+      {navigationItems.map(
+        (item, index) => {
+          const active = isActiveRoute(
+            pathname,
+            item.href,
+          );
 
-        return (
-          <Link
-            href={item.href}
-            key={item.href}
-            className={`${styles.navItem} ${
-              active ? styles.active : ""
-            }`}
-            aria-current={
-              active ? "page" : undefined
-            }
-          >
-            <span className={styles.navNumber}>
-              {String(index + 1).padStart(
-                2,
-                "0",
-              )}
-            </span>
+          return (
+            <Link
+              href={item.href}
+              key={item.href}
+              className={`${styles.navItem} ${
+                active ? styles.active : ""
+              }`}
+              aria-current={
+                active
+                  ? "page"
+                  : undefined
+              }
+            >
+              <span
+                className={
+                  styles.navNumber
+                }
+              >
+                {String(index + 1).padStart(
+                  2,
+                  "0",
+                )}
+              </span>
 
-            <span className={styles.navIcon}>
-              {item.icon}
-            </span>
+              <span
+                className={
+                  styles.navIcon
+                }
+              >
+                {item.icon}
+              </span>
 
-            <span className={styles.navText}>
-              <strong>{item.label}</strong>
-              <small>{item.description}</small>
-            </span>
+              <span
+                className={
+                  styles.navText
+                }
+              >
+                <strong>
+                  {item.label}
+                </strong>
 
-            <span className={styles.navArrow}>
-              →
-            </span>
-          </Link>
-        );
-      })}
+                <small>
+                  {item.description}
+                </small>
+              </span>
+
+              <span
+                className={
+                  styles.navArrow
+                }
+              >
+                →
+              </span>
+            </Link>
+          );
+        },
+      )}
     </nav>
   );
 }
