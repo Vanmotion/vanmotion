@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const SESSION_COOKIE_NAME = "vanmotion_admin_session";
-const OPENING_DATE = new Date("2026-09-01T00:00:00+02:00");
+const SESSION_COOKIE_NAME =
+  "vanmotion_admin_session";
 
-function hasValidAdminSession(request: NextRequest) {
-  const expectedToken = process.env.ADMIN_SESSION_TOKEN;
+const OPENING_DATE = new Date(
+  "2026-09-01T00:00:00+02:00",
+);
+
+function hasValidAdminSession(
+  request: NextRequest,
+) {
+  const expectedToken =
+    process.env.ADMIN_SESSION_TOKEN;
+
   const currentToken = request.cookies.get(
     SESSION_COOKIE_NAME,
   )?.value;
@@ -18,7 +26,9 @@ function hasValidAdminSession(request: NextRequest) {
 
 function isPublicSiteOpen() {
   const manualSetting =
-    process.env.PUBLIC_SITE_ENABLED?.trim().toLowerCase();
+    process.env.PUBLIC_SITE_ENABLED
+      ?.trim()
+      .toLowerCase();
 
   if (manualSetting === "true") {
     return true;
@@ -31,15 +41,45 @@ function isPublicSiteOpen() {
   return Date.now() >= OPENING_DATE.getTime();
 }
 
-function isPrelaunchRoute(pathname: string) {
+function isPrelaunchRoute(
+  pathname: string,
+) {
   return (
     pathname === "/proximamente" ||
     pathname.startsWith("/login-admin")
   );
 }
 
-export function proxy(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+/*
+ * Stripe no tiene sesión de administrador.
+ * El webhook debe llegar directamente a su
+ * Route Handler y allí se valida su firma.
+ */
+function isStripeWebhookRoute(
+  pathname: string,
+) {
+  return (
+    pathname === "/api/stripe/webhook" ||
+    pathname.startsWith(
+      "/api/stripe/webhook/",
+    )
+  );
+}
+
+export function proxy(
+  request: NextRequest,
+) {
+  const pathname =
+    request.nextUrl.pathname;
+
+  /*
+   * Esta comprobación debe ir antes de cualquier
+   * redirección de administración o preapertura.
+   */
+  if (isStripeWebhookRoute(pathname)) {
+    return NextResponse.next();
+  }
+
   const adminSessionIsValid =
     hasValidAdminSession(request);
 
@@ -47,7 +87,8 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/admin") &&
     !adminSessionIsValid
   ) {
-    const loginUrl = request.nextUrl.clone();
+    const loginUrl =
+      request.nextUrl.clone();
 
     loginUrl.pathname = "/login-admin";
     loginUrl.search = "";
@@ -63,12 +104,17 @@ export function proxy(request: NextRequest) {
     !isPublicSiteOpen() &&
     !isPrelaunchRoute(pathname)
   ) {
-    const comingSoonUrl = request.nextUrl.clone();
+    const comingSoonUrl =
+      request.nextUrl.clone();
 
-    comingSoonUrl.pathname = "/proximamente";
+    comingSoonUrl.pathname =
+      "/proximamente";
+
     comingSoonUrl.search = "";
 
-    return NextResponse.redirect(comingSoonUrl);
+    return NextResponse.redirect(
+      comingSoonUrl,
+    );
   }
 
   return NextResponse.next();
