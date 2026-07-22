@@ -3,7 +3,6 @@
 import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
 import {
-  useEffect,
   useRef,
   useState,
 } from "react";
@@ -24,9 +23,7 @@ type DirectVehicleImageUploadProps = {
   existingImageCount: number;
 };
 
-type UploadActionResponse = {
-  added?: number;
-  imageCount?: number;
+type RegisterImageResponse = {
   error?: string;
 };
 
@@ -56,12 +53,12 @@ function formatMegabytes(
   ).toFixed(2)} MB`;
 }
 
-async function readActionResponse(
+async function readJsonResponse(
   response: Response,
-): Promise<UploadActionResponse> {
+): Promise<RegisterImageResponse> {
   try {
     return (await response.json()) as
-      UploadActionResponse;
+      RegisterImageResponse;
   } catch {
     return {};
   }
@@ -76,13 +73,7 @@ export default function DirectVehicleImageUpload({
   const inputRef =
     useRef<HTMLInputElement>(null);
 
-  const hasTriedInitialSync =
-    useRef(false);
-
   const [isUploading, setIsUploading] =
-    useState(false);
-
-  const [isSyncing, setIsSyncing] =
     useState(false);
 
   const [progress, setProgress] =
@@ -107,104 +98,6 @@ export default function DirectVehicleImageUpload({
       inputRef.current.value = "";
     }
   }
-
-  async function syncStoredImages({
-    silent = false,
-  }: {
-    silent?: boolean;
-  } = {}) {
-    if (isSyncing) {
-      return;
-    }
-
-    setIsSyncing(true);
-
-    if (!silent) {
-      setError(null);
-      setMessage(
-        "Comprobando fotografías ya subidas...",
-      );
-    }
-
-    try {
-      const response = await fetch(
-        "/api/vehicle-images/upload",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            action: "sync",
-            vehicleId,
-          }),
-        },
-      );
-
-      const result =
-        await readActionResponse(response);
-
-      if (!response.ok) {
-        throw new Error(
-          result.error ??
-            "No se pudieron comprobar las fotografías.",
-        );
-      }
-
-      const added = result.added ?? 0;
-
-      if (added > 0) {
-        setMessage(
-          `${added} ${
-            added === 1
-              ? "fotografía recuperada"
-              : "fotografías recuperadas"
-          }. Actualizando la galería...`,
-        );
-
-        router.refresh();
-
-        window.setTimeout(() => {
-          window.location.reload();
-        }, 700);
-      } else if (!silent) {
-        setMessage(
-          "La galería ya está actualizada.",
-        );
-      }
-    } catch (syncError) {
-      if (!silent) {
-        setError(
-          syncError instanceof Error
-            ? syncError.message
-            : "No se pudieron comprobar las fotografías.",
-        );
-
-        setMessage(null);
-      }
-    } finally {
-      setIsSyncing(false);
-    }
-  }
-
-  useEffect(() => {
-    if (
-      hasTriedInitialSync.current ||
-      existingImageCount >= MAX_IMAGES
-    ) {
-      return;
-    }
-
-    hasTriedInitialSync.current = true;
-
-    void syncStoredImages({
-      silent: true,
-    });
-    // La sincronización inicial debe ejecutarse
-    // una sola vez al abrir esta pantalla.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [existingImageCount, vehicleId]);
 
   function validateFiles(
     files: File[],
@@ -250,7 +143,7 @@ export default function DirectVehicleImageUpload({
     return null;
   }
 
-  async function registerUploadedBlob({
+  async function registerUploadedImage({
     url,
     pathname,
   }: {
@@ -275,12 +168,12 @@ export default function DirectVehicleImageUpload({
     );
 
     const result =
-      await readActionResponse(response);
+      await readJsonResponse(response);
 
     if (!response.ok) {
       throw new Error(
         result.error ??
-          "La fotografía se subió, pero no pudo guardarse en la galería.",
+          "La fotografía se subió, pero no pudo añadirse a la galería.",
       );
     }
   }
@@ -288,7 +181,7 @@ export default function DirectVehicleImageUpload({
   async function uploadFiles(
     files: File[],
   ) {
-    if (isUploading || isSyncing) {
+    if (isUploading) {
       return;
     }
 
@@ -361,7 +254,7 @@ export default function DirectVehicleImageUpload({
           },
         );
 
-        await registerUploadedBlob({
+        await registerUploadedImage({
           url: blob.url,
           pathname: blob.pathname,
         });
@@ -374,7 +267,7 @@ export default function DirectVehicleImageUpload({
           files.length === 1
             ? "fotografía guardada"
             : "fotografías guardadas"
-        }. Abriendo la galería...`,
+        }. Actualizando la galería...`,
       );
 
       clearInput();
@@ -382,7 +275,7 @@ export default function DirectVehicleImageUpload({
 
       window.setTimeout(() => {
         window.location.reload();
-      }, 700);
+      }, 800);
     } catch (uploadError) {
       setError(
         uploadError instanceof Error
@@ -392,15 +285,7 @@ export default function DirectVehicleImageUpload({
 
       setMessage(null);
       setCurrentFile(null);
-
-      /*
-       * Si el archivo llegó a Blob pero falló su registro,
-       * este intento recupera automáticamente las imágenes
-       * pendientes sin obligar al usuario a seleccionarlas otra vez.
-       */
-      await syncStoredImages({
-        silent: true,
-      });
+      clearInput();
     } finally {
       setIsUploading(false);
     }
@@ -420,36 +305,31 @@ export default function DirectVehicleImageUpload({
     void uploadFiles(files);
   }
 
-  const isBusy =
-    isUploading || isSyncing;
-
   return (
     <div>
       <label
         htmlFor="direct-vehicle-images"
         className={`flex min-h-44 flex-col items-center justify-center border border-dashed px-6 text-center transition ${
           availableSlots > 0 &&
-          !isBusy
+          !isUploading
             ? "cursor-pointer border-white/20 bg-black/25 hover:border-white/40 hover:bg-white/[0.03]"
             : "cursor-not-allowed border-white/10 bg-black/15 opacity-55"
         }`}
       >
         <span className="text-3xl">
-          {isBusy ? "…" : "＋"}
+          {isUploading ? "…" : "＋"}
         </span>
 
         <strong className="mt-4 text-sm">
           {isUploading
             ? "Subiendo fotografías"
-            : isSyncing
-              ? "Actualizando galería"
-              : availableSlots > 0
-                ? "Seleccionar y subir fotografías"
-                : "Máximo de fotografías alcanzado"}
+            : availableSlots > 0
+              ? "Seleccionar y subir fotografías"
+              : "Máximo de fotografías alcanzado"}
         </strong>
 
         <small className="mt-2 max-w-lg text-xs leading-6 text-white/35">
-          {isBusy
+          {isUploading
             ? "No cierres esta página hasta que aparezcan las miniaturas."
             : `Selecciona hasta ${availableSlots} ${
                 availableSlots === 1
@@ -466,7 +346,7 @@ export default function DirectVehicleImageUpload({
           accept="image/jpeg,image/png,image/webp,image/avif"
           disabled={
             availableSlots === 0 ||
-            isBusy
+            isUploading
           }
           onChange={handleSelection}
           className="sr-only"
@@ -505,20 +385,9 @@ export default function DirectVehicleImageUpload({
       )}
 
       {error && (
-        <div className="mt-4 border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-red-200">
-          <p>{error}</p>
-
-          <button
-            type="button"
-            onClick={() =>
-              void syncStoredImages()
-            }
-            disabled={isBusy}
-            className="mt-3 border border-red-300/25 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-red-300/10 disabled:cursor-wait disabled:opacity-50"
-          >
-            Recuperar fotografías subidas
-          </button>
-        </div>
+        <p className="mt-4 border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-red-200">
+          {error}
+        </p>
       )}
     </div>
   );
