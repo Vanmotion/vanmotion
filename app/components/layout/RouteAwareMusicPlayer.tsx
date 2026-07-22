@@ -12,6 +12,10 @@ const HIDDEN_PATHS = [
   "/login-admin",
   "/proximamente",
   "/musica",
+  "/aviso-legal",
+  "/privacidad",
+  "/cookies",
+  "/condiciones-compra",
 ];
 
 const COMPACT_PATHS = [
@@ -20,6 +24,16 @@ const COMPACT_PATHS = [
   "/coleccion",
 ];
 
+function matchesPath(
+  pathname: string,
+  path: string,
+) {
+  return (
+    pathname === path ||
+    pathname.startsWith(`${path}/`)
+  );
+}
+
 export default function RouteAwareMusicPlayer({
   children,
 }: RouteAwareMusicPlayerProps) {
@@ -27,19 +41,18 @@ export default function RouteAwareMusicPlayer({
 
   const shouldHide = HIDDEN_PATHS.some(
     (path) =>
-      pathname === path ||
-      pathname.startsWith(`${path}/`),
+      matchesPath(pathname, path),
   );
 
   if (shouldHide) {
     return null;
   }
 
-  const shouldUseCompactMode = COMPACT_PATHS.some(
-    (path) =>
-      pathname === path ||
-      pathname.startsWith(`${path}/`),
-  );
+  const shouldUseCompactMode =
+    COMPACT_PATHS.some(
+      (path) =>
+        matchesPath(pathname, path),
+    );
 
   return (
     <div

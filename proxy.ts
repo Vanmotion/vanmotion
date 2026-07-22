@@ -8,6 +8,15 @@ const OPENING_DATE = new Date(
   "2026-09-01T00:00:00+02:00",
 );
 
+const PRELAUNCH_PUBLIC_ROUTES = [
+  "/proximamente",
+  "/login-admin",
+  "/aviso-legal",
+  "/privacidad",
+  "/cookies",
+  "/condiciones-compra",
+] as const;
+
 function hasValidAdminSession(
   request: NextRequest,
 ) {
@@ -41,12 +50,22 @@ function isPublicSiteOpen() {
   return Date.now() >= OPENING_DATE.getTime();
 }
 
-function isPrelaunchRoute(
+function matchesRoute(
   pathname: string,
+  route: string,
 ) {
   return (
-    pathname === "/proximamente" ||
-    pathname.startsWith("/login-admin")
+    pathname === route ||
+    pathname.startsWith(`${route}/`)
+  );
+}
+
+function isPrelaunchPublicRoute(
+  pathname: string,
+) {
+  return PRELAUNCH_PUBLIC_ROUTES.some(
+    (route) =>
+      matchesRoute(pathname, route),
   );
 }
 
@@ -58,11 +77,9 @@ function isPrelaunchRoute(
 function isStripeWebhookRoute(
   pathname: string,
 ) {
-  return (
-    pathname === "/api/stripe/webhook" ||
-    pathname.startsWith(
-      "/api/stripe/webhook/",
-    )
+  return matchesRoute(
+    pathname,
+    "/api/stripe/webhook",
   );
 }
 
@@ -102,7 +119,7 @@ export function proxy(
 
   if (
     !isPublicSiteOpen() &&
-    !isPrelaunchRoute(pathname)
+    !isPrelaunchPublicRoute(pathname)
   ) {
     const comingSoonUrl =
       request.nextUrl.clone();
