@@ -96,9 +96,15 @@
 .hero {
   padding: clamp(58px, 9vh, 112px) 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(270px, 390px);
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(270px, 390px);
   align-items: end;
   gap: clamp(50px, 8vw, 120px);
+}
+
+.hero > * {
+  min-width: 0;
 }
 
 .eyebrow {
@@ -109,6 +115,9 @@
 }
 
 .title {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin: 25px 0 0;
   display: grid;
   font-size: clamp(58px, 8.6vw, 142px);
@@ -117,19 +126,28 @@
   letter-spacing: -0.065em;
 }
 
+.title span {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .title span:last-child {
   color: rgba(255, 255, 255, 0.28);
 }
 
 .introduction {
   max-width: 730px;
+  min-width: 0;
   margin: 38px 0 0;
   color: rgba(255, 255, 255, 0.56);
   font-size: clamp(15px, 1.4vw, 19px);
   line-height: 1.8;
+  overflow-wrap: break-word;
 }
 
 .openingCard {
+  min-width: 0;
   padding: clamp(26px, 3vw, 38px);
   border: 1px solid rgba(255, 255, 255, 0.17);
   background: rgba(255, 255, 255, 0.025);
@@ -184,11 +202,12 @@
 
 @media (max-width: 850px) {
   .hero {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
   }
 
   .openingCard {
+    width: 100%;
     max-width: 520px;
   }
 }
@@ -211,17 +230,27 @@
   }
 
   .hero {
+    width: 100%;
     padding: 54px 0;
     gap: 42px;
   }
 
   .title {
-    font-size: clamp(52px, 18vw, 80px);
-    line-height: 0.88;
+    font-size: clamp(38px, 11.8vw, 54px);
+    line-height: 0.9;
+    letter-spacing: -0.055em;
   }
 
   .introduction {
+    width: 100%;
+    max-width: 100%;
     margin-top: 28px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .openingCard {
+    width: 100%;
   }
 
   .footer {
