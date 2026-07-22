@@ -3,6 +3,7 @@
 import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
 import {
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -21,6 +22,12 @@ const ALLOWED_IMAGE_TYPES = new Set([
 type DirectVehicleImageUploadProps = {
   vehicleId: string;
   existingImageCount: number;
+};
+
+type UploadActionResponse = {
+  added?: number;
+  imageCount?: number;
+  error?: string;
 };
 
 function safeFileName(
@@ -49,6 +56,17 @@ function formatMegabytes(
   ).toFixed(2)} MB`;
 }
 
+async function readActionResponse(
+  response: Response,
+): Promise<UploadActionResponse> {
+  try {
+    return (await response.json()) as
+      UploadActionResponse;
+  } catch {
+    return {};
+  }
+}
+
 export default function DirectVehicleImageUpload({
   vehicleId,
   existingImageCount,
@@ -58,14 +76,20 @@ export default function DirectVehicleImageUpload({
   const inputRef =
     useRef<HTMLInputElement>(null);
 
-  const [selectedFiles, setSelectedFiles] =
-    useState<File[]>([]);
+  const hasTriedInitialSync =
+    useRef(false);
 
   const [isUploading, setIsUploading] =
     useState(false);
 
+  const [isSyncing, setIsSyncing] =
+    useState(false);
+
   const [progress, setProgress] =
     useState(0);
+
+  const [currentFile, setCurrentFile] =
+    useState<string | null>(null);
 
   const [message, setMessage] =
     useState<string | null>(null);
@@ -78,49 +102,127 @@ export default function DirectVehicleImageUpload({
     MAX_IMAGES - existingImageCount,
   );
 
-  function clearSelection() {
-    setSelectedFiles([]);
-    setProgress(0);
-
+  function clearInput() {
     if (inputRef.current) {
       inputRef.current.value = "";
     }
   }
 
-  function handleSelection(
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) {
-    setMessage(null);
-    setError(null);
-    setProgress(0);
-
-    const files = Array.from(
-      event.target.files ?? [],
-    );
-
-    if (files.length === 0) {
-      setSelectedFiles([]);
+  async function syncStoredImages({
+    silent = false,
+  }: {
+    silent?: boolean;
+  } = {}) {
+    if (isSyncing) {
       return;
+    }
+
+    setIsSyncing(true);
+
+    if (!silent) {
+      setError(null);
+      setMessage(
+        "Comprobando fotografías ya subidas...",
+      );
+    }
+
+    try {
+      const response = await fetch(
+        "/api/vehicle-images/upload",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            action: "sync",
+            vehicleId,
+          }),
+        },
+      );
+
+      const result =
+        await readActionResponse(response);
+
+      if (!response.ok) {
+        throw new Error(
+          result.error ??
+            "No se pudieron comprobar las fotografías.",
+        );
+      }
+
+      const added = result.added ?? 0;
+
+      if (added > 0) {
+        setMessage(
+          `${added} ${
+            added === 1
+              ? "fotografía recuperada"
+              : "fotografías recuperadas"
+          }. Actualizando la galería...`,
+        );
+
+        router.refresh();
+
+        window.setTimeout(() => {
+          window.location.reload();
+        }, 700);
+      } else if (!silent) {
+        setMessage(
+          "La galería ya está actualizada.",
+        );
+      }
+    } catch (syncError) {
+      if (!silent) {
+        setError(
+          syncError instanceof Error
+            ? syncError.message
+            : "No se pudieron comprobar las fotografías.",
+        );
+
+        setMessage(null);
+      }
+    } finally {
+      setIsSyncing(false);
+    }
+  }
+
+  useEffect(() => {
+    if (
+      hasTriedInitialSync.current ||
+      existingImageCount >= MAX_IMAGES
+    ) {
+      return;
+    }
+
+    hasTriedInitialSync.current = true;
+
+    void syncStoredImages({
+      silent: true,
+    });
+    // La sincronización inicial debe ejecutarse
+    // una sola vez al abrir esta pantalla.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [existingImageCount, vehicleId]);
+
+  function validateFiles(
+    files: File[],
+  ): string | null {
+    if (files.length === 0) {
+      return "No se ha seleccionado ninguna fotografía.";
     }
 
     if (availableSlots === 0) {
-      setError(
-        "Este vehículo ya tiene el máximo de 8 fotografías.",
-      );
-      clearSelection();
-      return;
+      return "Este vehículo ya tiene el máximo de 8 fotografías.";
     }
 
     if (files.length > availableSlots) {
-      setError(
-        `Puedes añadir ${availableSlots} ${
-          availableSlots === 1
-            ? "fotografía"
-            : "fotografías"
-        } más.`,
-      );
-      clearSelection();
-      return;
+      return `Puedes añadir ${availableSlots} ${
+        availableSlots === 1
+          ? "fotografía"
+          : "fotografías"
+      } más.`;
     }
 
     const invalidType = files.find(
@@ -131,11 +233,7 @@ export default function DirectVehicleImageUpload({
     );
 
     if (invalidType) {
-      setError(
-        `“${invalidType.name}” no está en formato JPG, PNG, WebP o AVIF.`,
-      );
-      clearSelection();
-      return;
+      return `“${invalidType.name}” no está en formato JPG, PNG, WebP o AVIF.`;
     }
 
     const oversizedFile = files.find(
@@ -144,54 +242,89 @@ export default function DirectVehicleImageUpload({
     );
 
     if (oversizedFile) {
-      setError(
-        `“${oversizedFile.name}” ocupa ${formatMegabytes(
-          oversizedFile.size,
-        )}. Cada imagen puede ocupar como máximo 8 MB.`,
+      return `“${oversizedFile.name}” ocupa ${formatMegabytes(
+        oversizedFile.size,
+      )}. Cada imagen puede ocupar como máximo 8 MB.`;
+    }
+
+    return null;
+  }
+
+  async function registerUploadedBlob({
+    url,
+    pathname,
+  }: {
+    url: string;
+    pathname: string;
+  }) {
+    const response = await fetch(
+      "/api/vehicle-images/upload",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          action: "register",
+          vehicleId,
+          url,
+          pathname,
+        }),
+      },
+    );
+
+    const result =
+      await readActionResponse(response);
+
+    if (!response.ok) {
+      throw new Error(
+        result.error ??
+          "La fotografía se subió, pero no pudo guardarse en la galería.",
       );
-      clearSelection();
+    }
+  }
+
+  async function uploadFiles(
+    files: File[],
+  ) {
+    if (isUploading || isSyncing) {
       return;
     }
 
-    setSelectedFiles(files);
-  }
+    const validationError =
+      validateFiles(files);
 
-  async function uploadSelectedFiles() {
-    if (
-      selectedFiles.length === 0 ||
-      isUploading
-    ) {
+    if (validationError) {
+      setError(validationError);
+      setMessage(null);
+      clearInput();
       return;
     }
 
     setIsUploading(true);
     setError(null);
     setMessage(
-      "Preparando la subida directa...",
+      "Subiendo fotografías automáticamente...",
     );
     setProgress(0);
 
     try {
       for (
         let index = 0;
-        index < selectedFiles.length;
+        index < files.length;
         index += 1
       ) {
-        const file =
-          selectedFiles[index];
+        const file = files[index];
+
+        setCurrentFile(file.name);
 
         const pathname =
           `vehicles/${vehicleId}/` +
           `${Date.now()}-${index + 1}-` +
           safeFileName(file.name);
 
-        setMessage(
-          `Subiendo ${index + 1} de ${
-            selectedFiles.length
-          }: ${file.name}`,
-        );
-
-        await upload(
+        const blob = await upload(
           pathname,
           file,
           {
@@ -210,13 +343,12 @@ export default function DirectVehicleImageUpload({
               percentage,
             }) => {
               const completed =
-                index /
-                selectedFiles.length;
+                index / files.length;
 
               const current =
                 percentage /
                 100 /
-                selectedFiles.length;
+                files.length;
 
               setProgress(
                 Math.round(
@@ -228,40 +360,68 @@ export default function DirectVehicleImageUpload({
             },
           },
         );
+
+        await registerUploadedBlob({
+          url: blob.url,
+          pathname: blob.pathname,
+        });
       }
 
       setProgress(100);
+      setCurrentFile(null);
       setMessage(
-        `${
-          selectedFiles.length
-        } ${
-          selectedFiles.length === 1
-            ? "fotografía subida"
-            : "fotografías subidas"
-        }. Actualizando la galería...`,
+        `${files.length} ${
+          files.length === 1
+            ? "fotografía guardada"
+            : "fotografías guardadas"
+        }. Abriendo la galería...`,
       );
 
-      clearSelection();
+      clearInput();
+      router.refresh();
 
       window.setTimeout(() => {
-        router.refresh();
-      }, 1800);
-
-      window.setTimeout(() => {
-        router.refresh();
-      }, 4500);
+        window.location.reload();
+      }, 700);
     } catch (uploadError) {
-      const uploadMessage =
+      setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "No se pudieron subir las fotografías.";
+          : "No se pudieron subir las fotografías.",
+      );
 
-      setError(uploadMessage);
       setMessage(null);
+      setCurrentFile(null);
+
+      /*
+       * Si el archivo llegó a Blob pero falló su registro,
+       * este intento recupera automáticamente las imágenes
+       * pendientes sin obligar al usuario a seleccionarlas otra vez.
+       */
+      await syncStoredImages({
+        silent: true,
+      });
     } finally {
       setIsUploading(false);
     }
   }
+
+  function handleSelection(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    setMessage(null);
+    setError(null);
+    setProgress(0);
+
+    const files = Array.from(
+      event.target.files ?? [],
+    );
+
+    void uploadFiles(files);
+  }
+
+  const isBusy =
+    isUploading || isSyncing;
 
   return (
     <div>
@@ -269,29 +429,33 @@ export default function DirectVehicleImageUpload({
         htmlFor="direct-vehicle-images"
         className={`flex min-h-44 flex-col items-center justify-center border border-dashed px-6 text-center transition ${
           availableSlots > 0 &&
-          !isUploading
+          !isBusy
             ? "cursor-pointer border-white/20 bg-black/25 hover:border-white/40 hover:bg-white/[0.03]"
             : "cursor-not-allowed border-white/10 bg-black/15 opacity-55"
         }`}
       >
         <span className="text-3xl">
-          ＋
+          {isBusy ? "…" : "＋"}
         </span>
 
         <strong className="mt-4 text-sm">
-          {availableSlots > 0
-            ? "Seleccionar fotografías"
-            : "Máximo de fotografías alcanzado"}
+          {isUploading
+            ? "Subiendo fotografías"
+            : isSyncing
+              ? "Actualizando galería"
+              : availableSlots > 0
+                ? "Seleccionar y subir fotografías"
+                : "Máximo de fotografías alcanzado"}
         </strong>
 
         <small className="mt-2 max-w-lg text-xs leading-6 text-white/35">
-          Puedes seleccionar hasta{" "}
-          {availableSlots}{" "}
-          {availableSlots === 1
-            ? "imagen más"
-            : "imágenes más"}
-          . JPG, PNG, WebP o AVIF, con
-          un máximo de 8 MB por archivo.
+          {isBusy
+            ? "No cierres esta página hasta que aparezcan las miniaturas."
+            : `Selecciona hasta ${availableSlots} ${
+                availableSlots === 1
+                  ? "imagen"
+                  : "imágenes"
+              }. La subida comienza automáticamente. JPG, PNG, WebP o AVIF; máximo 8 MB por archivo.`}
         </small>
 
         <input
@@ -302,89 +466,25 @@ export default function DirectVehicleImageUpload({
           accept="image/jpeg,image/png,image/webp,image/avif"
           disabled={
             availableSlots === 0 ||
-            isUploading
+            isBusy
           }
           onChange={handleSelection}
           className="sr-only"
         />
       </label>
 
-      {selectedFiles.length > 0 && (
+      {isUploading && (
         <div className="mt-5 border border-white/10 bg-black/30 p-4">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-sm font-semibold">
-                {selectedFiles.length}{" "}
-                {selectedFiles.length === 1
-                  ? "fotografía seleccionada"
-                  : "fotografías seleccionadas"}
-              </p>
-
-              <p className="mt-1 text-xs text-white/35">
-                Peso total:{" "}
-                {formatMegabytes(
-                  selectedFiles.reduce(
-                    (total, file) =>
-                      total +
-                      file.size,
-                    0,
-                  ),
-                )}
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                disabled={isUploading}
-                onClick={clearSelection}
-                className="min-h-11 border border-white/15 px-5 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Cancelar selección
-              </button>
-
-              <button
-                type="button"
-                disabled={isUploading}
-                onClick={
-                  uploadSelectedFiles
-                }
-                className="min-h-11 bg-white px-5 text-xs font-bold uppercase tracking-[0.12em] text-black transition hover:bg-white/85 disabled:cursor-wait disabled:opacity-60"
-              >
-                {isUploading
-                  ? "Subiendo..."
-                  : "Subir fotografías"}
-              </button>
-            </div>
-          </div>
-
-          <ul className="mt-4 grid gap-2 text-xs text-white/45 sm:grid-cols-2">
-            {selectedFiles.map(
-              (file) => (
-                <li
-                  key={`${file.name}-${file.size}-${file.lastModified}`}
-                  className="truncate border border-white/10 px-3 py-2"
-                >
-                  {file.name} ·{" "}
-                  {formatMegabytes(
-                    file.size,
-                  )}
-                </li>
-              ),
-            )}
-          </ul>
-        </div>
-      )}
-
-      {(isUploading ||
-        progress > 0) && (
-        <div className="mt-5">
-          <div className="mb-2 flex items-center justify-between text-xs text-white/45">
-            <span>
-              Progreso de subida
+          <div className="mb-3 flex items-center justify-between gap-4 text-xs text-white/45">
+            <span className="truncate">
+              {currentFile
+                ? `Subiendo: ${currentFile}`
+                : "Preparando fotografías..."}
             </span>
 
-            <span>{progress}%</span>
+            <strong className="text-white">
+              {progress}%
+            </strong>
           </div>
 
           <div className="h-2 overflow-hidden bg-white/10">
@@ -405,9 +505,20 @@ export default function DirectVehicleImageUpload({
       )}
 
       {error && (
-        <p className="mt-4 border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-red-200">
-          {error}
-        </p>
+        <div className="mt-4 border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-red-200">
+          <p>{error}</p>
+
+          <button
+            type="button"
+            onClick={() =>
+              void syncStoredImages()
+            }
+            disabled={isBusy}
+            className="mt-3 border border-red-300/25 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-red-300/10 disabled:cursor-wait disabled:opacity-50"
+          >
+            Recuperar fotografías subidas
+          </button>
+        </div>
       )}
     </div>
   );
