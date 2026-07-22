@@ -69,7 +69,9 @@ const translations = {
         "Cuéntanos con claridad en qué podemos ayudarte.",
       submit: "Enviar mensaje",
       privacy:
-        "Tus datos se utilizarán únicamente para responder a esta consulta.",
+        "Responsable: VANMOTION. Finalidad: responder y gestionar tu solicitud. Legitimación: medidas precontractuales o interés legítimo, según la consulta.",
+      privacyLink:
+        "Más información y derechos en la Política de Privacidad.",
       topics: [
         {
           value: "GENERAL",
@@ -187,7 +189,9 @@ const translations = {
         "Tell us clearly how we can help.",
       submit: "Send message",
       privacy:
-        "Your details will only be used to answer this enquiry.",
+        "Controller: VANMOTION. Purpose: to respond to and manage your request. Legal basis: pre-contractual steps or legitimate interests, depending on the enquiry.",
+      privacyLink:
+        "Further information and rights in the Privacy Policy.",
       topics: [
         {
           value: "GENERAL",
@@ -715,7 +719,11 @@ export default async function ContactoPage({
 
               <div className={styles.formFooter}>
                 <p>
-                  {content.form.privacy}
+                  {content.form.privacy}{" "}
+
+                  <Link href="/privacidad">
+                    {content.form.privacyLink}
+                  </Link>
                 </p>
 
                 <button type="submit">

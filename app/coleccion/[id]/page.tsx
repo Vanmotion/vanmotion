@@ -198,6 +198,10 @@ const translations = {
       messagePlaceholder:
         "Estoy interesado en el",
       submit: "Enviar solicitud",
+      privacy:
+        "Responsable: VANMOTION. Utilizaremos tus datos para responder y gestionar esta solicitud.",
+      privacyLink:
+        "Consulta la Política de Privacidad.",
     },
 
     emblem: {
@@ -266,6 +270,10 @@ const translations = {
       messagePlaceholder:
         "I am interested in the",
       submit: "Send enquiry",
+      privacy:
+        "Controller: VANMOTION. We will use your details to respond to and manage this request.",
+      privacyLink:
+        "Read the Privacy Policy.",
     },
 
     emblem: {
@@ -785,6 +793,17 @@ export default async function PublicVehiclePage({
                       />
                     </div>
                   </div>
+
+                  <p className="mt-5 text-xs leading-6 text-white/40">
+                    {content.contact.privacy}{" "}
+
+                    <Link
+                      href="/privacidad"
+                      className="text-white/70 underline underline-offset-4 transition hover:text-white"
+                    >
+                      {content.contact.privacyLink}
+                    </Link>
+                  </p>
 
                   <button
                     type="submit"
