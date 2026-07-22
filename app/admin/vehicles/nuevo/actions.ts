@@ -1,30 +1,9 @@
 "use server";
 
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
-
-const MAX_IMAGES = 8;
-const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
-
-const ALLOWED_IMAGE_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/avif",
-]);
-
-const ALLOWED_IMAGE_EXTENSIONS = new Set([
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".webp",
-  ".avif",
-]);
 
 const ALLOWED_STATUSES = new Set([
   "AVAILABLE",
@@ -74,21 +53,16 @@ function requiredInt(
   formData: FormData,
   field: string,
 ): number {
-  const value = requiredString(formData, field);
-
-  const normalized = value.replace(
-    /[^\d-]/g,
-    "",
+  const value = requiredString(
+    formData,
+    field,
   );
 
-  const parsed = Number.parseInt(
-    normalized,
-    10,
-  );
+  const parsed = Number(value);
 
   if (!Number.isInteger(parsed)) {
     throw new Error(
-      `El campo “${field}” debe ser un número válido.`,
+      `El campo “${field}” debe ser un número entero válido.`,
     );
   }
 
@@ -99,28 +73,24 @@ function optionalInt(
   formData: FormData,
   field: string,
 ): number | null {
-  const value = formData.get(field);
-
-  if (typeof value !== "string") {
-    return null;
-  }
-
-  const normalized = value
-    .trim()
-    .replace(/[^\d-]/g, "");
-
-  if (!normalized) {
-    return null;
-  }
-
-  const parsed = Number.parseInt(
-    normalized,
-    10,
+  const value = optionalString(
+    formData,
+    field,
   );
 
-  return Number.isNaN(parsed)
-    ? null
-    : parsed;
+  if (value === null) {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  if (!Number.isInteger(parsed)) {
+    throw new Error(
+      `El campo “${field}” debe ser un número entero válido.`,
+    );
+  }
+
+  return parsed;
 }
 
 function requiredPrice(
@@ -191,160 +161,6 @@ function vehicleStatus(
   }
 
   return status;
-}
-
-function safeFileName(
-  fileName: string,
-): string {
-  return fileName
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9._-]/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function getImageFiles(
-  formData: FormData,
-): File[] {
-  const possibleFields = [
-    "images",
-    "imageFiles",
-    "photos",
-  ];
-
-  const files: File[] = [];
-
-  for (const field of possibleFields) {
-    const values = formData.getAll(field);
-
-    for (const value of values) {
-      if (
-        value instanceof File &&
-        value.size > 0
-      ) {
-        files.push(value);
-      }
-    }
-  }
-
-  return Array.from(
-    new Set(files),
-  ).slice(0, MAX_IMAGES);
-}
-
-function validateImageFile(file: File) {
-  const extension = path
-    .extname(file.name)
-    .toLowerCase();
-
-  const validMime =
-    ALLOWED_IMAGE_TYPES.has(file.type);
-
-  const validExtension =
-    ALLOWED_IMAGE_EXTENSIONS.has(extension);
-
-  if (!validMime && !validExtension) {
-    throw new Error(
-      `El archivo “${file.name}” no tiene un formato permitido.`,
-    );
-  }
-
-  if (file.size > MAX_IMAGE_SIZE) {
-    throw new Error(
-      `La imagen “${file.name}” supera los 8 MB.`,
-    );
-  }
-}
-
-async function saveVehicleImages({
-  vehicleId,
-  files,
-  alt,
-}: {
-  vehicleId: string;
-  files: File[];
-  alt: string;
-}) {
-  if (files.length === 0) {
-    return;
-  }
-
-  const uploadDirectory = path.join(
-    process.cwd(),
-    "public",
-    "uploads",
-    "vehicles",
-  );
-
-  await mkdir(uploadDirectory, {
-    recursive: true,
-  });
-
-  const currentMaximum =
-    await prisma.vehicleImage.aggregate({
-      where: {
-        vehicleId,
-      },
-      _max: {
-        sortOrder: true,
-      },
-    });
-
-  const firstSortOrder =
-    (currentMaximum._max.sortOrder ?? -1) +
-    1;
-
-  const imageRecords: Array<{
-    vehicleId: string;
-    url: string;
-    alt: string;
-    sortOrder: number;
-  }> = [];
-
-  for (
-    let index = 0;
-    index < files.length;
-    index += 1
-  ) {
-    const file = files[index];
-
-    validateImageFile(file);
-
-    const originalExtension = path
-      .extname(file.name)
-      .toLowerCase();
-
-    const extension =
-      originalExtension || ".jpg";
-
-    const fileName = safeFileName(
-      `${vehicleId}-${Date.now()}-${index}${extension}`,
-    );
-
-    const destination = path.join(
-      uploadDirectory,
-      fileName,
-    );
-
-    const buffer = Buffer.from(
-      await file.arrayBuffer(),
-    );
-
-    await writeFile(destination, buffer);
-
-    imageRecords.push({
-      vehicleId,
-      url: `/uploads/vehicles/${fileName}`,
-      alt,
-      sortOrder: firstSortOrder + index,
-    });
-  }
-
-  await prisma.vehicleImage.createMany({
-    data: imageRecords,
-  });
 }
 
 export async function createVehicle(
@@ -450,6 +266,9 @@ export async function createVehicle(
     where: {
       id: brandId,
     },
+    select: {
+      id: true,
+    },
   });
 
   if (!brand) {
@@ -476,15 +295,9 @@ export async function createVehicle(
       featured,
       status,
     },
-  });
-
-  const imageFiles =
-    getImageFiles(formData);
-
-  await saveVehicleImages({
-    vehicleId: vehicle.id,
-    files: imageFiles,
-    alt: `${brand.name} ${model}`,
+    select: {
+      id: true,
+    },
   });
 
   revalidatePath("/admin");
@@ -492,6 +305,10 @@ export async function createVehicle(
   revalidatePath("/coleccion");
   revalidatePath("/");
 
+  /*
+   * Las fotografías se suben después desde la pantalla de edición,
+   * que utiliza la carga directa a Vercel Blob.
+   */
   redirect(
     `/admin/vehicles/${vehicle.id}/edit`,
   );
