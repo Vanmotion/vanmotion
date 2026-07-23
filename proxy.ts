@@ -19,21 +19,28 @@ const PRELAUNCH_PUBLIC_ROUTES = [
 
 function hasValidAdminSession(
   request: NextRequest,
-) {
+): boolean {
+  /*
+   * Normalizamos el token de Vercel para que
+   * coincida con el guardado por authActions.ts
+   * y con las Server Actions administrativas.
+   */
   const expectedToken =
-    process.env.ADMIN_SESSION_TOKEN;
+    process.env.ADMIN_SESSION_TOKEN?.trim();
 
-  const currentToken = request.cookies.get(
-    SESSION_COOKIE_NAME,
-  )?.value;
+  const currentToken =
+    request.cookies.get(
+      SESSION_COOKIE_NAME,
+    )?.value;
 
   return Boolean(
     expectedToken &&
+      currentToken &&
       currentToken === expectedToken,
   );
 }
 
-function isPublicSiteOpen() {
+function isPublicSiteOpen(): boolean {
   const manualSetting =
     process.env.PUBLIC_SITE_ENABLED
       ?.trim()
@@ -47,36 +54,44 @@ function isPublicSiteOpen() {
     return false;
   }
 
-  return Date.now() >= OPENING_DATE.getTime();
+  return (
+    Date.now() >=
+    OPENING_DATE.getTime()
+  );
 }
 
 function matchesRoute(
   pathname: string,
   route: string,
-) {
+): boolean {
   return (
     pathname === route ||
-    pathname.startsWith(`${route}/`)
+    pathname.startsWith(
+      `${route}/`,
+    )
   );
 }
 
 function isPrelaunchPublicRoute(
   pathname: string,
-) {
+): boolean {
   return PRELAUNCH_PUBLIC_ROUTES.some(
     (route) =>
-      matchesRoute(pathname, route),
+      matchesRoute(
+        pathname,
+        route,
+      ),
   );
 }
 
 /*
- * Stripe no tiene sesión de administrador.
+ * Stripe no utiliza sesión administrativa.
  * El webhook debe llegar directamente a su
- * Route Handler y allí se valida su firma.
+ * Route Handler, donde se valida la firma.
  */
 function isStripeWebhookRoute(
   pathname: string,
-) {
+): boolean {
   return matchesRoute(
     pathname,
     "/api/stripe/webhook",
@@ -90,16 +105,22 @@ export function proxy(
     request.nextUrl.pathname;
 
   /*
-   * Esta comprobación debe ir antes de cualquier
-   * redirección de administración o preapertura.
+   * Esta comprobación debe ejecutarse antes
+   * de cualquier redirección administrativa
+   * o de preapertura.
    */
-  if (isStripeWebhookRoute(pathname)) {
+  if (
+    isStripeWebhookRoute(pathname)
+  ) {
     return NextResponse.next();
   }
 
   const adminSessionIsValid =
     hasValidAdminSession(request);
 
+  /*
+   * Protege todas las rutas administrativas.
+   */
   if (
     pathname.startsWith("/admin") &&
     !adminSessionIsValid
@@ -107,19 +128,33 @@ export function proxy(
     const loginUrl =
       request.nextUrl.clone();
 
-    loginUrl.pathname = "/login-admin";
+    loginUrl.pathname =
+      "/login-admin";
+
     loginUrl.search = "";
 
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(
+      loginUrl,
+    );
   }
 
+  /*
+   * Una sesión administrativa válida puede
+   * navegar por toda la web durante el desarrollo.
+   */
   if (adminSessionIsValid) {
     return NextResponse.next();
   }
 
+  /*
+   * Mientras la web pública esté cerrada,
+   * solamente se permiten las rutas indicadas.
+   */
   if (
     !isPublicSiteOpen() &&
-    !isPrelaunchPublicRoute(pathname)
+    !isPrelaunchPublicRoute(
+      pathname,
+    )
   ) {
     const comingSoonUrl =
       request.nextUrl.clone();

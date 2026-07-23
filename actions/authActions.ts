@@ -3,17 +3,36 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const SESSION_COOKIE_NAME = "vanmotion_admin_session";
+const SESSION_COOKIE_NAME =
+  "vanmotion_admin_session";
 
-function getText(formData: FormData, field: string): string {
-  return String(formData.get(field) ?? "").trim();
+function getText(
+  formData: FormData,
+  field: string,
+): string {
+  return String(
+    formData.get(field) ?? "",
+  ).trim();
 }
 
-export async function loginAdmin(formData: FormData) {
-  const password = getText(formData, "password");
+export async function loginAdmin(
+  formData: FormData,
+): Promise<void> {
+  const password = getText(
+    formData,
+    "password",
+  );
 
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  const sessionToken = process.env.ADMIN_SESSION_TOKEN;
+  const adminPassword =
+    process.env.ADMIN_PASSWORD;
+
+  /*
+   * Normalizamos el token para que la cookie,
+   * el proxy y las Server Actions comparen
+   * exactamente el mismo valor.
+   */
+  const sessionToken =
+    process.env.ADMIN_SESSION_TOKEN?.trim();
 
   if (!adminPassword || !sessionToken) {
     throw new Error(
@@ -21,33 +40,50 @@ export async function loginAdmin(formData: FormData) {
     );
   }
 
-  if (!password || password !== adminPassword) {
-    redirect("/login-admin?error=1");
+  if (
+    !password ||
+    password !== adminPassword
+  ) {
+    redirect(
+      "/login-admin?error=1",
+    );
   }
 
   const cookieStore = await cookies();
 
-  cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 8,
-  });
+  cookieStore.set(
+    SESSION_COOKIE_NAME,
+    sessionToken,
+    {
+      httpOnly: true,
+      secure:
+        process.env.NODE_ENV ===
+        "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 8,
+    },
+  );
 
   redirect("/admin");
 }
 
-export async function logoutAdmin() {
+export async function logoutAdmin(): Promise<void> {
   const cookieStore = await cookies();
 
-  cookieStore.set(SESSION_COOKIE_NAME, "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
+  cookieStore.set(
+    SESSION_COOKIE_NAME,
+    "",
+    {
+      httpOnly: true,
+      secure:
+        process.env.NODE_ENV ===
+        "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 0,
+    },
+  );
 
   redirect("/login-admin");
 }
