@@ -1,11 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import {
   sendOrderShippedEmail,
 } from "@/app/lib/order-shipped-email";
 import { prisma } from "@/app/lib/prisma";
+
+const SESSION_COOKIE_NAME =
+  "vanmotion_admin_session";
 
 const ALLOWED_FULFILLMENT_STATUSES =
   new Set([
@@ -16,6 +21,27 @@ const ALLOWED_FULFILLMENT_STATUSES =
     "CANCELLED",
     "REVIEW_REQUIRED",
   ]);
+
+async function requireAdminSession(): Promise<void> {
+  const expectedToken =
+    process.env.ADMIN_SESSION_TOKEN?.trim();
+
+  const cookieStore =
+    await cookies();
+
+  const currentToken =
+    cookieStore.get(
+      SESSION_COOKIE_NAME,
+    )?.value;
+
+  if (
+    !expectedToken ||
+    !currentToken ||
+    currentToken !== expectedToken
+  ) {
+    redirect("/login-admin");
+  }
+}
 
 function normalizeOptionalText(
   value: FormDataEntryValue | null,
@@ -67,6 +93,13 @@ function refreshOrderPages(): void {
 export async function updateOrderFulfillmentStatusAction(
   formData: FormData,
 ): Promise<void> {
+  /*
+   * El proxy protege la navegación del panel,
+   * pero la Server Action también debe comprobar
+   * directamente la sesión administrativa.
+   */
+  await requireAdminSession();
+
   const orderId = String(
     formData.get("orderId") ?? "",
   ).trim();
