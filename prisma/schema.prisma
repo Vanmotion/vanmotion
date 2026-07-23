@@ -119,7 +119,7 @@ model MusicTrack {
 
   externalUrl String?
 
-  format   String @default("MP3")
+  format   String  @default("MP3")
   duration String?
 
   active    Boolean @default(true)
@@ -131,7 +131,6 @@ model MusicTrack {
 
 /**
  * Catálogo de productos VANMOTION.
- *
  * Estados recomendados:
  * - DRAFT
  * - COMING_SOON
@@ -179,7 +178,6 @@ model Product {
 
 /**
  * Stock independiente por talla.
- *
  * Para la primera camiseta:
  * - S
  * - M
@@ -210,7 +208,6 @@ model ProductVariant {
 
 /**
  * Galería del producto.
- *
  * view puede contener:
  * - FRONT
  * - BACK
@@ -284,9 +281,87 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  /**
+   * Cada pedido puede tener como máximo
+   * una solicitud de desistimiento.
+   */
+  withdrawalRequest WithdrawalRequest?
+
   @@index([paymentStatus])
   @@index([fulfillmentStatus])
   @@index([customerEmail])
   @@index([trackingNumber])
   @@index([createdAt])
+}
+
+/**
+ * Estado de una solicitud de desistimiento.
+ */
+enum WithdrawalStatus {
+  RECEIVED
+  UNDER_REVIEW
+  RETURN_RECEIVED
+  REFUNDED
+  REJECTED
+}
+
+/**
+ * Solicitud electrónica de desistimiento.
+ * Se vincula directamente con el pedido y conserva
+ * la declaración y la fecha exacta de recepción.
+ */
+model WithdrawalRequest {
+  id String @id @default(cuid())
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  status WithdrawalStatus @default(RECEIVED)
+
+  customerName  String
+  customerEmail String
+
+  /**
+   * Declaración inequívoca enviada por el cliente.
+   */
+  statement String
+
+  /**
+   * Comentario voluntario del cliente.
+   * No se exige explicar el motivo del desistimiento.
+   */
+  customerMessage String?
+
+  /**
+   * Idioma utilizado para el formulario
+   * y el correo de confirmación.
+   */
+  language String @default("es")
+
+  /**
+   * Fecha exacta en la que se recibió la solicitud.
+   */
+  requestedAt DateTime @default(now())
+
+  /**
+   * Fecha en la que se envió la confirmación
+   * automática al cliente.
+   */
+  confirmationSentAt DateTime?
+
+  /**
+   * Fechas de gestión interna.
+   */
+  returnReceivedAt DateTime?
+  refundedAt       DateTime?
+  rejectedAt       DateTime?
+  resolvedAt       DateTime?
+
+  adminNotes String?
+
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([customerEmail])
+  @@index([requestedAt])
 }
