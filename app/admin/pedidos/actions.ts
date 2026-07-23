@@ -1,5 +1,6 @@
 "use server";
 
+import { WithdrawalStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -21,6 +22,23 @@ const ALLOWED_FULFILLMENT_STATUSES =
     "CANCELLED",
     "REVIEW_REQUIRED",
   ]);
+
+const ALLOWED_WITHDRAWAL_STATUSES =
+  new Set<WithdrawalStatus>([
+    WithdrawalStatus.RECEIVED,
+    WithdrawalStatus.UNDER_REVIEW,
+    WithdrawalStatus.RETURN_RECEIVED,
+    WithdrawalStatus.REFUNDED,
+    WithdrawalStatus.REJECTED,
+  ]);
+
+function isWithdrawalStatus(
+  value: string,
+): value is WithdrawalStatus {
+  return ALLOWED_WITHDRAWAL_STATUSES.has(
+    value as WithdrawalStatus,
+  );
+}
 
 async function requireAdminSession(): Promise<void> {
   const expectedToken =
@@ -45,10 +63,14 @@ async function requireAdminSession(): Promise<void> {
 
 function normalizeOptionalText(
   value: FormDataEntryValue | null,
+  maximumLength = 500,
 ): string | null {
   const normalized = String(
     value ?? "",
-  ).trim();
+  )
+    .replace(/\0/g, "")
+    .trim()
+    .slice(0, maximumLength);
 
   return normalized || null;
 }
@@ -57,7 +79,10 @@ function normalizeTrackingUrl(
   value: FormDataEntryValue | null,
 ): string | null {
   const normalized =
-    normalizeOptionalText(value);
+    normalizeOptionalText(
+      value,
+      1000,
+    );
 
   if (!normalized) {
     return null;
@@ -115,6 +140,7 @@ export async function updateOrderFulfillmentStatusAction(
       formData.get(
         "shippingCarrier",
       ),
+      120,
     );
 
   const trackingNumber =
@@ -122,6 +148,7 @@ export async function updateOrderFulfillmentStatusAction(
       formData.get(
         "trackingNumber",
       ),
+      180,
     );
 
   const trackingUrl =
@@ -295,6 +322,9 @@ export async function updateOrderFulfillmentStatusAction(
       },
     });
 
+  let shippedEmailSent =
+    false;
+
   if (shouldSendShippedEmail) {
     try {
       await sendOrderShippedEmail({
@@ -333,6 +363,9 @@ export async function updateOrderFulfillmentStatusAction(
           updatedOrder
             .trackingUrl,
       });
+
+      shippedEmailSent =
+        true;
     } catch (emailError) {
       /*
        * El estado y los datos del transporte
@@ -362,8 +395,207 @@ export async function updateOrderFulfillmentStatusAction(
           trackingUrl,
         ),
 
-      shippedEmailSent:
-        shouldSendShippedEmail,
+      shippedEmailSent,
+    },
+  );
+
+  refreshOrderPages();
+}
+
+export async function updateWithdrawalRequestAction(
+  formData: FormData,
+): Promise<void> {
+  /*
+   * Esta acción solo puede utilizarse desde
+   * una sesión administrativa válida.
+   */
+  await requireAdminSession();
+
+  const withdrawalId = String(
+    formData.get(
+      "withdrawalId",
+    ) ?? "",
+  ).trim();
+
+  const withdrawalStatus = String(
+    formData.get(
+      "withdrawalStatus",
+    ) ?? "",
+  ).trim();
+
+  const adminNotes =
+    normalizeOptionalText(
+      formData.get(
+        "adminNotes",
+      ),
+      4000,
+    );
+
+  if (!withdrawalId) {
+    throw new Error(
+      "No se ha recibido el identificador del desistimiento.",
+    );
+  }
+
+  if (
+    !isWithdrawalStatus(
+      withdrawalStatus,
+    )
+  ) {
+    throw new Error(
+      "El estado del desistimiento no es válido.",
+    );
+  }
+
+  const existingWithdrawal =
+    await prisma.withdrawalRequest.findUnique({
+      where: {
+        id: withdrawalId,
+      },
+
+      select: {
+        id: true,
+        orderId: true,
+        status: true,
+        returnReceivedAt: true,
+        refundedAt: true,
+        rejectedAt: true,
+        resolvedAt: true,
+      },
+    });
+
+  if (!existingWithdrawal) {
+    throw new Error(
+      "La solicitud de desistimiento indicada no existe.",
+    );
+  }
+
+  const now =
+    new Date();
+
+  const dateUpdates: {
+    returnReceivedAt?: Date;
+    refundedAt?: Date;
+    rejectedAt?: Date;
+    resolvedAt?: Date;
+  } = {};
+
+  if (
+    withdrawalStatus ===
+      "RETURN_RECEIVED" &&
+    !existingWithdrawal
+      .returnReceivedAt
+  ) {
+    dateUpdates.returnReceivedAt =
+      now;
+  }
+
+  if (
+    withdrawalStatus ===
+      "REFUNDED"
+  ) {
+    if (
+      !existingWithdrawal
+        .refundedAt
+    ) {
+      dateUpdates.refundedAt =
+        now;
+    }
+
+    if (
+      !existingWithdrawal
+        .resolvedAt
+    ) {
+      dateUpdates.resolvedAt =
+        now;
+    }
+  }
+
+  if (
+    withdrawalStatus ===
+      "REJECTED"
+  ) {
+    if (
+      !existingWithdrawal
+        .rejectedAt
+    ) {
+      dateUpdates.rejectedAt =
+        now;
+    }
+
+    if (
+      !existingWithdrawal
+        .resolvedAt
+    ) {
+      dateUpdates.resolvedAt =
+        now;
+    }
+  }
+
+  const statusChanged =
+    existingWithdrawal.status !==
+    withdrawalStatus;
+
+  const updatedWithdrawal =
+    await prisma.withdrawalRequest.update({
+      where: {
+        id: withdrawalId,
+      },
+
+      data: {
+        status:
+          withdrawalStatus,
+
+        adminNotes,
+
+        ...dateUpdates,
+      },
+
+      select: {
+        id: true,
+        orderId: true,
+        status: true,
+      },
+    });
+
+  /*
+   * Al empezar la revisión, también dejamos
+   * el pedido marcado para revisión interna.
+   */
+  if (
+    statusChanged &&
+    (
+      withdrawalStatus ===
+        "RECEIVED" ||
+      withdrawalStatus ===
+        "UNDER_REVIEW"
+    )
+  ) {
+    await prisma.order.update({
+      where: {
+        id:
+          updatedWithdrawal
+            .orderId,
+      },
+
+      data: {
+        fulfillmentStatus:
+          "REVIEW_REQUIRED",
+      },
+    });
+  }
+
+  console.log(
+    "VANMOTION_WITHDRAWAL_UPDATED:",
+    {
+      withdrawalId:
+        updatedWithdrawal.id,
+
+      orderId:
+        updatedWithdrawal.orderId,
+
+      withdrawalStatus:
+        updatedWithdrawal.status,
     },
   );
 
