@@ -154,7 +154,10 @@ const translations = {
       "Para ejercer este derecho debe comunicar a VANMOTION, antes de que termine el plazo, una declaración inequívoca que identifique al cliente, el pedido y la decisión de desistir.",
 
     electronicWithdrawalText:
-      "El desistimiento podrá comunicarse mediante el correo indicado en estas condiciones y, antes de activar las ventas al público, mediante una función electrónica visible denominada «Desistir del contrato», que proporcionará confirmación inmediata de la solicitud.",
+      "El desistimiento puede comunicarse mediante el correo indicado en estas condiciones o mediante la función electrónica visible «Desistir del contrato». Esta función registra la fecha de recepción y envía una confirmación inmediata al correo asociado al pedido.",
+
+    withdrawalAction:
+      "Desistir del contrato",
 
     optionalFormText:
       "El cliente podrá utilizar el formulario de desistimiento facilitado por VANMOTION, aunque su utilización no será obligatoria siempre que la comunicación exprese claramente su decisión.",
@@ -399,7 +402,10 @@ const translations = {
       "To exercise this right, the customer must send VANMOTION an unequivocal statement identifying the customer, the order and the decision to withdraw before the period expires.",
 
     electronicWithdrawalText:
-      "Withdrawal may be communicated using the email stated in these terms and, before public sales are activated, through a clearly visible electronic function called “Withdraw from the contract”, which will provide immediate confirmation of the request.",
+      "Withdrawal may be communicated using the email stated in these terms or through the clearly visible electronic function “Withdraw from the contract”. This function records the receipt date and sends immediate confirmation to the email address associated with the order.",
+
+    withdrawalAction:
+      "Withdraw from the contract",
 
     optionalFormText:
       "Customers may use the withdrawal form supplied by VANMOTION, although its use is not compulsory where the communication clearly expresses the decision to withdraw.",
@@ -795,6 +801,14 @@ export default async function PurchaseTermsPage() {
               {content.electronicWithdrawalText}
             </p>
             <p>{content.optionalFormText}</p>
+
+            <Link
+              href="/desistimiento"
+              className={styles.primaryAction}
+            >
+              {content.withdrawalAction}
+              <span aria-hidden="true">→</span>
+            </Link>
           </div>
         </section>
 
