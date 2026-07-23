@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useEffect,
   useMemo,
@@ -30,6 +31,7 @@ type CheckoutResponse = {
 };
 
 const MAX_CHECKOUT_QUANTITY = 5;
+const PURCHASE_TERMS_VERSION = "2026-07-23";
 
 const translations = {
   es: {
@@ -57,6 +59,13 @@ const translations = {
 
     checkoutError:
       "No se ha podido abrir el pago. Inténtalo de nuevo.",
+
+    termsPrefix:
+      "He leído y acepto las",
+    termsLink:
+      "Condiciones de compra",
+    termsRequired:
+      "Debes aceptar las condiciones de compra antes de continuar.",
 
     noteAvailable:
       "El pago se realizará de forma segura mediante Stripe. Podrás revisar el pedido antes de confirmarlo.",
@@ -99,6 +108,13 @@ const translations = {
 
     checkoutError:
       "Checkout could not be opened. Please try again.",
+
+    termsPrefix:
+      "I have read and accept the",
+    termsLink:
+      "Purchase Terms",
+    termsRequired:
+      "You must accept the Purchase Terms before continuing.",
 
     noteAvailable:
       "Payment will be processed securely through Stripe. You can review your order before confirming it.",
@@ -191,6 +207,11 @@ export default function ProductPurchasePanel({
     setCheckoutError,
   ] = useState("");
 
+  const [
+    termsAccepted,
+    setTermsAccepted,
+  ] = useState(false);
+
   useEffect(() => {
     const currentVariant =
       activeVariants.find(
@@ -218,7 +239,11 @@ export default function ProductPurchasePanel({
 
   useEffect(() => {
     setCheckoutError("");
-  }, [selectedSize, quantity]);
+  }, [
+    selectedSize,
+    quantity,
+    termsAccepted,
+  ]);
 
   const selectedVariant =
     activeVariants.find(
@@ -352,6 +377,14 @@ export default function ProductPurchasePanel({
       return;
     }
 
+    if (!termsAccepted) {
+      setCheckoutError(
+        content.termsRequired,
+      );
+
+      return;
+    }
+
     setCheckoutPending(true);
     setCheckoutError("");
 
@@ -370,6 +403,9 @@ export default function ProductPurchasePanel({
             productSlug,
             size: selectedSize,
             quantity,
+            termsAccepted,
+            termsVersion:
+              PURCHASE_TERMS_VERSION,
           }),
         },
       );
@@ -535,6 +571,39 @@ export default function ProductPurchasePanel({
           </button>
         </div>
       </div>
+
+      {isAvailable && canRequest ? (
+        <div
+          className={
+            styles.termsAcceptance
+          }
+        >
+          <input
+            id="purchase-terms-acceptance"
+            type="checkbox"
+            checked={termsAccepted}
+            onChange={(event) =>
+              setTermsAccepted(
+                event.target.checked,
+              )
+            }
+            aria-required="true"
+          />
+
+          <label htmlFor="purchase-terms-acceptance">
+            {content.termsPrefix}{" "}
+
+            <Link
+              href="/condiciones-compra"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {content.termsLink}
+            </Link>
+            .
+          </label>
+        </div>
+      ) : null}
 
       {isAvailable && canRequest ? (
         <button

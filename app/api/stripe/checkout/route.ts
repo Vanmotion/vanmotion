@@ -15,10 +15,18 @@ const ALLOWED_SIZES = new Set([
 
 const MAX_QUANTITY = 5;
 
+const PURCHASE_TERMS_VERSION =
+  "2026-07-23";
+
+const TERMS_ACCEPTANCE_SOURCE =
+  "VANMOTION_WEB_CHECKOUT";
+
 type CheckoutBody = {
   productSlug?: unknown;
   size?: unknown;
   quantity?: unknown;
+  termsAccepted?: unknown;
+  termsVersion?: unknown;
 };
 
 export async function POST(
@@ -64,6 +72,24 @@ export async function POST(
       .toUpperCase();
 
     const quantity = Number(body.quantity);
+
+    const termsVersion = String(
+      body.termsVersion ?? "",
+    ).trim();
+
+    if (
+      body.termsAccepted !== true ||
+      termsVersion !==
+        PURCHASE_TERMS_VERSION
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Debes aceptar las condiciones de compra vigentes antes de continuar.",
+        },
+        { status: 400 },
+      );
+    }
 
     if (
       !productSlug ||
@@ -198,6 +224,13 @@ export async function POST(
         "",
       );
 
+    /*
+     * La fecha se genera en el servidor para que
+     * el navegador no pueda elegirla o modificarla.
+     */
+    const termsAcceptedAt =
+      new Date().toISOString();
+
     const session =
       await stripe.checkout.sessions.create({
         mode: "payment",
@@ -217,6 +250,13 @@ export async function POST(
           sku: variant.sku,
           size: variant.size,
           quantity: String(quantity),
+
+          termsAccepted: "true",
+          termsAcceptedAt,
+          termsVersion:
+            PURCHASE_TERMS_VERSION,
+          termsAcceptanceSource:
+            TERMS_ACCEPTANCE_SOURCE,
         },
 
         client_reference_id:

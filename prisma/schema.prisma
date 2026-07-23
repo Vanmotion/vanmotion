@@ -278,6 +278,16 @@ model Order {
   size      String
   quantity  Int
 
+  /**
+   * Prueba de la aceptación de las condiciones
+   * realizada antes de abrir Stripe Checkout.
+   * Los campos son opcionales para conservar
+   * los pedidos creados antes de esta función.
+   */
+  termsAcceptedAt       DateTime?
+  termsVersion          String?
+  termsAcceptanceSource String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

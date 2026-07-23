@@ -80,6 +80,24 @@ async function registerPaidOrder(
   const quantity =
     Number(metadata.quantity);
 
+  const termsAccepted =
+    metadata.termsAccepted?.trim() ===
+    "true";
+
+  const termsAcceptedAtText =
+    metadata.termsAcceptedAt?.trim();
+
+  const termsVersion =
+    metadata.termsVersion?.trim();
+
+  const termsAcceptanceSource =
+    metadata.termsAcceptanceSource?.trim();
+
+  const termsAcceptedAt =
+    termsAcceptedAtText
+      ? new Date(termsAcceptedAtText)
+      : null;
+
   if (
     !productId ||
     !productSlug ||
@@ -91,6 +109,20 @@ async function registerPaidOrder(
   ) {
     throw new Error(
       `La sesión ${session.id} no contiene metadatos válidos.`,
+    );
+  }
+
+  if (
+    !termsAccepted ||
+    !termsAcceptedAt ||
+    Number.isNaN(
+      termsAcceptedAt.getTime(),
+    ) ||
+    !termsVersion ||
+    !termsAcceptanceSource
+  ) {
+    throw new Error(
+      `La sesión ${session.id} no contiene una aceptación válida de las condiciones de compra.`,
     );
   }
 
@@ -264,6 +296,10 @@ async function registerPaidOrder(
 
               size,
               quantity,
+
+              termsAcceptedAt,
+              termsVersion,
+              termsAcceptanceSource,
             },
           });
 
@@ -289,6 +325,8 @@ async function registerPaidOrder(
 
       stockUpdated:
         result.stockUpdated,
+
+      termsVersion,
     },
   );
 
