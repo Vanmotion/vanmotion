@@ -15,6 +15,7 @@ const PRELAUNCH_PUBLIC_ROUTES = [
   "/privacidad",
   "/cookies",
   "/condiciones-compra",
+  "/desistimiento",
 ] as const;
 
 function hasValidAdminSession(
