@@ -130,6 +130,7 @@
 
 .sectionHeading h2 {
   margin: 13px 0 0;
+  color: #ffffff;
   font-size: 35px;
   letter-spacing: -0.04em;
   text-transform: uppercase;
@@ -476,9 +477,15 @@
 
 @media (max-width: 760px) {
   .hero {
+    min-height: 0;
     padding: 32px 24px;
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 12vw, 56px);
+    overflow-wrap: anywhere;
   }
 
   .heroActions,
@@ -488,7 +495,17 @@
   }
 
   .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statsGrid article {
+    min-width: 0;
+    padding: 18px;
+  }
+
+  .statNumber {
+    font-size: 34px;
+    overflow-wrap: anywhere;
   }
 
   .actionGrid {
@@ -503,10 +520,41 @@
     grid-column: 2;
     align-items: flex-start;
     flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .contactList article {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .contactDate {
+    grid-column: 2;
+    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   .statusSection {
     padding: 35px 24px;
     grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 460px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .panelHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .statusList > div {
+    grid-template-columns: 14px minmax(0, 1fr);
+    padding: 12px 0;
+  }
+
+  .statusList small {
+    grid-column: 2;
   }
 }
