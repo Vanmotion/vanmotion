@@ -93,21 +93,18 @@ export async function sendOrderShippedEmail(
     "VANMOTION <contacto@vanmotion.es>";
 
   if (!apiKey) {
-    console.warn(
-      "VANMOTION_SHIPPED_EMAIL_SKIPPED: " +
-        "Falta RESEND_API_KEY.",
+    throw new Error(
+      "No se puede enviar el correo de envío: falta RESEND_API_KEY.",
     );
-
-    return;
   }
 
-  if (!input.customerEmail) {
-    console.warn(
-      "VANMOTION_SHIPPED_EMAIL_SKIPPED: " +
-        "El pedido no contiene correo del cliente.",
-    );
+  const customerEmail =
+    input.customerEmail?.trim();
 
-    return;
+  if (!customerEmail) {
+    throw new Error(
+      "No se puede enviar el correo de envío: el pedido no contiene un correo de cliente válido.",
+    );
   }
 
   const resend =
@@ -276,7 +273,7 @@ export async function sendOrderShippedEmail(
       from: fromEmail,
 
       to: [
-        input.customerEmail,
+        customerEmail,
       ],
 
       ...(notificationEmail
