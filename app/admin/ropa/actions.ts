@@ -1,8 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
+
+const SESSION_COOKIE_NAME =
+  "vanmotion_admin_session";
 
 const PRODUCT_SLUG =
   "carpe-diem-black-edition-drop-01";
@@ -31,6 +36,27 @@ const MANUAL_STATUSES = new Set([
   "HIDDEN",
 ]);
 
+async function requireAdminSession(): Promise<void> {
+  const expectedToken =
+    process.env.ADMIN_SESSION_TOKEN?.trim();
+
+  const cookieStore =
+    await cookies();
+
+  const currentToken =
+    cookieStore.get(
+      SESSION_COOKIE_NAME,
+    )?.value;
+
+  if (
+    !expectedToken ||
+    !currentToken ||
+    currentToken !== expectedToken
+  ) {
+    redirect("/login-admin");
+  }
+}
+
 function parsePrice(
   value: FormDataEntryValue | null,
 ): number {
@@ -55,16 +81,21 @@ function parsePrice(
 function parseStock(
   value: FormDataEntryValue | null,
 ): number {
-  const stock = Number.parseInt(
-    String(value ?? "0"),
-    10,
+  const normalized = String(
+    value ?? "0",
+  ).trim();
+
+  const stock = Number(
+    normalized || "0",
   );
 
   if (
-    !Number.isFinite(stock) ||
+    !Number.isSafeInteger(stock) ||
     stock < 0
   ) {
-    return 0;
+    throw new Error(
+      "El stock introducido debe ser un número entero igual o superior a cero.",
+    );
   }
 
   return stock;
@@ -101,6 +132,8 @@ function getAutomaticStatus(
 }
 
 export async function createCarpeDiemProductAction(): Promise<void> {
+  await requireAdminSession();
+
   await prisma.product.upsert({
     where: {
       slug: PRODUCT_SLUG,
@@ -193,6 +226,8 @@ export async function createCarpeDiemProductAction(): Promise<void> {
 export async function updateProductAction(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
+
   const productId = String(
     formData.get("productId") ?? "",
   ).trim();
@@ -200,6 +235,30 @@ export async function updateProductAction(
   if (!productId) {
     throw new Error(
       "No se ha recibido el identificador del producto.",
+    );
+  }
+
+  /*
+   * Esta acción pertenece exclusivamente al Drop 01.
+   * No debe poder utilizarse para modificar otro producto.
+   */
+  const product =
+    await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+
+      select: {
+        slug: true,
+      },
+    });
+
+  if (
+    !product ||
+    product.slug !== PRODUCT_SLUG
+  ) {
+    throw new Error(
+      "El producto indicado no puede gestionarse desde esta sección.",
     );
   }
 
