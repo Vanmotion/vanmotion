@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
-import Sidebar from "@/components/admin/Sidebar";
 import Header from "@/components/admin/Header";
+import Sidebar from "@/components/admin/Sidebar";
 
 export default function AdminLayout({
   children,
@@ -9,22 +9,16 @@ export default function AdminLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-[#050505] text-white">
-
+    <div className="flex min-h-screen flex-col bg-[#050505] text-white md:flex-row">
       <Sidebar />
 
-      <div className="flex flex-1 flex-col">
-
+      <div className="flex min-w-0 flex-1 flex-col">
         <Header />
 
-        <main className="flex-1 p-10">
-
+        <main className="min-w-0 flex-1 px-4 py-6 sm:p-6 lg:p-10">
           {children}
-
         </main>
-
       </div>
-
     </div>
   );
 }
