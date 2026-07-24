@@ -5,6 +5,7 @@ import { basename, join } from "node:path";
 
 import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
@@ -17,6 +18,50 @@ const ALLOWED_IMAGE_TYPES = {
   "image/webp": "webp",
   "image/avif": "avif",
 } as const;
+
+const ADMIN_SESSION_COOKIE_NAME =
+  "vanmotion_admin_session";
+
+const ALLOWED_VEHICLE_STATUSES =
+  new Set([
+    "AVAILABLE",
+    "RESERVED",
+    "SOLD",
+  ]);
+
+async function requireAdminSession(): Promise<void> {
+  const sessionToken =
+    process.env.ADMIN_SESSION_TOKEN?.trim();
+
+  if (!sessionToken) {
+    throw new Error(
+      "La configuración de acceso al panel no está completa.",
+    );
+  }
+
+  const cookieStore = await cookies();
+
+  const currentSession =
+    cookieStore
+      .get(ADMIN_SESSION_COOKIE_NAME)
+      ?.value.trim();
+
+  if (currentSession !== sessionToken) {
+    throw new Error(
+      "No tienes autorización para realizar esta acción.",
+    );
+  }
+}
+
+function validateVehicleStatus(
+  status: string,
+): void {
+  if (!ALLOWED_VEHICLE_STATUSES.has(status)) {
+    throw new Error(
+      "El estado del vehículo no es válido.",
+    );
+  }
+}
 
 function getText(formData: FormData, field: string): string {
   return String(formData.get(field) ?? "").trim();
@@ -201,6 +246,8 @@ function revalidateVehiclePages(vehicleId: string) {
 }
 
 export async function createVehicle(formData: FormData) {
+  await requireAdminSession();
+
   const brandId = getText(formData, "brandId");
   const model = getText(formData, "model");
   const fuel = getText(formData, "fuel");
@@ -229,6 +276,8 @@ export async function createVehicle(formData: FormData) {
 
   const status =
     getOptionalText(formData, "status") ?? "AVAILABLE";
+
+  validateVehicleStatus(status);
 
   const featured = formData.get("featured") === "true";
 
@@ -288,6 +337,8 @@ export async function createVehicle(formData: FormData) {
 }
 
 export async function updateVehicle(formData: FormData) {
+  await requireAdminSession();
+
   const vehicleId = getText(formData, "vehicleId");
   const brandId = getText(formData, "brandId");
   const model = getText(formData, "model");
@@ -316,6 +367,8 @@ export async function updateVehicle(formData: FormData) {
 
   const status =
     getOptionalText(formData, "status") ?? "AVAILABLE";
+
+  validateVehicleStatus(status);
 
   const featured = formData.get("featured") === "true";
 
@@ -364,6 +417,8 @@ export async function updateVehicle(formData: FormData) {
 }
 
 export async function deleteVehicle(formData: FormData) {
+  await requireAdminSession();
+
   const vehicleId = getText(formData, "vehicleId");
 
   if (!vehicleId) {
@@ -401,6 +456,8 @@ export async function deleteVehicle(formData: FormData) {
 export async function addVehicleImage(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
+
   const vehicleId = getText(formData, "vehicleId");
   const alt = getOptionalText(formData, "alt");
 
@@ -496,6 +553,8 @@ export async function addVehicleImage(
 export async function setPrimaryVehicleImage(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
+
   const imageId = getText(formData, "imageId");
 
   if (!imageId) {
@@ -561,6 +620,8 @@ export async function setPrimaryVehicleImage(
 export async function deleteVehicleImage(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
+
   const imageId = getText(formData, "imageId");
 
   if (!imageId) {
