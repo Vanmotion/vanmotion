@@ -25,6 +25,8 @@ type WithdrawalOrder = {
 
   withdrawalRequest: {
     id: string;
+    customerName: string;
+    customerEmail: string;
     statement: string;
     customerMessage: string | null;
     requestedAt: Date;
@@ -136,6 +138,8 @@ async function findPaidOrder(
       withdrawalRequest: {
         select: {
           id: true,
+          customerName: true,
+          customerEmail: true,
           statement: true,
           customerMessage: true,
           requestedAt: true,
@@ -158,6 +162,8 @@ async function findExistingWithdrawal(
 
     select: {
       id: true,
+      customerName: true,
+      customerEmail: true,
       statement: true,
       customerMessage: true,
       requestedAt: true,
@@ -309,6 +315,8 @@ export async function createWithdrawalRequestAction(
 
           select: {
             id: true,
+            customerName: true,
+            customerEmail: true,
             statement: true,
             customerMessage: true,
             requestedAt: true,
@@ -356,56 +364,66 @@ export async function createWithdrawalRequestAction(
     );
   }
 
-  const emailResult =
-    await sendWithdrawalEmails({
-      withdrawalId:
-        withdrawal.id,
+  /*
+   * La solicitud es única por pedido. Si el cliente
+   * vuelve a enviar el formulario después de recibir
+   * la confirmación, no repetimos ningún correo.
+   *
+   * Cuando la confirmación no llegó a enviarse,
+   * permitimos un nuevo intento sin crear otra
+   * solicitud en la base de datos.
+   */
+  if (!withdrawal.confirmationSentAt) {
+    const emailResult =
+      await sendWithdrawalEmails({
+        withdrawalId:
+          withdrawal.id,
 
-      orderId:
-        order.id,
+        orderId:
+          order.id,
 
-      customerName,
+        customerName:
+          withdrawal.customerName,
 
-      customerEmail:
-        order.customerEmail,
+        customerEmail:
+          withdrawal.customerEmail,
 
-      productName:
-        order.productName,
+        productName:
+          order.productName,
 
-      size:
-        order.size,
+        size:
+          order.size,
 
-      quantity:
-        order.quantity,
+        quantity:
+          order.quantity,
 
-      statement:
-        withdrawal.statement,
+        statement:
+          withdrawal.statement,
 
-      customerMessage:
-        withdrawal.customerMessage,
+        customerMessage:
+          withdrawal.customerMessage,
 
-      requestedAt:
-        withdrawal.requestedAt,
+        requestedAt:
+          withdrawal.requestedAt,
 
-      language,
-    });
+        language,
+      });
 
-  if (
-    emailResult
-      .customerConfirmationSent &&
-    !withdrawal
-      .confirmationSentAt
-  ) {
-    await prisma.withdrawalRequest.update({
-      where: {
-        id: withdrawal.id,
-      },
+    if (
+      emailResult
+        .customerConfirmationSent
+    ) {
+      await prisma.withdrawalRequest.update({
+        where: {
+          id: withdrawal.id,
+        },
 
-      data: {
-        confirmationSentAt:
-          new Date(),
-      },
-    });
+        data: {
+          confirmationSentAt:
+            new Date(),
+        },
+      });
+    }
   }
 
   revalidatePath(
