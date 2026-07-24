@@ -154,8 +154,14 @@ const translations = {
       action: "Abrir contacto",
     },
 
-    footer:
-      "Vehículos · Música · Diseño · Madrid",
+    footer: {
+      identity:
+        "Vehículos · Música · Diseño · Madrid",
+      purchaseConditions:
+        "Condiciones de compra",
+      withdrawal:
+        "Desistimiento",
+    },
   },
 
   en: {
@@ -304,8 +310,14 @@ const translations = {
       action: "Open contact",
     },
 
-    footer:
-      "Vehicles · Music · Design · Madrid",
+    footer: {
+      identity:
+        "Vehicles · Music · Design · Madrid",
+      purchaseConditions:
+        "Purchase conditions",
+      withdrawal:
+        "Withdrawal",
+    },
   },
 } as const;
 
@@ -435,6 +447,7 @@ export default async function Home() {
 
               <div className={styles.motionTitle}>
                 <span>{content.hero.real}</span>
+
                 <strong>
                   {content.hero.motion}
                 </strong>
@@ -443,6 +456,7 @@ export default async function Home() {
               <div className={styles.heroStats}>
                 <div>
                   <strong>01</strong>
+
                   <span>
                     {content.hero.vehicles}
                   </span>
@@ -450,6 +464,7 @@ export default async function Home() {
 
                 <div>
                   <strong>02</strong>
+
                   <span>
                     {content.hero.music}
                   </span>
@@ -457,6 +472,7 @@ export default async function Home() {
 
                 <div>
                   <strong>03</strong>
+
                   <span>
                     {content.hero.design}
                   </span>
@@ -796,7 +812,23 @@ export default async function Home() {
         <div className={styles.footerInner}>
           <strong>VANMOTION</strong>
 
-          <span>{content.footer}</span>
+          <span>
+            {content.footer.identity}
+            {" · "}
+
+            <Link href="/condiciones-compra">
+              {
+                content.footer
+                  .purchaseConditions
+              }
+            </Link>
+
+            {" · "}
+
+            <Link href="/desistimiento">
+              {content.footer.withdrawal}
+            </Link>
+          </span>
 
           <span>© 2026 VANMOTION</span>
         </div>
