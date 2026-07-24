@@ -6,20 +6,23 @@ import { stripe } from "@/app/lib/stripe";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const ALLOWED_SIZES = new Set([
-  "S",
-  "M",
-  "L",
-  "XL",
-]);
+const PRODUCT_SLUG =
+  "carpe-diem-black-edition-drop-01";
 
 const MAX_QUANTITY = 5;
+const MAX_SIZE_LENGTH = 20;
 
 const PURCHASE_TERMS_VERSION =
   "2026-07-23";
 
 const TERMS_ACCEPTANCE_SOURCE =
   "VANMOTION_WEB_CHECKOUT";
+
+const NON_PAYABLE_STATUSES = new Set([
+  "DRAFT",
+  "COMING_SOON",
+  "HIDDEN",
+]);
 
 type CheckoutBody = {
   productSlug?: unknown;
@@ -91,20 +94,29 @@ export async function POST(
       );
     }
 
-    if (
-      !productSlug ||
-      productSlug.length > 150
-    ) {
+    /*
+     * Este endpoint utiliza un precio concreto de Stripe.
+     * Por eso solo puede procesar el producto asociado.
+     */
+    if (productSlug !== PRODUCT_SLUG) {
       return NextResponse.json(
         {
           error:
-            "No se ha identificado el producto.",
+            "El producto indicado no admite este proceso de pago.",
         },
         { status: 400 },
       );
     }
 
-    if (!ALLOWED_SIZES.has(size)) {
+    /*
+     * La base de datos determina qué tallas existen.
+     * Aquí solo comprobamos que el formato sea razonable.
+     */
+    if (
+      !size ||
+      size.length > MAX_SIZE_LENGTH ||
+      !/^[A-Z0-9+-]+$/.test(size)
+    ) {
       return NextResponse.json(
         {
           error:
@@ -131,7 +143,7 @@ export async function POST(
     const product =
       await prisma.product.findUnique({
         where: {
-          slug: productSlug,
+          slug: PRODUCT_SLUG,
         },
 
         select: {
@@ -168,7 +180,14 @@ export async function POST(
       );
     }
 
-    if (product.status !== "AVAILABLE") {
+    /*
+     * DRAFT, COMING_SOON y HIDDEN bloquean el pago.
+     * AVAILABLE y SOLD_OUT se resuelven mediante el stock
+     * real de la variante, igual que en la página pública.
+     */
+    if (
+      NON_PAYABLE_STATUSES.has(product.status)
+    ) {
       return NextResponse.json(
         {
           error:
