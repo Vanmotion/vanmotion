@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { list } from "@vercel/blob";
 import {
   handleUpload,
@@ -24,6 +25,8 @@ const ALLOWED_CONTENT_TYPES = [
   "image/webp",
   "image/avif",
 ];
+
+const MAX_TRANSACTION_RETRIES = 3;
 
 type ClientPayload = {
   vehicleId: string;
@@ -54,12 +57,12 @@ function requireAdminSession(
   request: NextRequest,
 ) {
   const expectedToken =
-    process.env.ADMIN_SESSION_TOKEN;
+    process.env.ADMIN_SESSION_TOKEN?.trim();
 
   const currentToken =
-    request.cookies.get(
-      SESSION_COOKIE_NAME,
-    )?.value;
+    request.cookies
+      .get(SESSION_COOKIE_NAME)
+      ?.value.trim();
 
   if (
     !expectedToken ||
@@ -265,6 +268,28 @@ function validateBlobLocation({
       "La fotografía no pertenece al almacenamiento autorizado.",
     );
   }
+
+  let decodedUrlPathname: string;
+
+  try {
+    decodedUrlPathname =
+      decodeURIComponent(
+        parsedUrl.pathname,
+      );
+  } catch {
+    throw new Error(
+      "La dirección de la imagen no es válida.",
+    );
+  }
+
+  if (
+    decodedUrlPathname !==
+    `/${pathname}`
+  ) {
+    throw new Error(
+      "La dirección y la ubicación de la imagen no coinciden.",
+    );
+  }
 }
 
 function refreshVehiclePages(
@@ -340,63 +365,103 @@ async function registerVehicleImage({
     pathname,
   });
 
-  const duplicatedImage =
-    await prisma.vehicleImage.findFirst({
-      where: {
-        url,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-  if (duplicatedImage) {
-    return false;
-  }
-
-  const imageCount =
-    await prisma.vehicleImage.count({
-      where: {
-        vehicleId,
-      },
-    });
-
-  if (imageCount >= MAX_IMAGES) {
-    throw new Error(
-      "Este vehículo ya tiene el máximo de 8 fotografías.",
-    );
-  }
-
-  const currentMaximum =
-    await prisma.vehicleImage.aggregate({
-      where: {
-        vehicleId,
-      },
-      _max: {
-        sortOrder: true,
-      },
-    });
-
-  const nextSortOrder =
-    (currentMaximum._max.sortOrder ??
-      -1) + 1;
-
-  await prisma.vehicleImage.create({
-    data: {
+  const resolvedAlt =
+    alt ??
+    (await getVehicleAlt(
       vehicleId,
-      url,
-      alt:
-        alt ??
-        (await getVehicleAlt(
-          vehicleId,
-        )),
-      sortOrder: nextSortOrder,
-    },
-  });
+    ));
 
-  refreshVehiclePages(vehicleId);
+  for (
+    let attempt = 1;
+    attempt <= MAX_TRANSACTION_RETRIES;
+    attempt += 1
+  ) {
+    try {
+      const added =
+        await prisma.$transaction(
+          async (transaction) => {
+            const duplicatedImage =
+              await transaction.vehicleImage.findFirst({
+                where: {
+                  url,
+                },
+                select: {
+                  id: true,
+                },
+              });
 
-  return true;
+            if (duplicatedImage) {
+              return false;
+            }
+
+            const imageCount =
+              await transaction.vehicleImage.count({
+                where: {
+                  vehicleId,
+                },
+              });
+
+            if (imageCount >= MAX_IMAGES) {
+              throw new Error(
+                "Este vehículo ya tiene el máximo de 8 fotografías.",
+              );
+            }
+
+            const currentMaximum =
+              await transaction.vehicleImage.aggregate({
+                where: {
+                  vehicleId,
+                },
+                _max: {
+                  sortOrder: true,
+                },
+              });
+
+            const nextSortOrder =
+              (currentMaximum._max.sortOrder ??
+                -1) + 1;
+
+            await transaction.vehicleImage.create({
+              data: {
+                vehicleId,
+                url,
+                alt: resolvedAlt,
+                sortOrder: nextSortOrder,
+              },
+            });
+
+            return true;
+          },
+          {
+            isolationLevel:
+              Prisma.TransactionIsolationLevel
+                .Serializable,
+          },
+        );
+
+      if (added) {
+        refreshVehiclePages(vehicleId);
+      }
+
+      return added;
+    } catch (error) {
+      const shouldRetry =
+        error instanceof
+          Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2034" &&
+        attempt < MAX_TRANSACTION_RETRIES;
+
+      if (shouldRetry) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw new Error(
+    "No se ha podido registrar la fotografía.",
+  );
 }
 
 async function synchronizeVehicleImages(
