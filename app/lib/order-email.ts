@@ -82,32 +82,30 @@ export async function sendOrderEmails(
     process.env.CONTACT_FROM_EMAIL?.trim() ||
     "VANMOTION <contacto@vanmotion.es>";
 
-  if (!apiKey) {
-    console.warn(
-      "VANMOTION_ORDER_EMAIL_SKIPPED: " +
-        "Falta RESEND_API_KEY.",
-    );
+  const customerEmail =
+    input.customerEmail?.trim() ||
+    null;
 
-    return;
+  if (!apiKey) {
+    throw new Error(
+      "No se puede enviar el correo del pedido: falta RESEND_API_KEY.",
+    );
   }
 
   if (
     !notificationEmail &&
-    !input.customerEmail
+    !customerEmail
   ) {
-    console.warn(
-      "VANMOTION_ORDER_EMAIL_SKIPPED: " +
-        "No existe ninguna dirección de destino.",
+    throw new Error(
+      "No se puede enviar el correo del pedido: no existe ninguna dirección de destino.",
     );
-
-    return;
   }
 
   const resend = new Resend(apiKey);
 
   const customerName =
-    input.customerName ||
-    input.shippingName ||
+    input.customerName?.trim() ||
+    input.shippingName?.trim() ||
     "Cliente";
 
   const safeCustomerName =
@@ -115,7 +113,7 @@ export async function sendOrderEmails(
 
   const safeCustomerEmail =
     escapeHtml(
-      input.customerEmail ||
+      customerEmail ||
         "No indicado",
     );
 
@@ -173,10 +171,10 @@ export async function sendOrderEmails(
             notificationEmail,
           ],
 
-          ...(input.customerEmail
+          ...(customerEmail
             ? {
                 replyTo:
-                  input.customerEmail,
+                  customerEmail,
               }
             : {}),
 
@@ -288,12 +286,12 @@ export async function sendOrderEmails(
         });
 
   const confirmationPromise =
-    input.customerEmail
+    customerEmail
       ? resend.emails.send({
           from: fromEmail,
 
           to: [
-            input.customerEmail,
+            customerEmail,
           ],
 
           ...(notificationEmail
@@ -498,7 +496,7 @@ export async function sendOrderEmails(
     {
       orderId: input.orderId,
       customerEmailSent:
-        Boolean(input.customerEmail),
+        Boolean(customerEmail),
       notificationEmailSent:
         Boolean(notificationEmail),
     },
