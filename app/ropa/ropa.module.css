@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: #080808;
   color: #f5f5f2;
 }
@@ -8,6 +8,19 @@
 .page,
 .page * {
   box-sizing: border-box;
+}
+
+.hero > *,
+.productSection > *,
+.sectionHeading > *,
+.palettePanel > *,
+.philosophySection > *,
+.contactSection > * {
+  min-width: 0;
+}
+
+.page img {
+  max-width: 100%;
 }
 
 .page a {
@@ -722,8 +735,25 @@
     grid-template-columns: 1fr;
   }
 
+  .hero {
+    min-height: auto;
+    gap: 48px;
+  }
+
+  .productSection,
+  .philosophySection,
+  .contactSection {
+    gap: 48px;
+  }
+
+  .sectionHeading {
+    gap: 30px;
+    align-items: start;
+  }
+
   .productInformation {
     position: static;
+    padding-top: 0;
   }
 
   .specificationGrid {
@@ -732,12 +762,24 @@
 }
 
 @media (max-width: 820px) {
+  .hero {
+    gap: 38px;
+  }
+
   .palettePanel {
     grid-template-columns: 1fr;
+    gap: 34px;
   }
 
   .galleryMain {
     min-height: auto;
+    aspect-ratio: 4 / 5;
+  }
+
+  .galleryMain img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 }
 
@@ -749,82 +791,222 @@
   .philosophySection,
   .contactSection,
   .footer {
-    width: min(100% - 30px, 1440px);
+    width: min(100% - 24px, 1440px);
   }
 
   .header {
-    padding: 20px 0;
+    min-height: auto;
+    padding: 18px 0;
     flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .logo {
+    font-size: 14px;
+    letter-spacing: 0.28em;
+  }
+
+  .headerButton {
+    min-height: 40px;
+    padding: 0 14px;
+    gap: 12px;
+    font-size: 8px;
   }
 
   .navigation {
     order: 3;
     width: 100%;
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 22px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    white-space: nowrap;
   }
 
-  .navigation a,
-  .headerButton {
-    font-size: 7px;
+  .navigation::-webkit-scrollbar {
+    display: none;
+  }
+
+  .navigation a {
+    flex: 0 0 auto;
+    padding: 12px 0 10px;
+    font-size: 8px;
   }
 
   .hero {
-    padding: 68px 0 60px;
+    padding: 52px 0 58px;
+    gap: 32px;
+    background-size: 48px 48px;
   }
 
   .hero h1 {
-    font-size: 55px;
+    margin-top: 22px;
+    font-size: clamp(42px, 15vw, 60px);
+    line-height: 0.88;
+    letter-spacing: -0.06em;
   }
 
-  .heroVisual {
-    min-height: 410px;
-    padding: 18px;
-  }
-
-  .heroImage {
-    min-height: 320px;
+  .description {
+    margin-top: 25px;
+    font-size: 14px;
+    line-height: 1.72;
   }
 
   .heroActions {
+    margin-top: 28px;
     flex-direction: column;
   }
 
   .primaryButton,
   .secondaryButton {
     width: 100%;
+    min-height: 52px;
+    padding: 0 18px;
+  }
+
+  .heroVisual {
+    min-height: auto;
+    padding: 16px;
+  }
+
+  .visualTop,
+  .visualBottom {
+    gap: 16px;
+    font-size: 8px;
+  }
+
+  .heroImage {
+    min-height: auto;
+    margin: 14px 0;
+    aspect-ratio: 4 / 5;
+  }
+
+  .heroImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   .productSection,
   .detailsSection,
   .philosophySection,
   .contactSection {
-    padding: 78px 0;
+    padding: 64px 0;
+  }
+
+  .productSection,
+  .philosophySection,
+  .contactSection {
+    gap: 34px;
+  }
+
+  .productGallery {
+    gap: 10px;
   }
 
   .gallerySecondary {
     grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
   .gallerySecondary figure {
-    min-height: 230px;
+    min-height: 200px;
+  }
+
+  .galleryMain figcaption,
+  .gallerySecondary figcaption {
+    left: 10px;
+    bottom: 10px;
+    max-width: calc(100% - 20px);
+    font-size: 7px;
   }
 
   .productInformation h2 {
-    font-size: 50px;
+    margin-top: 20px;
+    font-size: clamp(40px, 13vw, 54px);
+    line-height: 0.94;
+  }
+
+  .productDescription {
+    margin-top: 24px;
+    font-size: 14px;
+    line-height: 1.72;
   }
 
   .purchasePanel,
   .palettePanel {
-    padding: 22px;
+    padding: 18px;
+  }
+
+  .purchasePanel {
+    margin-top: 30px;
+  }
+
+  .priceRow,
+  .quantityRow {
+    gap: 16px;
+  }
+
+  .sizeSelector > div {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sizeSelector span {
+    min-height: 54px;
+  }
+
+  .quantityRow {
+    flex-wrap: wrap;
+  }
+
+  .termsAcceptance {
+    padding: 14px;
+  }
+
+  .purchaseButton {
+    min-height: 58px;
+    padding: 0 16px;
+  }
+
+  .sectionHeading {
+    gap: 24px;
+  }
+
+  .sectionHeading h2,
+  .philosophyTitle h2,
+  .contactSection h2 {
+    font-size: clamp(38px, 13vw, 56px);
+    line-height: 0.96;
+  }
+
+  .sectionHeading > p,
+  .contactCopy p {
+    font-size: 14px;
+    line-height: 1.72;
   }
 
   .specificationGrid {
+    margin-top: 42px;
     grid-template-columns: 1fr;
   }
 
   .specificationGrid article {
-    min-height: 250px;
+    min-height: auto;
+    padding: 24px;
+  }
+
+  .specificationGrid h3 {
+    margin-top: 34px;
+    font-size: 22px;
+  }
+
+  .specificationGrid p {
+    margin-top: 26px;
+  }
+
+  .palettePanel {
+    gap: 28px;
   }
 
   .colorList {
@@ -832,40 +1014,125 @@
   }
 
   .principles article {
-    grid-template-columns: 40px 1fr;
+    min-height: auto;
+    padding: 24px 0;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 18px;
   }
 
   .principles p {
     grid-column: 2;
   }
 
+  .contactCopy a {
+    min-height: 54px;
+    margin-top: 24px;
+  }
+
   .footer {
-    padding: 30px 0;
+    min-height: auto;
+    padding: 30px 0 calc(110px + env(safe-area-inset-bottom));
     flex-direction: column;
     align-items: flex-start;
+    gap: 14px;
   }
 }
 
 @media (max-width: 450px) {
+  .header,
+  .hero,
+  .productSection,
+  .detailsSection,
+  .philosophySection,
+  .contactSection,
+  .footer {
+    width: min(100% - 20px, 1440px);
+  }
+
+  .logo {
+    font-size: 13px;
+    letter-spacing: 0.24em;
+  }
+
+  .headerButton {
+    padding: 0 12px;
+  }
+
+  .navigation {
+    gap: 18px;
+  }
+
+  .hero {
+    padding-top: 44px;
+  }
+
+  .hero h1 {
+    font-size: clamp(39px, 14.5vw, 50px);
+  }
+
   .gallerySecondary {
     grid-template-columns: 1fr;
   }
 
   .gallerySecondary figure {
-    min-height: 300px;
+    min-height: auto;
+    aspect-ratio: 4 / 5;
   }
 
-  .sizeSelector > div {
-    grid-template-columns: repeat(2, 1fr);
+  .gallerySecondary img {
+    object-fit: contain;
   }
 
-  .priceRow {
-    align-items: flex-start;
+  .designFigure img {
+    padding: 14px;
+  }
+
+  .purchasePanel,
+  .palettePanel {
+    padding: 16px;
+  }
+
+  .priceRow,
+  .quantityRow {
+    align-items: stretch;
     flex-direction: column;
   }
 
   .priceRow strong {
     text-align: left;
+  }
+
+  .quantityControl {
+    width: 100%;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+  }
+
+  .quantityControl button {
+    width: 100%;
+    height: 44px;
+  }
+
+  .termsAcceptance {
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .termsAcceptance input {
+    width: 20px;
+    height: 20px;
+  }
+
+  .purchaseButton {
+    gap: 12px;
+  }
+
+  .colorList > div {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .colorSwatch {
+    width: 38px;
+    height: 38px;
   }
 }
 

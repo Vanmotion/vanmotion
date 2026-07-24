@@ -166,7 +166,7 @@ const translations = {
           title: "Tallas",
 
           text:
-            "Primera selección prevista: S, M, L y XL. El stock real se configurará antes de activar el pago.",
+            "Primera selección prevista: S, M, L y XL. El stock se actualiza por talla y limita automáticamente la cantidad disponible para cada compra.",
         },
         {
           number: "04",
@@ -236,7 +236,7 @@ const translations = {
             "Producción responsable",
 
           description:
-            "Primero se confirmarán calidad, tallaje, coste y unidades. Después se activará el pago seguro.",
+            "Calidad, tallaje, coste y unidades se controlan antes de cada lanzamiento. El pago solo permanece activo cuando existe stock real disponible.",
         },
       ],
     },
@@ -246,20 +246,26 @@ const translations = {
         "Drop 01 · primeras unidades",
 
       titleFirst:
-        "¿Quieres reservar",
+        "¿Quieres formar parte",
 
       titleSecond:
-        "la primera camiseta?",
+        "del primer drop?",
 
       description:
-        "Selecciona talla y cantidad en la ficha. La solicitud llegará al panel privado de VANMOTION y confirmaremos personalmente disponibilidad y condiciones antes del pago.",
+        "Selecciona talla y cantidad en la ficha. Si el producto está disponible, podrás continuar al pago seguro; si todavía está en preparación, podrás consultar disponibilidad directamente con VANMOTION.",
 
       action:
         "Hablar con VANMOTION",
     },
 
-    footer:
-      "Vehículos · Música · Diseño · Madrid",
+    footer: {
+      identity:
+        "Vehículos · Música · Diseño · Madrid",
+      purchaseConditions:
+        "Condiciones de compra",
+      withdrawal:
+        "Desistimiento",
+    },
   },
 
   en: {
@@ -377,7 +383,7 @@ const translations = {
           title: "Sizes",
 
           text:
-            "Initial selection: S, M, L and XL. Actual stock will be configured before payment is activated.",
+            "Initial selection: S, M, L and XL. Stock is updated by size and automatically limits the quantity available for each purchase.",
         },
         {
           number: "04",
@@ -447,7 +453,7 @@ const translations = {
             "Responsible production",
 
           description:
-            "Quality, sizing, cost and quantities will be confirmed first. Secure payment will then be activated.",
+            "Quality, sizing, cost and quantities are checked before every release. Secure payment remains active only while real stock is available.",
         },
       ],
     },
@@ -457,20 +463,26 @@ const translations = {
         "Drop 01 · first units",
 
       titleFirst:
-        "Would you like to reserve",
+        "Would you like to join",
 
       titleSecond:
-        "the first T-shirt?",
+        "the first drop?",
 
       description:
-        "Choose your size and quantity on the product card. The request will reach the private VANMOTION panel and we will personally confirm availability and conditions before payment.",
+        "Choose your size and quantity on the product card. When the product is available, you can continue to secure checkout; while it is still being prepared, you can ask VANMOTION about availability directly.",
 
       action:
         "Talk to VANMOTION",
     },
 
-    footer:
-      "Vehicles · Music · Design · Madrid",
+    footer: {
+      identity:
+        "Vehicles · Music · Design · Madrid",
+      purchaseConditions:
+        "Purchase conditions",
+      withdrawal:
+        "Withdrawal",
+    },
   },
 } as const;
 
@@ -1219,7 +1231,21 @@ export default async function RopaPage() {
         </strong>
 
         <span>
-          {content.footer}
+          {content.footer.identity}
+          {" · "}
+
+          <Link href="/condiciones-compra">
+            {
+              content.footer
+                .purchaseConditions
+            }
+          </Link>
+
+          {" · "}
+
+          <Link href="/desistimiento">
+            {content.footer.withdrawal}
+          </Link>
         </span>
 
         <span>
