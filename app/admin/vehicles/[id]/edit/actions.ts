@@ -4,28 +4,36 @@ import path from "node:path";
 
 import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
+
+const ADMIN_SESSION_COOKIE_NAME =
+  "vanmotion_admin_session";
 
 const MAX_IMAGES = 8;
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
 const MAX_UPLOAD_TOTAL_SIZE = 4 * 1024 * 1024;
 
-const ALLOWED_IMAGE_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/avif",
-]);
-
-const ALLOWED_IMAGE_EXTENSIONS = new Set([
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".webp",
-  ".avif",
-]);
+const ALLOWED_IMAGE_FORMATS: Record<
+  string,
+  ReadonlySet<string>
+> = {
+  "image/jpeg": new Set([
+    ".jpg",
+    ".jpeg",
+  ]),
+  "image/png": new Set([
+    ".png",
+  ]),
+  "image/webp": new Set([
+    ".webp",
+  ]),
+  "image/avif": new Set([
+    ".avif",
+  ]),
+};
 
 const ALLOWED_STATUSES = new Set([
   "AVAILABLE",
@@ -33,6 +41,51 @@ const ALLOWED_STATUSES = new Set([
   "SOLD",
   "EMBLEM",
 ]);
+
+const ALLOWED_FUELS = new Set([
+  "DIESEL",
+  "GASOLINE",
+  "HYBRID",
+  "PLUG_IN_HYBRID",
+  "ELECTRIC",
+  "LPG",
+]);
+
+const ALLOWED_TRANSMISSIONS = new Set([
+  "MANUAL",
+  "AUTOMATIC",
+]);
+
+const ALLOWED_DRIVETRAINS = new Set([
+  "FRONT",
+  "REAR",
+  "AWD",
+  "FOUR_WHEEL_DRIVE",
+]);
+
+async function requireAdminSession(): Promise<void> {
+  const expectedSession =
+    process.env.ADMIN_SESSION_TOKEN?.trim();
+
+  if (!expectedSession) {
+    throw new Error(
+      "La configuración de acceso al panel no está completa.",
+    );
+  }
+
+  const cookieStore = await cookies();
+
+  const currentSession =
+    cookieStore
+      .get(ADMIN_SESSION_COOKIE_NAME)
+      ?.value.trim();
+
+  if (currentSession !== expectedSession) {
+    throw new Error(
+      "No tienes autorización para realizar esta acción.",
+    );
+  }
+}
 
 function requiredString(
   formData: FormData,
@@ -81,19 +134,11 @@ function requiredInt(
     field,
   );
 
-  const normalized = value.replace(
-    /[^\d-]/g,
-    "",
-  );
-
-  const parsed = Number.parseInt(
-    normalized,
-    10,
-  );
+  const parsed = Number(value);
 
   if (!Number.isInteger(parsed)) {
     throw new Error(
-      `El campo “${field}” debe ser un número válido.`,
+      `El campo “${field}” debe ser un número entero válido.`,
     );
   }
 
@@ -104,28 +149,24 @@ function optionalInt(
   formData: FormData,
   field: string,
 ): number | null {
-  const value = formData.get(field);
-
-  if (typeof value !== "string") {
-    return null;
-  }
-
-  const normalized = value
-    .trim()
-    .replace(/[^\d-]/g, "");
-
-  if (!normalized) {
-    return null;
-  }
-
-  const parsed = Number.parseInt(
-    normalized,
-    10,
+  const value = optionalString(
+    formData,
+    field,
   );
 
-  return Number.isNaN(parsed)
-    ? null
-    : parsed;
+  if (value === null) {
+    return null;
+  }
+
+  const parsed = Number(value);
+
+  if (!Number.isInteger(parsed)) {
+    throw new Error(
+      `El campo “${field}” debe ser un número entero válido.`,
+    );
+  }
+
+  return parsed;
 }
 
 function requiredPrice(
@@ -192,7 +233,9 @@ function vehicleStatus(
     "AVAILABLE";
 
   if (!ALLOWED_STATUSES.has(status)) {
-    return "AVAILABLE";
+    throw new Error(
+      "El estado del vehículo no es válido.",
+    );
   }
 
   return status;
@@ -282,9 +325,17 @@ function getImageFiles(
     }
   }
 
-  return Array.from(
+  const uniqueFiles = Array.from(
     new Set(files),
-  ).slice(0, MAX_IMAGES);
+  );
+
+  if (uniqueFiles.length > MAX_IMAGES) {
+    throw new Error(
+      `Solo puedes subir un máximo de ${MAX_IMAGES} imágenes a la vez.`,
+    );
+  }
+
+  return uniqueFiles;
 }
 
 function validateImageFile(file: File) {
@@ -292,15 +343,15 @@ function validateImageFile(file: File) {
     .extname(file.name)
     .toLowerCase();
 
-  const validMime =
-    ALLOWED_IMAGE_TYPES.has(file.type);
+  const allowedExtensions =
+    ALLOWED_IMAGE_FORMATS[file.type];
 
-  const validExtension =
-    ALLOWED_IMAGE_EXTENSIONS.has(extension);
-
-  if (!validMime && !validExtension) {
+  if (
+    !allowedExtensions ||
+    !allowedExtensions.has(extension)
+  ) {
     throw new Error(
-      `El archivo “${file.name}” no tiene un formato permitido.`,
+      `El archivo “${file.name}” no tiene un formato permitido o su extensión no coincide con el contenido declarado.`,
     );
   }
 
@@ -322,6 +373,22 @@ async function saveVehicleImages({
 }) {
   if (files.length === 0) {
     return;
+  }
+
+  const existingImageCount =
+    await prisma.vehicleImage.count({
+      where: {
+        vehicleId,
+      },
+    });
+
+  if (
+    existingImageCount + files.length >
+    MAX_IMAGES
+  ) {
+    throw new Error(
+      `El vehículo puede tener un máximo de ${MAX_IMAGES} fotografías.`,
+    );
   }
 
   const totalSize = files.reduce(
@@ -492,6 +559,30 @@ async function removeStoredImage(
   }
 }
 
+function validateSelection({
+  value,
+  currentValue,
+  allowedValues,
+  label,
+}: {
+  value: string | null;
+  currentValue: string | null;
+  allowedValues: ReadonlySet<string>;
+  label: string;
+}): void {
+  if (
+    value === null ||
+    value === currentValue ||
+    allowedValues.has(value)
+  ) {
+    return;
+  }
+
+  throw new Error(
+    `${label} no es válido.`,
+  );
+}
+
 function refreshVehiclePages(
   vehicleId: string,
 ) {
@@ -516,6 +607,8 @@ function refreshVehiclePages(
 export async function updateVehicle(
   formData: FormData,
 ) {
+  await requireAdminSession();
+
   const id = vehicleIdFromForm(formData);
 
   const brandId = requiredString(
@@ -646,6 +739,29 @@ export async function updateVehicle(
     );
   }
 
+  validateSelection({
+    value: fuel,
+    currentValue: vehicle.fuel,
+    allowedValues: ALLOWED_FUELS,
+    label: "El combustible",
+  });
+
+  validateSelection({
+    value: transmission,
+    currentValue: vehicle.transmission,
+    allowedValues:
+      ALLOWED_TRANSMISSIONS,
+    label: "La transmisión",
+  });
+
+  validateSelection({
+    value: drivetrain,
+    currentValue: vehicle.drivetrain,
+    allowedValues:
+      ALLOWED_DRIVETRAINS,
+    label: "La tracción",
+  });
+
   await prisma.vehicle.update({
     where: {
       id,
@@ -695,6 +811,8 @@ export async function updateVehicleAction(
 export async function uploadVehicleImages(
   formData: FormData,
 ) {
+  await requireAdminSession();
+
   const vehicleId =
     vehicleIdFromForm(formData);
 
@@ -734,6 +852,8 @@ export async function uploadVehicleImages(
 export async function setVehicleCoverImage(
   formData: FormData,
 ) {
+  await requireAdminSession();
+
   const vehicleId =
     vehicleIdFromForm(formData);
 
@@ -792,6 +912,8 @@ export async function setVehicleCoverImage(
 export async function moveVehicleImage(
   formData: FormData,
 ) {
+  await requireAdminSession();
+
   const vehicleId =
     vehicleIdFromForm(formData);
 
@@ -803,6 +925,15 @@ export async function moveVehicleImage(
       formData,
       "direction",
     ) ?? "up";
+
+  if (
+    direction !== "up" &&
+    direction !== "down"
+  ) {
+    throw new Error(
+      "La dirección del movimiento no es válida.",
+    );
+  }
 
   const images =
     await prisma.vehicleImage.findMany({
@@ -871,6 +1002,8 @@ export async function moveVehicleImage(
 export async function deleteVehicleImage(
   formData: FormData,
 ) {
+  await requireAdminSession();
+
   const vehicleId =
     vehicleIdFromForm(formData);
 
