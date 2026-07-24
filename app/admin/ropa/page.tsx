@@ -12,6 +12,9 @@ import SubmitButton from "./SubmitButton";
 
 export const dynamic = "force-dynamic";
 
+const PRODUCT_SLUG =
+  "carpe-diem-black-edition-drop-01";
+
 const statusLabels: Record<
   string,
   string
@@ -62,16 +65,19 @@ function formatPrice(
 function getProductStock(
   variants: Array<{
     stock: number;
+    active: boolean;
   }>,
 ): number {
   return variants.reduce(
     (total, variant) =>
-      total + variant.stock,
+      variant.active
+        ? total + variant.stock
+        : total,
     0,
   );
 }
 
-function getEffectiveStatus(
+function getStockAwareStatus(
   storedStatus: string,
   productStock: number,
 ): string {
@@ -89,16 +95,39 @@ function getEffectiveStatus(
 
   /*
    * Disponible y Agotado dependen siempre
-   * del número real de unidades.
+   * del número real de unidades activas.
    */
   return productStock > 0
     ? "AVAILABLE"
     : "SOLD_OUT";
 }
 
+function getEffectiveStatus(
+  storedStatus: string,
+  active: boolean,
+  productStock: number,
+): string {
+  if (!active) {
+    return "HIDDEN";
+  }
+
+  return getStockAwareStatus(
+    storedStatus,
+    productStock,
+  );
+}
+
 export default async function ClothingAdminPage() {
-  const products =
-    await prisma.product.findMany({
+  /*
+   * Este panel administra exclusivamente el primer
+   * producto de ropa, igual que sus Server Actions.
+   */
+  const product =
+    await prisma.product.findUnique({
+      where: {
+        slug: PRODUCT_SLUG,
+      },
+
       include: {
         images: {
           orderBy: [
@@ -117,16 +146,11 @@ export default async function ClothingAdminPage() {
           },
         },
       },
-
-      orderBy: [
-        {
-          sortOrder: "asc",
-        },
-        {
-          createdAt: "desc",
-        },
-      ],
     });
+
+  const products = product
+    ? [product]
+    : [];
 
   const totalProducts =
     products.length;
@@ -141,6 +165,7 @@ export default async function ClothingAdminPage() {
       const effectiveStatus =
         getEffectiveStatus(
           product.status,
+          product.active,
           productStock,
         );
 
@@ -161,6 +186,7 @@ export default async function ClothingAdminPage() {
       const effectiveStatus =
         getEffectiveStatus(
           product.status,
+          product.active,
           productStock,
         );
 
@@ -231,8 +257,7 @@ export default async function ClothingAdminPage() {
           >
             Gestiona el precio, el
             estado y el stock por talla
-            de los productos de ropa de
-            VANMOTION.
+            de CARPE DIEM · Drop 01.
           </p>
         </div>
 
@@ -356,6 +381,13 @@ export default async function ClothingAdminPage() {
 
             const effectiveStatus =
               getEffectiveStatus(
+                product.status,
+                product.active,
+                productStock,
+              );
+
+            const editableStatus =
+              getStockAwareStatus(
                 product.status,
                 productStock,
               );
@@ -563,7 +595,7 @@ export default async function ClothingAdminPage() {
                         <select
                           name="status"
                           defaultValue={
-                            effectiveStatus
+                            editableStatus
                           }
                           className={
                             styles.select
@@ -652,6 +684,8 @@ export default async function ClothingAdminPage() {
                                   name={`stock_${size}`}
                                   type="number"
                                   min="0"
+                                  step="1"
+                                  required
                                   defaultValue={
                                     variant?.stock ??
                                     0
