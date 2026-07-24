@@ -1,15 +1,56 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
+
+const ADMIN_SESSION_COOKIE_NAME =
+  "vanmotion_admin_session";
 
 const ALLOWED_STATUSES = new Set([
   "AVAILABLE",
   "RESERVED",
   "SOLD",
 ]);
+
+const ALLOWED_FUELS = new Set([
+  "Diesel",
+  "Gasoline",
+  "Hybrid",
+  "Electric",
+  "LPG",
+]);
+
+const ALLOWED_TRANSMISSIONS = new Set([
+  "Manual",
+  "Automatic",
+]);
+
+async function requireAdminSession(): Promise<void> {
+  const sessionToken =
+    process.env.ADMIN_SESSION_TOKEN?.trim();
+
+  if (!sessionToken) {
+    throw new Error(
+      "La configuración de acceso al panel no está completa.",
+    );
+  }
+
+  const cookieStore = await cookies();
+
+  const currentSession =
+    cookieStore
+      .get(ADMIN_SESSION_COOKIE_NAME)
+      ?.value.trim();
+
+  if (currentSession !== sessionToken) {
+    throw new Error(
+      "No tienes autorización para realizar esta acción.",
+    );
+  }
+}
 
 function requiredString(
   formData: FormData,
@@ -157,7 +198,9 @@ function vehicleStatus(
     "AVAILABLE";
 
   if (!ALLOWED_STATUSES.has(status)) {
-    return "AVAILABLE";
+    throw new Error(
+      "El estado del vehículo no es válido.",
+    );
   }
 
   return status;
@@ -166,6 +209,8 @@ function vehicleStatus(
 export async function createVehicle(
   formData: FormData,
 ) {
+  await requireAdminSession();
+
   const brandId = requiredString(
     formData,
     "brandId",
@@ -205,6 +250,18 @@ export async function createVehicle(
     formData,
     "transmission",
   );
+
+  if (!ALLOWED_FUELS.has(fuel)) {
+    throw new Error(
+      "El tipo de combustible no es válido.",
+    );
+  }
+
+  if (!ALLOWED_TRANSMISSIONS.has(transmission)) {
+    throw new Error(
+      "El tipo de transmisión no es válido.",
+    );
+  }
 
   const drivetrain = optionalString(
     formData,
