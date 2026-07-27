@@ -9,6 +9,15 @@ import {
 
 export const dynamic = "force-dynamic";
 
+type OrdersPageProps = {
+  searchParams?: Promise<
+    Record<
+      string,
+      string | string[] | undefined
+    >
+  >;
+};
+
 const paymentStatusLabels: Record<
   string,
   string
@@ -184,6 +193,39 @@ function getWithdrawalStatusClass(
   return "border-amber-500/30 bg-amber-500/10 text-amber-300";
 }
 
+function getSingleSearchParam(
+  value: string | string[] | undefined,
+): string | null {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value[0] ?? null;
+  }
+
+  return null;
+}
+
+function isVanmotionTrackingUrl(
+  value: string | null,
+): boolean {
+  if (!value) {
+    return false;
+  }
+
+  try {
+    const hostname = new URL(value)
+      .hostname
+      .toLowerCase()
+      .replace(/^www\./, "");
+
+    return hostname === "vanmotion.es";
+  } catch {
+    return false;
+  }
+}
+
 function getShippingAddress(
   order: {
     shippingName: string | null;
@@ -216,7 +258,24 @@ function getShippingAddress(
   );
 }
 
-export default async function OrdersPage() {
+export default async function OrdersPage({
+  searchParams,
+}: OrdersPageProps) {
+  const resolvedSearchParams =
+    searchParams
+      ? await searchParams
+      : {};
+
+  const savedOrderId =
+    getSingleSearchParam(
+      resolvedSearchParams.orderSaved,
+    );
+
+  const savedWithdrawalId =
+    getSingleSearchParam(
+      resolvedSearchParams.withdrawalSaved,
+    );
+
   const orders =
     await prisma.order.findMany({
       include: {
@@ -316,6 +375,24 @@ export default async function OrdersPage() {
         </Link>
       </header>
 
+      {savedOrderId && (
+        <div
+          role="status"
+          className="border border-emerald-500/30 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-200"
+        >
+          Pedido #{savedOrderId} guardado correctamente.
+        </div>
+      )}
+
+      {savedWithdrawalId && (
+        <div
+          role="status"
+          className="border border-emerald-500/30 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-200"
+        >
+          Desistimiento #{savedWithdrawalId} guardado correctamente.
+        </div>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {statistics.map((item) => (
           <article
@@ -382,6 +459,11 @@ export default async function OrdersPage() {
                     .withdrawalRequest
                     .status
                 : null;
+
+            const trackingUsesVanmotion =
+              isVanmotionTrackingUrl(
+                order.trackingUrl,
+              );
 
             const formKey = [
               order.id,
@@ -754,7 +836,7 @@ export default async function OrdersPage() {
 
                     <label className="flex flex-col gap-2">
                       <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
-                        Enlace de seguimiento
+                        Enlace del transportista
                       </span>
 
                       <input
@@ -764,9 +846,14 @@ export default async function OrdersPage() {
                           order.trackingUrl ??
                           ""
                         }
-                        placeholder="https://..."
+                        placeholder="https://seguimiento.transportista..."
+                        autoComplete="off"
                         className="min-h-11 border border-white/15 bg-black px-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-white/50"
                       />
+
+                      <span className="text-[11px] leading-4 text-white/30">
+                        Pega el enlace real de Correos, MRW, SEUR u otra empresa. No uses www.vanmotion.es.
+                      </span>
                     </label>
 
                     <label className="flex flex-col gap-2">
@@ -956,18 +1043,23 @@ export default async function OrdersPage() {
                           </p>
                         )}
 
-                        {order.trackingUrl && (
-                          <a
-                            href={
-                              order.trackingUrl
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-3 inline-flex border-b border-white/40 pb-1 font-semibold uppercase tracking-[0.1em] text-white transition hover:border-white"
-                          >
-                            Abrir seguimiento ↗
-                          </a>
-                        )}
+                        {order.trackingUrl &&
+                          (trackingUsesVanmotion ? (
+                            <p className="mt-3 border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-amber-200">
+                              Enlace de prueba: abre VANMOTION y no permite seguir el envío. Sustitúyelo por el enlace del transportista.
+                            </p>
+                          ) : (
+                            <a
+                              href={
+                                order.trackingUrl
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-3 inline-flex border-b border-white/40 pb-1 font-semibold uppercase tracking-[0.1em] text-white transition hover:border-white"
+                            >
+                              Abrir seguimiento del transportista ↗
+                            </a>
+                          ))}
                       </div>
                     )}
                   </div>

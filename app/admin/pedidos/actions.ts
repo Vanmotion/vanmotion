@@ -258,6 +258,14 @@ function refreshOrderPages(): void {
   revalidatePath("/admin/pedidos");
 }
 
+function getShortIdentifier(
+  identifier: string,
+): string {
+  return identifier
+    .slice(-10)
+    .toUpperCase();
+}
+
 export async function updateOrderFulfillmentStatusAction(
   formData: FormData,
 ): Promise<void> {
@@ -401,7 +409,11 @@ export async function updateOrderFulfillmentStatusAction(
   ) {
     refreshOrderPages();
 
-    return;
+    redirect(
+      `/admin/pedidos?orderSaved=${encodeURIComponent(
+        getShortIdentifier(orderId),
+      )}`,
+    );
   }
 
   /*
@@ -550,6 +562,12 @@ export async function updateOrderFulfillmentStatusAction(
   );
 
   refreshOrderPages();
+
+  redirect(
+    `/admin/pedidos?orderSaved=${encodeURIComponent(
+      getShortIdentifier(updatedOrder.id),
+    )}`,
+  );
 }
 
 export async function updateWithdrawalRequestAction(
@@ -659,7 +677,11 @@ export async function updateWithdrawalRequestAction(
   ) {
     refreshOrderPages();
 
-    return;
+    redirect(
+      `/admin/pedidos?withdrawalSaved=${encodeURIComponent(
+        getShortIdentifier(withdrawalId),
+      )}`,
+    );
   }
 
   const orderStatus =
@@ -736,5 +758,11 @@ export async function updateWithdrawalRequestAction(
   );
 
   refreshOrderPages();
+
+  redirect(
+    `/admin/pedidos?withdrawalSaved=${encodeURIComponent(
+      getShortIdentifier(updatedWithdrawal.id),
+    )}`,
+  );
 }
 
