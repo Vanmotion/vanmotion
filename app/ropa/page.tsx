@@ -842,9 +842,6 @@ export default async function RopaPage() {
               width={768}
               height={1024}
               sizes="(max-width: 900px) 100vw, 44vw"
-              unoptimized={
-                backImage.startsWith("http")
-              }
             />
 
             <figcaption>
@@ -870,9 +867,6 @@ export default async function RopaPage() {
                 width={768}
                 height={1024}
                 sizes="(max-width: 700px) 50vw, 22vw"
-                unoptimized={
-                  frontImage.startsWith("http")
-                }
               />
 
               <figcaption>
@@ -897,9 +891,6 @@ export default async function RopaPage() {
                 width={1024}
                 height={1536}
                 sizes="(max-width: 700px) 50vw, 22vw"
-                unoptimized={
-                  detailImage.startsWith("http")
-                }
               />
 
               <figcaption>
@@ -975,134 +966,6 @@ export default async function RopaPage() {
               productVariants
             }
           />
-        </div>
-      </section>
-
-      <section
-        className={
-          styles.detailsSection
-        }
-      >
-        <div
-          className={
-            styles.sectionHeading
-          }
-        >
-          <div>
-            <p
-              className={
-                styles.eyebrow
-              }
-            >
-              {
-                content.details
-                  .eyebrow
-              }
-            </p>
-
-            <h2>
-              {
-                content.details
-                  .titleFirst
-              }
-
-              <br />
-
-              {
-                content.details
-                  .titleSecond
-              }
-            </h2>
-          </div>
-
-          <p>
-            {content.details.intro}
-          </p>
-        </div>
-
-        <div
-          className={
-            styles.specificationGrid
-          }
-        >
-          {content.details.cards.map(
-            (card) => (
-              <article
-                key={card.number}
-              >
-                <span>
-                  {card.number}
-                </span>
-
-                <h3>
-                  {card.title}
-                </h3>
-
-                <p>
-                  {card.text}
-                </p>
-              </article>
-            ),
-          )}
-        </div>
-
-        <div
-          className={
-            styles.palettePanel
-          }
-        >
-          <div>
-            <p
-              className={
-                styles.eyebrow
-              }
-            >
-              {
-                content.details
-                  .colorTitle
-              }
-            </p>
-
-            <strong>
-              CARPE / DIEM /
-              VANMOTION
-            </strong>
-          </div>
-
-          <div
-            className={
-              styles.colorList
-            }
-          >
-            {content.details.colors.map(
-              (color) => (
-                <div
-                  key={color.name}
-                >
-                  <span
-                    className={
-                      styles.colorSwatch
-                    }
-                    style={{
-                      background:
-                        color.value,
-                    }}
-                    aria-hidden="true"
-                  />
-
-                  <div>
-                    <strong>
-                      {color.name}
-                    </strong>
-
-                    <small>
-                      {color.value}
-                    </small>
-                  </div>
-                </div>
-              ),
-            )}
-          </div>
         </div>
       </section>
 
