@@ -210,7 +210,7 @@ export default async function EditVehiclePage({
 
             <Link
               href="/admin/vehicles"
-              className="inline-flex min-h-12 items-center justify-center bg-white px-5 text-xs font-semibold uppercase tracking-[0.14em] text-black transition hover:bg-white/85"
+              className="inline-flex min-h-12 items-center justify-center border border-white/25 bg-white/[0.04] px-5 text-xs font-semibold uppercase tracking-[0.14em] !text-white transition hover:border-white/45 hover:bg-white/10"
             >
               Volver a vehículos
             </Link>

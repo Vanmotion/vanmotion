@@ -424,11 +424,13 @@ export default async function CollectionPage() {
           <div
             className={
               vehicles.length === 1
-                ? "grid w-full grid-cols-1"
-                : "grid md:grid-cols-2 xl:grid-cols-3"
+                ? "grid w-full grid-cols-1 p-4 sm:p-5 lg:p-6"
+                : vehicles.length === 2
+                  ? "grid gap-4 p-4 sm:gap-5 sm:p-5 md:grid-cols-2 lg:gap-6 lg:p-6"
+                  : "grid gap-4 p-4 sm:gap-5 sm:p-5 md:grid-cols-2 lg:gap-6 lg:p-6 xl:grid-cols-3"
             }
           >
-            {vehicles.map((vehicle, index) => {
+            {vehicles.map((vehicle) => {
               const vehicleName = [
                 vehicle.brand.name,
                 vehicle.model,
@@ -470,19 +472,10 @@ export default async function CollectionPage() {
                   ? content.card.featured
                   : content.card.available;
 
-              const rightBorder =
-                index % 3 !== 2
-                  ? "xl:border-r"
-                  : "";
-
               return (
                 <article
                   key={vehicle.id}
-                  className={
-                    vehicles.length === 1
-                      ? "border-b border-white/10"
-                      : `border-b border-white/10 ${rightBorder} md:[&:nth-child(odd)]:border-r md:[&:nth-child(3n)]:border-r-0 xl:[&:nth-child(odd)]:border-r-0`
-                  }
+                  className="overflow-hidden border border-white/10 bg-white/[0.015]"
                 >
                   <Link
                     href={`/coleccion/${vehicle.id}`}
