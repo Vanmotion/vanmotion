@@ -179,7 +179,7 @@ export default function VehicleGallery({
       </div>
 
       {images.length > 1 && (
-        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+        <div className="mt-7 grid grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-6">
           {images.map(
             (image, index) => {
               const isSelected =
