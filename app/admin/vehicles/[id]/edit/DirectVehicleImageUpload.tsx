@@ -3,13 +3,13 @@
 import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
 import {
+  DragEvent,
   useRef,
   useState,
 } from "react";
 
 const MAX_IMAGES = 8;
-const MAX_IMAGE_SIZE =
-  8 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
 
 const ALLOWED_IMAGE_TYPES = new Set([
   "image/jpeg",
@@ -27,15 +27,10 @@ type RegisterImageResponse = {
   error?: string;
 };
 
-function safeFileName(
-  fileName: string,
-): string {
+function safeFileName(fileName: string): string {
   const normalized = fileName
     .normalize("NFD")
-    .replace(
-      /[\u0300-\u036f]/g,
-      "",
-    )
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9._-]+/g, "-")
     .replace(/-+/g, "-")
@@ -44,21 +39,15 @@ function safeFileName(
   return normalized || "vehiculo.jpg";
 }
 
-function formatMegabytes(
-  bytes: number,
-): string {
-  return `${(
-    bytes /
-    (1024 * 1024)
-  ).toFixed(2)} MB`;
+function formatMegabytes(bytes: number): string {
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
 async function readJsonResponse(
   response: Response,
 ): Promise<RegisterImageResponse> {
   try {
-    return (await response.json()) as
-      RegisterImageResponse;
+    return (await response.json()) as RegisterImageResponse;
   } catch {
     return {};
   }
@@ -69,39 +58,36 @@ export default function DirectVehicleImageUpload({
   existingImageCount,
 }: DirectVehicleImageUploadProps) {
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dragDepthRef = useRef(0);
 
-  const inputRef =
-    useRef<HTMLInputElement>(null);
-
-  const [isUploading, setIsUploading] =
-    useState(false);
-
-  const [progress, setProgress] =
-    useState(0);
-
-  const [currentFile, setCurrentFile] =
-    useState<string | null>(null);
-
-  const [message, setMessage] =
-    useState<string | null>(null);
-
-  const [error, setError] =
-    useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentFile, setCurrentFile] = useState<string | null>(null);
+  const [selectedFileNames, setSelectedFileNames] = useState<string[]>([]);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const availableSlots = Math.max(
     0,
     MAX_IMAGES - existingImageCount,
   );
 
-  function clearInput() {
+  function clearInput(): void {
     if (inputRef.current) {
       inputRef.current.value = "";
     }
   }
 
-  function validateFiles(
-    files: File[],
-  ): string | null {
+  function resetMessages(): void {
+    setMessage(null);
+    setError(null);
+    setProgress(0);
+    setCurrentFile(null);
+  }
+
+  function validateFiles(files: File[]): string | null {
     if (files.length === 0) {
       return "No se ha seleccionado ninguna fotografía.";
     }
@@ -111,18 +97,19 @@ export default function DirectVehicleImageUpload({
     }
 
     if (files.length > availableSlots) {
-      return `Puedes añadir ${availableSlots} ${
-        availableSlots === 1
-          ? "fotografía"
-          : "fotografías"
-      } más.`;
+      return `Has seleccionado ${files.length} fotografías, pero solo puedes añadir ${availableSlots} ${
+        availableSlots === 1 ? "más" : "más"
+      }.`;
+    }
+
+    const emptyFile = files.find((file) => file.size === 0);
+
+    if (emptyFile) {
+      return `“${emptyFile.name}” está vacío o no se puede leer.`;
     }
 
     const invalidType = files.find(
-      (file) =>
-        !ALLOWED_IMAGE_TYPES.has(
-          file.type,
-        ),
+      (file) => !ALLOWED_IMAGE_TYPES.has(file.type),
     );
 
     if (invalidType) {
@@ -130,8 +117,7 @@ export default function DirectVehicleImageUpload({
     }
 
     const oversizedFile = files.find(
-      (file) =>
-        file.size > MAX_IMAGE_SIZE,
+      (file) => file.size > MAX_IMAGE_SIZE,
     );
 
     if (oversizedFile) {
@@ -149,14 +135,13 @@ export default function DirectVehicleImageUpload({
   }: {
     url: string;
     pathname: string;
-  }) {
+  }): Promise<void> {
     const response = await fetch(
       "/api/vehicle-images/upload",
       {
         method: "POST",
         headers: {
-          "Content-Type":
-            "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           action: "register",
@@ -167,8 +152,7 @@ export default function DirectVehicleImageUpload({
       },
     );
 
-    const result =
-      await readJsonResponse(response);
+    const result = await readJsonResponse(response);
 
     if (!response.ok) {
       throw new Error(
@@ -178,19 +162,17 @@ export default function DirectVehicleImageUpload({
     }
   }
 
-  async function uploadFiles(
-    files: File[],
-  ) {
+  async function uploadFiles(files: File[]): Promise<void> {
     if (isUploading) {
       return;
     }
 
-    const validationError =
-      validateFiles(files);
+    const validationError = validateFiles(files);
 
     if (validationError) {
       setError(validationError);
       setMessage(null);
+      setSelectedFileNames([]);
       clearInput();
       return;
     }
@@ -198,9 +180,14 @@ export default function DirectVehicleImageUpload({
     setIsUploading(true);
     setError(null);
     setMessage(
-      "Subiendo fotografías automáticamente...",
+      `Preparando ${files.length} ${
+        files.length === 1 ? "fotografía" : "fotografías"
+      }...`,
     );
     setProgress(0);
+    setSelectedFileNames(files.map((file) => file.name));
+
+    let successfulUploads = 0;
 
     try {
       for (
@@ -210,7 +197,9 @@ export default function DirectVehicleImageUpload({
       ) {
         const file = files[index];
 
-        setCurrentFile(file.name);
+        setCurrentFile(
+          `${index + 1} de ${files.length}: ${file.name}`,
+        );
 
         const pathname =
           `vehicles/${vehicleId}/` +
@@ -224,14 +213,12 @@ export default function DirectVehicleImageUpload({
             access: "public",
             handleUploadUrl:
               "/api/vehicle-images/upload",
-            clientPayload:
-              JSON.stringify({
-                vehicleId,
-              }),
+            clientPayload: JSON.stringify({
+              vehicleId,
+            }),
             contentType: file.type,
             multipart:
-              file.size >
-              5 * 1024 * 1024,
+              file.size > 5 * 1024 * 1024,
             onUploadProgress: ({
               percentage,
             }) => {
@@ -245,9 +232,7 @@ export default function DirectVehicleImageUpload({
 
               setProgress(
                 Math.round(
-                  (completed +
-                    current) *
-                    100,
+                  (completed + current) * 100,
                 ),
               );
             },
@@ -258,13 +243,22 @@ export default function DirectVehicleImageUpload({
           url: blob.url,
           pathname: blob.pathname,
         });
+
+        successfulUploads += 1;
+
+        setProgress(
+          Math.round(
+            (successfulUploads / files.length) *
+              100,
+          ),
+        );
       }
 
       setProgress(100);
       setCurrentFile(null);
       setMessage(
-        `${files.length} ${
-          files.length === 1
+        `${successfulUploads} ${
+          successfulUploads === 1
             ? "fotografía guardada"
             : "fotografías guardadas"
         }. Actualizando la galería...`,
@@ -275,68 +269,205 @@ export default function DirectVehicleImageUpload({
 
       window.setTimeout(() => {
         window.location.reload();
-      }, 800);
+      }, 700);
     } catch (uploadError) {
-      setError(
+      const detail =
         uploadError instanceof Error
           ? uploadError.message
-          : "No se pudieron subir las fotografías.",
+          : "No se pudieron subir las fotografías.";
+
+      setError(
+        successfulUploads > 0
+          ? `${successfulUploads} ${
+              successfulUploads === 1
+                ? "fotografía quedó guardada"
+                : "fotografías quedaron guardadas"
+            }, pero la subida se detuvo: ${detail}`
+          : detail,
       );
 
       setMessage(null);
       setCurrentFile(null);
       clearInput();
+
+      if (successfulUploads > 0) {
+        router.refresh();
+
+        window.setTimeout(() => {
+          window.location.reload();
+        }, 1200);
+      }
     } finally {
       setIsUploading(false);
+      setIsDragging(false);
+      dragDepthRef.current = 0;
     }
+  }
+
+  function processSelection(files: File[]): void {
+    resetMessages();
+    void uploadFiles(files);
   }
 
   function handleSelection(
     event: React.ChangeEvent<HTMLInputElement>,
-  ) {
-    setMessage(null);
-    setError(null);
-    setProgress(0);
-
+  ): void {
     const files = Array.from(
       event.target.files ?? [],
     );
 
-    void uploadFiles(files);
+    processSelection(files);
   }
+
+  function handleDragEnter(
+    event: DragEvent<HTMLDivElement>,
+  ): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (
+      isUploading ||
+      availableSlots === 0
+    ) {
+      return;
+    }
+
+    dragDepthRef.current += 1;
+    setIsDragging(true);
+  }
+
+  function handleDragOver(
+    event: DragEvent<HTMLDivElement>,
+  ): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (
+      !isUploading &&
+      availableSlots > 0
+    ) {
+      event.dataTransfer.dropEffect =
+        "copy";
+    }
+  }
+
+  function handleDragLeave(
+    event: DragEvent<HTMLDivElement>,
+  ): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    dragDepthRef.current = Math.max(
+      0,
+      dragDepthRef.current - 1,
+    );
+
+    if (dragDepthRef.current === 0) {
+      setIsDragging(false);
+    }
+  }
+
+  function handleDrop(
+    event: DragEvent<HTMLDivElement>,
+  ): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    dragDepthRef.current = 0;
+    setIsDragging(false);
+
+    if (
+      isUploading ||
+      availableSlots === 0
+    ) {
+      return;
+    }
+
+    const files = Array.from(
+      event.dataTransfer.files,
+    );
+
+    processSelection(files);
+  }
+
+  function openFilePicker(): void {
+    if (
+      isUploading ||
+      availableSlots === 0
+    ) {
+      return;
+    }
+
+    inputRef.current?.click();
+  }
+
+  const isDisabled =
+    availableSlots === 0 || isUploading;
 
   return (
     <div>
-      <label
-        htmlFor="direct-vehicle-images"
-        className={`flex min-h-44 flex-col items-center justify-center border border-dashed px-6 text-center transition ${
-          availableSlots > 0 &&
-          !isUploading
-            ? "cursor-pointer border-white/20 bg-black/25 hover:border-white/40 hover:bg-white/[0.03]"
-            : "cursor-not-allowed border-white/10 bg-black/15 opacity-55"
+      <div
+        role="button"
+        tabIndex={isDisabled ? -1 : 0}
+        aria-disabled={isDisabled}
+        onClick={openFilePicker}
+        onKeyDown={(event) => {
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+            event.preventDefault();
+            openFilePicker();
+          }
+        }}
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`flex min-h-52 flex-col items-center justify-center border border-dashed px-6 text-center transition ${
+          isDisabled
+            ? "cursor-not-allowed border-white/10 bg-black/15 opacity-55"
+            : isDragging
+              ? "cursor-copy border-white bg-white/[0.08]"
+              : "cursor-pointer border-white/20 bg-black/25 hover:border-white/45 hover:bg-white/[0.03]"
         }`}
       >
         <span className="text-3xl">
-          {isUploading ? "…" : "＋"}
+          {isUploading
+            ? "…"
+            : isDragging
+              ? "↓"
+              : "＋"}
         </span>
 
         <strong className="mt-4 text-sm">
           {isUploading
             ? "Subiendo fotografías"
-            : availableSlots > 0
-              ? "Seleccionar y subir fotografías"
-              : "Máximo de fotografías alcanzado"}
+            : availableSlots === 0
+              ? "Máximo de fotografías alcanzado"
+              : isDragging
+                ? "Suelta aquí las fotografías"
+                : "Seleccionar varias fotografías"}
         </strong>
 
-        <small className="mt-2 max-w-lg text-xs leading-6 text-white/35">
+        <small className="mt-2 max-w-xl text-xs leading-6 text-white/40">
           {isUploading
             ? "No cierres esta página hasta que aparezcan las miniaturas."
-            : `Selecciona hasta ${availableSlots} ${
-                availableSlots === 1
-                  ? "imagen"
-                  : "imágenes"
-              }. La subida comienza automáticamente. JPG, PNG, WebP o AVIF; máximo 8 MB por archivo.`}
+            : availableSlots === 0
+              ? "Este vehículo ya tiene 8 fotografías."
+              : `Puedes arrastrar aquí hasta ${availableSlots} ${
+                  availableSlots === 1
+                    ? "imagen"
+                    : "imágenes"
+                } juntas. En el selector de macOS, mantén pulsada ⌘ para elegir fotos separadas o Mayúsculas para seleccionar un grupo.`}
         </small>
+
+        {!isUploading &&
+          availableSlots > 0 && (
+            <span className="mt-5 border border-white/20 bg-white px-5 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-black">
+              Abrir selector
+            </span>
+          )}
 
         <input
           ref={inputRef}
@@ -344,22 +475,40 @@ export default function DirectVehicleImageUpload({
           type="file"
           multiple
           accept="image/jpeg,image/png,image/webp,image/avif"
-          disabled={
-            availableSlots === 0 ||
-            isUploading
-          }
+          disabled={isDisabled}
           onChange={handleSelection}
           className="sr-only"
         />
-      </label>
+      </div>
+
+      {selectedFileNames.length > 0 &&
+        !error && (
+          <div className="mt-4 border border-white/10 bg-black/25 p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
+              Archivos seleccionados
+            </p>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {selectedFileNames.map(
+                (fileName, index) => (
+                  <span
+                    key={`${fileName}-${index}`}
+                    className="max-w-full truncate border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-white/55"
+                  >
+                    {index + 1}. {fileName}
+                  </span>
+                ),
+              )}
+            </div>
+          </div>
+        )}
 
       {isUploading && (
         <div className="mt-5 border border-white/10 bg-black/30 p-4">
           <div className="mb-3 flex items-center justify-between gap-4 text-xs text-white/45">
             <span className="truncate">
-              {currentFile
-                ? `Subiendo: ${currentFile}`
-                : "Preparando fotografías..."}
+              {currentFile ??
+                "Preparando fotografías..."}
             </span>
 
             <strong className="text-white">
