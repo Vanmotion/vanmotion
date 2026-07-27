@@ -7,6 +7,10 @@ import {
   moveMusicTrack,
   saveMusicTrack,
 } from "./actions";
+import {
+  removeTrackCover,
+  saveTrackCover,
+} from "./covers/actions";
 import styles from "./music-admin.module.css";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +31,10 @@ export default async function AdminMusicPage() {
     (track) => track.active,
   ).length;
 
+  const tracksWithCover = tracks.filter(
+    (track) => Boolean(track.coverUrl),
+  ).length;
+
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
@@ -42,8 +50,9 @@ export default async function AdminMusicPage() {
           </h1>
 
           <p>
-            Gestiona los temas que forman parte del
-            reproductor oficial de VANMOTION.
+            Gestiona los temas, el audio y las portadas
+            del reproductor oficial de VANMOTION desde
+            un único espacio.
           </p>
         </div>
 
@@ -75,6 +84,11 @@ export default async function AdminMusicPage() {
             {tracks.length - activeTracks}
           </strong>
           <span>Temas ocultos</span>
+        </article>
+
+        <article>
+          <strong>{tracksWithCover}</strong>
+          <span>Portadas añadidas</span>
         </article>
       </section>
 
@@ -129,6 +143,26 @@ export default async function AdminMusicPage() {
                     {String(index + 1).padStart(
                       2,
                       "0",
+                    )}
+                  </div>
+
+                  <div className={styles.coverThumbnail}>
+                    {track.coverUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={track.coverUrl}
+                        alt={`Portada de ${track.title}`}
+                      />
+                    ) : (
+                      <div
+                        className={
+                          styles.coverPlaceholder
+                        }
+                        aria-label="Tema sin portada"
+                      >
+                        <strong>V</strong>
+                        <span>Sin portada</span>
+                      </div>
                     )}
                   </div>
 
@@ -191,6 +225,68 @@ export default async function AdminMusicPage() {
                       </button>
                     </form>
                   </div>
+                </div>
+
+                <div className={styles.coverManager}>
+                  <div className={styles.coverStatus}>
+                    <span>Portada</span>
+
+                    <strong>
+                      {track.coverUrl
+                        ? "Portada activa"
+                        : "Pendiente de añadir"}
+                    </strong>
+                  </div>
+
+                  <form
+                    action={saveTrackCover}
+                    className={styles.coverUploadForm}
+                  >
+                    <input
+                      type="hidden"
+                      name="trackId"
+                      value={track.id}
+                    />
+
+                    <label>
+                      <span className="sr-only">
+                        Seleccionar portada para{" "}
+                        {track.title}
+                      </span>
+
+                      <input
+                        type="file"
+                        name="cover"
+                        accept="image/jpeg,image/png,image/webp,image/avif"
+                        required
+                      />
+                    </label>
+
+                    <button type="submit">
+                      {track.coverUrl
+                        ? "Sustituir portada"
+                        : "Subir portada"}
+                    </button>
+                  </form>
+
+                  {track.coverUrl && (
+                    <form
+                      action={removeTrackCover}
+                      className={
+                        styles.removeCoverForm
+                      }
+                    >
+                      <input
+                        type="hidden"
+                        name="trackId"
+                        value={track.id}
+                      />
+
+                      <button type="submit">
+                        Eliminar
+                      </button>
+                    </form>
+                  )}
                 </div>
 
                 <div className={styles.audioPreview}>

@@ -71,7 +71,7 @@
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   border-left: 1px solid #dedede;
 }
 
@@ -183,7 +183,7 @@
   min-height: 125px;
   padding: 22px;
   display: grid;
-  grid-template-columns: 55px minmax(0, 1fr) auto;
+  grid-template-columns: 55px 84px minmax(0, 1fr) auto;
   gap: 20px;
   align-items: center;
   border-bottom: 1px solid #e2e2e2;
@@ -192,6 +192,45 @@
 .trackNumber {
   color: #aaaaaa;
   font-size: 14px;
+}
+
+.coverThumbnail {
+  width: 84px;
+  height: 84px;
+  overflow: hidden;
+  border: 1px solid #dddddd;
+  background: #0b0b0b;
+}
+
+.coverThumbnail img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.coverPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #ffffff;
+}
+
+.coverPlaceholder strong {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.coverPlaceholder span {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 7px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .trackTitle span {
@@ -229,6 +268,71 @@
 .orderButtons button:disabled {
   opacity: 0.25;
   cursor: not-allowed;
+}
+
+.coverManager {
+  padding: 16px 22px;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.55fr) minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid #e2e2e2;
+  background: #f5f5f5;
+}
+
+.coverStatus {
+  display: grid;
+  gap: 5px;
+}
+
+.coverStatus span {
+  color: #888888;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.coverStatus strong {
+  font-size: 13px;
+}
+
+.coverUploadForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.coverUploadForm input[type="file"] {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 10px;
+  border: 1px solid #d4d4d4;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+}
+
+.coverUploadForm button,
+.removeCoverForm button {
+  min-height: 42px;
+  padding: 0 15px;
+  border: 0;
+  background: #111111;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.removeCoverForm button {
+  border: 1px solid #d0d0d0;
+  background: transparent;
+  color: #777777;
 }
 
 .audioPreview {
@@ -318,6 +422,20 @@
   cursor: pointer;
 }
 
+@media (max-width: 1000px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .coverManager {
+    grid-template-columns: 1fr;
+  }
+
+  .removeCoverForm {
+    justify-self: start;
+  }
+}
+
 @media (max-width: 800px) {
   .hero {
     padding: 35px 24px;
@@ -339,11 +457,20 @@
   }
 
   .trackHeader {
-    grid-template-columns: 40px 1fr;
+    grid-template-columns: 40px 72px 1fr;
+  }
+
+  .coverThumbnail {
+    width: 72px;
+    height: 72px;
   }
 
   .orderButtons {
-    grid-column: 2;
+    grid-column: 3;
+  }
+
+  .coverUploadForm {
+    grid-template-columns: 1fr;
   }
 
   .editForm {
