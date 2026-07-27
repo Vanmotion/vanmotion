@@ -842,6 +842,9 @@ export default async function RopaPage() {
               width={768}
               height={1024}
               sizes="(max-width: 900px) 100vw, 44vw"
+              unoptimized={
+                backImage.startsWith("http")
+              }
             />
 
             <figcaption>
@@ -867,6 +870,9 @@ export default async function RopaPage() {
                 width={768}
                 height={1024}
                 sizes="(max-width: 700px) 50vw, 22vw"
+                unoptimized={
+                  frontImage.startsWith("http")
+                }
               />
 
               <figcaption>
@@ -891,6 +897,9 @@ export default async function RopaPage() {
                 width={1024}
                 height={1536}
                 sizes="(max-width: 700px) 50vw, 22vw"
+                unoptimized={
+                  detailImage.startsWith("http")
+                }
               />
 
               <figcaption>

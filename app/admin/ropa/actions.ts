@@ -1,5 +1,8 @@
 "use server";
 
+import path from "node:path";
+
+import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -19,8 +22,51 @@ const PRODUCT_SIZES = [
   "XL",
 ] as const;
 
+const PRODUCT_IMAGE_VIEWS = {
+  FRONT: {
+    sortOrder: 0,
+    alt:
+      "Vista frontal de la camiseta CARPE DIEM Black Edition",
+  },
+  BACK: {
+    sortOrder: 1,
+    alt:
+      "Vista trasera de la camiseta CARPE DIEM Black Edition",
+  },
+  DETAIL: {
+    sortOrder: 2,
+    alt:
+      "Detalle del diseño CARPE DIEM",
+  },
+} as const;
+
+const MAX_PRODUCT_IMAGE_SIZE =
+  8 * 1024 * 1024;
+
+const ALLOWED_IMAGE_FORMATS: Record<
+  string,
+  ReadonlySet<string>
+> = {
+  "image/jpeg": new Set([
+    ".jpg",
+    ".jpeg",
+  ]),
+  "image/png": new Set([
+    ".png",
+  ]),
+  "image/webp": new Set([
+    ".webp",
+  ]),
+  "image/avif": new Set([
+    ".avif",
+  ]),
+};
+
 type ProductSize =
   (typeof PRODUCT_SIZES)[number];
+
+type ProductImageView =
+  keyof typeof PRODUCT_IMAGE_VIEWS;
 
 const ALLOWED_STATUSES = new Set([
   "DRAFT",
@@ -55,6 +101,24 @@ async function requireAdminSession(): Promise<void> {
   ) {
     redirect("/login-admin");
   }
+}
+
+function requiredString(
+  formData: FormData,
+  field: string,
+): string {
+  const value = formData.get(field);
+
+  if (
+    typeof value !== "string" ||
+    !value.trim()
+  ) {
+    throw new Error(
+      `El campo “${field}” es obligatorio.`,
+    );
+  }
+
+  return value.trim();
 }
 
 function parsePrice(
@@ -101,7 +165,134 @@ function parseStock(
   return stock;
 }
 
+function parseProductImageView(
+  formData: FormData,
+): ProductImageView {
+  const view = requiredString(
+    formData,
+    "view",
+  );
+
+  if (!(view in PRODUCT_IMAGE_VIEWS)) {
+    throw new Error(
+      "La vista de la imagen no es válida.",
+    );
+  }
+
+  return view as ProductImageView;
+}
+
+function safeFileName(
+  fileName: string,
+): string {
+  return fileName
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function validateProductImage(
+  file: File,
+): string {
+  const extension = path
+    .extname(file.name)
+    .toLowerCase();
+
+  const allowedExtensions =
+    ALLOWED_IMAGE_FORMATS[file.type];
+
+  if (
+    !allowedExtensions ||
+    !allowedExtensions.has(extension)
+  ) {
+    throw new Error(
+      "La imagen debe ser JPG, PNG, WebP o AVIF y su extensión debe coincidir con el archivo.",
+    );
+  }
+
+  if (file.size > MAX_PRODUCT_IMAGE_SIZE) {
+    throw new Error(
+      "La imagen no puede superar los 8 MB.",
+    );
+  }
+
+  return extension;
+}
+
+function isVercelBlobUrl(
+  value: string | null,
+): value is string {
+  if (!value || value.startsWith("/")) {
+    return false;
+  }
+
+  try {
+    const parsedUrl = new URL(value);
+
+    return (
+      parsedUrl.protocol === "https:" &&
+      parsedUrl.hostname.endsWith(
+        ".blob.vercel-storage.com",
+      )
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function removeStoredProductImage(
+  imageUrl: string | null,
+): Promise<void> {
+  if (!isVercelBlobUrl(imageUrl)) {
+    return;
+  }
+
+  try {
+    await del(imageUrl);
+  } catch (error) {
+    console.error(
+      "No se pudo eliminar la imagen de ropa de Vercel Blob:",
+      error,
+    );
+  }
+}
+
+async function requireManagedProduct(
+  productId: string,
+): Promise<{
+  id: string;
+  slug: string;
+}> {
+  const product =
+    await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+
+      select: {
+        id: true,
+        slug: true,
+      },
+    });
+
+  if (
+    !product ||
+    product.slug !== PRODUCT_SLUG
+  ) {
+    throw new Error(
+      "El producto indicado no puede gestionarse desde esta sección.",
+    );
+  }
+
+  return product;
+}
+
 function refreshClothingPages(): void {
+  revalidatePath("/");
+  revalidatePath("/admin");
   revalidatePath("/admin/ropa");
   revalidatePath("/ropa");
 }
@@ -190,30 +381,36 @@ export async function createCarpeDiemProductAction(): Promise<void> {
               "/ropa/carpe-diem-frontal.webp",
 
             alt:
-              "Vista frontal de la camiseta CARPE DIEM Black Edition",
+              PRODUCT_IMAGE_VIEWS.FRONT.alt,
 
             view: "FRONT",
-            sortOrder: 0,
+            sortOrder:
+              PRODUCT_IMAGE_VIEWS.FRONT
+                .sortOrder,
           },
           {
             url:
               "/ropa/carpe-diem-trasera.webp",
 
             alt:
-              "Vista trasera de la camiseta CARPE DIEM Black Edition",
+              PRODUCT_IMAGE_VIEWS.BACK.alt,
 
             view: "BACK",
-            sortOrder: 1,
+            sortOrder:
+              PRODUCT_IMAGE_VIEWS.BACK
+                .sortOrder,
           },
           {
             url:
               "/ropa/carpe-diem-diseno.webp",
 
             alt:
-              "Detalle del diseño CARPE DIEM",
+              PRODUCT_IMAGE_VIEWS.DETAIL.alt,
 
             view: "DETAIL",
-            sortOrder: 2,
+            sortOrder:
+              PRODUCT_IMAGE_VIEWS.DETAIL
+                .sortOrder,
           },
         ],
       },
@@ -228,39 +425,12 @@ export async function updateProductAction(
 ): Promise<void> {
   await requireAdminSession();
 
-  const productId = String(
-    formData.get("productId") ?? "",
-  ).trim();
+  const productId = requiredString(
+    formData,
+    "productId",
+  );
 
-  if (!productId) {
-    throw new Error(
-      "No se ha recibido el identificador del producto.",
-    );
-  }
-
-  /*
-   * Esta acción pertenece exclusivamente al Drop 01.
-   * No debe poder utilizarse para modificar otro producto.
-   */
-  const product =
-    await prisma.product.findUnique({
-      where: {
-        id: productId,
-      },
-
-      select: {
-        slug: true,
-      },
-    });
-
-  if (
-    !product ||
-    product.slug !== PRODUCT_SLUG
-  ) {
-    throw new Error(
-      "El producto indicado no puede gestionarse desde esta sección.",
-    );
-  }
+  await requireManagedProduct(productId);
 
   const price = parsePrice(
     formData.get("price"),
@@ -348,6 +518,210 @@ export async function updateProductAction(
         }),
     ),
   ]);
+
+  refreshClothingPages();
+}
+
+export async function saveProductImageAction(
+  formData: FormData,
+): Promise<void> {
+  await requireAdminSession();
+
+  const productId = requiredString(
+    formData,
+    "productId",
+  );
+
+  const view =
+    parseProductImageView(formData);
+
+  const product =
+    await requireManagedProduct(productId);
+
+  const image = formData.get("image");
+
+  if (
+    !(image instanceof File) ||
+    image.size === 0
+  ) {
+    throw new Error(
+      "Selecciona una imagen para el producto.",
+    );
+  }
+
+  const extension =
+    validateProductImage(image);
+
+  const viewConfiguration =
+    PRODUCT_IMAGE_VIEWS[view];
+
+  const originalBaseName =
+    path.basename(
+      image.name,
+      extension,
+    ) || view.toLowerCase();
+
+  const pathname =
+    `clothing/${product.id}/${view.toLowerCase()}/` +
+    safeFileName(
+      `${originalBaseName}${extension}`,
+    );
+
+  const currentImages =
+    await prisma.productImage.findMany({
+      where: {
+        productId: product.id,
+        view,
+      },
+
+      orderBy: [
+        {
+          sortOrder: "asc",
+        },
+        {
+          createdAt: "asc",
+        },
+      ],
+    });
+
+  const blob = await put(
+    pathname,
+    image,
+    {
+      access: "public",
+      addRandomSuffix: true,
+    },
+  );
+
+  try {
+    await prisma.$transaction(
+      async (transaction) => {
+        const currentImage =
+          currentImages[0];
+
+        if (currentImage) {
+          await transaction.productImage.update({
+            where: {
+              id: currentImage.id,
+            },
+
+            data: {
+              url: blob.url,
+              alt:
+                viewConfiguration.alt,
+              view,
+              sortOrder:
+                viewConfiguration.sortOrder,
+            },
+          });
+        } else {
+          await transaction.productImage.create({
+            data: {
+              productId: product.id,
+              url: blob.url,
+              alt:
+                viewConfiguration.alt,
+              view,
+              sortOrder:
+                viewConfiguration.sortOrder,
+            },
+          });
+        }
+
+        const duplicatedImageIds =
+          currentImages
+            .slice(1)
+            .map(
+              (currentImage) =>
+                currentImage.id,
+            );
+
+        if (
+          duplicatedImageIds.length > 0
+        ) {
+          await transaction.productImage.deleteMany({
+            where: {
+              id: {
+                in: duplicatedImageIds,
+              },
+            },
+          });
+        }
+      },
+    );
+  } catch (error) {
+    try {
+      await del(blob.url);
+    } catch (cleanupError) {
+      console.error(
+        "No se pudo limpiar la nueva imagen de ropa tras fallar la base de datos:",
+        cleanupError,
+      );
+    }
+
+    throw error;
+  }
+
+  await Promise.all(
+    currentImages.map(
+      (currentImage) =>
+        removeStoredProductImage(
+          currentImage.url,
+        ),
+    ),
+  );
+
+  refreshClothingPages();
+}
+
+export async function removeProductImageAction(
+  formData: FormData,
+): Promise<void> {
+  await requireAdminSession();
+
+  const productId = requiredString(
+    formData,
+    "productId",
+  );
+
+  const view =
+    parseProductImageView(formData);
+
+  const product =
+    await requireManagedProduct(productId);
+
+  const currentImages =
+    await prisma.productImage.findMany({
+      where: {
+        productId: product.id,
+        view,
+      },
+    });
+
+  if (currentImages.length === 0) {
+    refreshClothingPages();
+    return;
+  }
+
+  await prisma.productImage.deleteMany({
+    where: {
+      id: {
+        in: currentImages.map(
+          (currentImage) =>
+            currentImage.id,
+        ),
+      },
+    },
+  });
+
+  await Promise.all(
+    currentImages.map(
+      (currentImage) =>
+        removeStoredProductImage(
+          currentImage.url,
+        ),
+    ),
+  );
 
   refreshClothingPages();
 }

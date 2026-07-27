@@ -4,6 +4,8 @@ import { prisma } from "@/app/lib/prisma";
 
 import {
   createCarpeDiemProductAction,
+  removeProductImageAction,
+  saveProductImageAction,
   updateProductAction,
 } from "./actions";
 
@@ -46,6 +48,39 @@ const productSizes = [
   "M",
   "L",
   "XL",
+] as const;
+
+const productImageSlots = [
+  {
+    view: "FRONT",
+    title: "Vista frontal",
+    description:
+      "Imagen limpia de la parte delantera.",
+    fallbackUrl:
+      "/ropa/carpe-diem-frontal.webp",
+    alt:
+      "Vista frontal de la camiseta CARPE DIEM Black Edition",
+  },
+  {
+    view: "BACK",
+    title: "Vista trasera",
+    description:
+      "Imagen principal con el diseño CARPE DIEM.",
+    fallbackUrl:
+      "/ropa/carpe-diem-trasera.webp",
+    alt:
+      "Vista trasera de la camiseta CARPE DIEM Black Edition",
+  },
+  {
+    view: "DETAIL",
+    title: "Detalle del diseño",
+    description:
+      "Acercamiento del estampado y del acabado.",
+    fallbackUrl:
+      "/ropa/carpe-diem-diseno.webp",
+    alt:
+      "Detalle del diseño CARPE DIEM",
+  },
 ] as const;
 
 function formatPrice(
@@ -256,8 +291,8 @@ export default async function ClothingAdminPage() {
             }
           >
             Gestiona el precio, el
-            estado y el stock por talla
-            de CARPE DIEM · Drop 01.
+            estado, el stock por talla
+            y las imágenes de CARPE DIEM · Drop 01.
           </p>
         </div>
 
@@ -361,8 +396,22 @@ export default async function ClothingAdminPage() {
           }
         >
           {products.map((product) => {
+            const imagesByView =
+              new Map(
+                product.images.map(
+                  (image) => [
+                    image.view,
+                    image,
+                  ],
+                ),
+              );
+
             const primaryImage =
-              product.images[0];
+              imagesByView.get("FRONT");
+
+            const primaryImageUrl =
+              primaryImage?.url ??
+              "/ropa/carpe-diem-frontal.webp";
 
             const variantsBySize =
               new Map(
@@ -425,28 +474,16 @@ export default async function ClothingAdminPage() {
                         styles.imageFrame
                       }
                     >
-                      {primaryImage ? (
-                        <img
-                          src={
-                            primaryImage.url
-                          }
-                          alt={
-                            primaryImage.alt ??
-                            product.name
-                          }
-                          className={
-                            styles.productImage
-                          }
-                        />
-                      ) : (
-                        <div
-                          className={
-                            styles.noImage
-                          }
-                        >
-                          Sin imagen
-                        </div>
-                      )}
+                      <img
+                        src={primaryImageUrl}
+                        alt={
+                          primaryImage?.alt ??
+                          product.name
+                        }
+                        className={
+                          styles.productImage
+                        }
+                      />
                     </div>
 
                     <div
@@ -760,6 +797,192 @@ export default async function ClothingAdminPage() {
                     </div>
                   </form>
                 </div>
+
+                <section
+                  className={
+                    styles.imageManager
+                  }
+                >
+                  <div
+                    className={
+                      styles.imageManagerHeading
+                    }
+                  >
+                    <div>
+                      <p
+                        className={
+                          styles.fieldLabel
+                        }
+                      >
+                        Imágenes del producto
+                      </p>
+
+                      <h3>
+                        Galería de la tienda
+                      </h3>
+
+                      <p>
+                        Sube cada vista por separado.
+                        Las imágenes se guardan de forma
+                        permanente y se actualizan
+                        directamente en la tienda pública.
+                      </p>
+                    </div>
+
+                    <span>
+                      JPG · PNG · WEBP · AVIF
+                    </span>
+                  </div>
+
+                  <div
+                    className={
+                      styles.productImagesGrid
+                    }
+                  >
+                    {productImageSlots.map(
+                      (slot) => {
+                        const image =
+                          imagesByView.get(
+                            slot.view,
+                          );
+
+                        const displayUrl =
+                          image?.url ??
+                          slot.fallbackUrl;
+
+                        const isCustomImage =
+                          Boolean(
+                            image?.url.startsWith(
+                              "http",
+                            ),
+                          );
+
+                        return (
+                          <article
+                            key={slot.view}
+                            className={
+                              styles.productImageCard
+                            }
+                          >
+                            <div
+                              className={
+                                styles.productImagePreview
+                              }
+                            >
+                              <img
+                                src={displayUrl}
+                                alt={
+                                  image?.alt ??
+                                  slot.alt
+                                }
+                              />
+
+                              <span>
+                                {isCustomImage
+                                  ? "Personalizada"
+                                  : "Predeterminada"}
+                              </span>
+                            </div>
+
+                            <div
+                              className={
+                                styles.productImageInformation
+                              }
+                            >
+                              <h4>
+                                {slot.title}
+                              </h4>
+
+                              <p>
+                                {
+                                  slot.description
+                                }
+                              </p>
+                            </div>
+
+                            <form
+                              action={
+                                saveProductImageAction
+                              }
+                              className={
+                                styles.productImageUploadForm
+                              }
+                            >
+                              <input
+                                type="hidden"
+                                name="productId"
+                                value={product.id}
+                              />
+
+                              <input
+                                type="hidden"
+                                name="view"
+                                value={slot.view}
+                              />
+
+                              <input
+                                type="file"
+                                name="image"
+                                accept="image/jpeg,image/png,image/webp,image/avif"
+                                required
+                                className={
+                                  styles.productImageFile
+                                }
+                              />
+
+                              <SubmitButton
+                                idleText={
+                                  isCustomImage
+                                    ? "Sustituir imagen"
+                                    : "Subir imagen"
+                                }
+                                pendingText="Subiendo..."
+                                className={
+                                  styles.productImageUploadButton
+                                }
+                              />
+                            </form>
+
+                            {isCustomImage && (
+                              <form
+                                action={
+                                  removeProductImageAction
+                                }
+                                className={
+                                  styles.productImageRestoreForm
+                                }
+                              >
+                                <input
+                                  type="hidden"
+                                  name="productId"
+                                  value={
+                                    product.id
+                                  }
+                                />
+
+                                <input
+                                  type="hidden"
+                                  name="view"
+                                  value={
+                                    slot.view
+                                  }
+                                />
+
+                                <SubmitButton
+                                  idleText="Restaurar predeterminada"
+                                  pendingText="Restaurando..."
+                                  className={
+                                    styles.productImageRestoreButton
+                                  }
+                                />
+                              </form>
+                            )}
+                          </article>
+                        );
+                      },
+                    )}
+                  </div>
+                </section>
               </article>
             );
           })}
