@@ -45,10 +45,10 @@ export default async function BrandsPage() {
         </div>
 
         <Link
-          href="/admin/vehicles/nuevo"
+          href="#nueva-marca"
           className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-5 text-sm font-semibold !text-black transition hover:bg-white/80"
         >
-          + Añadir vehículo
+          + Añadir marca
         </Link>
       </div>
 
@@ -88,7 +88,10 @@ export default async function BrandsPage() {
         </article>
       </div>
 
-      <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+      <section
+        id="nueva-marca"
+        className="mt-8 scroll-mt-8 rounded-2xl border border-white/10 bg-white/[0.025] p-6"
+      >
         <div className="border-b border-white/10 pb-5">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/35">
             Nueva marca
