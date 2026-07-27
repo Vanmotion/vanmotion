@@ -13,20 +13,51 @@ const ALLOWED_STATUSES = new Set([
   "AVAILABLE",
   "RESERVED",
   "SOLD",
+  "EMBLEM",
 ]);
 
-const ALLOWED_FUELS = new Set([
-  "Diesel",
-  "Gasoline",
-  "Hybrid",
-  "Electric",
-  "LPG",
-]);
+const FUEL_ALIASES: Record<string, string> = {
+  DIESEL: "DIESEL",
+  Diesel: "DIESEL",
+  diesel: "DIESEL",
 
-const ALLOWED_TRANSMISSIONS = new Set([
-  "Manual",
-  "Automatic",
-]);
+  GASOLINE: "GASOLINE",
+  Gasoline: "GASOLINE",
+  gasolina: "GASOLINE",
+  Gasolina: "GASOLINE",
+
+  HYBRID: "HYBRID",
+  Hybrid: "HYBRID",
+  hybrid: "HYBRID",
+  Híbrido: "HYBRID",
+  Hibrido: "HYBRID",
+
+  PLUG_IN_HYBRID: "PLUG_IN_HYBRID",
+  "Plug-in hybrid": "PLUG_IN_HYBRID",
+  "Híbrido enchufable": "PLUG_IN_HYBRID",
+  "Hibrido enchufable": "PLUG_IN_HYBRID",
+
+  ELECTRIC: "ELECTRIC",
+  Electric: "ELECTRIC",
+  electric: "ELECTRIC",
+  Eléctrico: "ELECTRIC",
+  Electrico: "ELECTRIC",
+
+  LPG: "LPG",
+  GLP: "LPG",
+};
+
+const TRANSMISSION_ALIASES: Record<string, string> = {
+  MANUAL: "MANUAL",
+  Manual: "MANUAL",
+  manual: "MANUAL",
+
+  AUTOMATIC: "AUTOMATIC",
+  Automatic: "AUTOMATIC",
+  automatic: "AUTOMATIC",
+  Automática: "AUTOMATIC",
+  Automatica: "AUTOMATIC",
+};
 
 async function requireAdminSession(): Promise<void> {
   const sessionToken =
@@ -52,19 +83,25 @@ async function requireAdminSession(): Promise<void> {
   }
 }
 
+function normalizeText(
+  value: FormDataEntryValue | null,
+  maximumLength: number,
+): string {
+  return String(value ?? "")
+    .replace(/\0/g, "")
+    .trim()
+    .slice(0, maximumLength);
+}
+
 function requiredString(
   formData: FormData,
   field: string,
+  maximumLength = 500,
 ): string {
-  const value = formData.get(field);
-
-  if (typeof value !== "string") {
-    throw new Error(
-      `El campo “${field}” es obligatorio.`,
-    );
-  }
-
-  const normalized = value.trim();
+  const normalized = normalizeText(
+    formData.get(field),
+    maximumLength,
+  );
 
   if (!normalized) {
     throw new Error(
@@ -78,14 +115,12 @@ function requiredString(
 function optionalString(
   formData: FormData,
   field: string,
+  maximumLength = 500,
 ): string | null {
-  const value = formData.get(field);
-
-  if (typeof value !== "string") {
-    return null;
-  }
-
-  const normalized = value.trim();
+  const normalized = normalizeText(
+    formData.get(field),
+    maximumLength,
+  );
 
   return normalized || null;
 }
@@ -97,6 +132,7 @@ function requiredInt(
   const value = requiredString(
     formData,
     field,
+    30,
   );
 
   const parsed = Number(value);
@@ -117,6 +153,7 @@ function optionalInt(
   const value = optionalString(
     formData,
     field,
+    30,
   );
 
   if (value === null) {
@@ -141,6 +178,7 @@ function requiredPrice(
   const rawValue = requiredString(
     formData,
     field,
+    50,
   );
 
   let normalized = rawValue
@@ -190,12 +228,60 @@ function checkboxValue(
   );
 }
 
+function normalizeFuel(
+  formData: FormData,
+): string {
+  const receivedFuel = requiredString(
+    formData,
+    "fuel",
+    80,
+  );
+
+  const normalizedFuel =
+    FUEL_ALIASES[receivedFuel];
+
+  if (!normalizedFuel) {
+    throw new Error(
+      "El tipo de combustible no es válido.",
+    );
+  }
+
+  return normalizedFuel;
+}
+
+function normalizeTransmission(
+  formData: FormData,
+): string {
+  const receivedTransmission =
+    requiredString(
+      formData,
+      "transmission",
+      80,
+    );
+
+  const normalizedTransmission =
+    TRANSMISSION_ALIASES[
+      receivedTransmission
+    ];
+
+  if (!normalizedTransmission) {
+    throw new Error(
+      "El tipo de transmisión no es válido.",
+    );
+  }
+
+  return normalizedTransmission;
+}
+
 function vehicleStatus(
   formData: FormData,
 ): string {
   const status =
-    optionalString(formData, "status") ??
-    "AVAILABLE";
+    optionalString(
+      formData,
+      "status",
+      50,
+    ) ?? "AVAILABLE";
 
   if (!ALLOWED_STATUSES.has(status)) {
     throw new Error(
@@ -208,22 +294,25 @@ function vehicleStatus(
 
 export async function createVehicle(
   formData: FormData,
-) {
+): Promise<void> {
   await requireAdminSession();
 
   const brandId = requiredString(
     formData,
     "brandId",
+    100,
   );
 
   const model = requiredString(
     formData,
     "model",
+    160,
   );
 
   const version = optionalString(
     formData,
     "version",
+    180,
   );
 
   const year = requiredInt(
@@ -241,36 +330,28 @@ export async function createVehicle(
     "price",
   );
 
-  const fuel = requiredString(
-    formData,
-    "fuel",
-  );
-
-  const transmission = requiredString(
-    formData,
-    "transmission",
-  );
-
-  if (!ALLOWED_FUELS.has(fuel)) {
-    throw new Error(
-      "El tipo de combustible no es válido.",
-    );
-  }
-
-  if (!ALLOWED_TRANSMISSIONS.has(transmission)) {
-    throw new Error(
-      "El tipo de transmisión no es válido.",
-    );
-  }
+  /*
+   * El formulario antiguo enviaba Diesel,
+   * Gasoline, Manual y Automatic.
+   * La edición utiliza DIESEL, GASOLINE,
+   * MANUAL y AUTOMATIC. Normalizamos ambos
+   * formatos para guardar siempre el valor
+   * canónico en PostgreSQL.
+   */
+  const fuel = normalizeFuel(formData);
+  const transmission =
+    normalizeTransmission(formData);
 
   const drivetrain = optionalString(
     formData,
     "drivetrain",
+    100,
   );
 
   const engine = optionalString(
     formData,
     "engine",
+    120,
   );
 
   const power = optionalInt(
@@ -281,11 +362,13 @@ export async function createVehicle(
   const color = optionalString(
     formData,
     "color",
+    100,
   );
 
   const description = optionalString(
     formData,
     "description",
+    10000,
   );
 
   const featured = checkboxValue(
@@ -362,10 +445,6 @@ export async function createVehicle(
   revalidatePath("/coleccion");
   revalidatePath("/");
 
-  /*
-   * Las fotografías se suben después desde la pantalla de edición,
-   * que utiliza la carga directa a Vercel Blob.
-   */
   redirect(
     `/admin/vehicles/${vehicle.id}/edit`,
   );
@@ -373,6 +452,6 @@ export async function createVehicle(
 
 export async function createVehicleAction(
   formData: FormData,
-) {
+): Promise<void> {
   return createVehicle(formData);
 }
