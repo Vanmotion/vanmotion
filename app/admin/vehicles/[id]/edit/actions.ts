@@ -774,15 +774,17 @@ export async function updateVehicle(
     );
   }
 
+  /*
+   * Traducimos siempre al guardar.
+   * Así corregimos vehículos antiguos cuya descripción inglesa
+   * quedó guardada anteriormente en español.
+   */
   const descriptionEn =
     description === null
       ? null
-      : description !== vehicle.description ||
-          !vehicle.descriptionEn
-        ? await translateVehicleDescriptionToEnglish(
-            description,
-          )
-        : vehicle.descriptionEn;
+      : await translateVehicleDescriptionToEnglish(
+          description,
+        );
 
   validateSelection({
     value: fuel,
