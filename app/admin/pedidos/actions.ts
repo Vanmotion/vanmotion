@@ -32,6 +32,20 @@ const ALLOWED_WITHDRAWAL_STATUSES =
     WithdrawalStatus.REJECTED,
   ]);
 
+type WithdrawalDates = {
+  returnReceivedAt: Date | null;
+  refundedAt: Date | null;
+  rejectedAt: Date | null;
+  resolvedAt: Date | null;
+};
+
+type WithdrawalDateUpdates = {
+  returnReceivedAt?: Date | null;
+  refundedAt?: Date | null;
+  rejectedAt?: Date | null;
+  resolvedAt?: Date | null;
+};
+
 function isWithdrawalStatus(
   value: string,
 ): value is WithdrawalStatus {
@@ -110,6 +124,135 @@ function normalizeTrackingUrl(
   return url.toString();
 }
 
+function validateShippingData(
+  fulfillmentStatus: string,
+  shippingCarrier: string | null,
+  trackingNumber: string | null,
+  trackingUrl: string | null,
+): void {
+  if (fulfillmentStatus !== "SHIPPED") {
+    return;
+  }
+
+  if (!shippingCarrier) {
+    throw new Error(
+      "Indica el transportista antes de marcar el pedido como enviado.",
+    );
+  }
+
+  if (!trackingNumber && !trackingUrl) {
+    throw new Error(
+      "Indica un número o un enlace de seguimiento antes de marcar el pedido como enviado.",
+    );
+  }
+}
+
+function getWithdrawalDateUpdates(
+  status: WithdrawalStatus,
+  existingDates: WithdrawalDates,
+  now: Date,
+): WithdrawalDateUpdates {
+  const updates: WithdrawalDateUpdates = {};
+
+  if (
+    status === WithdrawalStatus.RECEIVED ||
+    status === WithdrawalStatus.UNDER_REVIEW
+  ) {
+    if (existingDates.refundedAt) {
+      updates.refundedAt = null;
+    }
+
+    if (existingDates.rejectedAt) {
+      updates.rejectedAt = null;
+    }
+
+    if (existingDates.resolvedAt) {
+      updates.resolvedAt = null;
+    }
+
+    return updates;
+  }
+
+  if (
+    status ===
+    WithdrawalStatus.RETURN_RECEIVED
+  ) {
+    if (!existingDates.returnReceivedAt) {
+      updates.returnReceivedAt = now;
+    }
+
+    if (existingDates.refundedAt) {
+      updates.refundedAt = null;
+    }
+
+    if (existingDates.rejectedAt) {
+      updates.rejectedAt = null;
+    }
+
+    if (existingDates.resolvedAt) {
+      updates.resolvedAt = null;
+    }
+
+    return updates;
+  }
+
+  if (status === WithdrawalStatus.REFUNDED) {
+    if (!existingDates.refundedAt) {
+      updates.refundedAt = now;
+    }
+
+    if (existingDates.rejectedAt) {
+      updates.rejectedAt = null;
+    }
+
+    if (!existingDates.resolvedAt) {
+      updates.resolvedAt = now;
+    }
+
+    return updates;
+  }
+
+  if (status === WithdrawalStatus.REJECTED) {
+    if (existingDates.refundedAt) {
+      updates.refundedAt = null;
+    }
+
+    if (!existingDates.rejectedAt) {
+      updates.rejectedAt = now;
+    }
+
+    if (!existingDates.resolvedAt) {
+      updates.resolvedAt = now;
+    }
+  }
+
+  return updates;
+}
+
+function getOrderStatusForWithdrawal(
+  withdrawalStatus: WithdrawalStatus,
+): string | null {
+  if (
+    withdrawalStatus ===
+      WithdrawalStatus.RECEIVED ||
+    withdrawalStatus ===
+      WithdrawalStatus.UNDER_REVIEW ||
+    withdrawalStatus ===
+      WithdrawalStatus.RETURN_RECEIVED
+  ) {
+    return "REVIEW_REQUIRED";
+  }
+
+  if (
+    withdrawalStatus ===
+    WithdrawalStatus.REFUNDED
+  ) {
+    return "CANCELLED";
+  }
+
+  return null;
+}
+
 function refreshOrderPages(): void {
   revalidatePath("/admin");
   revalidatePath("/admin/pedidos");
@@ -173,6 +316,13 @@ export async function updateOrderFulfillmentStatusAction(
       "El estado seleccionado no es válido.",
     );
   }
+
+  validateShippingData(
+    fulfillmentStatus,
+    shippingCarrier,
+    trackingNumber,
+    trackingUrl,
+  );
 
   const existingOrder =
     await prisma.order.findUnique({
@@ -457,6 +607,7 @@ export async function updateWithdrawalRequestAction(
         id: true,
         orderId: true,
         status: true,
+        adminNotes: true,
         returnReceivedAt: true,
         refundedAt: true,
         rejectedAt: true,
@@ -470,120 +621,102 @@ export async function updateWithdrawalRequestAction(
     );
   }
 
-  const now =
-    new Date();
-
-  const dateUpdates: {
-    returnReceivedAt?: Date;
-    refundedAt?: Date;
-    rejectedAt?: Date;
-    resolvedAt?: Date;
-  } = {};
-
-  if (
-    withdrawalStatus ===
-      "RETURN_RECEIVED" &&
-    !existingWithdrawal
-      .returnReceivedAt
-  ) {
-    dateUpdates.returnReceivedAt =
-      now;
-  }
-
-  if (
-    withdrawalStatus ===
-      "REFUNDED"
-  ) {
-    if (
-      !existingWithdrawal
-        .refundedAt
-    ) {
-      dateUpdates.refundedAt =
-        now;
-    }
-
-    if (
-      !existingWithdrawal
-        .resolvedAt
-    ) {
-      dateUpdates.resolvedAt =
-        now;
-    }
-  }
-
-  if (
-    withdrawalStatus ===
-      "REJECTED"
-  ) {
-    if (
-      !existingWithdrawal
-        .rejectedAt
-    ) {
-      dateUpdates.rejectedAt =
-        now;
-    }
-
-    if (
-      !existingWithdrawal
-        .resolvedAt
-    ) {
-      dateUpdates.resolvedAt =
-        now;
-    }
-  }
-
   const statusChanged =
     existingWithdrawal.status !==
     withdrawalStatus;
 
-  const updatedWithdrawal =
-    await prisma.withdrawalRequest.update({
-      where: {
-        id: withdrawalId,
+  const notesChanged =
+    existingWithdrawal.adminNotes !==
+    adminNotes;
+
+  const dateUpdates =
+    getWithdrawalDateUpdates(
+      withdrawalStatus,
+      {
+        returnReceivedAt:
+          existingWithdrawal
+            .returnReceivedAt,
+
+        refundedAt:
+          existingWithdrawal
+            .refundedAt,
+
+        rejectedAt:
+          existingWithdrawal
+            .rejectedAt,
+
+        resolvedAt:
+          existingWithdrawal
+            .resolvedAt,
       },
+      new Date(),
+    );
 
-      data: {
-        status:
-          withdrawalStatus,
-
-        adminNotes,
-
-        ...dateUpdates,
-      },
-
-      select: {
-        id: true,
-        orderId: true,
-        status: true,
-      },
-    });
-
-  /*
-   * Al empezar la revisión, también dejamos
-   * el pedido marcado para revisión interna.
-   */
   if (
-    statusChanged &&
-    (
-      withdrawalStatus ===
-        "RECEIVED" ||
-      withdrawalStatus ===
-        "UNDER_REVIEW"
-    )
+    !statusChanged &&
+    !notesChanged &&
+    Object.keys(dateUpdates).length === 0
   ) {
-    await prisma.order.update({
-      where: {
-        id:
-          updatedWithdrawal
-            .orderId,
-      },
+    refreshOrderPages();
 
-      data: {
-        fulfillmentStatus:
-          "REVIEW_REQUIRED",
-      },
-    });
+    return;
   }
+
+  const orderStatus =
+    statusChanged
+      ? getOrderStatusForWithdrawal(
+          withdrawalStatus,
+        )
+      : null;
+
+  const updatedWithdrawal =
+    await prisma.$transaction(
+      async (transaction) => {
+        const withdrawal =
+          await transaction
+            .withdrawalRequest
+            .update({
+              where: {
+                id: withdrawalId,
+              },
+
+              data: {
+                status:
+                  withdrawalStatus,
+
+                adminNotes,
+
+                ...dateUpdates,
+              },
+
+              select: {
+                id: true,
+                orderId: true,
+                status: true,
+              },
+            });
+
+        /*
+         * El pedido y el desistimiento se guardan
+         * dentro de la misma transacción para evitar
+         * estados administrativos incoherentes.
+         */
+        if (orderStatus) {
+          await transaction.order.update({
+            where: {
+              id: withdrawal.orderId,
+            },
+
+            data: {
+              fulfillmentStatus:
+                orderStatus,
+            },
+          });
+        }
+
+        return withdrawal;
+      },
+    );
 
   console.log(
     "VANMOTION_WITHDRAWAL_UPDATED:",
@@ -596,8 +729,12 @@ export async function updateWithdrawalRequestAction(
 
       withdrawalStatus:
         updatedWithdrawal.status,
+
+      orderStatusUpdated:
+        orderStatus,
     },
   );
 
   refreshOrderPages();
 }
+
