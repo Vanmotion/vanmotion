@@ -199,7 +199,7 @@ export default function VehicleGallery({
                   aria-pressed={isSelected}
                   className={`group relative overflow-hidden rounded-2xl border bg-white/[0.03] text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
                     isSelected
-                      ? "border-amber-300/70 ring-2 ring-amber-300/20"
+                      ? "border-amber-300/70 ring-2 ring-inset ring-amber-300/20"
                       : "border-white/10 hover:border-white/35"
                   }`}
                 >
