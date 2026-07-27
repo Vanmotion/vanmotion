@@ -131,5 +131,5 @@ export async function saveSiteSettings(
   revalidatePath("/admin/settings");
   revalidatePath("/admin/configuracion");
 
-  redirect("/admin/settings");
+  redirect("/admin/settings?saved=1");
 }

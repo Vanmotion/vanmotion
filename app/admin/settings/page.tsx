@@ -6,7 +6,16 @@ import { saveSiteSettings } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function SettingsPage() {
+type SettingsPageProps = {
+  searchParams: Promise<{
+    saved?: string;
+  }>;
+};
+
+export default async function SettingsPage({
+  searchParams,
+}: SettingsPageProps) {
+  const { saved } = await searchParams;
   const settings = await prisma.siteSettings.findUnique({
     where: {
       id: "main",
@@ -38,6 +47,20 @@ export default async function SettingsPage() {
           Ver página pública →
         </Link>
       </div>
+
+      {saved === "1" ? (
+        <div
+          role="status"
+          className="mt-6 flex items-center gap-3 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 px-5 py-4 text-sm font-semibold text-emerald-300"
+        >
+          <span
+            aria-hidden="true"
+            className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_16px_rgba(52,211,153,0.65)]"
+          />
+
+          Configuración guardada correctamente.
+        </div>
+      ) : null}
 
       <form
         action={saveSiteSettings}
