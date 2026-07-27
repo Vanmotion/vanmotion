@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:local": "DATABASE_URL=postgresql://jose@localhost:5432/vanmotion PUBLIC_SITE_ENABLED=true next dev",
+    "dev:local:closed": "DATABASE_URL=postgresql://jose@localhost:5432/vanmotion PUBLIC_SITE_ENABLED=false next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:local:migrate": "DATABASE_URL=postgresql://jose@localhost:5432/vanmotion prisma migrate deploy",
+    "db:local:seed": "DATABASE_URL=postgresql://jose@localhost:5432/vanmotion tsx prisma/seed.ts",
+    "db:local:studio": "DATABASE_URL=postgresql://jose@localhost:5432/vanmotion prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
@@ -27,6 +32,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",
+    "tsx": "^4.23.1",
     "typescript": "^5"
   }
 }
