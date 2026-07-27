@@ -493,9 +493,58 @@ async function saveVehicleImages({
   }
 }
 
+async function persistImageOrder(
+  images: Array<{
+    id: string;
+  }>,
+): Promise<void> {
+  if (images.length === 0) {
+    return;
+  }
+
+  /*
+   * Primero asignamos posiciones temporales negativas.
+   * Así evitamos colisiones si la base de datos tiene
+   * una restricción única sobre vehículo + orden.
+   */
+  await prisma.$transaction(
+    async (transaction) => {
+      for (
+        let index = 0;
+        index < images.length;
+        index += 1
+      ) {
+        await transaction.vehicleImage.update({
+          where: {
+            id: images[index].id,
+          },
+          data: {
+            sortOrder: -(index + 1),
+          },
+        });
+      }
+
+      for (
+        let index = 0;
+        index < images.length;
+        index += 1
+      ) {
+        await transaction.vehicleImage.update({
+          where: {
+            id: images[index].id,
+          },
+          data: {
+            sortOrder: index,
+          },
+        });
+      }
+    },
+  );
+}
+
 async function normalizeImageOrder(
   vehicleId: string,
-) {
+): Promise<void> {
   const images =
     await prisma.vehicleImage.findMany({
       where: {
@@ -509,24 +558,12 @@ async function normalizeImageOrder(
           createdAt: "asc",
         },
       ],
+      select: {
+        id: true,
+      },
     });
 
-  if (images.length === 0) {
-    return;
-  }
-
-  await prisma.$transaction(
-    images.map((image, index) =>
-      prisma.vehicleImage.update({
-        where: {
-          id: image.id,
-        },
-        data: {
-          sortOrder: index,
-        },
-      }),
-    ),
-  );
+  await persistImageOrder(images);
 }
 
 async function removeStoredImage(
@@ -885,6 +922,11 @@ export async function setVehicleCoverImage(
     );
   }
 
+  if (images[0]?.id === imageId) {
+    refreshVehiclePages(vehicleId);
+    return;
+  }
+
   const reorderedImages = [
     selectedImage,
     ...images.filter(
@@ -892,18 +934,8 @@ export async function setVehicleCoverImage(
     ),
   ];
 
-  await prisma.$transaction(
-    reorderedImages.map(
-      (image, index) =>
-        prisma.vehicleImage.update({
-          where: {
-            id: image.id,
-          },
-          data: {
-            sortOrder: index,
-          },
-        }),
-    ),
+  await persistImageOrder(
+    reorderedImages,
   );
 
   refreshVehiclePages(vehicleId);
@@ -924,12 +956,18 @@ export async function moveVehicleImage(
     optionalString(
       formData,
       "direction",
-    ) ?? "up";
+    ) ?? "left";
 
-  if (
-    direction !== "up" &&
-    direction !== "down"
-  ) {
+  const normalizedDirection =
+    direction === "left" ||
+    direction === "up"
+      ? "previous"
+      : direction === "right" ||
+          direction === "down"
+        ? "next"
+        : null;
+
+  if (!normalizedDirection) {
     throw new Error(
       "La dirección del movimiento no es válida.",
     );
@@ -961,7 +999,7 @@ export async function moveVehicleImage(
   }
 
   const targetIndex =
-    direction === "down"
+    normalizedDirection === "next"
       ? currentIndex + 1
       : currentIndex - 1;
 
@@ -982,18 +1020,8 @@ export async function moveVehicleImage(
     reorderedImages[currentIndex],
   ];
 
-  await prisma.$transaction(
-    reorderedImages.map(
-      (image, index) =>
-        prisma.vehicleImage.update({
-          where: {
-            id: image.id,
-          },
-          data: {
-            sortOrder: index,
-          },
-        }),
-    ),
+  await persistImageOrder(
+    reorderedImages,
   );
 
   refreshVehiclePages(vehicleId);
