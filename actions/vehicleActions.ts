@@ -9,6 +9,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
+import {
+  translateVehicleDescriptionToEnglish,
+} from "@/app/lib/vehicle-description-translation";
 
 const MAX_IMAGE_SIZE_BYTES = 4 * 1024 * 1024;
 
@@ -296,6 +299,11 @@ export async function createVehicle(formData: FormData) {
     validateImageUrl(imageUrl);
   }
 
+  const descriptionEn =
+    await translateVehicleDescriptionToEnglish(
+      description,
+    );
+
   await prisma.vehicle.create({
     data: {
       brandId,
@@ -313,7 +321,12 @@ export async function createVehicle(formData: FormData) {
       ...(engine ? { engine } : {}),
       ...(power !== undefined ? { power } : {}),
       ...(color ? { color } : {}),
-      ...(description ? { description } : {}),
+      ...(description
+        ? {
+            description,
+            descriptionEn,
+          }
+        : {}),
 
       ...(imageUrl
         ? {
@@ -389,6 +402,35 @@ export async function updateVehicle(formData: FormData) {
     power,
   });
 
+  const existingVehicle =
+    await prisma.vehicle.findUnique({
+      where: {
+        id: vehicleId,
+      },
+
+      select: {
+        description: true,
+        descriptionEn: true,
+      },
+    });
+
+  if (!existingVehicle) {
+    throw new Error(
+      "El vehículo indicado no existe.",
+    );
+  }
+
+  const descriptionEn =
+    description === undefined
+      ? null
+      : description !==
+            existingVehicle.description ||
+          !existingVehicle.descriptionEn
+        ? await translateVehicleDescriptionToEnglish(
+            description,
+          )
+        : existingVehicle.descriptionEn;
+
   await prisma.vehicle.update({
     where: {
       id: vehicleId,
@@ -409,6 +451,7 @@ export async function updateVehicle(formData: FormData) {
       featured,
       status,
       description: description ?? null,
+      descriptionEn,
     },
   });
 

@@ -5,6 +5,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
+import {
+  translateVehicleDescriptionToEnglish,
+} from "@/app/lib/vehicle-description-translation";
 
 const ADMIN_SESSION_COOKIE_NAME =
   "vanmotion_admin_session";
@@ -371,6 +374,11 @@ export async function createVehicle(
     10000,
   );
 
+  const descriptionEn =
+    await translateVehicleDescriptionToEnglish(
+      description,
+    );
+
   const featured = checkboxValue(
     formData,
     "featured",
@@ -432,6 +440,7 @@ export async function createVehicle(
       power,
       color,
       description,
+      descriptionEn,
       featured,
       status,
     },

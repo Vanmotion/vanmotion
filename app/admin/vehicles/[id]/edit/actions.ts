@@ -8,6 +8,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
+import {
+  translateVehicleDescriptionToEnglish,
+} from "@/app/lib/vehicle-description-translation";
 
 const ADMIN_SESSION_COOKIE_NAME =
   "vanmotion_admin_session";
@@ -713,11 +716,6 @@ export async function updateVehicle(
     "description",
   );
 
-  const descriptionEn = optionalString(
-    formData,
-    "descriptionEn",
-  );
-
   const featured = checkboxValue(
     formData,
     "featured",
@@ -775,6 +773,16 @@ export async function updateVehicle(
       "La marca seleccionada no existe.",
     );
   }
+
+  const descriptionEn =
+    description === null
+      ? null
+      : description !== vehicle.description ||
+          !vehicle.descriptionEn
+        ? await translateVehicleDescriptionToEnglish(
+            description,
+          )
+        : vehicle.descriptionEn;
 
   validateSelection({
     value: fuel,

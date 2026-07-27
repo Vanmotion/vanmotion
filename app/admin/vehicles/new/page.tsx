@@ -387,6 +387,11 @@ export default async function NewVehiclePage() {
                   placeholder="Describe el estado, equipamiento y características del vehículo..."
                   className="w-full resize-y rounded-xl border border-white/10 bg-black p-4 text-white"
                 />
+
+                <p className="mt-2 text-xs text-white/40">
+                  Escribe solo en español. VANMOTION generará automáticamente
+                  la versión inglesa al guardar.
+                </p>
               </div>
 
               <label className="mt-6 flex cursor-pointer items-center gap-3">

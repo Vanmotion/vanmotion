@@ -556,28 +556,15 @@ export default async function EditVehiclePage({
                 />
               </div>
 
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="descriptionEn"
-                  className="mb-2 block text-xs font-semibold uppercase tracking-[0.14em] text-white/45"
-                >
-                  Descripción en inglés
-                </label>
+              <div className="border border-emerald-400/20 bg-emerald-400/[0.06] px-5 py-4 md:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-300">
+                  Traducción automática al inglés
+                </p>
 
-                <textarea
-                  id="descriptionEn"
-                  name="descriptionEn"
-                  rows={7}
-                  defaultValue={
-                    vehicle.descriptionEn ?? ""
-                  }
-                  placeholder="Describe the condition, maintenance, equipment and special features of the vehicle in English."
-                  className={`${inputClasses} resize-y py-4`}
-                />
-
-                <p className="mt-2 text-xs leading-5 text-white/30">
-                  Si se deja vacía, la ficha inglesa mostrará temporalmente
-                  la descripción en español.
+                <p className="mt-2 text-sm leading-6 text-white/55">
+                  Escribe solamente la descripción en español. Al guardar,
+                  VANMOTION creará o actualizará automáticamente la versión
+                  inglesa.
                 </p>
               </div>
 

@@ -311,6 +311,11 @@ export default async function NuevoVehiculoPage() {
                   rows={9}
                   placeholder="Describe el estado, mantenimiento, equipamiento, historial y características especiales..."
                 />
+
+                <small>
+                  Escribe solo en español. VANMOTION generará automáticamente
+                  la versión inglesa al guardar.
+                </small>
               </label>
             </div>
 
