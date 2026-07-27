@@ -1,32 +1,60 @@
 "use server";
 
-import {
-  mkdir,
-  unlink,
-  writeFile,
-} from "node:fs/promises";
 import path from "node:path";
 
+import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 import { prisma } from "@/app/lib/prisma";
 
+const ADMIN_SESSION_COOKIE_NAME =
+  "vanmotion_admin_session";
+
 const MAX_COVER_SIZE = 8 * 1024 * 1024;
 
-const ALLOWED_IMAGE_TYPES = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/avif",
-]);
+const ALLOWED_IMAGE_TYPES: Record<
+  string,
+  ReadonlySet<string>
+> = {
+  "image/jpeg": new Set([
+    ".jpg",
+    ".jpeg",
+  ]),
+  "image/png": new Set([
+    ".png",
+  ]),
+  "image/webp": new Set([
+    ".webp",
+  ]),
+  "image/avif": new Set([
+    ".avif",
+  ]),
+};
 
-const ALLOWED_EXTENSIONS = new Set([
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".webp",
-  ".avif",
-]);
+async function requireAdminSession(): Promise<void> {
+  const expectedSession =
+    process.env.ADMIN_SESSION_TOKEN?.trim();
+
+  if (!expectedSession) {
+    throw new Error(
+      "La configuración de acceso al panel no está completa.",
+    );
+  }
+
+  const cookieStore = await cookies();
+
+  const currentSession =
+    cookieStore
+      .get(ADMIN_SESSION_COOKIE_NAME)
+      ?.value.trim();
+
+  if (currentSession !== expectedSession) {
+    throw new Error(
+      "No tienes autorización para gestionar portadas.",
+    );
+  }
+}
 
 function requiredString(
   formData: FormData,
@@ -66,17 +94,20 @@ function refreshMusicPages() {
   revalidatePath("/");
 }
 
-function validateCover(file: File) {
+function validateCover(file: File): string {
   const extension = path
     .extname(file.name)
     .toLowerCase();
 
+  const allowedExtensions =
+    ALLOWED_IMAGE_TYPES[file.type];
+
   if (
-    !ALLOWED_IMAGE_TYPES.has(file.type) &&
-    !ALLOWED_EXTENSIONS.has(extension)
+    !allowedExtensions ||
+    !allowedExtensions.has(extension)
   ) {
     throw new Error(
-      "La portada debe ser JPG, PNG, WebP o AVIF.",
+      "La portada debe ser JPG, PNG, WebP o AVIF y su extensión debe coincidir con el archivo.",
     );
   }
 
@@ -85,50 +116,53 @@ function validateCover(file: File) {
       "La portada no puede superar los 8 MB.",
     );
   }
+
+  return extension;
 }
 
-async function removeLocalCover(
-  coverUrl: string | null,
-) {
-  if (
-    !coverUrl ||
-    !coverUrl.startsWith(
-      "/uploads/music-covers/",
-    )
-  ) {
-    return;
+function isVercelBlobUrl(
+  value: string | null,
+): value is string {
+  if (!value || value.startsWith("/")) {
+    return false;
   }
 
-  const publicDirectory = path.resolve(
-    process.cwd(),
-    "public",
-  );
+  try {
+    const parsedUrl = new URL(value);
 
-  const coversDirectory = path.resolve(
-    publicDirectory,
-    "uploads",
-    "music-covers",
-  );
+    return (
+      parsedUrl.protocol === "https:" &&
+      parsedUrl.hostname.endsWith(
+        ".blob.vercel-storage.com",
+      )
+    );
+  } catch {
+    return false;
+  }
+}
 
-  const filePath = path.resolve(
-    publicDirectory,
-    coverUrl.replace(/^\/+/, ""),
-  );
-
-  if (!filePath.startsWith(coversDirectory)) {
+async function removeStoredCover(
+  coverUrl: string | null,
+): Promise<void> {
+  if (!isVercelBlobUrl(coverUrl)) {
     return;
   }
 
   try {
-    await unlink(filePath);
-  } catch {
-    // El archivo puede haber sido eliminado antes.
+    await del(coverUrl);
+  } catch (error) {
+    console.error(
+      "No se pudo eliminar la portada de Vercel Blob:",
+      error,
+    );
   }
 }
 
 export async function saveTrackCover(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
+
   const trackId = requiredString(
     formData,
     "trackId",
@@ -145,7 +179,7 @@ export async function saveTrackCover(
     );
   }
 
-  validateCover(cover);
+  const extension = validateCover(cover);
 
   const track =
     await prisma.musicTrack.findUnique({
@@ -160,62 +194,52 @@ export async function saveTrackCover(
     );
   }
 
-  const originalExtension = path
-    .extname(cover.name)
-    .toLowerCase();
+  const baseName =
+    path.basename(
+      cover.name,
+      extension,
+    ) || track.slug || "portada";
 
-  const extension =
-    ALLOWED_EXTENSIONS.has(originalExtension)
-      ? originalExtension
-      : cover.type === "image/png"
-        ? ".png"
-        : cover.type === "image/webp"
-          ? ".webp"
-          : cover.type === "image/avif"
-            ? ".avif"
-            : ".jpg";
-
-  const uploadDirectory = path.join(
-    process.cwd(),
-    "public",
-    "uploads",
-    "music-covers",
-  );
-
-  await mkdir(uploadDirectory, {
-    recursive: true,
-  });
-
-  const fileName = safeFileName(
-    `${track.slug}-${Date.now()}${extension}`,
-  );
-
-  const destination = path.join(
-    uploadDirectory,
-    fileName,
-  );
-
-  const buffer = Buffer.from(
-    await cover.arrayBuffer(),
-  );
-
-  await writeFile(destination, buffer);
-
-  const newCoverUrl =
-    `/uploads/music-covers/${fileName}`;
+  const pathname =
+    `music-covers/${track.id}/` +
+    safeFileName(
+      `${baseName}${extension}`,
+    );
 
   const previousCoverUrl = track.coverUrl;
 
-  await prisma.musicTrack.update({
-    where: {
-      id: track.id,
+  const blob = await put(
+    pathname,
+    cover,
+    {
+      access: "public",
+      addRandomSuffix: true,
     },
-    data: {
-      coverUrl: newCoverUrl,
-    },
-  });
+  );
 
-  await removeLocalCover(previousCoverUrl);
+  try {
+    await prisma.musicTrack.update({
+      where: {
+        id: track.id,
+      },
+      data: {
+        coverUrl: blob.url,
+      },
+    });
+  } catch (error) {
+    try {
+      await del(blob.url);
+    } catch (cleanupError) {
+      console.error(
+        "No se pudo limpiar la nueva portada tras fallar la base de datos:",
+        cleanupError,
+      );
+    }
+
+    throw error;
+  }
+
+  await removeStoredCover(previousCoverUrl);
 
   refreshMusicPages();
 }
@@ -223,6 +247,8 @@ export async function saveTrackCover(
 export async function removeTrackCover(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
+
   const trackId = requiredString(
     formData,
     "trackId",
@@ -250,7 +276,7 @@ export async function removeTrackCover(
     },
   });
 
-  await removeLocalCover(track.coverUrl);
+  await removeStoredCover(track.coverUrl);
 
   refreshMusicPages();
 }
