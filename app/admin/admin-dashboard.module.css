@@ -92,6 +92,7 @@
 }
 
 .statsGrid article {
+  min-width: 0;
   min-height: 145px;
   padding: 24px;
   display: flex;
@@ -105,7 +106,13 @@
 .statNumber {
   font-size: 42px;
   font-weight: 700;
+  line-height: 1;
   letter-spacing: -0.05em;
+  overflow-wrap: anywhere;
+}
+
+.statNumber[data-compact="true"] {
+  font-size: clamp(25px, 2.2vw, 34px);
 }
 
 .statsGrid strong,
@@ -240,11 +247,17 @@
 }
 
 .vehicleList article {
-  grid-template-columns: 115px minmax(0, 1fr) auto;
+  grid-template-columns:
+    115px
+    minmax(0, 1fr)
+    auto;
 }
 
 .contactList article {
-  grid-template-columns: 48px minmax(0, 1fr) auto;
+  grid-template-columns:
+    48px
+    minmax(0, 1fr)
+    auto;
 }
 
 .vehicleList article:last-child,
@@ -336,6 +349,11 @@
   color: #555555;
 }
 
+.vehicleStatus > span[data-status="EMBLEM"] {
+  background: #111111;
+  color: #ffffff;
+}
+
 .vehicleStatus a,
 .contactDate a {
   font-size: 8px;
@@ -375,6 +393,13 @@
 .contactDate span {
   color: #999999;
   font-size: 8px;
+  text-transform: uppercase;
+}
+
+.contactDate small {
+  color: #666666;
+  font-size: 8px;
+  text-align: right;
   text-transform: uppercase;
 }
 
@@ -421,6 +446,16 @@
   color: #ffffff;
 }
 
+.statusSection[data-tone="warning"] {
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(228, 195, 21, 0.1),
+      transparent 30%
+    ),
+    #0a0a0a;
+}
+
 .statusSection h2 {
   margin: 17px 0 0;
   font-size: clamp(40px, 4vw, 63px);
@@ -430,16 +465,23 @@
 }
 
 .statusList {
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.12);
 }
 
 .statusList > div {
   min-height: 65px;
   display: grid;
-  grid-template-columns: 14px 1fr auto;
+  grid-template-columns:
+    14px
+    1fr
+    auto;
   gap: 13px;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.12);
 }
 
 .statusList > div > span {
@@ -447,7 +489,23 @@
   height: 8px;
   border-radius: 50%;
   background: #73d08a;
-  box-shadow: 0 0 14px rgba(115, 208, 138, 0.55);
+  box-shadow:
+    0 0 14px
+    rgba(115, 208, 138, 0.55);
+}
+
+.statusList > div[data-state="warning"] > span {
+  background: #e4c315;
+  box-shadow:
+    0 0 14px
+    rgba(228, 195, 21, 0.55);
+}
+
+.statusList > div[data-state="neutral"] > span {
+  background: #858585;
+  box-shadow:
+    0 0 14px
+    rgba(133, 133, 133, 0.35);
 }
 
 .statusList strong {
@@ -458,16 +516,19 @@
   color: rgba(255, 255, 255, 0.4);
   font-size: 8px;
   letter-spacing: 0.1em;
+  text-align: right;
   text-transform: uppercase;
 }
 
 @media (max-width: 1200px) {
   .statsGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+      repeat(3, 1fr);
   }
 
   .actionGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+      repeat(2, 1fr);
   }
 
   .contentGrid {
@@ -484,7 +545,8 @@
   }
 
   .hero h1 {
-    font-size: clamp(36px, 12vw, 56px);
+    font-size:
+      clamp(36px, 12vw, 56px);
     overflow-wrap: anywhere;
   }
 
@@ -495,7 +557,11 @@
   }
 
   .statsGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 
   .statsGrid article {
@@ -503,7 +569,8 @@
     padding: 18px;
   }
 
-  .statNumber {
+  .statNumber,
+  .statNumber[data-compact="true"] {
     font-size: 34px;
     overflow-wrap: anywhere;
   }
@@ -513,7 +580,9 @@
   }
 
   .vehicleList article {
-    grid-template-columns: 90px minmax(0, 1fr);
+    grid-template-columns:
+      90px
+      minmax(0, 1fr);
   }
 
   .vehicleStatus {
@@ -524,7 +593,9 @@
   }
 
   .contactList article {
-    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-columns:
+      44px
+      minmax(0, 1fr);
   }
 
   .contactDate {
@@ -534,11 +605,17 @@
     flex-wrap: wrap;
   }
 
+  .contactDate small {
+    text-align: left;
+  }
+
   .statusSection {
     padding: 35px 24px;
     grid-template-columns: 1fr;
+    gap: 40px;
   }
 }
+
 @media (max-width: 460px) {
   .statsGrid {
     grid-template-columns: 1fr;
@@ -550,11 +627,14 @@
   }
 
   .statusList > div {
-    grid-template-columns: 14px minmax(0, 1fr);
+    grid-template-columns:
+      14px
+      minmax(0, 1fr);
     padding: 12px 0;
   }
 
   .statusList small {
     grid-column: 2;
+    text-align: left;
   }
 }

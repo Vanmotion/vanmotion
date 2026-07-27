@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { prisma } from "@/app/lib/prisma";
+
 import styles from "./admin-dashboard.module.css";
 
 export const dynamic = "force-dynamic";
@@ -48,6 +49,7 @@ function statusLabel(status: string): string {
     AVAILABLE: "Disponible",
     RESERVED: "Reservado",
     SOLD: "Vendido",
+    EMBLEM: "Emblema",
   };
 
   return labels[status] ?? status;
@@ -69,6 +71,9 @@ function orderStatusLabel(
 }
 
 export default async function AdminDashboardPage() {
+  const publicSiteEnabled =
+    process.env.PUBLIC_SITE_ENABLED === "true";
+
   const [
     totalVehicles,
     availableVehicles,
@@ -82,6 +87,9 @@ export default async function AdminDashboardPage() {
     shippedOrders,
     reviewOrders,
     paidRevenue,
+
+    totalWithdrawals,
+    openWithdrawals,
 
     recentVehicles,
     recentContacts,
@@ -149,6 +157,19 @@ export default async function AdminDashboardPage() {
       },
     }),
 
+    prisma.withdrawalRequest.count(),
+
+    prisma.withdrawalRequest.count({
+      where: {
+        status: {
+          notIn: [
+            "REFUNDED",
+            "REJECTED",
+          ],
+        },
+      },
+    }),
+
     prisma.vehicle.findMany({
       take: 5,
 
@@ -207,6 +228,128 @@ export default async function AdminDashboardPage() {
   const confirmedRevenue =
     paidRevenue._sum.amountTotal ?? 0;
 
+  const needsAttention =
+    reviewOrders > 0 ||
+    openWithdrawals > 0;
+
+  const stats = [
+    {
+      value: totalVehicles,
+      title: "Vehículos",
+      description: "Total registrado",
+    },
+    {
+      value: availableVehicles,
+      title: "Disponibles",
+      description: "Publicados para venta",
+    },
+    {
+      value: reservedVehicles,
+      title: "Reservados",
+      description: "Operaciones en proceso",
+    },
+    {
+      value: soldVehicles,
+      title: "Vendidos",
+      description: "Vehículos completados",
+    },
+    {
+      value: totalContacts,
+      title: "Contactos",
+      description: "Solicitudes recibidas",
+    },
+    {
+      value: totalBrands,
+      title: "Marcas",
+      description: "Fabricantes registrados",
+    },
+    {
+      value: totalOrders,
+      title: "Pedidos",
+      description: "Compras registradas",
+    },
+    {
+      value: pendingOrders,
+      title: "Pendientes",
+      description: "Por preparar o procesar",
+    },
+    {
+      value: shippedOrders,
+      title: "Enviados",
+      description: "Pedidos en transporte",
+    },
+    {
+      value: reviewOrders,
+      title: "Para revisar",
+      description: "Pedidos con incidencia",
+    },
+    {
+      value: openWithdrawals,
+      title: "Desistimientos",
+      description: "Solicitudes abiertas",
+    },
+    {
+      value: formatOrderAmount(
+        confirmedRevenue,
+      ),
+      title: "Facturación",
+      description: "Pagos confirmados",
+      compact: true,
+    },
+  ];
+
+  const quickActions = [
+    {
+      number: "01",
+      href: "/admin/vehicles",
+      title: "Vehículos",
+      description:
+        "Añadir, editar, ordenar imágenes y cambiar el estado.",
+    },
+    {
+      number: "02",
+      href: "/admin/brands",
+      title: "Marcas",
+      description:
+        "Gestionar fabricantes y organizar el catálogo.",
+    },
+    {
+      number: "03",
+      href: "/admin/contactos",
+      title: "Contactos",
+      description:
+        "Consultar solicitudes de personas interesadas.",
+    },
+    {
+      number: "04",
+      href: "/admin/pedidos",
+      title: "Pedidos",
+      description:
+        "Consultar compras, envíos, seguimientos y desistimientos.",
+    },
+    {
+      number: "05",
+      href: "/admin/music",
+      title: "Música",
+      description:
+        "Añadir y gestionar temas, portadas y reproducción.",
+    },
+    {
+      number: "06",
+      href: "/admin/ropa",
+      title: "Ropa",
+      description:
+        "Gestionar productos, precios, tallas, stock y visibilidad.",
+    },
+    {
+      number: "07",
+      href: "/admin/settings",
+      title: "Configuración",
+      description:
+        "Teléfono, dirección, WhatsApp, horario y redes.",
+    },
+  ];
+
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
@@ -229,16 +372,12 @@ export default async function AdminDashboardPage() {
           </p>
         </div>
 
-        <div
-          className={styles.heroActions}
-        >
+        <div className={styles.heroActions}>
           <Link
             href="/admin/vehicles/nuevo"
-            className={
-              styles.primaryButton
-            }
+            className={styles.primaryButton}
           >
-            Añadir vehículo{" "}
+            Añadir vehículo
             <span>＋</span>
           </Link>
 
@@ -248,7 +387,7 @@ export default async function AdminDashboardPage() {
               styles.secondaryButton
             }
           >
-            Ver pedidos{" "}
+            Ver pedidos
             <span>→</span>
           </Link>
 
@@ -259,244 +398,118 @@ export default async function AdminDashboardPage() {
               styles.secondaryButton
             }
           >
-            Ver página pública{" "}
+            Ver página pública
             <span>↗</span>
           </Link>
         </div>
       </section>
 
-      <section
-        className={styles.statsGrid}
-      >
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {totalVehicles}
-          </span>
-
-          <div>
-            <strong>Vehículos</strong>
-            <small>
-              Total registrado
-            </small>
-          </div>
-        </article>
-
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {availableVehicles}
-          </span>
-
-          <div>
-            <strong>
-              Disponibles
-            </strong>
-
-            <small>
-              Publicados para venta
-            </small>
-          </div>
-        </article>
-
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {reservedVehicles}
-          </span>
-
-          <div>
-            <strong>
-              Reservados
-            </strong>
-
-            <small>
-              Operaciones en proceso
-            </small>
-          </div>
-        </article>
-
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {soldVehicles}
-          </span>
-
-          <div>
-            <strong>Vendidos</strong>
-
-            <small>
-              Vehículos completados
-            </small>
-          </div>
-        </article>
-
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {totalContacts}
-          </span>
-
-          <div>
-            <strong>Contactos</strong>
-
-            <small>
-              Solicitudes recibidas
-            </small>
-          </div>
-        </article>
-
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {totalBrands}
-          </span>
-
-          <div>
-            <strong>Marcas</strong>
-
-            <small>
-              Fabricantes registrados
-            </small>
-          </div>
-        </article>
-
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {totalOrders}
-          </span>
-
-          <div>
-            <strong>Pedidos</strong>
-
-            <small>
-              Compras registradas
-            </small>
-          </div>
-        </article>
-
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {pendingOrders}
-          </span>
-
-          <div>
-            <strong>Pendientes</strong>
-
-            <small>
-              Por preparar o procesar
-            </small>
-          </div>
-        </article>
-
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {shippedOrders}
-          </span>
-
-          <div>
-            <strong>Enviados</strong>
-
-            <small>
-              Pedidos en transporte
-            </small>
-          </div>
-        </article>
-
-        <article>
-          <span
-            className={
-              styles.statNumber
-            }
-          >
-            {formatOrderAmount(
-              confirmedRevenue,
-            )}
-          </span>
-
-          <div>
-            <strong>
-              Facturación
-            </strong>
-
-            <small>
-              Pagos confirmados
-            </small>
-          </div>
-        </article>
-      </section>
-
-      {reviewOrders > 0 && (
-        <section
-          className={styles.statusSection}
-        >
-          <div>
-            <p
-              className={
-                styles.eyebrow
+      <section className={styles.statsGrid}>
+        {stats.map((stat) => (
+          <article key={stat.title}>
+            <span
+              className={styles.statNumber}
+              data-compact={
+                stat.compact
+                  ? "true"
+                  : "false"
               }
             >
+              {stat.value}
+            </span>
+
+            <div>
+              <strong>
+                {stat.title}
+              </strong>
+
+              <small>
+                {stat.description}
+              </small>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      {needsAttention && (
+        <section
+          className={styles.statusSection}
+          data-tone="warning"
+        >
+          <div>
+            <p className={styles.eyebrow}>
               Atención necesaria
             </p>
 
             <h2>
-              Hay pedidos
+              Hay gestiones
               <br />
-              para revisar.
+              pendientes.
             </h2>
           </div>
 
-          <div
-            className={
-              styles.statusList
-            }
-          >
-            <div>
+          <div className={styles.statusList}>
+            <div
+              data-state={
+                reviewOrders > 0
+                  ? "warning"
+                  : "success"
+              }
+            >
               <span />
 
               <strong>
-                Revisión de pedidos
+                Pedidos para revisar
               </strong>
 
               <small>
-                {reviewOrders}{" "}
-                {reviewOrders === 1
-                  ? "pedido pendiente"
-                  : "pedidos pendientes"}
+                {reviewOrders > 0
+                  ? `${reviewOrders} ${
+                      reviewOrders === 1
+                        ? "pedido"
+                        : "pedidos"
+                    }`
+                  : "Sin incidencias"}
               </small>
             </div>
 
-            <div>
+            <div
+              data-state={
+                openWithdrawals > 0
+                  ? "warning"
+                  : "success"
+              }
+            >
+              <span />
+
+              <strong>
+                Desistimientos abiertos
+              </strong>
+
+              <small>
+                {openWithdrawals > 0
+                  ? `${openWithdrawals} ${
+                      openWithdrawals === 1
+                        ? "solicitud"
+                        : "solicitudes"
+                    }`
+                  : "Sin pendientes"}
+              </small>
+            </div>
+
+            <div data-state="neutral">
+              <span />
+
+              <strong>
+                Desistimientos totales
+              </strong>
+
+              <small>
+                {totalWithdrawals} recibidos
+              </small>
+            </div>
+
+            <div data-state="neutral">
               <span />
 
               <strong>
@@ -504,53 +517,17 @@ export default async function AdminDashboardPage() {
               </strong>
 
               <small>
-                Comprobar stock y pago
-              </small>
-            </div>
-
-            <div>
-              <span />
-
-              <strong>
-                Acceso directo
-              </strong>
-
-              <small>
-                Panel de pedidos
-              </small>
-            </div>
-
-            <div>
-              <span />
-
-              <strong>
-                Estado
-              </strong>
-
-              <small>
-                Requiere atención
+                Abrir panel de pedidos
               </small>
             </div>
           </div>
         </section>
       )}
 
-      <section
-        className={
-          styles.quickActions
-        }
-      >
-        <div
-          className={
-            styles.sectionHeading
-          }
-        >
+      <section className={styles.quickActions}>
+        <div className={styles.sectionHeading}>
           <div>
-            <p
-              className={
-                styles.eyebrow
-              }
-            >
+            <p className={styles.eyebrow}>
               Accesos rápidos
             </p>
 
@@ -560,130 +537,33 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
 
-        <div
-          className={
-            styles.actionGrid
-          }
-        >
-          <Link href="/admin/vehicles">
-            <span>01</span>
+        <div className={styles.actionGrid}>
+          {quickActions.map((action) => (
+            <Link
+              href={action.href}
+              key={action.number}
+            >
+              <span>{action.number}</span>
 
-            <strong>
-              Vehículos
-            </strong>
+              <strong>
+                {action.title}
+              </strong>
 
-            <small>
-              Añadir, editar, ordenar
-              imágenes y cambiar el
-              estado.
-            </small>
+              <small>
+                {action.description}
+              </small>
 
-            <b>Entrar →</b>
-          </Link>
-
-          <Link href="/admin/brands">
-            <span>02</span>
-
-            <strong>Marcas</strong>
-
-            <small>
-              Gestionar fabricantes y
-              organizar el catálogo.
-            </small>
-
-            <b>Entrar →</b>
-          </Link>
-
-          <Link href="/admin/contactos">
-            <span>03</span>
-
-            <strong>
-              Contactos
-            </strong>
-
-            <small>
-              Consultar solicitudes de
-              personas interesadas.
-            </small>
-
-            <b>Entrar →</b>
-          </Link>
-
-          <Link href="/admin/pedidos">
-            <span>04</span>
-
-            <strong>Pedidos</strong>
-
-            <small>
-              Consultar compras, preparar
-              envíos y añadir números de
-              seguimiento.
-            </small>
-
-            <b>Entrar →</b>
-          </Link>
-
-          <Link href="/admin/music">
-            <span>05</span>
-
-            <strong>Música</strong>
-
-            <small>
-              Añadir y gestionar temas,
-              portadas y reproducción.
-            </small>
-
-            <b>Entrar →</b>
-          </Link>
-
-          <Link href="/admin/ropa">
-            <span>06</span>
-
-            <strong>Ropa</strong>
-
-            <small>
-              Gestionar productos,
-              precios, tallas, stock y
-              visibilidad.
-            </small>
-
-            <b>Entrar →</b>
-          </Link>
-
-          <Link href="/admin/settings">
-            <span>07</span>
-
-            <strong>
-              Configuración
-            </strong>
-
-            <small>
-              Teléfono, dirección,
-              WhatsApp, horario y redes.
-            </small>
-
-            <b>Entrar →</b>
-          </Link>
+              <b>Entrar →</b>
+            </Link>
+          ))}
         </div>
       </section>
 
-      <section
-        className={
-          styles.contentGrid
-        }
-      >
+      <section className={styles.contentGrid}>
         <div className={styles.panel}>
-          <div
-            className={
-              styles.panelHeader
-            }
-          >
+          <div className={styles.panelHeader}>
             <div>
-              <p
-                className={
-                  styles.eyebrow
-                }
-              >
+              <p className={styles.eyebrow}>
                 Inventario
               </p>
 
@@ -697,16 +577,10 @@ export default async function AdminDashboardPage() {
             </Link>
           </div>
 
-          {recentVehicles.length ===
-          0 ? (
-            <div
-              className={
-                styles.emptyState
-              }
-            >
+          {recentVehicles.length === 0 ? (
+            <div className={styles.emptyState}>
               <strong>
-                Todavía no hay
-                vehículos.
+                Todavía no hay vehículos.
               </strong>
 
               <p>
@@ -720,20 +594,14 @@ export default async function AdminDashboardPage() {
               </Link>
             </div>
           ) : (
-            <div
-              className={
-                styles.vehicleList
-              }
-            >
+            <div className={styles.vehicleList}>
               {recentVehicles.map(
                 (vehicle) => {
                   const image =
                     vehicle.images[0];
 
                   return (
-                    <article
-                      key={vehicle.id}
-                    >
+                    <article key={vehicle.id}>
                       <div
                         className={
                           styles.vehicleImage
@@ -742,9 +610,7 @@ export default async function AdminDashboardPage() {
                         {image ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
-                            src={
-                              image.url
-                            }
+                            src={image.url}
                             alt={
                               image.alt ??
                               `${vehicle.brand.name} ${vehicle.model}`
@@ -771,13 +637,8 @@ export default async function AdminDashboardPage() {
                         </span>
 
                         <strong>
-                          {
-                            vehicle.brand
-                              .name
-                          }{" "}
-                          {
-                            vehicle.model
-                          }
+                          {vehicle.brand.name}{" "}
+                          {vehicle.model}
                         </strong>
 
                         <small>
@@ -817,17 +678,9 @@ export default async function AdminDashboardPage() {
         </div>
 
         <div className={styles.panel}>
-          <div
-            className={
-              styles.panelHeader
-            }
-          >
+          <div className={styles.panelHeader}>
             <div>
-              <p
-                className={
-                  styles.eyebrow
-                }
-              >
+              <p className={styles.eyebrow}>
                 Tienda
               </p>
 
@@ -842,11 +695,7 @@ export default async function AdminDashboardPage() {
           </div>
 
           {recentOrders.length === 0 ? (
-            <div
-              className={
-                styles.emptyState
-              }
-            >
+            <div className={styles.emptyState}>
               <strong>
                 Todavía no hay pedidos.
               </strong>
@@ -862,93 +711,77 @@ export default async function AdminDashboardPage() {
               </Link>
             </div>
           ) : (
-            <div
-              className={
-                styles.contactList
-              }
-            >
-              {recentOrders.map(
-                (order) => (
-                  <article
-                    key={order.id}
+            <div className={styles.contactList}>
+              {recentOrders.map((order) => (
+                <article key={order.id}>
+                  <div
+                    className={
+                      styles.contactAvatar
+                    }
                   >
-                    <div
-                      className={
-                        styles.contactAvatar
-                      }
-                    >
-                      #
-                    </div>
+                    #
+                  </div>
 
-                    <div
-                      className={
-                        styles.contactInformation
-                      }
-                    >
-                      <strong>
-                        {order.customerName ??
-                          order.shippingName ??
-                          "Cliente"}
-                      </strong>
+                  <div
+                    className={
+                      styles.contactInformation
+                    }
+                  >
+                    <strong>
+                      {order.customerName ??
+                        order.shippingName ??
+                        "Cliente"}
+                    </strong>
 
-                      <span>
-                        {order.productName}
-                      </span>
+                    <span>
+                      {order.productName}
+                    </span>
 
-                      <small>
-                        Talla {order.size} ·{" "}
-                        {order.quantity}{" "}
-                        {order.quantity === 1
-                          ? "unidad"
-                          : "unidades"}{" "}
-                        ·{" "}
-                        {formatOrderAmount(
-                          order.amountTotal,
-                          order.currency,
-                        )}
-                      </small>
-                    </div>
+                    <small>
+                      Talla {order.size} ·{" "}
+                      {order.quantity}{" "}
+                      {order.quantity === 1
+                        ? "unidad"
+                        : "unidades"}{" "}
+                      ·{" "}
+                      {formatOrderAmount(
+                        order.amountTotal,
+                        order.currency,
+                      )}
+                    </small>
+                  </div>
 
-                    <div
-                      className={
-                        styles.contactDate
-                      }
-                    >
-                      <span>
-                        {formatDate(
-                          order.createdAt,
-                        )}
-                      </span>
+                  <div
+                    className={
+                      styles.contactDate
+                    }
+                  >
+                    <span>
+                      {formatDate(
+                        order.createdAt,
+                      )}
+                    </span>
 
-                      <small>
-                        {orderStatusLabel(
-                          order.fulfillmentStatus,
-                        )}
-                      </small>
+                    <small>
+                      {orderStatusLabel(
+                        order.fulfillmentStatus,
+                      )}
+                    </small>
 
-                      <Link href="/admin/pedidos">
-                        Abrir
-                      </Link>
-                    </div>
-                  </article>
-                ),
-              )}
+                    <Link href="/admin/pedidos">
+                      Abrir
+                    </Link>
+                  </div>
+                </article>
+              ))}
             </div>
           )}
         </div>
 
         <div className={styles.panel}>
-          <div
-            className={
-              styles.panelHeader
-            }
-          >
+          <div className={styles.panelHeader}>
             <div>
-              <p
-                className={
-                  styles.eyebrow
-                }
-              >
+              <p className={styles.eyebrow}>
                 Interesados
               </p>
 
@@ -962,35 +795,23 @@ export default async function AdminDashboardPage() {
             </Link>
           </div>
 
-          {recentContacts.length ===
-          0 ? (
-            <div
-              className={
-                styles.emptyState
-              }
-            >
+          {recentContacts.length === 0 ? (
+            <div className={styles.emptyState}>
               <strong>
-                No hay solicitudes
-                nuevas.
+                No hay solicitudes nuevas.
               </strong>
 
               <p>
                 Los contactos recibidos
-                desde las fichas
-                aparecerán aquí.
+                desde las fichas aparecerán
+                aquí.
               </p>
             </div>
           ) : (
-            <div
-              className={
-                styles.contactList
-              }
-            >
+            <div className={styles.contactList}>
               {recentContacts.map(
                 (contact) => (
-                  <article
-                    key={contact.id}
-                  >
+                  <article key={contact.id}>
                     <div
                       className={
                         styles.contactAvatar
@@ -1045,17 +866,9 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
 
-      <section
-        className={
-          styles.statusSection
-        }
-      >
+      <section className={styles.statusSection}>
         <div>
-          <p
-            className={
-              styles.eyebrow
-            }
-          >
+          <p className={styles.eyebrow}>
             Estado del proyecto
           </p>
 
@@ -1066,22 +879,28 @@ export default async function AdminDashboardPage() {
           </h2>
         </div>
 
-        <div
-          className={
-            styles.statusList
-          }
-        >
-          <div>
+        <div className={styles.statusList}>
+          <div
+            data-state={
+              publicSiteEnabled
+                ? "success"
+                : "warning"
+            }
+          >
             <span />
 
             <strong>
               Página pública
             </strong>
 
-            <small>Activa</small>
+            <small>
+              {publicSiteEnabled
+                ? "Abierta"
+                : "Cerrada · Próximamente"}
+            </small>
           </div>
 
-          <div>
+          <div data-state="success">
             <span />
 
             <strong>
@@ -1093,7 +912,7 @@ export default async function AdminDashboardPage() {
             </small>
           </div>
 
-          <div>
+          <div data-state="success">
             <span />
 
             <strong>
@@ -1105,7 +924,7 @@ export default async function AdminDashboardPage() {
             </small>
           </div>
 
-          <div>
+          <div data-state="success">
             <span />
 
             <strong>
@@ -1117,7 +936,13 @@ export default async function AdminDashboardPage() {
             </small>
           </div>
 
-          <div>
+          <div
+            data-state={
+              reviewOrders > 0
+                ? "warning"
+                : "success"
+            }
+          >
             <span />
 
             <strong>
@@ -1128,6 +953,26 @@ export default async function AdminDashboardPage() {
               {reviewOrders > 0
                 ? `${reviewOrders} pendientes`
                 : "Sin incidencias"}
+            </small>
+          </div>
+
+          <div
+            data-state={
+              openWithdrawals > 0
+                ? "warning"
+                : "success"
+            }
+          >
+            <span />
+
+            <strong>
+              Desistimientos
+            </strong>
+
+            <small>
+              {openWithdrawals > 0
+                ? `${openWithdrawals} abiertos`
+                : "Sin pendientes"}
             </small>
           </div>
         </div>
