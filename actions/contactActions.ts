@@ -214,7 +214,7 @@ export async function createContactRequest(
   );
 
   const name = normaliseText(
-    getText(formData, "name"),
+    getText(formData, "contactName"),
     120,
   );
 

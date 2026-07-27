@@ -642,17 +642,17 @@ export default async function ContactoPage({
 
               <div className={styles.formGrid}>
                 <div className={styles.formField}>
-                  <label htmlFor="name">
+                  <label htmlFor="contactName">
                     {content.form.name}
                   </label>
 
                   <input
-                    id="name"
-                    name="name"
+                    id="contactName"
+                    name="contactName"
                     type="text"
                     required
                     maxLength={120}
-                    autoComplete="name"
+                    autoComplete="off"
                     placeholder={
                       content.form
                         .namePlaceholder
