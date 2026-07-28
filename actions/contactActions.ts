@@ -130,6 +130,16 @@ function isContactTopic(
   );
 }
 
+function getErrorMessage(
+  value: unknown,
+): string {
+  if (value instanceof Error) {
+    return value.message;
+  }
+
+  return String(value);
+}
+
 /*
  * Comprueba la sesión dentro de cada Server Action privada.
  *
@@ -198,6 +208,9 @@ async function getAdminContactPath(): Promise<AdminContactPath> {
  * - El formulario general de /contacto.
  *
  * La solicitud se guarda antes de intentar enviar los correos.
+ *
+ * Si el envío falla, la solicitud sigue guardada en el panel,
+ * pero nunca se muestra una confirmación falsa al usuario.
  */
 export async function createContactRequest(
   formData: FormData,
@@ -286,38 +299,82 @@ export async function createContactRequest(
     ? null
     : content.topics[topic];
 
-  await prisma.contactRequest.create({
-    data: {
-      ...(vehicle
-        ? {
-            vehicleId: vehicle.id,
-          }
-        : {}),
+  const contactRequest =
+    await prisma.contactRequest.create({
+      data: {
+        ...(vehicle
+          ? {
+              vehicleId: vehicle.id,
+            }
+          : {}),
 
-      subject,
-      name,
-      email,
-      phone: phone || null,
-      message,
-      status: "PENDING",
-    },
-  });
+        subject,
+        name,
+        email,
+        phone: phone || null,
+        message,
+        status: "PENDING",
+      },
 
-  try {
-    await sendContactNotification({
-      vehicleId: vehicle?.id ?? null,
-      subject,
-      name,
-      email,
-      phone: phone || null,
-      message,
-      language,
+      select: {
+        id: true,
+      },
     });
-  } catch (error) {
-    console.error(
-      "La solicitud se guardó, pero uno de los correos no pudo enviarse:",
-      error,
+
+  const emailConfigurationIsComplete =
+    Boolean(
+      process.env.RESEND_API_KEY?.trim() &&
+      process.env.CONTACT_NOTIFICATION_EMAIL?.trim(),
     );
+
+  let emailDeliveryFailed = false;
+
+  if (!emailConfigurationIsComplete) {
+    emailDeliveryFailed = true;
+
+    console.error(
+      "VANMOTION_CONTACT_EMAIL_FAILED",
+      {
+        contactRequestId:
+          contactRequest.id,
+        reason:
+          "Faltan RESEND_API_KEY o CONTACT_NOTIFICATION_EMAIL.",
+      },
+    );
+  } else {
+    try {
+      await sendContactNotification({
+        vehicleId:
+          vehicle?.id ?? null,
+        subject,
+        name,
+        email,
+        phone:
+          phone || null,
+        message,
+        language,
+      });
+
+      console.info(
+        "VANMOTION_CONTACT_EMAIL_SENT",
+        {
+          contactRequestId:
+            contactRequest.id,
+        },
+      );
+    } catch (error) {
+      emailDeliveryFailed = true;
+
+      console.error(
+        "VANMOTION_CONTACT_EMAIL_FAILED",
+        {
+          contactRequestId:
+            contactRequest.id,
+          reason:
+            getErrorMessage(error),
+        },
+      );
+    }
   }
 
   revalidatePath(
@@ -329,12 +386,24 @@ export async function createContactRequest(
   );
 
   if (vehicle) {
+    if (emailDeliveryFailed) {
+      redirect(
+        `/coleccion/${vehicle.id}?enviado=0&error=correo`,
+      );
+    }
+
     redirect(
       `/coleccion/${vehicle.id}?enviado=1`,
     );
   }
 
   revalidatePath("/contacto");
+
+  if (emailDeliveryFailed) {
+    redirect(
+      "/contacto?enviado=0&error=correo#formulario",
+    );
+  }
 
   redirect(
     "/contacto?enviado=1#formulario",

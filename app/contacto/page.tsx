@@ -15,6 +15,7 @@ const CANONICAL_URL = "https://vanmotion.es/contacto";
 type ContactoPageProps = {
   searchParams: Promise<{
     enviado?: string;
+    error?: string;
     motivo?: string;
     producto?: string;
     nombreProducto?: string;
@@ -67,6 +68,9 @@ const translations = {
       successTitle: "Mensaje recibido",
       successDescription:
         "Tu consulta se ha registrado correctamente. VANMOTION se pondrá en contacto contigo.",
+      deliveryWarningTitle: "Consulta registrada",
+      deliveryWarningDescription:
+        "Tu mensaje está guardado en VANMOTION, pero no hemos podido enviar la confirmación automática. No es necesario que vuelvas a enviarlo.",
       topic: "Motivo de contacto *",
       name: "Nombre y apellidos *",
       namePlaceholder: "Nombre de la persona de contacto",
@@ -147,6 +151,9 @@ const translations = {
       successTitle: "Message received",
       successDescription:
         "Your enquiry has been registered successfully. VANMOTION will contact you.",
+      deliveryWarningTitle: "Enquiry registered",
+      deliveryWarningDescription:
+        "Your message is safely stored by VANMOTION, but we could not send the automatic confirmation. You do not need to submit it again.",
       topic: "Reason for contact *",
       name: "Full name *",
       namePlaceholder: "Name of the contact person",
@@ -251,6 +258,7 @@ export default async function ContactoPage({
   const content = translations[language];
   const {
     enviado,
+    error,
     motivo,
     producto,
     nombreProducto,
@@ -442,6 +450,21 @@ export default async function ContactoPage({
               <div className={styles.success} role="status">
                 <strong>{content.form.successTitle}</strong>
                 <p>{content.form.successDescription}</p>
+              </div>
+            )}
+
+            {enviado === "0" && error === "correo" && (
+              <div
+                className={styles.success}
+                role="alert"
+                style={{
+                  borderColor: "rgba(217, 120, 39, 0.65)",
+                  background: "rgba(217, 120, 39, 0.09)",
+                  color: "#f4d7bd",
+                }}
+              >
+                <strong>{content.form.deliveryWarningTitle}</strong>
+                <p>{content.form.deliveryWarningDescription}</p>
               </div>
             )}
 
