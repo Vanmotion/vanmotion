@@ -561,3 +561,16 @@
     transition: none;
   }
 }
+
+@media (max-width: 720px) {
+  .documentsSection h2 {
+    max-width: 100%;
+    font-size: clamp(40px, 11vw, 54px);
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+    text-wrap: balance;
+  }
+}
