@@ -388,12 +388,12 @@ export async function createContactRequest(
   if (vehicle) {
     if (emailDeliveryFailed) {
       redirect(
-        `/coleccion/${vehicle.id}?enviado=0&error=correo`,
+        `/coleccion/${vehicle.id}?enviado=0&error=correo#confirmacion`,
       );
     }
 
     redirect(
-      `/coleccion/${vehicle.id}?enviado=1`,
+      `/coleccion/${vehicle.id}?enviado=1#confirmacion`,
     );
   }
 

@@ -491,7 +491,12 @@ export default async function PublicVehiclePage({
         </section>
 
         {!isEmblem && enviado === "1" && (
-          <div className={styles.successMessage} role="status">
+          <div
+            id="confirmacion"
+            className={styles.successMessage}
+            role="status"
+            style={{ scrollMarginTop: "110px" }}
+          >
             <strong>{content.success.title}</strong>
             <span>{content.success.description}</span>
           </div>
@@ -499,9 +504,11 @@ export default async function PublicVehiclePage({
 
         {!isEmblem && enviado === "0" && error === "correo" && (
           <div
+            id="confirmacion"
             className={styles.successMessage}
             role="alert"
             style={{
+              scrollMarginTop: "110px",
               borderColor: "rgba(217, 120, 39, 0.65)",
               background: "rgba(217, 120, 39, 0.09)",
               color: "#f4d7bd",
