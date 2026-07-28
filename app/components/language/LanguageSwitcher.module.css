@@ -24,6 +24,15 @@
   -webkit-backdrop-filter: blur(18px);
 }
 
+.clothingPage {
+  z-index: 2147483647 !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
 .switcher,
 .switcher * {
   box-sizing: border-box;
