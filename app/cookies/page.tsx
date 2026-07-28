@@ -1,254 +1,210 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentLanguage } from "@/app/lib/language";
 
-import styles from "../legal.module.css";
+import styles from "./cookies.module.css";
 
 export const dynamic = "force-dynamic";
 
-const CANONICAL_URL =
-  "https://vanmotion.es/cookies";
+const CANONICAL_URL = "https://vanmotion.es/cookies";
 
 const translations = {
   es: {
     metadataTitle: "Política de cookies",
     metadataDescription:
-      "Información sobre las cookies técnicas utilizadas por VANMOTION y la forma de gestionarlas.",
-
-    location: "Madrid · España",
-    eyebrow: "Información sobre cookies",
-    title: "POLÍTICA DE COOKIES",
-    introduction:
-      "Esta política explica qué cookies utiliza actualmente VANMOTION, para qué sirven, cuánto tiempo permanecen activas y cómo puede gestionarlas el usuario.",
-
-    definitionTitle:
-      "1. Qué son las cookies",
-    definitionText:
-      "Las cookies son pequeños archivos o identificadores que un sitio web puede guardar en el navegador del usuario. Permiten recordar determinada información, mantener sesiones, conservar preferencias o habilitar funciones necesarias para prestar un servicio.",
-
-    currentUseTitle:
-      "2. Cookies utilizadas actualmente",
-    currentUseText:
-      "La configuración actual de VANMOTION utiliza únicamente cookies propias de carácter técnico o de preferencia. No se utilizan actualmente cookies publicitarias, de seguimiento comercial, de elaboración de perfiles ni de medición de audiencia.",
-
-    languageCookieTitle:
-      "Cookie de preferencia de idioma",
-    adminCookieTitle:
-      "Cookie de sesión administrativa",
-
-    cookieName: "Nombre",
-    provider: "Responsable",
-    purpose: "Finalidad",
-    type: "Tipo",
-    duration: "Duración",
-    scope: "Usuarios afectados",
-
-    ownerValue: "VANMOTION",
-
-    languageCookieName:
-      "vanmotion-language",
-    languagePurpose:
-      "Recuerda el idioma elegido directamente por el usuario para mostrar el contenido público en español o en inglés.",
-    languageType:
-      "Cookie propia, técnica y de personalización solicitada por el usuario.",
-    languageDuration:
-      "Hasta 1 año desde su creación o actualización.",
-    languageScope:
-      "Usuarios que utilizan el selector ES / EN.",
-
-    adminCookieName:
-      "vanmotion_admin_session",
-    adminPurpose:
-      "Mantiene protegida la sesión del panel privado y permite verificar que el acceso corresponde a una persona administradora autorizada.",
-    adminType:
-      "Cookie propia, técnica, de seguridad y sesión.",
-    adminDuration:
-      "Hasta 8 horas desde el inicio de sesión o hasta que la persona administradora cierre la sesión.",
-    adminScope:
-      "Exclusivamente personas administradoras. No se instala por la navegación pública ordinaria.",
-
-    securityTitle:
-      "3. Medidas aplicadas a las cookies",
-    securityText:
-      "Las cookies utilizadas por VANMOTION se configuran con medidas orientadas a limitar su utilización indebida. Cuando corresponde, se emplean atributos como HttpOnly, Secure en producción, SameSite y un ámbito de ruta definido para el sitio.",
-
-    consentTitle:
-      "4. Consentimiento",
-    consentText:
-      "Las cookies utilizadas actualmente son necesarias para prestar funciones expresamente solicitadas, conservar la preferencia de idioma o proteger el acceso administrativo. Por ello, no se solicita consentimiento previo para estas cookies técnicas.",
-
-    futureText:
-      "Si en el futuro VANMOTION incorpora cookies analíticas, publicitarias, de redes sociales o cualquier otra cookie no necesaria, se actualizará esta política y se habilitará un sistema para aceptar, rechazar o configurar esas cookies antes de instalarlas.",
-
-    thirdPartiesTitle:
-      "5. Servicios y sitios de terceros",
-    thirdPartiesText:
-      "El sitio puede dirigir al usuario a servicios externos, como la plataforma de pago Stripe, redes sociales, plataformas musicales u otras páginas de terceros. Al abandonar VANMOTION, esos servicios pueden utilizar sus propias cookies conforme a sus respectivas políticas y configuraciones.",
-
-    stripeText:
-      "El pago se realiza en el entorno seguro de Stripe Checkout. Las cookies que Stripe pueda utilizar dentro de su propia plataforma son gestionadas por Stripe y no constituyen cookies instaladas directamente por VANMOTION en su dominio.",
-
-    managementTitle:
-      "6. Cómo gestionar o eliminar cookies",
-    managementText:
-      "El usuario puede consultar, bloquear o eliminar cookies desde la configuración de privacidad de su navegador. Los pasos concretos dependen del navegador y del dispositivo utilizado.",
-
-    consequencesText:
-      "Bloquear o eliminar las cookies técnicas puede provocar que el idioma seleccionado no se recuerde o que una sesión administrativa deje de funcionar. La navegación pública básica debería continuar disponible siempre que no dependa de una función técnica concreta.",
-
-    changesTitle:
-      "7. Cambios en esta política",
-    changesText:
-      "VANMOTION podrá actualizar esta política cuando cambien las cookies utilizadas, se incorporen nuevos servicios o resulte necesario adaptar la información a cambios técnicos o normativos. La versión vigente será siempre la publicada en esta página.",
-
-    contactTitle:
-      "8. Contacto",
-    contactText:
-      "Para cualquier consulta relacionada con esta Política de Cookies puede contactar con VANMOTION mediante el siguiente correo electrónico:",
-
-    update:
-      "Última actualización: 23 de julio de 2026",
-    legalNotice: "Aviso legal",
-    privacy: "Privacidad",
-    back: "Volver a VANMOTION",
+      "Información esencial sobre las cookies técnicas utilizadas por VANMOTION.",
+    navigation: {
+      vehicles: "Vehículos",
+      music: "Música",
+      clothing: "Ropa",
+      contact: "Contacto",
+    },
+    hero: {
+      location: "Madrid · España",
+      label: "Cookies · VANMOTION",
+      titleFirst: "Solo lo",
+      titleSecond: "necesario.",
+      caption: "2 técnicas · 0 publicitarias · 0 perfiles",
+      update: "Actualizado · 28 julio 2026",
+      action: "Ver configuración",
+    },
+    summary: {
+      eyebrow: "Configuración actual",
+      title: "Nada oculto. Nada de seguimiento.",
+      technicalCount: "2",
+      technicalLabel: "cookies técnicas",
+      advertisingCount: "0",
+      advertisingLabel: "cookies publicitarias",
+      profilingCount: "0",
+      profilingLabel: "perfiles de navegación",
+    },
+    details: {
+      eyebrow: "Uso esencial",
+      title: "Funciones necesarias. Sin ruido comercial.",
+      items: [
+        {
+          title: "Sin seguimiento comercial",
+          text:
+            "No utilizamos cookies publicitarias, de medición de audiencia, redes sociales ni elaboración de perfiles. La navegación pública instala únicamente las funciones técnicas descritas en esta página.",
+        },
+        {
+          title: "vanmotion-language",
+          text:
+            "Recuerda el idioma elegido mediante el selector ES / EN. Es una cookie propia de personalización solicitada por el usuario y puede permanecer hasta 1 año.",
+        },
+        {
+          title: "vanmotion_admin_session",
+          text:
+            "Protege y mantiene la sesión del panel privado. Solo afecta a personas administradoras autorizadas, dura hasta 8 horas y no se instala durante la navegación pública ordinaria.",
+        },
+        {
+          title: "Consentimiento",
+          text:
+            "Estas cookies son técnicas y necesarias para funciones solicitadas por el usuario o para la seguridad del servicio, por lo que no requieren aceptación previa. Si se incorporan cookies no necesarias, se ofrecerán opciones equivalentes para aceptar, rechazar o configurar antes de instalarlas.",
+        },
+        {
+          title: "Control desde el navegador",
+          text:
+            "Puedes consultar, bloquear o eliminar cookies desde la configuración de privacidad de tu navegador. Al eliminar la cookie de idioma se perderá esa preferencia; al bloquear la cookie administrativa, el panel privado no podrá mantener la sesión.",
+        },
+        {
+          title: "Servicios externos",
+          text:
+            "Stripe Checkout, plataformas musicales, redes sociales y otras páginas externas pueden utilizar sus propias cookies cuando el usuario accede a sus dominios. Esas cookies se rigen por las políticas de cada proveedor.",
+        },
+      ],
+    },
+    documents: {
+      eyebrow: "Documentos relacionados",
+      title: "Todo conectado.",
+      privacy: "Privacidad",
+      purchase: "Condiciones de compra",
+      withdrawal: "Desistimiento",
+      legal: "Aviso legal",
+    },
+    references: {
+      title: "Referencias oficiales",
+      aepd: "Guía de cookies · AEPD",
+      boe: "LSSI · BOE",
+      note:
+        "Los enlaces oficiales se facilitan como referencia normativa y no implican certificación o respaldo institucional.",
+    },
+    footer: {
+      city: "Madrid · España",
+      contact: "Consulta sobre cookies",
+      back: "Volver a VANMOTION",
+    },
   },
-
   en: {
     metadataTitle: "Cookie policy",
     metadataDescription:
-      "Information about the technical cookies used by VANMOTION and how users can manage them.",
-
-    location: "Madrid · Spain",
-    eyebrow: "Cookie information",
-    title: "COOKIE POLICY",
-    introduction:
-      "This policy explains which cookies VANMOTION currently uses, their purposes, how long they remain active and how users can manage them.",
-
-    definitionTitle:
-      "1. What cookies are",
-    definitionText:
-      "Cookies are small files or identifiers that a website may store in a user's browser. They can remember certain information, maintain sessions, preserve preferences or enable functions required to provide a service.",
-
-    currentUseTitle:
-      "2. Cookies currently used",
-    currentUseText:
-      "VANMOTION's current configuration uses only first-party technical or preference cookies. It does not currently use advertising cookies, commercial tracking cookies, profiling cookies or audience-measurement cookies.",
-
-    languageCookieTitle:
-      "Language preference cookie",
-    adminCookieTitle:
-      "Administration session cookie",
-
-    cookieName: "Name",
-    provider: "Provider",
-    purpose: "Purpose",
-    type: "Type",
-    duration: "Duration",
-    scope: "Affected users",
-
-    ownerValue: "VANMOTION",
-
-    languageCookieName:
-      "vanmotion-language",
-    languagePurpose:
-      "Remembers the language directly selected by the user so that public content can be displayed in Spanish or English.",
-    languageType:
-      "First-party technical and user-requested personalisation cookie.",
-    languageDuration:
-      "Up to 1 year from its creation or renewal.",
-    languageScope:
-      "Users who operate the ES / EN language selector.",
-
-    adminCookieName:
-      "vanmotion_admin_session",
-    adminPurpose:
-      "Maintains the protected administration-panel session and verifies that access belongs to an authorised administrator.",
-    adminType:
-      "First-party technical, security and session cookie.",
-    adminDuration:
-      "Up to 8 hours from login or until the administrator signs out.",
-    adminScope:
-      "Administrators only. It is not installed during ordinary public browsing.",
-
-    securityTitle:
-      "3. Security measures applied to cookies",
-    securityText:
-      "VANMOTION cookies are configured with measures intended to limit improper use. Where appropriate, attributes such as HttpOnly, Secure in production, SameSite and a defined website path are applied.",
-
-    consentTitle:
-      "4. Consent",
-    consentText:
-      "The cookies currently used are required to provide expressly requested functions, retain the selected language or protect administration access. Prior consent is therefore not requested for these technical cookies.",
-
-    futureText:
-      "If VANMOTION introduces analytics, advertising, social-media or any other non-essential cookies in the future, this policy will be updated and a system will be provided to accept, reject or configure those cookies before they are installed.",
-
-    thirdPartiesTitle:
-      "5. Third-party services and websites",
-    thirdPartiesText:
-      "The website may direct users to external services such as the Stripe payment platform, social networks, music platforms or other third-party websites. After leaving VANMOTION, those services may use their own cookies in accordance with their respective policies and settings.",
-
-    stripeText:
-      "Payments are completed within the secure Stripe Checkout environment. Cookies that Stripe may use within its own platform are managed by Stripe and are not cookies directly installed by VANMOTION on its domain.",
-
-    managementTitle:
-      "6. Managing or deleting cookies",
-    managementText:
-      "Users can view, block or delete cookies through their browser privacy settings. The specific procedure depends on the browser and device being used.",
-
-    consequencesText:
-      "Blocking or deleting technical cookies may prevent the selected language from being remembered or cause an administration session to stop working. Basic public browsing should remain available whenever it does not depend on a specific technical function.",
-
-    changesTitle:
-      "7. Changes to this policy",
-    changesText:
-      "VANMOTION may update this policy when the cookies used change, new services are introduced or the information must be adapted to technical or regulatory developments. The current version will always be the version published on this page.",
-
-    contactTitle:
-      "8. Contact",
-    contactText:
-      "For any enquiry concerning this Cookie Policy, users may contact VANMOTION at the following email address:",
-
-    update:
-      "Last updated: July 23, 2026",
-    legalNotice: "Legal notice",
-    privacy: "Privacy",
-    back: "Return to VANMOTION",
+      "Essential information about the technical cookies used by VANMOTION.",
+    navigation: {
+      vehicles: "Vehicles",
+      music: "Music",
+      clothing: "Clothing",
+      contact: "Contact",
+    },
+    hero: {
+      location: "Madrid · Spain",
+      label: "Cookies · VANMOTION",
+      titleFirst: "Only what is",
+      titleSecond: "necessary.",
+      caption: "2 technical · 0 advertising · 0 profiles",
+      update: "Updated · 28 July 2026",
+      action: "View configuration",
+    },
+    summary: {
+      eyebrow: "Current configuration",
+      title: "Nothing hidden. No tracking.",
+      technicalCount: "2",
+      technicalLabel: "technical cookies",
+      advertisingCount: "0",
+      advertisingLabel: "advertising cookies",
+      profilingCount: "0",
+      profilingLabel: "browsing profiles",
+    },
+    details: {
+      eyebrow: "Essential use",
+      title: "Necessary functions. No commercial noise.",
+      items: [
+        {
+          title: "No commercial tracking",
+          text:
+            "We do not use advertising, audience-measurement, social-media or profiling cookies. Public browsing installs only the technical functions described on this page.",
+        },
+        {
+          title: "vanmotion-language",
+          text:
+            "Remembers the language selected through the ES / EN selector. It is a first-party personalisation cookie requested by the user and may remain for up to 1 year.",
+        },
+        {
+          title: "vanmotion_admin_session",
+          text:
+            "Protects and maintains the private administration-panel session. It affects authorised administrators only, lasts up to 8 hours and is not installed during ordinary public browsing.",
+        },
+        {
+          title: "Consent",
+          text:
+            "These cookies are technical and necessary for user-requested functions or service security, so prior acceptance is not required. If non-essential cookies are introduced, equivalent options to accept, reject or configure them will be provided before installation.",
+        },
+        {
+          title: "Browser controls",
+          text:
+            "You can view, block or delete cookies through your browser privacy settings. Deleting the language cookie removes that preference; blocking the administration cookie prevents the private panel from maintaining its session.",
+        },
+        {
+          title: "External services",
+          text:
+            "Stripe Checkout, music platforms, social networks and other external websites may use their own cookies when users access their domains. Those cookies are governed by each provider's policies.",
+        },
+      ],
+    },
+    documents: {
+      eyebrow: "Related documents",
+      title: "Everything connected.",
+      privacy: "Privacy",
+      purchase: "Purchase conditions",
+      withdrawal: "Withdrawal",
+      legal: "Legal notice",
+    },
+    references: {
+      title: "Official references",
+      aepd: "Cookie guide · AEPD",
+      boe: "LSSI · BOE",
+      note:
+        "Official links are provided as legal references and do not imply certification or institutional endorsement.",
+    },
+    footer: {
+      city: "Madrid · Spain",
+      contact: "Cookie enquiry",
+      back: "Return to VANMOTION",
+    },
   },
 } as const;
 
-function requireLegalValue(
-  variableName: string,
-): string {
-  const value =
-    process.env[variableName]?.trim();
+function requireLegalValue(variableName: string): string {
+  const value = process.env[variableName]?.trim();
 
   if (!value) {
-    throw new Error(
-      `Falta la variable legal ${variableName}.`,
-    );
+    throw new Error(`Falta la variable legal ${variableName}.`);
   }
 
   return value;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const language =
-    await getCurrentLanguage();
-
-  const content =
-    translations[language];
+  const language = await getCurrentLanguage();
+  const content = translations[language];
 
   return {
     title: content.metadataTitle,
-    description:
-      content.metadataDescription,
-
+    description: content.metadataDescription,
     alternates: {
       canonical: CANONICAL_URL,
     },
-
     robots: {
       index: true,
       follow: true,
@@ -257,238 +213,173 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CookiePolicyPage() {
-  const language =
-    await getCurrentLanguage();
+  const language = await getCurrentLanguage();
+  const content = translations[language];
+  const legalEmail = requireLegalValue("LEGAL_EMAIL");
 
-  const content =
-    translations[language];
-
-  const legalEmail =
-    requireLegalValue(
-      "LEGAL_EMAIL",
-    );
+  const summaryItems = [
+    {
+      value: content.summary.technicalCount,
+      label: content.summary.technicalLabel,
+    },
+    {
+      value: content.summary.advertisingCount,
+      label: content.summary.advertisingLabel,
+    },
+    {
+      value: content.summary.profilingCount,
+      label: content.summary.profilingLabel,
+    },
+  ];
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <header className={styles.header}>
-        <Link
-          href="/proximamente"
-          className={styles.brand}
-        >
-          VANMOTION
+        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+          <Image
+            src="/brand/vanmotion-mark.webp"
+            alt=""
+            width={76}
+            height={36}
+            priority
+            className={styles.brandMark}
+          />
+          <span>Vanmotion</span>
         </Link>
 
-        <span>{content.location}</span>
+        <nav
+          className={styles.navigation}
+          aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
+        >
+          <Link href="/coleccion">{content.navigation.vehicles}</Link>
+          <Link href="/musica">{content.navigation.music}</Link>
+          <Link href="/ropa">{content.navigation.clothing}</Link>
+          <Link href="/contacto">{content.navigation.contact}</Link>
+        </nav>
       </header>
 
-      <div className={styles.hero}>
-        <p className={styles.eyebrow}>
-          {content.eyebrow}
-        </p>
+      <main>
+        <section className={styles.hero} aria-labelledby="cookies-title">
+          <div className={styles.heroTopline}>
+            <span>{content.hero.location}</span>
+            <span>{content.hero.update}</span>
+          </div>
 
-        <h1>{content.title}</h1>
+          <div className={styles.heroCopy}>
+            <p>{content.hero.label}</p>
+            <h1 id="cookies-title">
+              <span>{content.hero.titleFirst}</span>
+              <span>{content.hero.titleSecond}</span>
+            </h1>
+          </div>
 
-        <p className={styles.introduction}>
-          {content.introduction}
-        </p>
-      </div>
-
-      <article className={styles.content}>
-        <section className={styles.section}>
-          <h2>{content.definitionTitle}</h2>
-
-          <p>{content.definitionText}</p>
-        </section>
-
-        <section className={styles.section}>
-          <h2>{content.currentUseTitle}</h2>
-
-          <div>
-            <p>{content.currentUseText}</p>
-
-            <div className={styles.dataGrid}>
-              <div>
-                <span>
-                  {content.languageCookieTitle}
-                </span>
-
-                <strong>
-                  {content.languageCookieName}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.provider}</span>
-
-                <strong>
-                  {content.ownerValue}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.purpose}</span>
-
-                <strong>
-                  {content.languagePurpose}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.type}</span>
-
-                <strong>
-                  {content.languageType}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.duration}</span>
-
-                <strong>
-                  {content.languageDuration}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.scope}</span>
-
-                <strong>
-                  {content.languageScope}
-                </strong>
-              </div>
-            </div>
-
-            <div className={styles.dataGrid}>
-              <div>
-                <span>
-                  {content.adminCookieTitle}
-                </span>
-
-                <strong>
-                  {content.adminCookieName}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.provider}</span>
-
-                <strong>
-                  {content.ownerValue}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.purpose}</span>
-
-                <strong>
-                  {content.adminPurpose}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.type}</span>
-
-                <strong>
-                  {content.adminType}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.duration}</span>
-
-                <strong>
-                  {content.adminDuration}
-                </strong>
-              </div>
-
-              <div>
-                <span>{content.scope}</span>
-
-                <strong>
-                  {content.adminScope}
-                </strong>
-              </div>
-            </div>
+          <div className={styles.heroFoot}>
+            <span>{content.hero.caption}</span>
+            <Link href="#configuracion">{content.hero.action}</Link>
           </div>
         </section>
 
-        <section className={styles.section}>
-          <h2>{content.securityTitle}</h2>
+        <section className={styles.summarySection} id="configuracion">
+          <div className={styles.summaryHeading}>
+            <p className={styles.sectionLabel}>{content.summary.eyebrow}</p>
+            <h2>{content.summary.title}</h2>
+          </div>
 
-          <p>{content.securityText}</p>
-        </section>
-
-        <section className={styles.section}>
-          <h2>{content.consentTitle}</h2>
-
-          <div>
-            <p>{content.consentText}</p>
-            <p>{content.futureText}</p>
+          <div className={styles.summaryGrid}>
+            {summaryItems.map((item) => (
+              <article key={item.label}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </article>
+            ))}
           </div>
         </section>
 
-        <section className={styles.section}>
-          <h2>{content.thirdPartiesTitle}</h2>
+        <section className={styles.detailsSection}>
+          <div className={styles.detailsHeading}>
+            <p className={styles.sectionLabel}>{content.details.eyebrow}</p>
+            <h2>{content.details.title}</h2>
+          </div>
 
+          <ol className={styles.detailsList}>
+            {content.details.items.map((item, index) => (
+              <li key={item.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className={styles.documentsSection}>
           <div>
-            <p>{content.thirdPartiesText}</p>
-            <p>{content.stripeText}</p>
+            <p className={styles.documentsLabel}>{content.documents.eyebrow}</p>
+            <h2>{content.documents.title}</h2>
+          </div>
+
+          <nav className={styles.documentsNav} aria-label={content.documents.eyebrow}>
+            <Link href="/privacidad">
+              <span>01</span>
+              <strong>{content.documents.privacy}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+            <Link href="/condiciones-compra">
+              <span>02</span>
+              <strong>{content.documents.purchase}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+            <Link href="/desistimiento">
+              <span>03</span>
+              <strong>{content.documents.withdrawal}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+            <Link href="/aviso-legal">
+              <span>04</span>
+              <strong>{content.documents.legal}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+          </nav>
+        </section>
+
+        <section className={styles.referencesSection}>
+          <div>
+            <p className={styles.documentsLabel}>{content.references.title}</p>
+            <p>{content.references.note}</p>
+          </div>
+
+          <div className={styles.referencesLinks}>
+            <a
+              href="https://www.aepd.es/documento/guia-cookies.pdf"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {content.references.aepd}
+            </a>
+            <a
+              href="https://www.boe.es/buscar/act.php?id=BOE-A-2002-13758#a22"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {content.references.boe}
+            </a>
           </div>
         </section>
-
-        <section className={styles.section}>
-          <h2>{content.managementTitle}</h2>
-
-          <div>
-            <p>{content.managementText}</p>
-            <p>{content.consequencesText}</p>
-          </div>
-        </section>
-
-        <section className={styles.section}>
-          <h2>{content.changesTitle}</h2>
-
-          <p>{content.changesText}</p>
-        </section>
-
-        <section className={styles.section}>
-          <h2>{content.contactTitle}</h2>
-
-          <div>
-            <p>{content.contactText}</p>
-
-            <div className={styles.dataGrid}>
-              <div>
-                <span>
-                  {content.cookieName === "Nombre"
-                    ? "Correo electrónico"
-                    : "Email"}
-                </span>
-
-                <a href={`mailto:${legalEmail}`}>
-                  {legalEmail}
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-      </article>
+      </main>
 
       <footer className={styles.footer}>
-        <p>{content.update}</p>
+        <div className={styles.footerBrand}>
+          <strong>Vanmotion</strong>
+          <span>{content.footer.city}</span>
+        </div>
 
-        <Link href="/aviso-legal">
-          {content.legalNotice}
-        </Link>
+        <nav className={styles.footerLinks} aria-label={language === "es" ? "Enlaces finales" : "Final links"}>
+          <a href={`mailto:${legalEmail}`}>{content.footer.contact}</a>
+          <Link href="/">{content.footer.back}</Link>
+        </nav>
 
-        <Link href="/privacidad">
-          {content.privacy}
-        </Link>
-
-        <Link href="/proximamente">
-          {content.back} →
-        </Link>
+        <span className={styles.copyright}>© 2026</span>
       </footer>
-    </main>
+    </div>
   );
 }

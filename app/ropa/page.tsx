@@ -10,15 +10,8 @@ import styles from "./ropa.module.css";
 
 export const dynamic = "force-dynamic";
 
-const PRODUCT_SLUG =
-  "carpe-diem-black-edition-drop-01";
-
-const FALLBACK_SIZES = [
-  "S",
-  "M",
-  "L",
-  "XL",
-] as const;
+const PRODUCT_SLUG = "carpe-diem-black-edition-drop-01";
+const FALLBACK_SIZES = ["S", "M", "L", "XL"] as const;
 
 function getEffectiveProductStatus(
   storedStatus: string,
@@ -29,10 +22,6 @@ function getEffectiveProductStatus(
     return "HIDDEN";
   }
 
-  /*
-   * Borrador, Próximamente y Oculto son estados
-   * manuales y no dependen automáticamente del stock.
-   */
   if (
     storedStatus === "DRAFT" ||
     storedStatus === "COMING_SOON" ||
@@ -41,1088 +30,440 @@ function getEffectiveProductStatus(
     return storedStatus;
   }
 
-  /*
-   * Disponible y Agotado se calculan siempre
-   * utilizando el stock real de las variantes activas.
-   */
-  return totalStock > 0
-    ? "AVAILABLE"
-    : "SOLD_OUT";
+  return totalStock > 0 ? "AVAILABLE" : "SOLD_OUT";
 }
 
 const translations = {
   es: {
     metadata: {
-      title:
-        "Ropa · CARPE DIEM Drop 01",
-
+      title: "Ropa · CARPE DIEM Drop 01",
       description:
-        "Primer producto VANMOTION: camiseta CARPE DIEM Black Edition, Drop 01.",
+        "CARPE DIEM Black Edition · Drop 01. La primera prenda oficial de VANMOTION.",
     },
-
     navigation: {
-      home: "Inicio",
-      collection: "Colección",
+      vehicles: "Vehículos",
       music: "Música",
       clothing: "Ropa",
       contact: "Contacto",
-      contactAction: "Contactar",
     },
-
     hero: {
-      eyebrow:
-        "VANMOTION Clothing · Drop 01",
-
-      titleFirst:
-        "CARPE DIEM",
-
-      titleSecond:
-        "BLACK EDITION.",
-
-      description:
-        "La primera prenda oficial de VANMOTION. Una camiseta negra, limpia por delante y con el mensaje colocado de forma intencionada en la espalda.",
-
-      primaryAction:
-        "Ver producto",
-
-      secondaryAction:
-        "Consultar disponibilidad",
-
-      visualTopLeft:
-        "PRIMER PRODUCTO",
-
-      visualTopRight:
-        "2026",
-
-      visualBottomLeft:
-        "BLACK EDITION",
-
-      visualBottomRight:
-        "DROP 01",
+      label: "VANMOTION Clothing · Drop 01",
+      titleFirst: "CARPE DIEM.",
+      titleSecond: "BLACK EDITION.",
+      statement: "Frente limpio. Mensaje en la espalda.",
+      location: "Madrid · España",
+      year: "2026",
+      productAction: "Ver producto",
+      contactAction: "Contacto",
     },
-
     product: {
-      eyebrow:
-        "Primera tirada",
-
-      name:
-        "Camiseta CARPE DIEM",
-
-      edition:
-        "Black Edition · Drop 01",
-
+      eyebrow: "Primera tirada",
+      headingFirst: "Una prenda.",
+      headingSecond: "Una idea.",
+      intro:
+        "Negra, directa y sin exceso. La identidad aparece al moverse, no al intentar llamar la atención.",
+      name: "Camiseta CARPE DIEM",
+      edition: "Black Edition · Drop 01",
       description:
-        "Una prenda sencilla con un mensaje directo. El frontal se mantiene completamente limpio y el diseño aparece en la esquina inferior derecha de la espalda, respetando una identidad discreta y reconocible.",
-
-      galleryFront:
-        "Vista frontal",
-
-      galleryBack:
-        "Vista trasera",
-
-      galleryDetail:
-        "Diseño de impresión",
-
-      frontAlt:
-        "Parte frontal de la camiseta negra CARPE DIEM VANMOTION, sin impresión",
-
+        "Una camiseta de uso diario con el frontal completamente limpio y el diseño CARPE DIEM situado en la esquina inferior derecha de la espalda.",
+      galleryBack: "Espalda",
+      galleryFront: "Frontal",
+      galleryDetail: "Diseño",
       backAlt:
         "Parte trasera de la camiseta negra con diseño CARPE DIEM en la esquina inferior derecha",
-
+      frontAlt:
+        "Parte frontal limpia de la camiseta negra CARPE DIEM VANMOTION",
       designAlt:
         "Diseño CARPE DIEM con logotipo VANMOTION preparado para impresión",
-    },
-
-    details: {
-      eyebrow:
-        "Especificaciones del producto",
-
-      titleFirst:
-        "Diseñado para",
-
-      titleSecond:
-        "llevarlo de verdad.",
-
-      intro:
-        "El primer drop se plantea como una prenda cotidiana: resistente, cómoda y producida con una impresión profesional que conserve el contraste del blanco, amarillo y gris oscuro.",
-
-      cards: [
-        {
-          number: "01",
-          title: "Colocación",
-
-          text:
-            "Espalda, esquina inferior derecha. Separación aproximada de 4–6 cm del borde inferior y 3–4 cm de la costura lateral.",
-        },
-        {
-          number: "02",
-          title: "Tamaño",
-
-          text:
-            "Diseño de 18 × 20 cm para M, L y XL. En talla S se adapta a 15 × 17 cm.",
-        },
-        {
-          number: "03",
-          title: "Tallas",
-
-          text:
-            "Primera selección prevista: S, M, L y XL. El stock se actualiza por talla y limita automáticamente la cantidad disponible para cada compra.",
-        },
-        {
-          number: "04",
-          title: "Impresión",
-
-          text:
-            "Serigrafía profesional para mantener durabilidad, definición y consistencia entre unidades.",
-        },
-      ],
-
-      colorTitle:
-        "Paleta oficial",
-
-      colors: [
-        {
-          name: "CARPE",
-          value: "#FFFFFF",
-        },
-        {
-          name: "DIEM",
-          value: "#FFD200",
-        },
-        {
-          name: "Letras DIEM",
-          value: "#000000",
-        },
-        {
-          name: "Logo VANMOTION",
-          value: "#3A3A3A",
-        },
+      specs: [
+        { label: "Edición", value: "Drop 01" },
+        { label: "Tallas", value: "S · M · L · XL" },
+        { label: "Impresión", value: "Serigrafía" },
       ],
     },
-
-    philosophy: {
-      eyebrow:
-        "Filosofía VANMOTION",
-
-      titleFirst:
-        "Sin aparentar.",
-
-      titleSecond:
-        "Con intención.",
-
+    manifesto: {
+      eyebrow: "La idea",
+      titleFirst: "Sin aparentar.",
+      titleSecond: "Con intención.",
       principles: [
         {
           number: "01",
-
-          title:
-            "Frontal limpio",
-
-          description:
-            "La parte delantera no necesita demostrar nada. La identidad aparece cuando la persona se mueve.",
+          title: "Frontal limpio",
+          text: "La prenda no necesita demostrar nada de frente.",
         },
         {
           number: "02",
-
-          title:
-            "Mensaje real",
-
-          description:
-            "CARPE DIEM no se utiliza como decoración: representa aprovechar el tiempo y seguir construyendo.",
+          title: "Mensaje real",
+          text: "CARPE DIEM recuerda que el tiempo se utiliza, no se espera.",
         },
         {
           number: "03",
-
-          title:
-            "Producción responsable",
-
-          description:
-            "Calidad, tallaje, coste y unidades se controlan antes de cada lanzamiento. El pago solo permanece activo cuando existe stock real disponible.",
+          title: "Unidades reales",
+          text: "El pago permanece activo únicamente mientras existe stock.",
         },
       ],
     },
-
     contact: {
-      eyebrow:
-        "Drop 01 · primeras unidades",
-
-      titleFirst:
-        "¿Quieres formar parte",
-
-      titleSecond:
-        "del primer drop?",
-
-      description:
-        "Selecciona talla y cantidad en la ficha. Si el producto está disponible, podrás continuar al pago seguro; si todavía está en preparación, podrás consultar disponibilidad directamente con VANMOTION.",
-
-      action:
-        "Hablar con VANMOTION",
+      label: "Contacto directo",
+      title: "¿Hablamos?",
+      action: "Abrir contacto",
     },
-
     footer: {
-      identity:
-        "Vehículos · Música · Diseño · Madrid",
-      purchaseConditions:
-        "Condiciones de compra",
-      withdrawal:
-        "Desistimiento",
+      identity: "Madrid · España",
+      purchaseConditions: "Condiciones de compra",
+      withdrawal: "Desistimiento",
+      privacy: "Privacidad",
     },
   },
-
   en: {
     metadata: {
-      title:
-        "Clothing · CARPE DIEM Drop 01",
-
+      title: "Clothing · CARPE DIEM Drop 01",
       description:
-        "VANMOTION's first product: the CARPE DIEM Black Edition T-shirt, Drop 01.",
+        "CARPE DIEM Black Edition · Drop 01. The first official VANMOTION garment.",
     },
-
     navigation: {
-      home: "Home",
-      collection: "Collection",
+      vehicles: "Vehicles",
       music: "Music",
       clothing: "Clothing",
       contact: "Contact",
-      contactAction: "Get in touch",
     },
-
     hero: {
-      eyebrow:
-        "VANMOTION Clothing · Drop 01",
-
-      titleFirst:
-        "CARPE DIEM",
-
-      titleSecond:
-        "BLACK EDITION.",
-
-      description:
-        "The first official VANMOTION garment. A black T-shirt, completely clean on the front, with the message intentionally placed on the back.",
-
-      primaryAction:
-        "View product",
-
-      secondaryAction:
-        "Ask about availability",
-
-      visualTopLeft:
-        "FIRST PRODUCT",
-
-      visualTopRight:
-        "2026",
-
-      visualBottomLeft:
-        "BLACK EDITION",
-
-      visualBottomRight:
-        "DROP 01",
+      label: "VANMOTION Clothing · Drop 01",
+      titleFirst: "CARPE DIEM.",
+      titleSecond: "BLACK EDITION.",
+      statement: "Clean front. Message on the back.",
+      location: "Madrid · Spain",
+      year: "2026",
+      productAction: "View product",
+      contactAction: "Contact",
     },
-
     product: {
-      eyebrow:
-        "First run",
-
-      name:
-        "CARPE DIEM T-shirt",
-
-      edition:
-        "Black Edition · Drop 01",
-
+      eyebrow: "First run",
+      headingFirst: "One garment.",
+      headingSecond: "One idea.",
+      intro:
+        "Black, direct and free from excess. The identity appears through movement, not through trying to attract attention.",
+      name: "CARPE DIEM T-shirt",
+      edition: "Black Edition · Drop 01",
       description:
-        "A simple garment with a direct message. The front remains completely clean and the design sits in the lower-right corner of the back, creating a discreet and recognisable identity.",
-
-      galleryFront:
-        "Front view",
-
-      galleryBack:
-        "Back view",
-
-      galleryDetail:
-        "Print design",
-
-      frontAlt:
-        "Front of the black VANMOTION CARPE DIEM T-shirt without a print",
-
+        "An everyday T-shirt with a completely clean front and the CARPE DIEM design placed in the lower-right corner of the back.",
+      galleryBack: "Back",
+      galleryFront: "Front",
+      galleryDetail: "Design",
       backAlt:
         "Back of the black T-shirt with the CARPE DIEM design in the lower-right corner",
-
+      frontAlt:
+        "Clean front of the black VANMOTION CARPE DIEM T-shirt",
       designAlt:
         "CARPE DIEM design with VANMOTION logo prepared for printing",
-    },
-
-    details: {
-      eyebrow:
-        "Product specifications",
-
-      titleFirst:
-        "Designed to",
-
-      titleSecond:
-        "be worn for real.",
-
-      intro:
-        "The first drop is designed as an everyday garment: durable, comfortable and professionally printed to preserve the contrast between white, yellow and dark grey.",
-
-      cards: [
-        {
-          number: "01",
-          title: "Placement",
-
-          text:
-            "Back, lower-right corner. Approximately 4–6 cm from the bottom edge and 3–4 cm from the side seam.",
-        },
-        {
-          number: "02",
-          title: "Size",
-
-          text:
-            "18 × 20 cm design for M, L and XL. Adapted to 15 × 17 cm for size S.",
-        },
-        {
-          number: "03",
-          title: "Sizes",
-
-          text:
-            "Initial selection: S, M, L and XL. Stock is updated by size and automatically limits the quantity available for each purchase.",
-        },
-        {
-          number: "04",
-          title: "Printing",
-
-          text:
-            "Professional screen printing to maintain durability, definition and consistency across all units.",
-        },
-      ],
-
-      colorTitle:
-        "Official palette",
-
-      colors: [
-        {
-          name: "CARPE",
-          value: "#FFFFFF",
-        },
-        {
-          name: "DIEM",
-          value: "#FFD200",
-        },
-        {
-          name: "DIEM letters",
-          value: "#000000",
-        },
-        {
-          name: "VANMOTION logo",
-          value: "#3A3A3A",
-        },
+      specs: [
+        { label: "Edition", value: "Drop 01" },
+        { label: "Sizes", value: "S · M · L · XL" },
+        { label: "Print", value: "Screen print" },
       ],
     },
-
-    philosophy: {
-      eyebrow:
-        "VANMOTION Philosophy",
-
-      titleFirst:
-        "No pretending.",
-
-      titleSecond:
-        "Built with intent.",
-
+    manifesto: {
+      eyebrow: "The idea",
+      titleFirst: "No pretending.",
+      titleSecond: "Built with intent.",
       principles: [
         {
           number: "01",
-
-          title:
-            "Clean front",
-
-          description:
-            "The front does not need to prove anything. The identity appears when the person moves.",
+          title: "Clean front",
+          text: "The garment does not need to prove anything from the front.",
         },
         {
           number: "02",
-
-          title:
-            "Real message",
-
-          description:
-            "CARPE DIEM is not used as decoration: it represents making use of time and continuing to build.",
+          title: "Real message",
+          text: "CARPE DIEM is a reminder to use time rather than wait for it.",
         },
         {
           number: "03",
-
-          title:
-            "Responsible production",
-
-          description:
-            "Quality, sizing, cost and quantities are checked before every release. Secure payment remains active only while real stock is available.",
+          title: "Real units",
+          text: "Secure payment remains active only while stock exists.",
         },
       ],
     },
-
     contact: {
-      eyebrow:
-        "Drop 01 · first units",
-
-      titleFirst:
-        "Would you like to join",
-
-      titleSecond:
-        "the first drop?",
-
-      description:
-        "Choose your size and quantity on the product card. When the product is available, you can continue to secure checkout; while it is still being prepared, you can ask VANMOTION about availability directly.",
-
-      action:
-        "Talk to VANMOTION",
+      label: "Direct contact",
+      title: "Let’s talk.",
+      action: "Open contact",
     },
-
     footer: {
-      identity:
-        "Vehicles · Music · Design · Madrid",
-      purchaseConditions:
-        "Purchase conditions",
-      withdrawal:
-        "Withdrawal",
+      identity: "Madrid · Spain",
+      purchaseConditions: "Purchase conditions",
+      withdrawal: "Withdrawal",
+      privacy: "Privacy",
     },
   },
 } as const;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const language =
-    await getCurrentLanguage();
-
-  const content =
-    translations[language];
+  const language = await getCurrentLanguage();
+  const content = translations[language];
 
   return {
-    title:
-      content.metadata.title,
-
-    description:
-      content.metadata.description,
+    title: content.metadata.title,
+    description: content.metadata.description,
   };
 }
 
 export default async function RopaPage() {
-  const language =
-    await getCurrentLanguage();
+  const language = await getCurrentLanguage();
+  const content = translations[language];
 
-  const content =
-    translations[language];
-
-  const databaseProduct =
-    await prisma.product.findUnique({
-      where: {
-        slug: PRODUCT_SLUG,
+  const databaseProduct = await prisma.product.findUnique({
+    where: {
+      slug: PRODUCT_SLUG,
+    },
+    include: {
+      variants: {
+        where: {
+          active: true,
+        },
+        orderBy: {
+          sortOrder: "asc",
+        },
       },
-
-      include: {
-        variants: {
-          where: {
-            active: true,
-          },
-
-          orderBy: {
+      images: {
+        orderBy: [
+          {
             sortOrder: "asc",
           },
-        },
-
-        images: {
-          orderBy: [
-            {
-              sortOrder: "asc",
-            },
-            {
-              createdAt: "asc",
-            },
-          ],
-        },
-      },
-    });
-
-  const imagesByView =
-    new Map(
-      databaseProduct?.images.map(
-        (image) => [
-          image.view,
-          image.url,
+          {
+            createdAt: "asc",
+          },
         ],
-      ) ?? [],
-    );
+      },
+    },
+  });
+
+  const imagesByView = new Map(
+    databaseProduct?.images.map((image) => [image.view, image.url]) ?? [],
+  );
 
   const frontImage =
-    imagesByView.get("FRONT") ??
-    "/ropa/carpe-diem-frontal.webp";
-
+    imagesByView.get("FRONT") ?? "/ropa/carpe-diem-frontal.webp";
   const backImage =
-    imagesByView.get("BACK") ??
-    "/ropa/carpe-diem-trasera.webp";
-
+    imagesByView.get("BACK") ?? "/ropa/carpe-diem-trasera.webp";
   const detailImage =
-    imagesByView.get("DETAIL") ??
-    "/ropa/carpe-diem-diseno.webp";
+    imagesByView.get("DETAIL") ?? "/ropa/carpe-diem-diseno.webp";
 
-  const productName =
-    databaseProduct?.name ??
-    content.product.name;
-
+  const productName = databaseProduct?.name ?? content.product.name;
   const productDescription =
     language === "es"
-      ? databaseProduct?.description ??
-        content.product.description
+      ? databaseProduct?.description ?? content.product.description
       : databaseProduct?.descriptionEn ??
         databaseProduct?.description ??
         content.product.description;
 
-  const productVariants =
-    databaseProduct
-      ? databaseProduct.variants.map(
-          (variant) => ({
-            size:
-              variant.size,
+  const productVariants = databaseProduct
+    ? databaseProduct.variants.map((variant) => ({
+        size: variant.size,
+        stock: variant.stock,
+        active: variant.active,
+      }))
+    : FALLBACK_SIZES.map((size) => ({
+        size,
+        stock: 0,
+        active: true,
+      }));
 
-            stock:
-              variant.stock,
+  const totalProductStock = productVariants.reduce(
+    (total, variant) => (variant.active ? total + variant.stock : total),
+    0,
+  );
 
-            active:
-              variant.active,
-          }),
-        )
-      : FALLBACK_SIZES.map(
-          (size) => ({
-            size,
-            stock: 0,
-            active: true,
-          }),
-        );
-
-  const totalProductStock =
-    productVariants.reduce(
-      (total, variant) =>
-        variant.active
-          ? total + variant.stock
-          : total,
-      0,
-    );
-
-  const productStatus =
-    getEffectiveProductStatus(
-      databaseProduct?.status ??
-        "COMING_SOON",
-
-      databaseProduct?.active ??
-        true,
-
-      totalProductStock,
-    );
+  const productStatus = getEffectiveProductStatus(
+    databaseProduct?.status ?? "COMING_SOON",
+    databaseProduct?.active ?? true,
+    totalProductStock,
+  );
 
   return (
     <main className={styles.page}>
-      <header
-        className={styles.header}
-      >
-        <Link
-          href="/"
-          className={styles.logo}
-        >
-          VANMOTION
+      <header className={styles.header}>
+        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+          <Image
+            src="/brand/vanmotion-mark.webp"
+            alt=""
+            width={76}
+            height={36}
+            priority
+            className={styles.brandMark}
+          />
+          <span>Vanmotion</span>
         </Link>
 
         <nav
-          className={
-            styles.navigation
-          }
+          className={styles.navigation}
           aria-label={
-            language === "es"
-              ? "Navegación principal"
-              : "Main navigation"
+            language === "es" ? "Navegación principal" : "Main navigation"
           }
         >
-          <Link href="/">
-            {content.navigation.home}
+          <Link href="/coleccion">{content.navigation.vehicles}</Link>
+          <Link href="/musica">{content.navigation.music}</Link>
+          <Link href="/ropa" className={styles.active} aria-current="page">
+            {content.navigation.clothing}
           </Link>
-
-          <Link href="/coleccion">
-            {
-              content.navigation
-                .collection
-            }
-          </Link>
-
-          <Link href="/musica">
-            {content.navigation.music}
-          </Link>
-
-          <Link
-            href="/ropa"
-            className={styles.active}
-            aria-current="page"
-          >
-            {
-              content.navigation
-                .clothing
-            }
-          </Link>
-
-          <Link href="/contacto">
-            {
-              content.navigation
-                .contact
-            }
-          </Link>
+          <Link href="/contacto">{content.navigation.contact}</Link>
         </nav>
-
-        <Link
-          href="/contacto"
-          className={
-            styles.headerButton
-          }
-        >
-          {
-            content.navigation
-              .contactAction
-          }
-
-          <span>→</span>
-        </Link>
       </header>
 
-      <section
-        className={styles.hero}
-      >
-        <div
-          className={
-            styles.heroCopy
-          }
-        >
-          <p
-            className={
-              styles.eyebrow
-            }
-          >
-            {content.hero.eyebrow}
-          </p>
+      <section className={styles.hero} aria-labelledby="clothing-title">
+        <Image
+          src="/ropa/carpe-diem-black-edition.webp"
+          alt={`${content.product.name} · ${content.product.edition}`}
+          fill
+          priority
+          sizes="100vw"
+          className={styles.heroImage}
+        />
+        <div className={styles.heroShade} aria-hidden="true" />
 
-          <h1>
-            {content.hero.titleFirst}
-            <br />
-            {
-              content.hero
-                .titleSecond
-            }
+        <div className={styles.heroTopline}>
+          <span>{content.hero.location}</span>
+          <span>{content.hero.year}</span>
+        </div>
+
+        <div className={styles.heroCopy}>
+          <p>{content.hero.label}</p>
+          <h1 id="clothing-title">
+            <span>{content.hero.titleFirst}</span>
+            <span>{content.hero.titleSecond}</span>
           </h1>
+        </div>
 
-          <p
-            className={
-              styles.description
-            }
-          >
-            {
-              content.hero
-                .description
-            }
-          </p>
-
-          <div
-            className={
-              styles.heroActions
-            }
-          >
-            <Link
-              href="#producto"
-              className={
-                styles.primaryButton
-              }
-            >
-              {
-                content.hero
-                  .primaryAction
-              }
-
-              <span>↓</span>
-            </Link>
-
-            <Link
-              href="/contacto"
-              className={
-                styles.secondaryButton
-              }
-            >
-              {
-                content.hero
-                  .secondaryAction
-              }
+        <div className={styles.heroFoot}>
+          <span>{content.hero.statement}</span>
+          <div>
+            <Link href="#producto">{content.hero.productAction}</Link>
+            <Link href="/contacto?motivo=ropa#formulario">
+              {content.hero.contactAction}
             </Link>
           </div>
         </div>
-
-        <div
-          className={
-            styles.heroVisual
-          }
-        >
-          <div
-            className={
-              styles.visualTop
-            }
-          >
-            <span>
-              {
-                content.hero
-                  .visualTopLeft
-              }
-            </span>
-
-            <span>
-              {
-                content.hero
-                  .visualTopRight
-              }
-            </span>
-          </div>
-
-          <div
-            className={
-              styles.heroImage
-            }
-          >
-            <Image
-              src="/ropa/carpe-diem-black-edition.webp"
-              alt={`${content.product.name} · ${content.product.edition}`}
-              width={1536}
-              height={1024}
-              priority
-              sizes="(max-width: 1050px) 100vw, 48vw"
-            />
-          </div>
-
-          <div
-            className={
-              styles.visualBottom
-            }
-          >
-            <span>
-              {
-                content.hero
-                  .visualBottomLeft
-              }
-            </span>
-
-            <span>
-              {
-                content.hero
-                  .visualBottomRight
-              }
-            </span>
-          </div>
-        </div>
       </section>
 
-      <section
-        className={
-          styles.productSection
-        }
-        id="producto"
-      >
-        <div
-          className={
-            styles.productGallery
-          }
-        >
-          <figure
-            className={
-              styles.galleryMain
-            }
-          >
-            <Image
-              src={backImage}
-              alt={
-                content.product
-                  .backAlt
-              }
-              width={768}
-              height={1024}
-              sizes="(max-width: 900px) 100vw, 44vw"
-            />
-
-            <figcaption>
-              {
-                content.product
-                  .galleryBack
-              }
-            </figcaption>
-          </figure>
-
-          <div
-            className={
-              styles.gallerySecondary
-            }
-          >
-            <figure>
-              <Image
-                src={frontImage}
-                alt={
-                  content.product
-                    .frontAlt
-                }
-                width={768}
-                height={1024}
-                sizes="(max-width: 700px) 50vw, 22vw"
-              />
-
-              <figcaption>
-                {
-                  content.product
-                    .galleryFront
-                }
-              </figcaption>
-            </figure>
-
-            <figure
-              className={
-                styles.designFigure
-              }
-            >
-              <Image
-                src={detailImage}
-                alt={
-                  content.product
-                    .designAlt
-                }
-                width={1024}
-                height={1536}
-                sizes="(max-width: 700px) 50vw, 22vw"
-              />
-
-              <figcaption>
-                {
-                  content.product
-                    .galleryDetail
-                }
-              </figcaption>
-            </figure>
-          </div>
-        </div>
-
-        <div
-          className={
-            styles.productInformation
-          }
-        >
-          <p
-            className={
-              styles.eyebrow
-            }
-          >
-            {
-              content.product
-                .eyebrow
-            }
-          </p>
-
+      <section className={styles.productSection} id="producto">
+        <div className={styles.productHeading}>
+          <p>{content.product.eyebrow}</p>
           <h2>
-            {productName}
+            <span>{content.product.headingFirst}</span>
+            <span>{content.product.headingSecond}</span>
           </h2>
+          <p className={styles.productIntro}>{content.product.intro}</p>
+        </div>
 
-          <p
-            className={
-              styles.productEdition
-            }
-          >
-            {
-              content.product
-                .edition
-            }
-          </p>
+        <div className={styles.productLayout}>
+          <div className={styles.productGallery}>
+            <figure className={styles.galleryMain}>
+              <Image
+                src={backImage}
+                alt={content.product.backAlt}
+                fill
+                sizes="(max-width: 980px) 100vw, 48vw"
+              />
+              <figcaption>{content.product.galleryBack}</figcaption>
+            </figure>
 
-          <p
-            className={
-              styles.productDescription
-            }
-          >
-            {productDescription}
-          </p>
+            <div className={styles.gallerySecondary}>
+              <figure>
+                <Image
+                  src={frontImage}
+                  alt={content.product.frontAlt}
+                  fill
+                  sizes="(max-width: 720px) 50vw, 23vw"
+                />
+                <figcaption>{content.product.galleryFront}</figcaption>
+              </figure>
 
-          <ProductPurchasePanel
-            language={language}
-            productName={
-              productName
-            }
-            productSlug={
-              databaseProduct?.slug ??
-              PRODUCT_SLUG
-            }
-            price={Number(
-              databaseProduct?.price ??
-                34.9,
-            )}
-            currency={
-              databaseProduct?.currency ??
-              "EUR"
-            }
-            status={
-              productStatus
-            }
-            variants={
-              productVariants
-            }
-          />
+              <figure className={styles.designFigure}>
+                <Image
+                  src={detailImage}
+                  alt={content.product.designAlt}
+                  fill
+                  sizes="(max-width: 720px) 50vw, 23vw"
+                />
+                <figcaption>{content.product.galleryDetail}</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div className={styles.productInformation}>
+            <p className={styles.productLabel}>{content.product.edition}</p>
+            <h3>{productName}</h3>
+            <p className={styles.productDescription}>{productDescription}</p>
+
+            <dl className={styles.productSpecs}>
+              {content.product.specs.map((spec) => (
+                <div key={spec.label}>
+                  <dt>{spec.label}</dt>
+                  <dd>{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <ProductPurchasePanel
+              language={language}
+              productName={productName}
+              productSlug={databaseProduct?.slug ?? PRODUCT_SLUG}
+              price={Number(databaseProduct?.price ?? 34.9)}
+              currency={databaseProduct?.currency ?? "EUR"}
+              status={productStatus}
+              variants={productVariants}
+            />
+          </div>
         </div>
       </section>
 
-      <section
-        className={
-          styles.philosophySection
-        }
-      >
-        <div
-          className={
-            styles.philosophyTitle
-          }
-        >
-          <p
-            className={
-              styles.eyebrow
-            }
-          >
-            {
-              content.philosophy
-                .eyebrow
-            }
-          </p>
-
+      <section className={styles.manifesto}>
+        <div className={styles.manifestoTitle}>
+          <p>{content.manifesto.eyebrow}</p>
           <h2>
-            {
-              content.philosophy
-                .titleFirst
-            }
-
-            <br />
-
-            {
-              content.philosophy
-                .titleSecond
-            }
+            <span>{content.manifesto.titleFirst}</span>
+            <span>{content.manifesto.titleSecond}</span>
           </h2>
         </div>
 
-        <div
-          className={
-            styles.principles
-          }
-        >
-          {content.philosophy.principles.map(
-            (principle) => (
-              <article
-                key={
-                  principle.number
-                }
-              >
-                <span>
-                  {
-                    principle.number
-                  }
-                </span>
-
-                <h3>
-                  {
-                    principle.title
-                  }
-                </h3>
-
-                <p>
-                  {
-                    principle.description
-                  }
-                </p>
-              </article>
-            ),
-          )}
+        <div className={styles.principles}>
+          {content.manifesto.principles.map((principle) => (
+            <article key={principle.number}>
+              <span>{principle.number}</span>
+              <h3>{principle.title}</h3>
+              <p>{principle.text}</p>
+            </article>
+          ))}
         </div>
       </section>
 
-      <section
-        className={
-          styles.contactSection
-        }
-      >
+      <section className={styles.contact}>
         <div>
-          <p
-            className={
-              styles.eyebrow
-            }
-          >
-            {
-              content.contact
-                .eyebrow
-            }
-          </p>
-
-          <h2>
-            {
-              content.contact
-                .titleFirst
-            }
-
-            <br />
-
-            {
-              content.contact
-                .titleSecond
-            }
-          </h2>
+          <p>{content.contact.label}</p>
+          <h2>{content.contact.title}</h2>
         </div>
 
-        <div
-          className={
-            styles.contactCopy
-          }
-        >
-          <p>
-            {
-              content.contact
-                .description
-            }
-          </p>
-
-          <Link href="/contacto?motivo=ropa#formulario">
-            {
-              content.contact
-                .action
-            }
-
-            <span>→</span>
-          </Link>
-        </div>
+        <Link href="/contacto?motivo=ropa#formulario">
+          {content.contact.action}
+          <span aria-hidden="true">↗</span>
+        </Link>
       </section>
 
-      <footer
-        className={styles.footer}
-      >
-        <strong>
-          VANMOTION
-        </strong>
+      <footer className={styles.footer}>
+        <div>
+          <strong>Vanmotion</strong>
+          <span>{content.footer.identity}</span>
+        </div>
 
-        <span>
-          {content.footer.identity}
-          {" · "}
-
+        <nav aria-label={language === "es" ? "Enlaces legales" : "Legal links"}>
           <Link href="/condiciones-compra">
-            {
-              content.footer
-                .purchaseConditions
-            }
+            {content.footer.purchaseConditions}
           </Link>
+          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
+          <Link href="/privacidad">{content.footer.privacy}</Link>
+        </nav>
 
-          {" · "}
-
-          <Link href="/desistimiento">
-            {content.footer.withdrawal}
-          </Link>
-        </span>
-
-        <span>
-          © 2026 VANMOTION
-        </span>
+        <span>© 2026</span>
       </footer>
     </main>
   );

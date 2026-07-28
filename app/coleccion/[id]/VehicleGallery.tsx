@@ -1,10 +1,8 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
+
+import styles from "./vehicle.module.css";
 
 type GalleryImage = {
   id: string;
@@ -19,9 +17,7 @@ type VehicleGalleryProps = {
   selectImageLabel: string;
 };
 
-function isInteractiveElement(
-  target: EventTarget | null,
-): boolean {
+function isInteractiveElement(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) {
     return false;
   }
@@ -39,13 +35,8 @@ export default function VehicleGallery({
   emptyLabel,
   selectImageLabel,
 }: VehicleGalleryProps) {
-  const [selectedIndex, setSelectedIndex] =
-    useState(0);
-
-  const safeSelectedIndex =
-    selectedIndex < images.length
-      ? selectedIndex
-      : 0;
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const safeSelectedIndex = selectedIndex < images.length ? selectedIndex : 0;
 
   const showPrevious = useCallback(() => {
     if (images.length === 0) {
@@ -53,9 +44,7 @@ export default function VehicleGallery({
     }
 
     setSelectedIndex((currentIndex) =>
-      currentIndex === 0
-        ? images.length - 1
-        : currentIndex - 1,
+      currentIndex === 0 ? images.length - 1 : currentIndex - 1,
     );
   }, [images.length]);
 
@@ -65,9 +54,7 @@ export default function VehicleGallery({
     }
 
     setSelectedIndex((currentIndex) =>
-      currentIndex === images.length - 1
-        ? 0
-        : currentIndex + 1,
+      currentIndex === images.length - 1 ? 0 : currentIndex + 1,
     );
   }, [images.length]);
 
@@ -78,9 +65,7 @@ export default function VehicleGallery({
   }, [images.length, selectedIndex]);
 
   useEffect(() => {
-    function handleKeyDown(
-      event: KeyboardEvent,
-    ) {
+    function handleKeyDown(event: KeyboardEvent) {
       if (isInteractiveElement(event.target)) {
         return;
       }
@@ -96,52 +81,32 @@ export default function VehicleGallery({
       }
     }
 
-    window.addEventListener(
-      "keydown",
-      handleKeyDown,
-    );
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown,
-      );
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [showNext, showPrevious]);
 
   if (images.length === 0) {
-    return (
-      <div className="flex aspect-[16/10] items-center justify-center rounded-3xl border border-dashed border-white/15 bg-white/[0.03] px-6 text-center text-white/35">
-        {emptyLabel}
-      </div>
-    );
+    return <div className={styles.emptyGallery}>{emptyLabel}</div>;
   }
 
-  const selectedImage =
-    images[safeSelectedIndex];
-
+  const selectedImage = images[safeSelectedIndex];
   const previousIndex =
-    safeSelectedIndex === 0
-      ? images.length - 1
-      : safeSelectedIndex - 1;
-
+    safeSelectedIndex === 0 ? images.length - 1 : safeSelectedIndex - 1;
   const nextIndex =
-    safeSelectedIndex === images.length - 1
-      ? 0
-      : safeSelectedIndex + 1;
+    safeSelectedIndex === images.length - 1 ? 0 : safeSelectedIndex + 1;
 
   return (
-    <div>
-      <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">
+    <div className={styles.gallery}>
+      <div className={styles.mainImageFrame}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           key={selectedImage.id}
           src={selectedImage.url}
-          alt={
-            selectedImage.alt ??
-            vehicleName
-          }
-          className="aspect-[16/10] w-full object-cover"
+          alt={selectedImage.alt ?? vehicleName}
+          className={styles.mainImage}
           loading="eager"
           fetchPriority="high"
         />
@@ -151,10 +116,8 @@ export default function VehicleGallery({
             <button
               type="button"
               onClick={showPrevious}
-              aria-label={`${selectImageLabel} ${
-                previousIndex + 1
-              }`}
-              className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/65 text-xl text-white backdrop-blur-sm transition hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:left-4 sm:h-12 sm:w-12"
+              aria-label={`${selectImageLabel} ${previousIndex + 1}`}
+              className={`${styles.galleryArrow} ${styles.galleryArrowLeft}`}
             >
               ←
             </button>
@@ -162,67 +125,47 @@ export default function VehicleGallery({
             <button
               type="button"
               onClick={showNext}
-              aria-label={`${selectImageLabel} ${
-                nextIndex + 1
-              }`}
-              className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/65 text-xl text-white backdrop-blur-sm transition hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-4 sm:h-12 sm:w-12"
+              aria-label={`${selectImageLabel} ${nextIndex + 1}`}
+              className={`${styles.galleryArrow} ${styles.galleryArrowRight}`}
             >
               →
             </button>
 
-            <span className="absolute bottom-4 right-4 rounded-full border border-white/15 bg-black/70 px-3 py-2 text-[10px] font-bold tracking-[0.14em] text-white/80 backdrop-blur-sm">
-              {safeSelectedIndex + 1} /{" "}
-              {images.length}
+            <span className={styles.imageCounter}>
+              {String(safeSelectedIndex + 1).padStart(2, "0")} /{" "}
+              {String(images.length).padStart(2, "0")}
             </span>
           </>
         )}
       </div>
 
       {images.length > 1 && (
-        <div className="mt-7 grid grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-6">
-          {images.map(
-            (image, index) => {
-              const isSelected =
-                index ===
-                safeSelectedIndex;
+        <div className={styles.thumbnailGrid}>
+          {images.map((image, index) => {
+            const isSelected = index === safeSelectedIndex;
 
-              return (
-                <button
-                  key={image.id}
-                  type="button"
-                  onClick={() =>
-                    setSelectedIndex(index)
-                  }
-                  aria-label={`${selectImageLabel} ${
-                    index + 1
-                  }`}
-                  aria-pressed={isSelected}
-                  className={`group relative overflow-hidden rounded-2xl border bg-white/[0.03] text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                    isSelected
-                      ? "border-amber-300/70 ring-2 ring-inset ring-amber-300/20"
-                      : "border-white/10 hover:border-white/35"
-                  }`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={image.url}
-                    alt={
-                      image.alt ??
-                      `${vehicleName} ${
-                        index + 1
-                      }`
-                    }
-                    className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-[1.03]"
-                    loading="lazy"
-                  />
-
-                  <span className="absolute bottom-2 right-2 rounded-full border border-white/15 bg-black/75 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-white/75 backdrop-blur-sm">
-                    {index + 1}
-                  </span>
-                </button>
-              );
-            },
-          )}
+            return (
+              <button
+                key={image.id}
+                type="button"
+                onClick={() => setSelectedIndex(index)}
+                aria-label={`${selectImageLabel} ${index + 1}`}
+                aria-pressed={isSelected}
+                className={`${styles.thumbnailButton} ${
+                  isSelected ? styles.thumbnailSelected : ""
+                }`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={image.url}
+                  alt={image.alt ?? `${vehicleName} ${index + 1}`}
+                  className={styles.thumbnailImage}
+                  loading="lazy"
+                />
+                <span>{String(index + 1).padStart(2, "0")}</span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

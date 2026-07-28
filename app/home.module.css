@@ -1,8 +1,16 @@
 .page {
+  --ink: #0a0a09;
+  --paper: #f2efe8;
+  --paper-soft: rgba(242, 239, 232, 0.72);
+  --paper-dim: rgba(242, 239, 232, 0.48);
+  --line: rgba(242, 239, 232, 0.17);
+  --dark-line: rgba(10, 10, 9, 0.16);
+  --orange: #d47728;
+
   min-height: 100vh;
+  background: var(--ink);
+  color: var(--paper);
   overflow-x: clip;
-  background: #080808;
-  color: #f5f5f2;
 }
 
 .page,
@@ -16,852 +24,589 @@
 }
 
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  height: 76px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(5, 5, 5, 0.94);
-  backdrop-filter: blur(16px);
-}
-
-.headerInner {
-  width: min(100% - 48px, 1440px);
-  height: 100%;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-}
-
-.logo {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0.38em;
-  white-space: nowrap;
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-  gap: 34px;
-}
-
-.nav a {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.68);
-  transition: color 180ms ease;
-}
-
-.nav a:hover {
-  color: #ffffff;
-}
-
-.headerButton {
-  display: inline-flex;
-  min-height: 40px;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 0 18px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.hero {
-  min-height: calc(100vh - 76px);
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 80px 80px;
-}
-
-.heroContent {
-  width: min(100% - 48px, 1440px);
-  margin: 0 auto;
-  padding: 64px 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
-  gap: 70px;
-  align-items: center;
-}
-
-.eyebrow {
-  margin: 0 0 30px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-}
-
-.eyebrow span {
-  width: 48px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.60);
-}
-
-.heroTitle {
-  margin: 0;
-  max-width: 750px;
-  font-size: clamp(68px, 7vw, 116px);
-  font-weight: 650;
-  line-height: 0.84;
-  letter-spacing: -0.065em;
-  text-transform: uppercase;
-}
-
-.heroTitle span {
-  display: block;
-  color: rgba(255, 255, 255, 0.38);
-}
-
-.heroDescription {
-  max-width: 650px;
-  margin: 34px 0 0;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 16px;
-  line-height: 1.85;
-}
-
-.heroActions {
-  margin-top: 36px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-}
-
-.primaryButton,
-.secondaryButton {
-  min-height: 54px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 0 26px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-
-.primaryButton {
-  background: #ffffff;
-  color: #050505 !important;
-}
-
-.secondaryButton {
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #ffffff !important;
-}
-
-.heroVisual {
-  position: relative;
-  min-height: 570px;
-  padding: 38px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background:
-    radial-gradient(
-      circle at 80% 15%,
-      rgba(255, 255, 255, 0.12),
-      transparent 33%
-    ),
-    #0d0d0d;
-}
-
-.heroVisual::before,
-.heroVisual::after {
-  content: "";
   position: absolute;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.heroVisual::before {
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-}
-
-.heroVisual::after {
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-}
-
-.visualTop,
-.motionTitle,
-.heroStats {
-  position: relative;
-  z-index: 1;
-}
-
-.visualTop {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.visualTop p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 10px;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-}
-
-.visualTop h2 {
-  margin: 16px 0 0;
-  font-size: 22px;
-  line-height: 1.25;
-}
-
-.year {
-  height: fit-content;
-  padding: 9px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  font-size: 10px;
-  letter-spacing: 0.18em;
-}
-
-.motionTitle {
-  display: flex;
-  flex-direction: column;
-}
-
-.motionTitle span,
-.motionTitle strong {
-  font-size: clamp(68px, 7vw, 108px);
-  font-weight: 700;
-  line-height: 0.76;
-  letter-spacing: -0.075em;
-}
-
-.motionTitle span {
-  color: rgba(255, 255, 255, 0.34);
-}
-
-.heroStats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.heroStats div {
-  padding: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.heroStats strong {
-  display: block;
-  font-size: 23px;
-}
-
-.heroStats span {
-  display: block;
-  margin-top: 7px;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.container {
-  width: min(100% - 48px, 1440px);
-  margin: 0 auto;
-}
-
-.section,
-.vehicleSection,
-.clothingSection,
-.contactSection {
-  padding: 120px 0;
-}
-
-.section {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.vehicleSection {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: #0c0c0c;
-}
-
-.sectionHeader {
-  display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 80px;
-  align-items: end;
-}
-
-.sectionLabel,
-.darkLabel {
-  margin: 0;
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 0.27em;
-  text-transform: uppercase;
-}
-
-.sectionLabel {
-  color: rgba(255, 255, 255, 0.62);
-}
-
-.darkLabel {
-  color: rgba(0, 0, 0, 0.68);
-}
-
-.sectionHeader h2,
-.largeTitle {
-  margin: 20px 0 0;
-  font-size: clamp(48px, 5vw, 78px);
-  line-height: 0.94;
-  letter-spacing: -0.055em;
-  text-transform: uppercase;
-}
-
-.sectionIntro,
-.normalText {
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 15px;
-  line-height: 1.9;
-}
-
-.sectionIntro {
-  max-width: 480px;
-  margin: 0;
-}
-
-.normalText {
-  max-width: 580px;
-  margin: 30px 0 36px;
-}
-
-.areaGrid {
-  margin-top: 72px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.areaCard {
-  min-height: 360px;
-  padding: 38px 32px;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.areaCard:first-child {
-  padding-left: 0;
-}
-
-.areaCard:last-child {
-  border-right: 0;
-}
-
-.areaNumber {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 11px;
-}
-
-.areaCard h3 {
-  margin: 60px 0 0;
-  font-size: 38px;
-  letter-spacing: -0.04em;
-}
-
-.areaCard p {
-  max-width: 360px;
-  margin: 22px 0;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 14px;
-  line-height: 1.8;
-}
-
-.areaCard a {
-  margin-top: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.vehicleGrid,
-.splitSection,
-.storyGrid,
-.contactBox {
-  display: grid;
-  grid-template-columns: 0.85fr 1.15fr;
-  gap: 80px;
-  align-items: center;
-}
-
-.vehicleCard {
-  position: relative;
-  isolation: isolate;
-  min-height: 520px;
-  padding: 36px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background:
-    radial-gradient(
-      circle at 75% 22%,
-      rgba(255, 255, 255, 0.13),
-      transparent 33%
-    ),
-    #131313;
-}
-
-.vehicleCardImage {
-  z-index: 0;
-  object-fit: cover;
-}
-
-.vehicleCardOverlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(5, 5, 5, 0.18) 0%,
-    rgba(5, 5, 5, 0.5) 48%,
-    rgba(5, 5, 5, 0.96) 100%
-  );
-}
-
-.vehicleCardTop,
-.vehicleWord,
-.vehicleCardBottom {
-  position: relative;
-  z-index: 2;
-}
-
-
-.vehicleCardTop,
-.vehicleCardBottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.vehicleCardTop {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.vehicleWord {
-  display: flex;
-  flex-direction: column;
-}
-
-.vehicleWord span,
-.vehicleWord strong {
-  font-size: clamp(70px, 8vw, 125px);
-  line-height: 0.75;
-  letter-spacing: -0.08em;
-}
-
-.vehicleWord span {
-  color: rgba(255, 255, 255, 0.34);
-}
-
-.vehicleCardBottom h3 {
-  margin: 0;
-  font-size: 25px;
-}
-
-.vehicleCardBottom p {
-  margin: 8px 0 0;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 13px;
-}
-
-.roundArrow {
-  width: 54px;
-  height: 54px;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  font-size: 20px;
-}
-
-.studioVisual {
-  min-height: 540px;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background:
-    radial-gradient(
-      circle at 20% 80%,
-      rgba(255, 255, 255, 0.12),
-      transparent 35%
-    ),
-    #101010;
-}
-
-.studioTop {
-  display: flex;
-  justify-content: space-between;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 9px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.soundBars {
-  height: 100px;
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.soundBars span {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.studioVisual h2 {
-  margin: 0;
-  font-size: clamp(48px, 5vw, 75px);
-  line-height: 0.92;
-  letter-spacing: -0.055em;
-  text-transform: uppercase;
-}
-
-.clothingSection {
-  background: #f3f3ef;
-  color: #080808;
-}
-
-.clothingSection h2 {
-  margin: 20px 0 0;
-  font-size: clamp(55px, 7vw, 105px);
-  line-height: 0.86;
-  letter-spacing: -0.065em;
-  text-transform: uppercase;
-}
-
-.clothingGrid {
-  margin-top: 70px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.blackClothingCard,
-.lightClothingCard,
-.greyClothingCard {
-  min-height: 390px;
-  padding: 34px;
-}
-
-.blackClothingCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #080808;
-  color: #ffffff;
-  font-size: 42px;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-}
-
-.lightClothingCard {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid rgba(0, 0, 0, 0.16);
-}
-
-.greyClothingCard {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  background: #ddddda;
-}
-
-.lightClothingCard small,
-.greyClothingCard small {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.68);
-}
-
-.lightClothingCard strong {
-  font-size: 44px;
-  line-height: 1.05;
-  letter-spacing: -0.05em;
-}
-
-.greyClothingCard strong {
-  margin-top: 25px;
-  font-size: 29px;
-  line-height: 1.25;
-}
-
-.storyGrid {
-  align-items: start;
-}
-
-.storyText p:first-child {
-  margin: 0;
-  font-size: 23px;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.68);
-}
-
-.storyText p:last-child {
-  margin: 28px 0 0;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 15px;
-  line-height: 1.9;
-}
-
-.valuesGrid {
-  margin-top: 80px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.valuesGrid article {
-  padding: 38px 30px;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.valuesGrid article:first-child {
-  padding-left: 0;
-}
-
-.valuesGrid article:last-child {
-  border-right: 0;
-}
-
-.valuesGrid span {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 10px;
-}
-
-.valuesGrid h3 {
-  margin: 45px 0 0;
-  font-size: 28px;
-}
-
-.valuesGrid p {
-  margin: 18px 0 0;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 14px;
-  line-height: 1.8;
-}
-
-.contactSection {
-  background: #080808;
-}
-
-.contactBox {
-  padding: 70px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background:
-    radial-gradient(
-      circle at 82% 20%,
-      rgba(255, 255, 255, 0.12),
-      transparent 30%
-    ),
-    #101010;
-}
-
-.contactBox h2 {
-  margin: 20px 0 0;
-  font-size: clamp(52px, 6vw, 90px);
-  line-height: 0.9;
-  letter-spacing: -0.06em;
-  text-transform: uppercase;
-}
-
-.contactCopy p {
-  margin: 0 0 28px;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 15px;
-  line-height: 1.9;
-}
-
-.footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.footerInner {
-  width: min(100% - 48px, 1440px);
-  min-height: 90px;
-  margin: 0 auto;
+  inset: 0 0 auto;
+  z-index: 30;
+  min-height: 82px;
+  padding: 18px clamp(20px, 4vw, 58px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 30px;
+  border-bottom: 1px solid var(--line);
+  color: var(--paper);
 }
 
-.footerInner strong {
-  letter-spacing: 0.32em;
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
 }
 
-.footerInner span {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 10px;
-  letter-spacing: 0.14em;
+.brandMark {
+  width: 54px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.brand span {
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.17em;
   text-transform: uppercase;
 }
 
-@media (max-width: 1050px) {
-  .nav {
-    display: none;
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.2vw, 34px);
+}
+
+.navigation a {
+  position: relative;
+  padding: 10px 0;
+  color: var(--paper-soft);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: color 180ms ease;
+}
+
+.navigation a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: 5px;
+  height: 1px;
+  background: var(--orange);
+  transition: right 180ms ease;
+}
+
+.navigation a:hover {
+  color: var(--paper);
+}
+
+.navigation a:hover::after {
+  right: 0;
+}
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  isolation: isolate;
+  overflow: hidden;
+  background: #171717;
+}
+
+.heroImage {
+  z-index: -3;
+  object-fit: cover;
+  object-position: center center;
+  filter: saturate(0.82) contrast(1.04) brightness(0.86);
+  transform: scale(1.015);
+}
+
+.heroShade {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(5, 5, 4, 0.82) 0%, rgba(5, 5, 4, 0.34) 42%, rgba(5, 5, 4, 0.08) 72%),
+    linear-gradient(180deg, rgba(5, 5, 4, 0.38) 0%, rgba(5, 5, 4, 0.02) 42%, rgba(5, 5, 4, 0.62) 100%);
+}
+
+.heroTopline,
+.heroFoot {
+  position: absolute;
+  left: clamp(20px, 4vw, 58px);
+  right: clamp(20px, 4vw, 58px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  color: var(--paper-soft);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.heroTopline {
+  top: 110px;
+}
+
+.heroCopy {
+  position: absolute;
+  left: clamp(20px, 6vw, 92px);
+  right: clamp(20px, 6vw, 92px);
+  bottom: clamp(118px, 14vh, 158px);
+  max-width: 820px;
+}
+
+.heroKicker {
+  margin: 0 0 18px;
+  color: var(--orange);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.heroCopy h1 {
+  margin: 0;
+  max-width: 820px;
+  font-size: clamp(54px, 8.2vw, 116px);
+  font-weight: 540;
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+  text-transform: uppercase;
+}
+
+.heroCopy h1 span {
+  display: block;
+}
+
+.heroCopy h1 span:last-child {
+  color: rgba(242, 239, 232, 0.74);
+}
+
+.heroFoot {
+  bottom: 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.heroLinks {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.5vw, 36px);
+}
+
+.heroLinks a {
+  color: var(--paper);
+  transition: color 180ms ease;
+}
+
+.heroLinks a:hover {
+  color: var(--orange);
+}
+
+.paths {
+  padding: clamp(70px, 8vw, 112px) clamp(20px, 4vw, 58px) clamp(54px, 6vw, 82px);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.pathsIntro {
+  margin-bottom: clamp(30px, 4vw, 54px);
+  display: grid;
+  grid-template-columns: minmax(190px, 0.44fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 30px;
+}
+
+.pathsIntro p,
+.contact p {
+  margin: 0;
+  color: rgba(10, 10, 9, 0.56);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.pathsIntro h2 {
+  margin: 0;
+  max-width: 920px;
+  font-size: clamp(40px, 5.2vw, 72px);
+  font-weight: 530;
+  line-height: 0.91;
+  letter-spacing: -0.065em;
+}
+
+.pathGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pathCard {
+  position: relative;
+  min-height: clamp(410px, 46vw, 580px);
+  isolation: isolate;
+  overflow: hidden;
+  background: #151514;
+  color: var(--paper);
+  border: 1px solid rgba(10, 10, 9, 0.08);
+}
+
+.pathMedia,
+.pathShade {
+  position: absolute;
+  inset: 0;
+}
+
+.pathMedia {
+  z-index: -2;
+  overflow: hidden;
+}
+
+.pathImage {
+  object-fit: cover;
+  filter: saturate(0.8) contrast(1.03) brightness(0.87);
+  transition:
+    transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 350ms ease;
+}
+
+.vehicleImage {
+  object-position: 60% center;
+}
+
+.musicImage {
+  object-position: center;
+}
+
+.clothingImage {
+  object-position: center top;
+}
+
+.pathShade {
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(5, 5, 4, 0.12) 0%, rgba(5, 5, 4, 0.06) 28%, rgba(5, 5, 4, 0.18) 46%, rgba(5, 5, 4, 0.82) 76%, rgba(5, 5, 4, 0.96) 100%);
+}
+
+.pathNumber {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(242, 239, 232, 0.28);
+  border-radius: 50%;
+  background: rgba(8, 8, 8, 0.24);
+  backdrop-filter: blur(6px);
+  color: rgba(242, 239, 232, 0.92);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.pathContent {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  padding: 16px 16px 14px;
+  border: 1px solid rgba(242, 239, 232, 0.11);
+  background: rgba(8, 8, 8, 0.78);
+  backdrop-filter: blur(5px);
+}
+
+.pathContent p {
+  margin: 0 0 8px;
+  color: rgba(242, 239, 232, 0.82);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.34);
+}
+
+.pathContent h3 {
+  margin: 0;
+  color: #fffdfa;
+  font-size: clamp(34px, 3.5vw, 50px);
+  font-weight: 560;
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.34);
+}
+
+.pathContent > span {
+  margin-top: 18px;
+  padding-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid rgba(242, 239, 232, 0.22);
+  color: rgba(255, 253, 250, 0.94);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.pathContent b {
+  color: #f08b32;
+  font-size: 18px;
+  font-weight: 600;
+  transition: transform 180ms ease;
+}
+
+.pathCard:hover .pathImage {
+  transform: scale(1.025);
+  filter: saturate(0.92) contrast(1.03) brightness(0.88);
+}
+
+.pathCard:hover .pathContent b {
+  transform: translate(3px, -3px);
+}
+
+.contact {
+  min-height: 310px;
+  padding: clamp(58px, 7vw, 98px) clamp(20px, 4vw, 58px);
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 40px;
+  background: var(--orange);
+  color: var(--ink);
+}
+
+.contact p {
+  color: rgba(10, 10, 9, 0.64);
+}
+
+.contact h2 {
+  margin: 12px 0 0;
+  font-size: clamp(56px, 8vw, 112px);
+  font-weight: 540;
+  line-height: 0.82;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+}
+
+.contactLink {
+  flex: 0 0 auto;
+  min-width: 220px;
+  padding: 18px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 1px solid rgba(10, 10, 9, 0.46);
+  border-bottom: 1px solid rgba(10, 10, 9, 0.46);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.contactLink span {
+  font-size: 20px;
+  font-weight: 500;
+  transition: transform 180ms ease;
+}
+
+.contactLink:hover span {
+  transform: translate(3px, -3px);
+}
+
+.footer {
+  padding: 28px clamp(20px, 4vw, 58px) 34px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 30px;
+  border-top: 1px solid rgba(242, 239, 232, 0.09);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.footerBrand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footerBrand strong,
+.copyright {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.footerBrand span {
+  color: var(--paper-dim);
+  font-size: 11px;
+}
+
+.legal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.legal a {
+  color: var(--paper-dim);
+  font-size: 10px;
+  transition: color 180ms ease;
+}
+
+.legal a:hover {
+  color: var(--paper);
+}
+
+.copyright {
+  color: var(--paper-dim);
+}
+
+@media (max-width: 980px) {
+  .heroCopy h1 {
+    font-size: clamp(54px, 10vw, 92px);
   }
 
-  .heroContent,
-  .vehicleGrid,
-  .splitSection,
-  .storyGrid,
-  .contactBox {
+  .pathsIntro {
     grid-template-columns: 1fr;
   }
 
-  .heroContent {
-    padding: 70px 0;
+  .pathGrid {
+    grid-template-columns: 1fr;
   }
 
-  .heroVisual {
+  .pathCard {
     min-height: 500px;
   }
 
-  .sectionHeader {
+  .vehicleImage {
+    object-position: center;
+  }
+
+  .contact {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .contactLink {
+    width: min(100%, 380px);
+  }
+
+  .footer {
     grid-template-columns: 1fr;
-    gap: 30px;
   }
 
-  .areaGrid,
-  .clothingGrid,
-  .valuesGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .areaCard,
-  .valuesGrid article {
-    padding-left: 0;
-    padding-right: 0;
-    border-right: 0;
-  }
-
-  .contactBox {
-    padding: 45px;
+  .legal {
+    justify-content: flex-start;
   }
 }
 
-@media (max-width: 650px) {
-  .headerInner,
-  .heroContent,
-  .container,
-  .footerInner {
-    width: min(100% - 30px, 1440px);
+@media (max-width: 720px) {
+  .pathContent {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    padding: 16px 16px 14px;
   }
 
-  .headerButton {
-    padding: 0 12px;
+  .pathContent h3 {
+    font-size: clamp(32px, 10vw, 44px);
+  }
+
+  .header {
+    min-height: 70px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .brandMark {
+    width: 43px;
+  }
+
+  .brand span {
+    font-size: 11px;
+  }
+
+  .navigation {
+    gap: 16px;
+  }
+
+  .navigation a {
     font-size: 8px;
+    letter-spacing: 0.12em;
   }
 
-  .logo {
-    font-size: 14px;
+  .navigation a:nth-child(4) {
+    display: none;
   }
 
-  .heroTitle {
-    font-size: 58px;
+  .hero {
+    min-height: 800px;
   }
 
-  .heroVisual {
-    min-height: 450px;
-    padding: 25px;
+  .heroImage {
+    object-position: 60% center;
   }
 
-  .motionTitle span,
-  .motionTitle strong {
-    font-size: 67px;
+  .heroShade {
+    background:
+      linear-gradient(180deg, rgba(5, 5, 4, 0.42) 0%, rgba(5, 5, 4, 0.08) 38%, rgba(5, 5, 4, 0.78) 100%);
   }
 
-  .heroStats {
-    grid-template-columns: 1fr;
+  .heroTopline {
+    top: 92px;
   }
 
-  .section,
-  .vehicleSection,
-  .clothingSection,
-  .contactSection {
-    padding: 80px 0;
+  .heroTopline span:last-child {
+    display: none;
   }
 
-  .heroActions {
-    flex-direction: column;
+  .heroCopy {
+    bottom: 150px;
   }
 
-  .primaryButton,
-  .secondaryButton {
-    width: 100%;
+  .heroCopy h1 {
+    font-size: clamp(52px, 17vw, 80px);
+    line-height: 0.88;
   }
 
-  .vehicleCard,
-  .studioVisual {
-    min-height: 450px;
-    padding: 25px;
-  }
-
-  .vehicleWord span,
-  .vehicleWord strong {
-    font-size: 68px;
-  }
-
-  .contactBox {
-    padding: 30px 22px;
-  }
-
-  .footerInner {
-    padding: 30px 0;
-    flex-direction: column;
+  .heroFoot {
     align-items: flex-start;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  .heroLinks {
+    gap: 16px;
+  }
+
+  .paths {
+    padding-top: 68px;
+  }
+
+  .pathsIntro h2 {
+    font-size: 43px;
+  }
+
+  .pathCard {
+    min-height: 470px;
+  }
+
+  .contact {
+    min-height: 310px;
+  }
+
+  .contact h2 {
+    font-size: clamp(58px, 20vw, 92px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navigation a,
+  .navigation a::after,
+  .pathImage,
+  .pathContent b,
+  .contactLink span {
+    transition: none;
   }
 }

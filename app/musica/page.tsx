@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
+import styles from "./musica.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -12,141 +14,128 @@ const translations = {
   es: {
     metadataTitle: "Música",
     metadataDescription:
-      "Escucha los temas oficiales de VANMOTION. Música propia, trabajo real e identidad.",
-
+      "Música oficial de VANMOTION. Sonido propio, trabajo real y lanzamientos con identidad.",
     navigation: {
-      home: "Inicio",
-      collection: "Colección",
-      history: "Historia",
+      vehicles: "Vehículos",
       music: "Música",
       clothing: "Ropa",
       contact: "Contacto",
-      vehicles: "Ver vehículos",
     },
-
     hero: {
-      eyebrow: "VANMOTION Studio · Madrid",
-      first: "Música",
-      second: "que deja",
-      third: "huella.",
-      description:
-        "Temas creados desde la verdad, la constancia y muchas horas de trabajo. Cada canción forma parte del universo VANMOTION.",
+      location: "Madrid · España",
+      titleFirst: "Sonido real.",
+      titleSecond: "Desde dentro.",
+      label: "VANMOTION music · sessions",
+      caption: "Temas oficiales · estudio · lanzamientos",
     },
-
-    universe: {
-      eyebrow: "VANMOTION Music",
-      titleFirst: "Sonido propio.",
-      titleSecond: "Identidad real.",
-      background: "Real",
-      foreground: "Sound",
+    intro: {
+      eyebrow: "Música oficial",
+      title: "Temas nacidos del estudio.",
+      text:
+        "Cada lanzamiento forma parte del universo VANMOTION: trabajo, constancia y una identidad que no necesita exceso para sonar fuerte.",
     },
-
-    discography: {
-      eyebrow: "Discografía oficial",
-      title: "VANMOTION Sessions",
-      description:
-        "Selecciona un tema, controla el volumen y escucha la música directamente dentro de la web.",
+    player: {
+      eyebrow: "Discografía",
+      title: "Escucha directa.",
+      text:
+        "Reproduce los temas oficiales desde la web y entra en el sonido propio de VANMOTION.",
     },
-
-    values: [
-      {
-        number: "01",
-        title: "Música propia",
-        description:
-          "Producción original creada dentro del universo creativo de VANMOTION.",
-      },
-      {
-        number: "02",
-        title: "Sin atajos",
-        description:
-          "Cada tema representa constancia, aprendizaje y trabajo real.",
-      },
-      {
-        number: "03",
-        title: "Todo conecta",
-        description:
-          "Vehículos, producción musical, diseño y movimiento unidos bajo una misma marca.",
-      },
-    ],
-
-    closing: {
-      eyebrow: "VANMOTION · Madrid",
-      first: "Trabajo real.",
-      second: "Movimiento real.",
-      contact: "Contactar",
+    philosophy: {
+      eyebrow: "La idea",
+      first: "Sin ruido.",
+      second: "Con verdad.",
+      rows: [
+        {
+          number: "01",
+          title: "Producción propia",
+          text: "Las canciones salen del estudio, no de una imagen vacía.",
+        },
+        {
+          number: "02",
+          title: "Lanzamientos reales",
+          text: "Cada tema suma identidad, catálogo y recorrido para la marca.",
+        },
+        {
+          number: "03",
+          title: "Todo conecta",
+          text: "Música, vehículos y ropa forman un mismo lenguaje visual y creativo.",
+        },
+      ],
     },
-
-    footer: "Vehículos · Música · Diseño · Madrid",
+    contact: {
+      eyebrow: "Contacto directo",
+      title: "¿Hablamos?",
+      action: "Abrir contacto",
+    },
+    footer: {
+      city: "Madrid · España",
+      purchaseConditions: "Condiciones de compra",
+      withdrawal: "Desistimiento",
+      privacy: "Privacidad",
+    },
   },
-
   en: {
     metadataTitle: "Music",
     metadataDescription:
-      "Listen to the official VANMOTION tracks. Original music, real work and identity.",
-
+      "Official VANMOTION music. Original sound, real work and releases with identity.",
     navigation: {
-      home: "Home",
-      collection: "Collection",
-      history: "Story",
+      vehicles: "Vehicles",
       music: "Music",
       clothing: "Clothing",
       contact: "Contact",
-      vehicles: "View vehicles",
     },
-
     hero: {
-      eyebrow: "VANMOTION Studio · Madrid",
-      first: "Music",
-      second: "that leaves",
-      third: "a mark.",
-      description:
-        "Tracks created from truth, consistency and countless hours of work. Every song is part of the VANMOTION universe.",
+      location: "Madrid · Spain",
+      titleFirst: "Real sound.",
+      titleSecond: "From within.",
+      label: "VANMOTION music · sessions",
+      caption: "Official tracks · studio · releases",
     },
-
-    universe: {
-      eyebrow: "VANMOTION Music",
-      titleFirst: "Original sound.",
-      titleSecond: "Real identity.",
-      background: "Real",
-      foreground: "Sound",
+    intro: {
+      eyebrow: "Official music",
+      title: "Tracks born in the studio.",
+      text:
+        "Every release belongs to the VANMOTION universe: work, consistency and an identity that does not need excess to hit hard.",
     },
-
-    discography: {
-      eyebrow: "Official discography",
-      title: "VANMOTION Sessions",
-      description:
-        "Choose a track, control the volume and listen to the music directly on the website.",
+    player: {
+      eyebrow: "Discography",
+      title: "Direct listening.",
+      text:
+        "Play the official tracks directly from the site and step into VANMOTION's own sound.",
     },
-
-    values: [
-      {
-        number: "01",
-        title: "Original music",
-        description:
-          "Original production created inside the VANMOTION creative universe.",
-      },
-      {
-        number: "02",
-        title: "No shortcuts",
-        description:
-          "Every track represents consistency, learning and real work.",
-      },
-      {
-        number: "03",
-        title: "Everything connects",
-        description:
-          "Vehicles, music production, design and movement united under one brand.",
-      },
-    ],
-
-    closing: {
-      eyebrow: "VANMOTION · Madrid",
-      first: "Real work.",
-      second: "Real movement.",
-      contact: "Get in touch",
+    philosophy: {
+      eyebrow: "The idea",
+      first: "No noise.",
+      second: "Only truth.",
+      rows: [
+        {
+          number: "01",
+          title: "Original production",
+          text: "The songs come out of the studio, not from an empty image.",
+        },
+        {
+          number: "02",
+          title: "Real releases",
+          text: "Every track adds identity, catalogue and direction to the brand.",
+        },
+        {
+          number: "03",
+          title: "Everything connects",
+          text: "Music, vehicles and clothing speak the same creative language.",
+        },
+      ],
     },
-
-    footer: "Vehicles · Music · Design · Madrid",
+    contact: {
+      eyebrow: "Direct contact",
+      title: "Shall we talk?",
+      action: "Open contact",
+    },
+    footer: {
+      city: "Madrid · Spain",
+      purchaseConditions: "Purchase conditions",
+      withdrawal: "Withdrawal",
+      privacy: "Privacy",
+    },
   },
 } satisfies Record<Language, object>;
 
@@ -164,233 +153,136 @@ export default async function MusicPage() {
   const language = await getCurrentLanguage();
   const content = translations[language];
 
-  const navigation = [
-    {
-      label: content.navigation.home,
-      href: "/",
-    },
-    {
-      label: content.navigation.collection,
-      href: "/coleccion",
-    },
-    {
-      label: content.navigation.history,
-      href: "/#historia",
-    },
-    {
-      label: content.navigation.music,
-      href: "/musica",
-    },
-    {
-      label: content.navigation.clothing,
-      href: "/ropa",
-    },
-    {
-      label: content.navigation.contact,
-      href: "/contacto",
-    },
-  ];
-
   return (
-    <main className="min-h-screen bg-[#080808] text-white">
-      <header className="border-b border-white/10 bg-[#080808]">
-        <div className="mx-auto flex min-h-[76px] w-full max-w-[1600px] items-center justify-between gap-8 px-6 lg:px-10">
-          <Link
-            href="/"
-            className="text-lg font-bold tracking-[0.34em] text-white"
-          >
-            VANMOTION
-          </Link>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+          <Image
+            src="/brand/vanmotion-mark.webp"
+            alt=""
+            width={76}
+            height={36}
+            priority
+            className={styles.brandMark}
+          />
+          <span>Vanmotion</span>
+        </Link>
 
-          <nav
-            className="hidden items-center gap-9 lg:flex"
-            aria-label={
-              language === "es"
-                ? "Navegación principal"
-                : "Main navigation"
-            }
-          >
-            {navigation.map((item) => {
-              const active = item.href === "/musica";
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className={`text-[10px] font-bold uppercase tracking-[0.2em] transition ${
-                    active
-                      ? "text-white"
-                      : "text-white/45 hover:text-white"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <Link
-            href="/coleccion"
-            className="hidden min-h-11 items-center justify-between gap-10 border border-white/20 px-5 text-[9px] font-bold uppercase tracking-[0.16em] transition hover:bg-white hover:text-black sm:flex"
-          >
-            {content.navigation.vehicles}
-            <span>→</span>
-          </Link>
-        </div>
+        <nav
+          className={styles.navigation}
+          aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
+        >
+          <Link href="/coleccion">{content.navigation.vehicles}</Link>
+          <Link href="/musica" aria-current="page">{content.navigation.music}</Link>
+          <Link href="/ropa">{content.navigation.clothing}</Link>
+          <Link href="/contacto">{content.navigation.contact}</Link>
+        </nav>
       </header>
 
-      <section className="relative overflow-hidden border-b border-white/10">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-40"
-          aria-hidden="true"
-        >
-          <div className="absolute right-[-180px] top-[-220px] h-[600px] w-[600px] rounded-full bg-white/[0.05] blur-[130px]" />
+      <main>
+        <section className={styles.hero} aria-labelledby="music-hero-title">
+          <div className={styles.heroMedia} aria-hidden="true">
+            <Image
+              src="/uploads/music-covers/vanmotion-1784378515490.png"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className={styles.heroArtwork}
+            />
+            <div className={styles.heroShade} />
+          </div>
 
-          <div className="absolute bottom-[-300px] left-[-200px] h-[600px] w-[600px] rounded-full bg-white/[0.025] blur-[140px]" />
-        </div>
+          <div className={styles.heroTopline}>
+            <span>{content.hero.location}</span>
+            <span>{content.hero.label}</span>
+          </div>
 
-        <div className="relative mx-auto grid min-h-[520px] w-full max-w-[1600px] border-x border-white/10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="flex flex-col justify-end border-b border-white/10 px-6 py-16 lg:border-b-0 lg:border-r lg:px-14 lg:py-20">
-            <div className="mb-9 flex items-center gap-4">
-              <span className="h-px w-12 bg-white/30" />
-
-              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/40">
-                {content.hero.eyebrow}
-              </p>
-            </div>
-
-            <h1 className="max-w-4xl text-[clamp(64px,9vw,150px)] font-semibold uppercase leading-[0.78] tracking-[-0.075em]">
-              {content.hero.first}
-              <br />
-
-              <span className="text-white/20">
-                {content.hero.second}
-              </span>
-
-              <br />
-              {content.hero.third}
+          <div className={styles.heroCopy}>
+            <p>{content.hero.label}</p>
+            <h1 id="music-hero-title">
+              <span>{content.hero.titleFirst}</span>
+              <span>{content.hero.titleSecond}</span>
             </h1>
-
-            <p className="mt-10 max-w-2xl text-sm leading-7 text-white/45">
-              {content.hero.description}
-            </p>
           </div>
 
-          <div className="relative flex min-h-[390px] flex-col justify-between bg-white/[0.015] p-6 lg:p-14">
-            <div className="flex items-start justify-between gap-8">
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.23em] text-white/30">
-                  {content.universe.eyebrow}
-                </p>
-
-                <h2 className="mt-6 text-3xl font-medium leading-tight md:text-5xl">
-                  {content.universe.titleFirst}
-                  <br />
-                  {content.universe.titleSecond}
-                </h2>
-              </div>
-
-              <span className="rounded-full border border-white/15 px-5 py-3 text-[9px] font-bold tracking-[0.18em] text-white/65">
-                2026
-              </span>
-            </div>
-
-            <div className="mt-20">
-              <p className="text-[clamp(70px,10vw,145px)] font-bold uppercase leading-[0.75] tracking-[-0.07em] text-white/[0.055]">
-                {content.universe.background}
-              </p>
-
-              <p className="text-[clamp(60px,8vw,120px)] font-semibold uppercase leading-[0.8] tracking-[-0.07em]">
-                {content.universe.foreground}
-              </p>
+          <div className={styles.heroFoot}>
+            <span>{content.hero.caption}</span>
+            <div className={styles.heroLinks}>
+              <Link href="#reproductor">{content.navigation.music}</Link>
+              <Link href="/ropa">{content.navigation.clothing}</Link>
+              <Link href="/contacto">{content.navigation.contact}</Link>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="mx-auto w-full max-w-[1600px] border-x border-white/10">
-        <div className="border-b border-white/10 px-6 py-12 lg:px-14">
-          <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
+        <section className={styles.introSection}>
+          <p className={styles.sectionLabel}>{content.intro.eyebrow}</p>
+          <div className={styles.introGrid}>
+            <h2>{content.intro.title}</h2>
+            <p>{content.intro.text}</p>
+          </div>
+        </section>
+
+        <section className={styles.playerSection} id="reproductor">
+          <div className={styles.playerIntro}>
             <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/30">
-                {content.discography.eyebrow}
-              </p>
-
-              <h2 className="mt-4 text-4xl font-semibold uppercase tracking-[-0.045em] md:text-6xl">
-                {content.discography.title}
-              </h2>
+              <p className={styles.sectionLabel}>{content.player.eyebrow}</p>
+              <h2>{content.player.title}</h2>
             </div>
-
-            <p className="max-w-md text-sm leading-7 text-white/40">
-              {content.discography.description}
-            </p>
+            <p>{content.player.text}</p>
           </div>
-        </div>
 
-        <DatabaseMusicPlayer language={language} />
-      </section>
+          <DatabaseMusicPlayer language={language} />
+        </section>
 
-      <section className="mx-auto grid w-full max-w-[1600px] border-x border-b border-white/10 md:grid-cols-3">
-        {content.values.map((value, index) => (
-          <article
-            key={value.number}
-            className={`min-h-56 p-8 lg:p-12 ${
-              index < 2
-                ? "border-b border-white/10 md:border-b-0 md:border-r"
-                : ""
-            }`}
-          >
-            <span className="text-[9px] font-bold tracking-[0.18em] text-white/25">
-              {value.number}
-            </span>
-
-            <h3 className="mt-12 text-xl font-semibold">
-              {value.title}
-            </h3>
-
-            <p className="mt-4 text-sm leading-7 text-white/40">
-              {value.description}
-            </p>
-          </article>
-        ))}
-      </section>
-
-      <section className="mx-auto w-full max-w-[1600px] border-x border-b border-white/10 px-6 py-16 lg:px-14 lg:py-24">
-        <div className="grid items-end gap-12 lg:grid-cols-[1fr_auto]">
-          <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.24em] text-white/30">
-              {content.closing.eyebrow}
-            </p>
-
-            <h2 className="mt-6 max-w-5xl text-[clamp(46px,7vw,105px)] font-semibold uppercase leading-[0.83] tracking-[-0.065em]">
-              {content.closing.first}
-              <br />
-              {content.closing.second}
+        <section className={styles.manifestoSection}>
+          <div className={styles.manifestoTitle}>
+            <p className={styles.sectionLabel}>{content.philosophy.eyebrow}</p>
+            <h2>
+              <span>{content.philosophy.first}</span>
+              <span>{content.philosophy.second}</span>
             </h2>
           </div>
 
-          <Link
-            href="/contacto"
-            className="flex min-h-14 min-w-60 items-center justify-between border border-white/20 px-6 text-[9px] font-bold uppercase tracking-[0.16em] transition hover:bg-white hover:text-black"
-          >
-            {content.closing.contact}
-            <span>→</span>
+          <div className={styles.manifestoList}>
+            {content.philosophy.rows.map((row) => (
+              <article key={row.number} className={styles.manifestoRow}>
+                <span>{row.number}</span>
+                <h3>{row.title}</h3>
+                <p>{row.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.contactSection}>
+          <div>
+            <p className={styles.contactLabel}>{content.contact.eyebrow}</p>
+            <h2>{content.contact.title}</h2>
+          </div>
+
+          <Link href="/contacto" className={styles.contactLink}>
+            {content.contact.action}
+            <span aria-hidden="true">↗</span>
           </Link>
+        </section>
+      </main>
+
+      <footer className={styles.footer}>
+        <div className={styles.footerBrand}>
+          <strong>Vanmotion</strong>
+          <span>{content.footer.city}</span>
         </div>
-      </section>
 
-      <footer className="mx-auto w-full max-w-[1600px] border-x border-white/10">
-        <div className="flex flex-col gap-6 px-6 py-8 text-[9px] uppercase tracking-[0.16em] text-white/30 md:flex-row md:items-center md:justify-between lg:px-14">
-          <strong className="text-white">
-            VANMOTION
-          </strong>
+        <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaces legales" : "Legal links"}>
+          <Link href="/condiciones-compra">{content.footer.purchaseConditions}</Link>
+          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
+          <Link href="/privacidad">{content.footer.privacy}</Link>
+        </nav>
 
-          <span>{content.footer}</span>
-
-          <span>© 2026 VANMOTION</span>
-        </div>
+        <span className={styles.copyright}>© 2026</span>
       </footer>
-    </main>
+    </div>
   );
 }

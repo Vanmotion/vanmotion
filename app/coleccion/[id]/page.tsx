@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -8,13 +9,11 @@ import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
 
 import VehicleGallery from "./VehicleGallery";
+import styles from "./vehicle.module.css";
 
 export const dynamic = "force-dynamic";
 
-const fuelLabels: Record<
-  Language,
-  Record<string, string>
-> = {
+const fuelLabels: Record<Language, Record<string, string>> = {
   es: {
     Diesel: "Diésel",
     Diésel: "Diésel",
@@ -28,7 +27,6 @@ const fuelLabels: Record<
     LPG: "GLP",
     GLP: "GLP",
   },
-
   en: {
     Diesel: "Diesel",
     Diésel: "Diesel",
@@ -44,10 +42,7 @@ const fuelLabels: Record<
   },
 };
 
-const transmissionLabels: Record<
-  Language,
-  Record<string, string>
-> = {
+const transmissionLabels: Record<Language, Record<string, string>> = {
   es: {
     Manual: "Manual",
     Automatic: "Automática",
@@ -55,7 +50,6 @@ const transmissionLabels: Record<
     "Semi-automatic": "Semiautomática",
     Semiautomática: "Semiautomática",
   },
-
   en: {
     Manual: "Manual",
     Automatic: "Automatic",
@@ -65,10 +59,7 @@ const transmissionLabels: Record<
   },
 };
 
-const drivetrainLabels: Record<
-  Language,
-  Record<string, string>
-> = {
+const drivetrainLabels: Record<Language, Record<string, string>> = {
   es: {
     FWD: "Delantera",
     Delantera: "Delantera",
@@ -79,7 +70,6 @@ const drivetrainLabels: Record<
     "4WD": "4x4",
     "4x4": "4x4",
   },
-
   en: {
     FWD: "Front-wheel drive",
     Delantera: "Front-wheel drive",
@@ -92,10 +82,7 @@ const drivetrainLabels: Record<
   },
 };
 
-const colorLabels: Record<
-  Language,
-  Record<string, string>
-> = {
+const colorLabels: Record<Language, Record<string, string>> = {
   es: {
     White: "Blanco",
     Blanco: "Blanco",
@@ -120,7 +107,6 @@ const colorLabels: Record<
     Orange: "Naranja",
     Naranja: "Naranja",
   },
-
   en: {
     White: "White",
     Blanco: "White",
@@ -150,28 +136,24 @@ const colorLabels: Record<
 const translations = {
   es: {
     metadataDescription:
-      "Consulta las fotografías, características y precio de este vehículo disponible en VANMOTION.",
-
+      "Consulta fotografías, características y precio de este vehículo disponible en VANMOTION.",
     emblemMetadataDescription:
       "Descubre el vehículo emblema de VANMOTION, una unidad que representa la historia y la identidad de la marca.",
-
     navigation: {
-      home: "Inicio",
-      collection: "Colección",
+      vehicles: "Vehículos",
+      music: "Música",
+      clothing: "Ropa",
+      contact: "Contacto",
     },
-
     back: "Volver a la colección",
-
     success: {
       title: "Solicitud enviada correctamente",
-      description:
-        "VANMOTION se pondrá en contacto contigo.",
+      description: "VANMOTION se pondrá en contacto contigo.",
     },
-
     photoSoon: "Fotografía próximamente",
-    imageNotice:
-      "Imágenes ilustrativas. La unidad real puede presentar diferencias.",
-
+    imageNotice: "Imágenes ilustrativas. La unidad real puede presentar diferencias.",
+    selectImage: "Mostrar fotografía",
+    detailsLabel: "Datos del vehículo",
     details: {
       year: "Año",
       mileage: "Kilómetros",
@@ -183,11 +165,10 @@ const translations = {
       color: "Color",
       unspecified: "Sin especificar",
     },
-
     contact: {
+      eyebrow: "Contacto directo",
       title: "Solicitar información",
-      description:
-        "Déjanos tus datos y contactaremos contigo.",
+      description: "Déjanos tus datos y contactaremos contigo.",
       name: "Nombre *",
       namePlaceholder: "Tu nombre",
       email: "Correo electrónico *",
@@ -195,55 +176,54 @@ const translations = {
       phone: "Teléfono",
       phonePlaceholder: "+34 600 000 000",
       message: "Mensaje *",
-      messagePlaceholder:
-        "Estoy interesado en el",
+      messagePlaceholder: "Estoy interesado en el",
       submit: "Enviar solicitud",
       privacy:
         "Responsable: VANMOTION. Utilizaremos tus datos para responder y gestionar esta solicitud.",
-      privacyLink:
-        "Consulta la Política de Privacidad.",
+      privacyLink: "Consulta la Política de Privacidad.",
     },
-
     emblem: {
       badge: "Vehículo emblema",
-      title: "Vehículo emblema de VANMOTION",
+      title: "Parte de nuestra historia.",
       description:
-        "Esta unidad representa la historia, el trabajo y la identidad de VANMOTION. Se muestra como parte de la marca y no está disponible para la venta.",
+        "Esta unidad representa el trabajo, el recorrido y la identidad de VANMOTION. Se muestra como parte de la marca y no está disponible para la venta.",
       notForSale: "No disponible para la venta",
     },
-
     information: {
-      label: "Información",
-      title: "Descripción del vehículo",
+      eyebrow: "Información real",
+      titleFirst: "Sin adornar.",
+      titleSecond: "Sin esconder.",
+      heading: "Descripción del vehículo",
       fallback:
         "Vehículo seleccionado por VANMOTION. Contacta con nosotros para recibir más información.",
     },
+    footer: {
+      city: "Madrid · España",
+      purchaseConditions: "Condiciones de compra",
+      withdrawal: "Desistimiento",
+      privacy: "Privacidad",
+    },
   },
-
   en: {
     metadataDescription:
-      "View the photographs, specifications and price of this vehicle available from VANMOTION.",
-
+      "View photographs, specifications and price for this vehicle available from VANMOTION.",
     emblemMetadataDescription:
-      "Discover the VANMOTION emblem vehicle, a unit that represents the history and identity of the brand.",
-
+      "Discover the VANMOTION emblem vehicle, a unit representing the history and identity of the brand.",
     navigation: {
-      home: "Home",
-      collection: "Collection",
+      vehicles: "Vehicles",
+      music: "Music",
+      clothing: "Clothing",
+      contact: "Contact",
     },
-
     back: "Back to collection",
-
     success: {
       title: "Enquiry sent successfully",
-      description:
-        "VANMOTION will contact you shortly.",
+      description: "VANMOTION will contact you shortly.",
     },
-
     photoSoon: "Photography coming soon",
-    imageNotice:
-      "Illustrative images. The actual vehicle may differ.",
-
+    imageNotice: "Illustrative images. The actual vehicle may differ.",
+    selectImage: "Show photograph",
+    detailsLabel: "Vehicle details",
     details: {
       year: "Year",
       mileage: "Mileage",
@@ -255,11 +235,10 @@ const translations = {
       color: "Colour",
       unspecified: "Not specified",
     },
-
     contact: {
+      eyebrow: "Direct contact",
       title: "Request information",
-      description:
-        "Leave your details and we will contact you.",
+      description: "Leave your details and we will contact you.",
       name: "Name *",
       namePlaceholder: "Your name",
       email: "Email address *",
@@ -267,46 +246,42 @@ const translations = {
       phone: "Phone",
       phonePlaceholder: "+34 600 000 000",
       message: "Message *",
-      messagePlaceholder:
-        "I am interested in the",
+      messagePlaceholder: "I am interested in the",
       submit: "Send enquiry",
       privacy:
         "Controller: VANMOTION. We will use your details to respond to and manage this request.",
-      privacyLink:
-        "Read the Privacy Policy.",
+      privacyLink: "Read the Privacy Policy.",
     },
-
     emblem: {
       badge: "Emblem vehicle",
-      title: "VANMOTION emblem vehicle",
+      title: "Part of our story.",
       description:
-        "This unit represents the history, work and identity of VANMOTION. It is displayed as part of the brand and is not available for sale.",
+        "This unit represents the work, journey and identity of VANMOTION. It is shown as part of the brand and is not available for sale.",
       notForSale: "Not available for sale",
     },
-
     information: {
-      label: "Information",
-      title: "Vehicle description",
+      eyebrow: "Real information",
+      titleFirst: "No dressing up.",
+      titleSecond: "Nothing hidden.",
+      heading: "Vehicle description",
       fallback:
         "Vehicle selected by VANMOTION. Contact us to receive further information.",
+    },
+    footer: {
+      city: "Madrid · Spain",
+      purchaseConditions: "Purchase conditions",
+      withdrawal: "Withdrawal",
+      privacy: "Privacy",
     },
   },
 } as const;
 
 interface PublicVehiclePageProps {
-  params: Promise<{
-    id: string;
-  }>;
-
-  searchParams: Promise<{
-    enviado?: string;
-  }>;
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ enviado?: string }>;
 }
 
-function formatPrice(
-  price: unknown,
-  locale: string,
-): string {
+function formatPrice(price: unknown, locale: string): string {
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "EUR",
@@ -328,52 +303,32 @@ function translateValue(
 
 export async function generateMetadata({
   params,
-}: Pick<
-  PublicVehiclePageProps,
-  "params"
->): Promise<Metadata> {
+}: Pick<PublicVehiclePageProps, "params">): Promise<Metadata> {
   const { id } = await params;
 
-  const [language, vehicle] =
-    await Promise.all([
-      getCurrentLanguage(),
-
-      prisma.vehicle.findFirst({
-        where: {
-          id,
-          status: {
-            in: ["AVAILABLE", "EMBLEM"],
-          },
-        },
-
-        select: {
-          model: true,
-          version: true,
-          status: true,
-
-          brand: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      }),
-    ]);
+  const [language, vehicle] = await Promise.all([
+    getCurrentLanguage(),
+    prisma.vehicle.findFirst({
+      where: {
+        id,
+        status: { in: ["AVAILABLE", "EMBLEM"] },
+      },
+      select: {
+        model: true,
+        version: true,
+        status: true,
+        brand: { select: { name: true } },
+      },
+    }),
+  ]);
 
   if (!vehicle) {
     return {
-      title:
-        language === "es"
-          ? "Vehículo no disponible"
-          : "Vehicle unavailable",
+      title: language === "es" ? "Vehículo no disponible" : "Vehicle unavailable",
     };
   }
 
-  const vehicleName = [
-    vehicle.brand.name,
-    vehicle.model,
-    vehicle.version,
-  ]
+  const vehicleName = [vehicle.brand.name, vehicle.model, vehicle.version]
     .filter(Boolean)
     .join(" ");
 
@@ -381,10 +336,8 @@ export async function generateMetadata({
     title: vehicleName,
     description:
       vehicle.status === "EMBLEM"
-        ? translations[language]
-            .emblemMetadataDescription
-        : translations[language]
-            .metadataDescription,
+        ? translations[language].emblemMetadataDescription
+        : translations[language].metadataDescription,
   };
 }
 
@@ -392,446 +345,292 @@ export default async function PublicVehiclePage({
   params,
   searchParams,
 }: PublicVehiclePageProps) {
-  const [
-    { id },
-    { enviado },
-    language,
-  ] = await Promise.all([
+  const [{ id }, { enviado }, language] = await Promise.all([
     params,
     searchParams,
     getCurrentLanguage(),
   ]);
 
-  const content =
-    translations[language];
+  const content = translations[language];
+  const locale = language === "es" ? "es-ES" : "en-GB";
 
-  const locale =
-    language === "es"
-      ? "es-ES"
-      : "en-GB";
-
-  const vehicle =
-    await prisma.vehicle.findFirst({
-      where: {
-        id,
-        status: {
-          in: ["AVAILABLE", "EMBLEM"],
-        },
+  const vehicle = await prisma.vehicle.findFirst({
+    where: {
+      id,
+      status: { in: ["AVAILABLE", "EMBLEM"] },
+    },
+    include: {
+      brand: true,
+      images: {
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
       },
-
-      include: {
-        brand: true,
-
-        images: {
-          orderBy: [
-            {
-              sortOrder: "asc",
-            },
-            {
-              createdAt: "asc",
-            },
-          ],
-        },
-      },
-    });
+    },
+  });
 
   if (!vehicle) {
     notFound();
   }
 
-  const isEmblem =
-    vehicle.status === "EMBLEM";
-
-  const vehicleName = [
-    vehicle.brand.name,
-    vehicle.model,
-    vehicle.version,
-  ]
+  const isEmblem = vehicle.status === "EMBLEM";
+  const vehicleName = [vehicle.brand.name, vehicle.model, vehicle.version]
     .filter(Boolean)
     .join(" ");
 
-  const formattedMileage =
-    vehicle.mileage.toLocaleString(
-      locale,
-    );
+  const translatedFuel = translateValue(
+    fuelLabels[language],
+    vehicle.fuel,
+    content.details.unspecified,
+  );
+  const translatedTransmission = translateValue(
+    transmissionLabels[language],
+    vehicle.transmission,
+    content.details.unspecified,
+  );
+  const translatedDrivetrain = translateValue(
+    drivetrainLabels[language],
+    vehicle.drivetrain,
+    content.details.unspecified,
+  );
+  const translatedColor = translateValue(
+    colorLabels[language],
+    vehicle.color,
+    content.details.unspecified,
+  );
 
-  const translatedFuel =
-    translateValue(
-      fuelLabels[language],
-      vehicle.fuel,
-      content.details.unspecified,
-    );
-
-  const translatedTransmission =
-    translateValue(
-      transmissionLabels[language],
-      vehicle.transmission,
-      content.details.unspecified,
-    );
-
-  const translatedDrivetrain =
-    translateValue(
-      drivetrainLabels[language],
-      vehicle.drivetrain,
-      content.details.unspecified,
-    );
-
-  const translatedColor =
-    translateValue(
-      colorLabels[language],
-      vehicle.color,
-      content.details.unspecified,
-    );
-
-  const messagePlaceholder =
-    `${content.contact.messagePlaceholder} ${vehicleName}.`;
-
+  const messagePlaceholder = `${content.contact.messagePlaceholder} ${vehicleName}.`;
   const vehicleDescription =
     language === "en"
       ? vehicle.descriptionEn ??
         vehicle.description ??
         content.information.fallback
-      : vehicle.description ??
-        content.information.fallback;
+      : vehicle.description ?? content.information.fallback;
+
+  const details = [
+    { label: content.details.year, value: vehicle.year },
+    {
+      label: content.details.mileage,
+      value: `${vehicle.mileage.toLocaleString(locale)} km`,
+    },
+    { label: content.details.fuel, value: translatedFuel },
+    { label: content.details.transmission, value: translatedTransmission },
+    { label: content.details.drivetrain, value: translatedDrivetrain },
+    {
+      label: content.details.power,
+      value:
+        vehicle.power !== null
+          ? `${vehicle.power} CV`
+          : content.details.unspecified,
+    },
+    {
+      label: content.details.engine,
+      value: vehicle.engine ?? content.details.unspecified,
+    },
+    { label: content.details.color, value: translatedColor },
+  ];
 
   return (
-    <main className="min-h-screen bg-black pb-32 text-white sm:pb-36">
-      <header className="border-b border-white/10 px-6 py-6">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link
-            href="/"
-            className="text-xl font-bold tracking-[0.35em] text-white"
-          >
-            VANMOTION
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+          <Image
+            src="/brand/vanmotion-mark.webp"
+            alt=""
+            width={76}
+            height={36}
+            priority
+            className={styles.brandMark}
+          />
+          <span>Vanmotion</span>
+        </Link>
+
+        <nav
+          className={styles.navigation}
+          aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
+        >
+          <Link href="/coleccion" aria-current="page">
+            {content.navigation.vehicles}
           </Link>
-
-          <nav
-            className="flex items-center gap-5 text-sm"
-            aria-label={
-              language === "es"
-                ? "Navegación principal"
-                : "Main navigation"
-            }
-          >
-            <Link
-              href="/"
-              className="text-white/60 transition hover:text-white"
-            >
-              {content.navigation.home}
-            </Link>
-
-            <Link
-              href="/coleccion"
-              className="font-semibold text-white"
-            >
-              {
-                content.navigation
-                  .collection
-              }
-            </Link>
-          </nav>
-        </div>
+          <Link href="/musica">{content.navigation.music}</Link>
+          <Link href="/ropa">{content.navigation.clothing}</Link>
+          <Link href="/contacto">{content.navigation.contact}</Link>
+        </nav>
       </header>
 
-      <div className="px-6 py-12">
-        <div className="mx-auto max-w-7xl">
-          <Link
-            href="/coleccion"
-            className="inline-flex text-sm font-semibold text-white/60 transition hover:text-white"
-          >
+      <main>
+        <section className={styles.hero}>
+          <div className={styles.heroTopline}>
+            <span>Madrid · España</span>
+            <span>{isEmblem ? content.emblem.badge : content.detailsLabel}</span>
+          </div>
+
+          <Link href="/coleccion" className={styles.backLink}>
             ← {content.back}
           </Link>
 
-          {!isEmblem && enviado === "1" && (
-            <div
-              className="mt-8 rounded-2xl border border-green-500/30 bg-green-500/10 p-5"
-              role="status"
-            >
-              <p className="font-semibold text-green-300">
-                {content.success.title}
-              </p>
+          <div className={styles.heroCopy}>
+            <p>{vehicle.brand.name}</p>
+            <h1>{vehicle.model}</h1>
+            {vehicle.version && <span>{vehicle.version}</span>}
+          </div>
 
-              <p className="mt-1 text-sm text-green-200/70">
-                {
-                  content.success
-                    .description
-                }
-              </p>
-            </div>
-          )}
+          <div className={styles.heroMeta}>
+            <span>{vehicle.year}</span>
+            <span>{translatedFuel}</span>
+            <span>{translatedTransmission}</span>
+          </div>
+        </section>
 
-          <section className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)] xl:grid-cols-[minmax(0,1.45fr)_minmax(380px,0.75fr)] xl:gap-12">
-            <div>
-              <div
-                className="mb-4 rounded-2xl border border-amber-300/25 bg-amber-300/10 px-4 py-3 text-sm leading-6 text-amber-100"
-                role="note"
-              >
-                {content.imageNotice}
-              </div>
+        {!isEmblem && enviado === "1" && (
+          <div className={styles.successMessage} role="status">
+            <strong>{content.success.title}</strong>
+            <span>{content.success.description}</span>
+          </div>
+        )}
 
-              <VehicleGallery
-                images={vehicle.images.map((image) => ({
-                  id: image.id,
-                  url: image.url,
-                  alt: image.alt,
-                }))}
-                vehicleName={vehicleName}
-                emptyLabel={content.photoSoon}
-                selectImageLabel={
-                  language === "es"
-                    ? "Mostrar fotografía"
-                    : "Show photograph"
-                }
-              />
+        <section className={styles.productSection}>
+          <div className={styles.galleryColumn}>
+            <div className={styles.imageNotice} role="note">
+              {content.imageNotice}
             </div>
 
-            <aside className="lg:sticky lg:top-8 lg:self-start">
-              <p className="text-sm uppercase tracking-[0.25em] text-white/40">
-                {vehicle.brand.name}
-              </p>
+            <VehicleGallery
+              images={vehicle.images.map((image) => ({
+                id: image.id,
+                url: image.url,
+                alt: image.alt,
+              }))}
+              vehicleName={vehicleName}
+              emptyLabel={content.photoSoon}
+              selectImageLabel={content.selectImage}
+            />
+          </div>
 
-              <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">
-                {vehicle.model}
-              </h1>
+          <aside className={styles.infoPanel}>
+            <div className={styles.infoHeading}>
+              <p>{vehicle.brand.name}</p>
+              <h2>{vehicle.model}</h2>
+              {vehicle.version && <span>{vehicle.version}</span>}
+            </div>
 
-              {vehicle.version && (
-                <p className="mt-2 text-xl text-white/55">
-                  {vehicle.version}
-                </p>
-              )}
-
+            <div className={styles.priceBlock}>
               {isEmblem ? (
-                <div className="mt-8">
-                  <span className="inline-flex rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-amber-100">
-                    {content.emblem.badge}
-                  </span>
+                <>
+                  <span>{content.emblem.badge}</span>
+                  <strong>{content.emblem.notForSale}</strong>
+                </>
+              ) : (
+                <>
+                  <span>{language === "es" ? "Precio" : "Price"}</span>
+                  <strong>{formatPrice(vehicle.price, locale)}</strong>
+                </>
+              )}
+            </div>
 
-                  <p className="mt-5 text-3xl font-bold text-white">
-                    {content.emblem.notForSale}
-                  </p>
+            <div className={styles.detailGrid}>
+              {details.map((detail) => (
+                <VehicleDetail
+                  key={detail.label}
+                  label={detail.label}
+                  value={detail.value}
+                />
+              ))}
+            </div>
+
+            {isEmblem ? (
+              <section className={styles.emblemPanel}>
+                <p>{content.emblem.badge}</p>
+                <h3>{content.emblem.title}</h3>
+                <span>{content.emblem.description}</span>
+              </section>
+            ) : (
+              <form action={createContactRequest} className={styles.contactForm}>
+                <input type="hidden" name="vehicleId" value={vehicle.id} />
+
+                <div className={styles.formHeading}>
+                  <p>{content.contact.eyebrow}</p>
+                  <h3>{content.contact.title}</h3>
+                  <span>{content.contact.description}</span>
                 </div>
-              ) : (
-                <p className="mt-8 text-4xl font-bold">
-                  {formatPrice(
-                    vehicle.price,
-                    locale,
-                  )}
-                </p>
-              )}
 
-              <div className="mt-8 grid grid-cols-2 gap-4 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                <VehicleDetail
-                  label={
-                    content.details.year
-                  }
-                  value={vehicle.year}
-                />
-
-                <VehicleDetail
-                  label={
-                    content.details.mileage
-                  }
-                  value={`${formattedMileage} km`}
-                />
-
-                <VehicleDetail
-                  label={
-                    content.details.fuel
-                  }
-                  value={translatedFuel}
-                />
-
-                <VehicleDetail
-                  label={
-                    content.details
-                      .transmission
-                  }
-                  value={
-                    translatedTransmission
-                  }
-                />
-
-                <VehicleDetail
-                  label={
-                    content.details
-                      .drivetrain
-                  }
-                  value={
-                    translatedDrivetrain
-                  }
-                />
-
-                <VehicleDetail
-                  label={
-                    content.details.power
-                  }
-                  value={
-                    vehicle.power !== null
-                      ? `${vehicle.power} CV`
-                      : content.details
-                          .unspecified
-                  }
-                />
-
-                <VehicleDetail
-                  label={
-                    content.details.engine
-                  }
-                  value={
-                    vehicle.engine ??
-                    content.details
-                      .unspecified
-                  }
-                />
-
-                <VehicleDetail
-                  label={
-                    content.details.color
-                  }
-                  value={translatedColor}
-                />
-              </div>
-
-              {isEmblem ? (
-                <section className="mt-8 rounded-3xl border border-amber-300/20 bg-amber-300/[0.06] p-6">
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-100/70">
-                    {content.emblem.badge}
-                  </p>
-
-                  <h2 className="mt-3 text-2xl font-semibold">
-                    {content.emblem.title}
-                  </h2>
-
-                  <p className="mt-3 text-sm leading-7 text-white/55">
-                    {content.emblem.description}
-                  </p>
-
-                  <p className="mt-5 border-t border-amber-300/15 pt-5 text-sm font-semibold text-amber-100">
-                    {content.emblem.notForSale}
-                  </p>
-                </section>
-              ) : (
-                <form
-                  action={createContactRequest}
-                  className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-6 shadow-[0_18px_50px_rgba(0,0,0,0.28)] sm:p-8"
-                >
-                  <input
-                    type="hidden"
-                    name="vehicleId"
-                    value={vehicle.id}
+                <div className={styles.formGrid}>
+                  <ContactField
+                    id="name"
+                    label={content.contact.name}
+                    type="text"
+                    placeholder={content.contact.namePlaceholder}
                   />
-
-                  <h2 className="text-2xl font-semibold">
-                    {content.contact.title}
-                  </h2>
-
-                  <p className="mt-2 text-sm text-white/50">
-                    {
-                      content.contact
-                        .description
-                    }
-                  </p>
-
-                  <div className="mt-6 space-y-4">
-                    <ContactField
-                      id="name"
-                      label={
-                        content.contact.name
-                      }
-                      type="text"
-                      placeholder={
-                        content.contact
-                          .namePlaceholder
-                      }
+                  <ContactField
+                    id="email"
+                    label={content.contact.email}
+                    type="email"
+                    placeholder={content.contact.emailPlaceholder}
+                  />
+                  <ContactField
+                    id="phone"
+                    label={content.contact.phone}
+                    type="tel"
+                    placeholder={content.contact.phonePlaceholder}
+                    required={false}
+                  />
+                  <div className={styles.messageField}>
+                    <label htmlFor="message">{content.contact.message}</label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      required
+                      rows={5}
+                      placeholder={messagePlaceholder}
                     />
-
-                    <ContactField
-                      id="email"
-                      label={
-                        content.contact.email
-                      }
-                      type="email"
-                      placeholder={
-                        content.contact
-                          .emailPlaceholder
-                      }
-                    />
-
-                    <ContactField
-                      id="phone"
-                      label={
-                        content.contact.phone
-                      }
-                      type="tel"
-                      placeholder={
-                        content.contact
-                          .phonePlaceholder
-                      }
-                      required={false}
-                    />
-
-                    <div>
-                      <label
-                        htmlFor="message"
-                        className="mb-2 block text-sm text-white/60"
-                      >
-                        {
-                          content.contact
-                            .message
-                        }
-                      </label>
-
-                      <textarea
-                        id="message"
-                        name="message"
-                        required
-                        rows={5}
-                        placeholder={
-                          messagePlaceholder
-                        }
-                        className="w-full resize-y rounded-xl border border-white/10 bg-black p-4 text-white transition placeholder:text-white/25 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10"
-                      />
-                    </div>
                   </div>
+                </div>
 
-                  <p className="mt-5 text-xs leading-6 text-white/40">
-                    {content.contact.privacy}{" "}
+                <p className={styles.privacyText}>
+                  {content.contact.privacy}{" "}
+                  <Link href="/privacidad">{content.contact.privacyLink}</Link>
+                </p>
 
-                    <Link
-                      href="/privacidad"
-                      className="text-white/70 underline underline-offset-4 transition hover:text-white"
-                    >
-                      {content.contact.privacyLink}
-                    </Link>
-                  </p>
+                <button type="submit" className={styles.submitButton}>
+                  {content.contact.submit}
+                  <span aria-hidden="true">↗</span>
+                </button>
+              </form>
+            )}
+          </aside>
+        </section>
 
-                  <button
-                    type="submit"
-                    className="mt-5 w-full rounded-xl bg-white px-6 py-4 font-bold text-black transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                  >
-                    {content.contact.submit}
-                  </button>
-                </form>
-              )}
-            </aside>
-          </section>
-
-          <section className="mt-12 rounded-3xl border border-white/10 bg-white/[0.03] p-7 md:p-10">
-            <p className="text-sm uppercase tracking-[0.25em] text-white/40">
-              {content.information.label}
-            </p>
-
-            <h2 className="mt-3 text-3xl font-semibold">
-              {content.information.title}
+        <section className={styles.descriptionSection}>
+          <div className={styles.descriptionTitle}>
+            <p>{content.information.eyebrow}</p>
+            <h2>
+              <span>{content.information.titleFirst}</span>
+              <span>{content.information.titleSecond}</span>
             </h2>
+          </div>
 
-            <p className="mt-6 max-w-5xl whitespace-pre-line text-base leading-8 text-white/75 sm:text-lg">
-              {vehicleDescription}
-            </p>
-          </section>
+          <div className={styles.descriptionCopy}>
+            <h3>{content.information.heading}</h3>
+            <p>{vehicleDescription}</p>
+          </div>
+        </section>
+      </main>
+
+      <footer className={styles.footer}>
+        <div className={styles.footerBrand}>
+          <strong>Vanmotion</strong>
+          <span>{content.footer.city}</span>
         </div>
-      </div>
-    </main>
+
+        <nav className={styles.footerNav}>
+          <Link href="/condiciones-compra">
+            {content.footer.purchaseConditions}
+          </Link>
+          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
+          <Link href="/privacidad">{content.footer.privacy}</Link>
+        </nav>
+
+        <span className={styles.copyright}>© 2026</span>
+      </footer>
+    </div>
   );
 }
 
@@ -843,14 +642,9 @@ function VehicleDetail({
   value: string | number;
 }) {
   return (
-    <div className="border-b border-white/10 pb-4">
-      <p className="text-sm text-white/35">
-        {label}
-      </p>
-
-      <p className="mt-1 font-medium text-white">
-        {value}
-      </p>
+    <div className={styles.detailItem}>
+      <span>{label}</span>
+      <strong>{value}</strong>
     </div>
   );
 }
@@ -869,21 +663,14 @@ function ContactField({
   required?: boolean;
 }) {
   return (
-    <div>
-      <label
-        htmlFor={id}
-        className="mb-2 block text-sm text-white/60"
-      >
-        {label}
-      </label>
-
+    <div className={styles.field}>
+      <label htmlFor={id}>{label}</label>
       <input
         id={id}
         name={id}
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-white/10 bg-black p-4 text-white transition placeholder:text-white/25 focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/10"
       />
     </div>
   );

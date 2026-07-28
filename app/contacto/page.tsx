@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { createContactRequest } from "@/actions/contactActions";
@@ -8,6 +9,8 @@ import { prisma } from "@/app/lib/prisma";
 import styles from "./contacto.module.css";
 
 export const dynamic = "force-dynamic";
+
+const CANONICAL_URL = "https://vanmotion.es/contacto";
 
 type ContactoPageProps = {
   searchParams: Promise<{
@@ -22,243 +25,164 @@ type ContactoPageProps = {
 
 const translations = {
   es: {
-    metadata: {
-      title: "Contacto",
-      description:
-        "Contacta directamente con VANMOTION para solicitar información sobre vehículos, música, ropa y proyectos.",
-    },
-
+    metadataTitle: "Contacto directo",
+    metadataDescription:
+      "Contacta directamente con VANMOTION para consultas sobre vehículos, música, ropa y colaboraciones.",
     navigation: {
-      home: "Inicio",
-      collection: "Colección",
+      vehicles: "Vehículos",
+      music: "Música",
+      clothing: "Ropa",
       contact: "Contacto",
-      vehicles: "Ver vehículos",
     },
-
     hero: {
-      eyebrow: "Contacto directo · Madrid",
-      titleFirst: "Hablemos del",
-      titleSecond: "próximo movimiento.",
-      description:
-        "Vehículos, producción musical, diseño y proyectos con identidad. Contacta directamente con VANMOTION para recibir información.",
-      visualFirst: "REAL",
-      visualSecond: "CONTACTO",
+      location: "Madrid · España",
+      label: "Contacto directo · VANMOTION",
+      first: "Hablemos.",
+      second: "Sin rodeos.",
+      foot: "Vehículos · música · ropa · colaboraciones",
     },
-
-    success: {
-      title: "Mensaje enviado correctamente",
-      description:
-        "Hemos recibido tu consulta. VANMOTION se pondrá en contacto contigo.",
+    intro: {
+      eyebrow: "Un punto de contacto",
+      title: "Una conversación real.",
+      text:
+        "Cuéntanos qué necesitas. Las consultas se revisan directamente desde VANMOTION y respondemos de forma personal.",
     },
-
+    channels: {
+      eyebrow: "Canales directos",
+      email: "Correo",
+      phone: "Teléfono",
+      whatsapp: "WhatsApp",
+      pending: "Pendiente de configurar",
+      noteTitle: "Atención directa",
+      note:
+        "Las visitas y reuniones se coordinan siempre mediante contacto previo.",
+      social: "Redes",
+      comingSoon: "Próximamente",
+    },
     form: {
-      label: "Formulario general",
-      titleFirst: "Cuéntanos",
-      titleSecond: "qué necesitas.",
+      eyebrow: "Envía tu consulta",
+      title: "Dinos lo necesario.",
       description:
-        "Utiliza este formulario para consultas sobre vehículos, música, ropa, colaboraciones o cualquier proyecto relacionado con VANMOTION.",
+        "Selecciona el área y facilita solo los datos imprescindibles para poder responderte.",
+      successTitle: "Mensaje recibido",
+      successDescription:
+        "Tu consulta se ha registrado correctamente. VANMOTION se pondrá en contacto contigo.",
       topic: "Motivo de contacto *",
-      name: "Nombre *",
-      namePlaceholder: "Tu nombre",
+      name: "Nombre y apellidos *",
+      namePlaceholder: "Nombre de la persona de contacto",
       email: "Correo electrónico *",
       emailPlaceholder: "correo@ejemplo.com",
       phone: "Teléfono",
       phonePlaceholder: "+34 600 000 000",
       message: "Mensaje *",
-      messagePlaceholder:
-        "Cuéntanos con claridad en qué podemos ayudarte.",
+      messagePlaceholder: "Explica brevemente en qué podemos ayudarte.",
       submit: "Enviar mensaje",
       privacy:
-        "Responsable: VANMOTION. Finalidad: responder y gestionar tu solicitud. Legitimación: medidas precontractuales o interés legítimo, según la consulta.",
-      privacyLink:
-        "Más información y derechos en la Política de Privacidad.",
+        "Usaremos estos datos únicamente para responder y gestionar tu solicitud.",
+      privacyLink: "Política de privacidad",
       topics: [
-        {
-          value: "GENERAL",
-          label: "Consulta general",
-        },
-        {
-          value: "VEHICLES",
-          label: "Vehículos",
-        },
-        {
-          value: "MUSIC",
-          label: "Música",
-        },
-        {
-          value: "CLOTHING",
-          label: "Ropa",
-        },
-        {
-          value: "PROJECTS",
-          label: "Proyectos y colaboraciones",
-        },
+        { value: "GENERAL", label: "Consulta general" },
+        { value: "VEHICLES", label: "Vehículos" },
+        { value: "MUSIC", label: "Música" },
+        { value: "CLOTHING", label: "Ropa" },
+        { value: "PROJECTS", label: "Proyectos y colaboraciones" },
       ],
     },
-
-    contactCards: {
-      email: "Correo electrónico",
-      phone: "Teléfono",
-      whatsapp: "WhatsApp",
-      location: "Ubicación",
-      pending: "Pendiente de configurar",
-      writeEmail: "Escribir correo",
-      callNow: "Llamar ahora",
-      openWhatsapp: "Abrir WhatsApp",
-      emailSubject:
-        "Contacto desde la web de VANMOTION",
-      whatsappMessage:
-        "me gustaría solicitar información",
-      locationFallback:
-        "Mejorada del Campo · Madrid",
-      appointment:
-        "Atención y visitas mediante contacto o cita previa.",
+    paths: {
+      eyebrow: "Explora VANMOTION",
+      title: "Tres caminos. Una identidad.",
+      vehicles: "Vehículos",
+      music: "Música",
+      clothing: "Ropa",
     },
-
-    schedule: {
-      label: "Horario de atención",
-      title: "Estamos al otro lado.",
-      fallback:
-        "Contacta con nosotros para confirmar disponibilidad y concertar una visita.",
+    footer: {
+      city: "Madrid · España",
+      legalNotice: "Aviso legal",
+      privacy: "Privacidad",
+      cookies: "Cookies",
+      purchaseConditions: "Condiciones de compra",
+      withdrawal: "Desistimiento",
     },
-
-    social: {
-      label: "Redes y contenido",
-      title: "Sigue el movimiento.",
-      comingSoon: "Próximamente",
-    },
-
-    collection: {
-      label: "Colección VANMOTION",
-      titleFirst: "¿Buscas un vehículo",
-      titleSecond: "con personalidad?",
-      description:
-        "Consulta nuestra colección. Los vehículos disponibles incluyen un formulario específico para solicitar información.",
-      action: "Explorar colección",
-    },
-
-    footer:
-      "Vehículos · Música · Diseño · Madrid",
   },
-
   en: {
-    metadata: {
-      title: "Contact",
-      description:
-        "Contact VANMOTION directly for information about vehicles, music, clothing and future projects.",
-    },
-
+    metadataTitle: "Direct contact",
+    metadataDescription:
+      "Contact VANMOTION directly about vehicles, music, clothing and collaborations.",
     navigation: {
-      home: "Home",
-      collection: "Collection",
+      vehicles: "Vehicles",
+      music: "Music",
+      clothing: "Clothing",
       contact: "Contact",
-      vehicles: "View vehicles",
     },
-
     hero: {
-      eyebrow: "Direct contact · Madrid",
-      titleFirst: "Let us discuss the",
-      titleSecond: "next movement.",
-      description:
-        "Vehicles, music production, design and projects with identity. Contact VANMOTION directly to receive further information.",
-      visualFirst: "REAL",
-      visualSecond: "CONTACT",
+      location: "Madrid · Spain",
+      label: "Direct contact · VANMOTION",
+      first: "Let us talk.",
+      second: "Straight.",
+      foot: "Vehicles · music · clothing · collaborations",
     },
-
-    success: {
-      title: "Message sent successfully",
-      description:
-        "We received your enquiry. VANMOTION will contact you shortly.",
+    intro: {
+      eyebrow: "One contact point",
+      title: "A real conversation.",
+      text:
+        "Tell us what you need. Every enquiry is reviewed directly by VANMOTION and answered personally.",
     },
-
-    form: {
-      label: "General contact form",
-      titleFirst: "Tell us",
-      titleSecond: "what you need.",
-      description:
-        "Use this form for enquiries about vehicles, music, clothing, collaborations or any project related to VANMOTION.",
-      topic: "Reason for contact *",
-      name: "Name *",
-      namePlaceholder: "Your name",
-      email: "Email address *",
-      emailPlaceholder: "email@example.com",
-      phone: "Phone",
-      phonePlaceholder: "+34 600 000 000",
-      message: "Message *",
-      messagePlaceholder:
-        "Tell us clearly how we can help.",
-      submit: "Send message",
-      privacy:
-        "Controller: VANMOTION. Purpose: to respond to and manage your request. Legal basis: pre-contractual steps or legitimate interests, depending on the enquiry.",
-      privacyLink:
-        "Further information and rights in the Privacy Policy.",
-      topics: [
-        {
-          value: "GENERAL",
-          label: "General enquiry",
-        },
-        {
-          value: "VEHICLES",
-          label: "Vehicles",
-        },
-        {
-          value: "MUSIC",
-          label: "Music",
-        },
-        {
-          value: "CLOTHING",
-          label: "Clothing",
-        },
-        {
-          value: "PROJECTS",
-          label: "Projects and collaborations",
-        },
-      ],
-    },
-
-    contactCards: {
-      email: "Email address",
-      phone: "Phone",
+    channels: {
+      eyebrow: "Direct channels",
+      email: "Email",
+      phone: "Telephone",
       whatsapp: "WhatsApp",
-      location: "Location",
       pending: "Pending configuration",
-      writeEmail: "Send email",
-      callNow: "Call now",
-      openWhatsapp: "Open WhatsApp",
-      emailSubject:
-        "Contact from the VANMOTION website",
-      whatsappMessage:
-        "I would like to request information",
-      locationFallback:
-        "Mejorada del Campo · Madrid",
-      appointment:
-        "Assistance and visits are available by prior contact or appointment.",
-    },
-
-    schedule: {
-      label: "Opening hours",
-      title: "We are here for you.",
-      fallback:
-        "Contact us to confirm availability and arrange a visit.",
-    },
-
-    social: {
-      label: "Social media and content",
-      title: "Follow the movement.",
+      noteTitle: "Direct assistance",
+      note:
+        "Visits and meetings are always arranged through prior contact.",
+      social: "Social media",
       comingSoon: "Coming soon",
     },
-
-    collection: {
-      label: "VANMOTION Collection",
-      titleFirst: "Looking for a vehicle",
-      titleSecond: "with personality?",
+    form: {
+      eyebrow: "Send your enquiry",
+      title: "Tell us what matters.",
       description:
-        "Browse our collection. Available vehicles include a dedicated form for requesting information.",
-      action: "Explore collection",
+        "Choose the relevant area and provide only the details we need to answer.",
+      successTitle: "Message received",
+      successDescription:
+        "Your enquiry has been registered successfully. VANMOTION will contact you.",
+      topic: "Reason for contact *",
+      name: "Full name *",
+      namePlaceholder: "Name of the contact person",
+      email: "Email address *",
+      emailPlaceholder: "email@example.com",
+      phone: "Telephone",
+      phonePlaceholder: "+34 600 000 000",
+      message: "Message *",
+      messagePlaceholder: "Briefly explain how we can help.",
+      submit: "Send message",
+      privacy:
+        "We will use this information only to respond to and manage your request.",
+      privacyLink: "Privacy policy",
+      topics: [
+        { value: "GENERAL", label: "General enquiry" },
+        { value: "VEHICLES", label: "Vehicles" },
+        { value: "MUSIC", label: "Music" },
+        { value: "CLOTHING", label: "Clothing" },
+        { value: "PROJECTS", label: "Projects and collaborations" },
+      ],
     },
-
-    footer:
-      "Vehicles · Music · Design · Madrid",
+    paths: {
+      eyebrow: "Explore VANMOTION",
+      title: "Three paths. One identity.",
+      vehicles: "Vehicles",
+      music: "Music",
+      clothing: "Clothing",
+    },
+    footer: {
+      city: "Madrid · Spain",
+      legalNotice: "Legal notice",
+      privacy: "Privacy",
+      cookies: "Cookies",
+      purchaseConditions: "Purchase conditions",
+      withdrawal: "Withdrawal",
+    },
   },
 } as const;
 
@@ -270,57 +194,81 @@ function externalUrl(value: string): string {
   return `https://${value}`;
 }
 
+function topicFromReason(reason?: string): string {
+  switch (reason?.toLowerCase()) {
+    case "ropa":
+    case "clothing":
+      return "CLOTHING";
+    case "vehiculo":
+    case "vehículos":
+    case "vehiculos":
+    case "vehicle":
+      return "VEHICLES";
+    case "musica":
+    case "música":
+    case "music":
+      return "MUSIC";
+    case "proyecto":
+    case "colaboracion":
+    case "colaboración":
+    case "projects":
+      return "PROJECTS";
+    default:
+      return "GENERAL";
+  }
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
   const content = translations[language];
 
   return {
-    title: content.metadata.title,
-    description: content.metadata.description,
+    title: content.metadataTitle,
+    description: content.metadataDescription,
+    alternates: {
+      canonical: CANONICAL_URL,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
   };
 }
 
 export default async function ContactoPage({
   searchParams,
 }: ContactoPageProps) {
-  const [
-    settings,
-    language,
-    contactParams,
-  ] = await Promise.all([
+  const [settings, language, contactParams] = await Promise.all([
     prisma.siteSettings.findUnique({
       where: {
         id: "main",
       },
     }),
-
     getCurrentLanguage(),
-
     searchParams,
   ]);
 
   const content = translations[language];
-
   const {
     enviado,
     motivo,
+    producto,
     nombreProducto,
     talla,
     cantidad,
   } = contactParams;
 
-  const defaultTopic =
-    motivo === "ropa"
-      ? "CLOTHING"
-      : "GENERAL";
+  const defaultTopic = topicFromReason(motivo);
+  const productName =
+    nombreProducto ||
+    producto ||
+    (language === "es" ? "la prenda VANMOTION" : "the VANMOTION garment");
 
   const defaultMessage =
-    motivo === "ropa"
+    defaultTopic === "CLOTHING"
       ? language === "es"
         ? [
-            `Hola VANMOTION, estoy interesado en ${
-              nombreProducto || "la camiseta CARPE DIEM"
-            }.`,
+            `Hola VANMOTION, estoy interesado en ${productName}.`,
             talla ? `Talla: ${talla}.` : "",
             cantidad ? `Cantidad: ${cantidad}.` : "",
             "Me gustaría confirmar disponibilidad, precio y condiciones de compra.",
@@ -328,9 +276,7 @@ export default async function ContactoPage({
             .filter(Boolean)
             .join("\n")
         : [
-            `Hello VANMOTION, I am interested in ${
-              nombreProducto || "the CARPE DIEM T-shirt"
-            }.`,
+            `Hello VANMOTION, I am interested in ${productName}.`,
             talla ? `Size: ${talla}.` : "",
             cantidad ? `Quantity: ${cantidad}.` : "",
             "I would like to confirm availability, price and purchase conditions.",
@@ -339,332 +285,192 @@ export default async function ContactoPage({
             .join("\n")
       : "";
 
-  const businessName =
-    settings?.businessName ?? "VANMOTION";
-
-  const location = [
-    settings?.address,
-    settings?.postalCode,
-    settings?.city,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-
-  const whatsappNumber =
-    settings?.whatsapp?.replace(/\D/g, "") ?? "";
-
+  const businessName = settings?.businessName ?? "VANMOTION";
+  const whatsappNumber = settings?.whatsapp?.replace(/\D/g, "") ?? "";
   const whatsappUrl = whatsappNumber
     ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-        `${
-          language === "es" ? "Hola" : "Hello"
-        } ${businessName}, ${
-          content.contactCards.whatsappMessage
-        }.`,
+        language === "es"
+          ? `Hola ${businessName}, me gustaría solicitar información.`
+          : `Hello ${businessName}, I would like to request information.`,
       )}`
     : null;
 
+  const socialLinks = [
+    { label: "Instagram", value: settings?.instagram },
+    { label: "YouTube", value: settings?.youtube },
+    { label: "TikTok", value: settings?.tiktok },
+  ];
+
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <header className={styles.header}>
-        <Link href="/" className={styles.logo}>
-          {businessName}
+        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+          <Image
+            src="/brand/vanmotion-mark.webp"
+            alt=""
+            width={76}
+            height={36}
+            priority
+            className={styles.brandMark}
+          />
+          <span>Vanmotion</span>
         </Link>
 
         <nav
           className={styles.navigation}
-          aria-label={
-            language === "es"
-              ? "Navegación principal"
-              : "Main navigation"
-          }
+          aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
         >
-          <Link href="/">
-            {content.navigation.home}
-          </Link>
-
-          <Link href="/coleccion">
-            {content.navigation.collection}
-          </Link>
-
-          <Link
-            href="/contacto"
-            className={styles.active}
-            aria-current="page"
-          >
+          <Link href="/coleccion">{content.navigation.vehicles}</Link>
+          <Link href="/musica">{content.navigation.music}</Link>
+          <Link href="/ropa">{content.navigation.clothing}</Link>
+          <Link href="/contacto" aria-current="page">
             {content.navigation.contact}
           </Link>
         </nav>
-
-        <Link
-          href="/coleccion"
-          className={styles.headerButton}
-        >
-          {content.navigation.vehicles}
-          <span>→</span>
-        </Link>
       </header>
 
-      <section className={styles.hero}>
-        <div>
-          <p className={styles.eyebrow}>
-            {content.hero.eyebrow}
-          </p>
-
-          <h1>
-            {content.hero.titleFirst}
-            <br />
-            {content.hero.titleSecond}
-          </h1>
-
-          <p className={styles.description}>
-            {content.hero.description}
-          </p>
-        </div>
-
-        <div className={styles.heroWord}>
-          <span>
-            {content.hero.visualFirst}
-          </span>
-
-          <strong>
-            {content.hero.visualSecond}
-          </strong>
-        </div>
-      </section>
-
-      <section className={styles.content}>
-        <div className={styles.contactGrid}>
-          <article className={styles.contactCard}>
-            <span className={styles.number}>
-              01
-            </span>
-
-            <p className={styles.label}>
-              {content.contactCards.email}
-            </p>
-
-            {settings?.email ? (
-              <a
-                href={`mailto:${settings.email}`}
-                className={styles.contactValue}
-              >
-                {settings.email}
-              </a>
-            ) : (
-              <p className={styles.emptyValue}>
-                {content.contactCards.pending}
-              </p>
-            )}
-
-            {settings?.email && (
-              <a
-                href={`mailto:${
-                  settings.email
-                }?subject=${encodeURIComponent(
-                  content.contactCards
-                    .emailSubject,
-                )}`}
-                className={styles.cardButton}
-              >
-                {
-                  content.contactCards
-                    .writeEmail
-                }
-                <span>→</span>
-              </a>
-            )}
-          </article>
-
-          <article className={styles.contactCard}>
-            <span className={styles.number}>
-              02
-            </span>
-
-            <p className={styles.label}>
-              {content.contactCards.phone}
-            </p>
-
-            {settings?.phone ? (
-              <a
-                href={`tel:${settings.phone}`}
-                className={styles.contactValue}
-              >
-                {settings.phone}
-              </a>
-            ) : (
-              <p className={styles.emptyValue}>
-                {content.contactCards.pending}
-              </p>
-            )}
-
-            {settings?.phone && (
-              <a
-                href={`tel:${settings.phone}`}
-                className={styles.cardButton}
-              >
-                {content.contactCards.callNow}
-                <span>→</span>
-              </a>
-            )}
-          </article>
-
-          <article className={styles.contactCard}>
-            <span className={styles.number}>
-              03
-            </span>
-
-            <p className={styles.label}>
-              {content.contactCards.whatsapp}
-            </p>
-
-            {settings?.whatsapp ? (
-              <p className={styles.contactValue}>
-                {settings.whatsapp}
-              </p>
-            ) : (
-              <p className={styles.emptyValue}>
-                {content.contactCards.pending}
-              </p>
-            )}
-
-            {whatsappUrl && (
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={
-                  styles.primaryCardButton
-                }
-              >
-                {
-                  content.contactCards
-                    .openWhatsapp
-                }
-                <span>→</span>
-              </a>
-            )}
-          </article>
-
-          <article className={styles.contactCard}>
-            <span className={styles.number}>
-              04
-            </span>
-
-            <p className={styles.label}>
-              {content.contactCards.location}
-            </p>
-
-            {location ? (
-              <p className={styles.contactValue}>
-                {location}
-              </p>
-            ) : (
-              <p className={styles.emptyValue}>
-                {
-                  content.contactCards
-                    .locationFallback
-                }
-              </p>
-            )}
-
-            <p className={styles.cardNote}>
-              {
-                content.contactCards
-                  .appointment
-              }
-            </p>
-          </article>
-        </div>
-
-        <section
-          className={styles.formSection}
-          id="formulario"
-        >
-          <div className={styles.formIntro}>
-            <p className={styles.sectionLabel}>
-              {content.form.label}
-            </p>
-
-            <h2>
-              {content.form.titleFirst}
-              <br />
-              {content.form.titleSecond}
-            </h2>
-
-            <p>
-              {content.form.description}
-            </p>
+      <main>
+        <section className={styles.hero} aria-labelledby="contact-hero-title">
+          <div className={styles.heroTopline}>
+            <span>{content.hero.location}</span>
+            <span>{content.hero.label}</span>
           </div>
 
-          <div>
-            {enviado === "1" && (
-              <div
-                className={styles.success}
-                role="status"
-              >
-                <strong>
-                  {content.success.title}
-                </strong>
+          <div className={styles.heroCopy}>
+            <p>{content.hero.label}</p>
+            <h1 id="contact-hero-title">
+              <span>{content.hero.first}</span>
+              <span>{content.hero.second}</span>
+            </h1>
+          </div>
 
-                <p>
-                  {content.success.description}
-                </p>
+          <div className={styles.heroFoot}>
+            <span>{content.hero.foot}</span>
+            <Link href="#formulario">↓</Link>
+          </div>
+        </section>
+
+        <section className={styles.introSection}>
+          <p className={styles.sectionLabel}>{content.intro.eyebrow}</p>
+          <div className={styles.introGrid}>
+            <h2>{content.intro.title}</h2>
+            <p>{content.intro.text}</p>
+          </div>
+        </section>
+
+        <section className={styles.contactSection} id="formulario">
+          <aside className={styles.channelsPanel}>
+            <p className={styles.sectionLabel}>{content.channels.eyebrow}</p>
+
+            <dl className={styles.contactList}>
+              <div>
+                <dt>{content.channels.email}</dt>
+                <dd>
+                  {settings?.email ? (
+                    <a href={`mailto:${settings.email}`}>{settings.email}</a>
+                  ) : (
+                    content.channels.pending
+                  )}
+                </dd>
+              </div>
+
+              <div>
+                <dt>{content.channels.phone}</dt>
+                <dd>
+                  {settings?.phone ? (
+                    <a href={`tel:${settings.phone}`}>{settings.phone}</a>
+                  ) : (
+                    content.channels.pending
+                  )}
+                </dd>
+              </div>
+
+              <div>
+                <dt>{content.channels.whatsapp}</dt>
+                <dd>
+                  {whatsappUrl && settings?.whatsapp ? (
+                    <a href={whatsappUrl} target="_blank" rel="noreferrer">
+                      {settings.whatsapp} ↗
+                    </a>
+                  ) : (
+                    content.channels.pending
+                  )}
+                </dd>
+              </div>
+            </dl>
+
+            <div className={styles.channelNote}>
+              <strong>{content.channels.noteTitle}</strong>
+              <p>{content.channels.note}</p>
+            </div>
+
+            <div className={styles.socialBlock}>
+              <strong>{content.channels.social}</strong>
+              <div>
+                {socialLinks.map((social) =>
+                  social.value ? (
+                    <a
+                      key={social.label}
+                      href={externalUrl(social.value)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {social.label} ↗
+                    </a>
+                  ) : (
+                    <span key={social.label}>
+                      {social.label} · {content.channels.comingSoon}
+                    </span>
+                  ),
+                )}
+              </div>
+            </div>
+          </aside>
+
+          <section className={styles.formPanel}>
+            <div className={styles.formHeading}>
+              <div>
+                <p className={styles.sectionLabel}>{content.form.eyebrow}</p>
+                <h2>{content.form.title}</h2>
+              </div>
+              <p>{content.form.description}</p>
+            </div>
+
+            {enviado === "1" && (
+              <div className={styles.success} role="status">
+                <strong>{content.form.successTitle}</strong>
+                <p>{content.form.successDescription}</p>
               </div>
             )}
 
-            <form
-              action={createContactRequest}
-              className={styles.form}
-            >
-              <div className={styles.formFieldFull}>
-                <label htmlFor="topic">
-                  {content.form.topic}
-                </label>
-
-                <select
-                  id="topic"
-                  name="topic"
-                  required
-                  defaultValue={defaultTopic}
-                >
-                  {content.form.topics.map(
-                    (topic) => (
-                      <option
-                        key={topic.value}
-                        value={topic.value}
-                      >
-                        {topic.label}
-                      </option>
-                    ),
-                  )}
+            <form action={createContactRequest} className={styles.form}>
+              <div className={styles.fieldFull}>
+                <label htmlFor="topic">{content.form.topic}</label>
+                <select id="topic" name="topic" required defaultValue={defaultTopic}>
+                  {content.form.topics.map((topic) => (
+                    <option key={topic.value} value={topic.value}>
+                      {topic.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className={styles.formGrid}>
-                <div className={styles.formField}>
-                  <label htmlFor="contactName">
-                    {content.form.name}
-                  </label>
-
+                <div className={styles.field}>
+                  <label htmlFor="contactName">{content.form.name}</label>
                   <input
                     id="contactName"
                     name="contactName"
                     type="text"
                     required
                     maxLength={120}
-                    autoComplete="off"
-                    placeholder={
-                      content.form
-                        .namePlaceholder
-                    }
+                    autoComplete="name"
+                    placeholder={content.form.namePlaceholder}
                   />
                 </div>
 
-                <div className={styles.formField}>
-                  <label htmlFor="email">
-                    {content.form.email}
-                  </label>
-
+                <div className={styles.field}>
+                  <label htmlFor="email">{content.form.email}</label>
                   <input
                     id="email"
                     name="email"
@@ -672,184 +478,92 @@ export default async function ContactoPage({
                     required
                     maxLength={180}
                     autoComplete="email"
-                    placeholder={
-                      content.form
-                        .emailPlaceholder
-                    }
+                    placeholder={content.form.emailPlaceholder}
                   />
                 </div>
               </div>
 
-              <div className={styles.formFieldFull}>
-                <label htmlFor="phone">
-                  {content.form.phone}
-                </label>
-
+              <div className={styles.fieldFull}>
+                <label htmlFor="phone">{content.form.phone}</label>
                 <input
                   id="phone"
                   name="phone"
                   type="tel"
                   maxLength={40}
                   autoComplete="tel"
-                  placeholder={
-                    content.form
-                      .phonePlaceholder
-                  }
+                  placeholder={content.form.phonePlaceholder}
                 />
               </div>
 
-              <div className={styles.formFieldFull}>
-                <label htmlFor="message">
-                  {content.form.message}
-                </label>
-
+              <div className={styles.fieldFull}>
+                <label htmlFor="message">{content.form.message}</label>
                 <textarea
                   id="message"
                   name="message"
                   required
                   maxLength={3000}
-                  rows={7}
+                  rows={6}
                   defaultValue={defaultMessage}
-                  placeholder={
-                    content.form
-                      .messagePlaceholder
-                  }
+                  placeholder={content.form.messagePlaceholder}
                 />
               </div>
 
               <div className={styles.formFooter}>
                 <p>
                   {content.form.privacy}{" "}
-
-                  <Link href="/privacidad">
-                    {content.form.privacyLink}
-                  </Link>
+                  <Link href="/privacidad">{content.form.privacyLink}</Link>
                 </p>
-
                 <button type="submit">
                   {content.form.submit}
-                  <span>→</span>
+                  <span aria-hidden="true">→</span>
                 </button>
               </div>
             </form>
-          </div>
+          </section>
         </section>
 
-        <div className={styles.informationGrid}>
-          <section className={styles.schedule}>
-            <p className={styles.sectionLabel}>
-              {content.schedule.label}
-            </p>
-
-            <h2>{content.schedule.title}</h2>
-
-            <p className={styles.scheduleText}>
-              {settings?.openingHours ??
-                content.schedule.fallback}
-            </p>
-          </section>
-
-          <section className={styles.social}>
-            <p className={styles.sectionLabel}>
-              {content.social.label}
-            </p>
-
-            <h2>{content.social.title}</h2>
-
-            <div className={styles.socialLinks}>
-              {settings?.instagram ? (
-                <a
-                  href={externalUrl(
-                    settings.instagram,
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Instagram <span>↗</span>
-                </a>
-              ) : (
-                <div>
-                  Instagram
-                  <span>
-                    {content.social.comingSoon}
-                  </span>
-                </div>
-              )}
-
-              {settings?.youtube ? (
-                <a
-                  href={externalUrl(
-                    settings.youtube,
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  YouTube <span>↗</span>
-                </a>
-              ) : (
-                <div>
-                  YouTube
-                  <span>
-                    {content.social.comingSoon}
-                  </span>
-                </div>
-              )}
-
-              {settings?.tiktok ? (
-                <a
-                  href={externalUrl(
-                    settings.tiktok,
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  TikTok <span>↗</span>
-                </a>
-              ) : (
-                <div>
-                  TikTok
-                  <span>
-                    {content.social.comingSoon}
-                  </span>
-                </div>
-              )}
-            </div>
-          </section>
-        </div>
-
-        <section className={styles.collectionCallout}>
+        <section className={styles.pathsSection}>
           <div>
-            <p className={styles.sectionLabel}>
-              {content.collection.label}
-            </p>
-
-            <h2>
-              {content.collection.titleFirst}
-              <br />
-              {content.collection.titleSecond}
-            </h2>
+            <p>{content.paths.eyebrow}</p>
+            <h2>{content.paths.title}</h2>
           </div>
 
-          <div>
-            <p>
-              {content.collection.description}
-            </p>
-
+          <nav className={styles.pathLinks}>
             <Link href="/coleccion">
-              {content.collection.action}
-              <span>→</span>
+              <span>01</span>
+              <strong>{content.paths.vehicles}</strong>
+              <b aria-hidden="true">↗</b>
             </Link>
-          </div>
+            <Link href="/musica">
+              <span>02</span>
+              <strong>{content.paths.music}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+            <Link href="/ropa">
+              <span>03</span>
+              <strong>{content.paths.clothing}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+          </nav>
         </section>
-      </section>
+      </main>
 
       <footer className={styles.footer}>
-        <strong>{businessName}</strong>
+        <div className={styles.footerBrand}>
+          <strong>Vanmotion</strong>
+          <span>{content.footer.city}</span>
+        </div>
 
-        <span>{content.footer}</span>
+        <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaces legales" : "Legal links"}>
+          <Link href="/aviso-legal">{content.footer.legalNotice}</Link>
+          <Link href="/privacidad">{content.footer.privacy}</Link>
+          <Link href="/cookies">{content.footer.cookies}</Link>
+          <Link href="/condiciones-compra">{content.footer.purchaseConditions}</Link>
+          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
+        </nav>
 
-        <span>© 2026 VANMOTION</span>
+        <span className={styles.copyright}>© 2026</span>
       </footer>
-    </main>
+    </div>
   );
 }

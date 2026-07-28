@@ -7,9 +7,9 @@
   --orange: #d47728;
 
   min-height: 100vh;
+  overflow-x: clip;
   background: var(--ink);
   color: var(--paper);
-  overflow-x: clip;
 }
 
 .page,
@@ -97,31 +97,24 @@
   min-height: 100svh;
   isolation: isolate;
   overflow: hidden;
-  background: #121212;
+  background: #101010;
 }
 
-.heroMedia,
+.heroImage {
+  z-index: -3;
+  object-fit: cover;
+  object-position: center center;
+  filter: saturate(0.72) contrast(1.03) brightness(0.66);
+  transform: scale(1.02);
+}
+
 .heroShade {
   position: absolute;
   inset: 0;
-}
-
-.heroMedia {
-  z-index: -3;
-}
-
-.heroArtwork {
-  object-fit: cover;
-  object-position: center center;
-  filter: saturate(0.62) contrast(1.02) brightness(0.48);
-  transform: scale(1.04);
-}
-
-.heroShade {
   z-index: -2;
   background:
-    linear-gradient(90deg, rgba(5, 5, 5, 0.88) 0%, rgba(5, 5, 5, 0.55) 36%, rgba(5, 5, 5, 0.38) 100%),
-    linear-gradient(180deg, rgba(5, 5, 5, 0.22) 0%, rgba(5, 5, 5, 0.04) 42%, rgba(5, 5, 5, 0.84) 100%);
+    linear-gradient(90deg, rgba(5, 5, 5, 0.88) 0%, rgba(5, 5, 5, 0.45) 42%, rgba(5, 5, 5, 0.16) 76%),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.22) 0%, rgba(5, 5, 5, 0.03) 40%, rgba(5, 5, 5, 0.78) 100%);
 }
 
 .heroTopline,
@@ -148,8 +141,8 @@
   position: absolute;
   left: clamp(20px, 6vw, 92px);
   right: clamp(20px, 6vw, 92px);
-  bottom: clamp(116px, 16vh, 174px);
-  max-width: 980px;
+  bottom: clamp(126px, 17vh, 184px);
+  max-width: 1040px;
 }
 
 .heroCopy p,
@@ -165,10 +158,10 @@
 
 .heroCopy h1 {
   margin: 22px 0 0;
-  max-width: 940px;
-  font-size: clamp(62px, 10vw, 148px);
+  max-width: 1040px;
+  font-size: clamp(58px, 9.2vw, 138px);
   font-weight: 560;
-  line-height: 0.82;
+  line-height: 0.83;
   letter-spacing: -0.075em;
   text-transform: uppercase;
 }
@@ -187,38 +180,37 @@
   border-top: 1px solid var(--line);
 }
 
-.heroLinks {
+.inventoryCount {
   display: flex;
-  align-items: center;
-  gap: clamp(16px, 2.5vw, 36px);
+  align-items: baseline;
+  gap: 12px;
 }
 
-.heroLinks a {
+.inventoryCount strong {
   color: var(--paper);
-  transition: color 180ms ease;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.05em;
 }
 
-.heroLinks a:hover {
-  color: var(--orange);
+.inventoryCount span {
+  color: var(--paper-soft);
 }
 
-.introSection,
-.playerSection {
-  padding: clamp(72px, 8vw, 118px) clamp(20px, 4vw, 58px);
+.collectionIntro {
+  padding: clamp(72px, 8vw, 118px) clamp(20px, 4vw, 58px) clamp(38px, 5vw, 62px);
   background: var(--paper);
   color: var(--ink);
 }
 
-.introGrid,
-.playerIntro {
+.introGrid {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
   gap: 30px;
   align-items: end;
 }
 
-.introGrid h2,
-.playerIntro h2 {
+.introGrid h2 {
   margin: 14px 0 0;
   font-size: clamp(46px, 6vw, 92px);
   font-weight: 560;
@@ -226,218 +218,262 @@
   letter-spacing: -0.065em;
 }
 
-.introGrid p,
-.playerIntro p {
+.introGrid p {
   margin: 0;
   color: rgba(10, 10, 9, 0.58);
   font-size: 17px;
   line-height: 1.9;
 }
 
-.playerSection {
-  padding-top: 0;
-}
-
-.playerIntro {
-  padding-bottom: clamp(34px, 5vw, 56px);
-}
-
-.player {
-  padding: 34px;
-  background: #0b0b0b;
-  color: var(--paper);
-  border: 1px solid rgba(10, 10, 9, 0.1);
-}
-
-.nowPlaying {
-  display: grid;
-  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
-  gap: 36px;
-  align-items: center;
-}
-
-.cover {
-  min-height: 420px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.cover > span {
-  font-size: 96px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.cover small,
-.cover strong {
-  display: block;
-}
-
-.cover small {
-  color: rgba(242, 239, 232, 0.45);
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.cover strong {
-  margin-top: 10px;
-  font-size: 30px;
-  line-height: 1;
-}
-
-.trackInformation p {
-  margin: 0;
-  color: rgba(242, 239, 232, 0.45);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.trackInformation h2 {
-  margin: 16px 0 0;
-  font-size: clamp(36px, 4vw, 68px);
-  font-weight: 560;
-  line-height: 0.95;
-  letter-spacing: -0.055em;
-  text-transform: uppercase;
-}
-
-.trackInformation > span {
-  display: block;
-  margin-top: 12px;
-  color: rgba(242, 239, 232, 0.56);
-  font-size: 15px;
-}
-
-.playerControls {
-  margin-top: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-}
-
-.playerControls button {
-  width: 52px;
-  height: 52px;
-  border: 1px solid rgba(242, 239, 232, 0.16);
-  background: transparent;
-  color: var(--paper);
-  cursor: pointer;
-}
-
-.playerControls .playButton {
-  width: 72px;
-  height: 72px;
-  border: 0;
-  border-radius: 50%;
+.vehiclesSection {
+  padding: 0 clamp(20px, 4vw, 58px) clamp(72px, 8vw, 118px);
   background: var(--paper);
   color: var(--ink);
-  font-size: 20px;
 }
 
-.progressSection {
-  margin-top: 30px;
+.vehicleGrid {
   display: grid;
-  grid-template-columns: 45px 1fr 45px;
-  gap: 14px;
-  align-items: center;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
 }
 
-.progressSection span {
-  color: rgba(242, 239, 232, 0.42);
-  font-size: 10px;
-  text-align: center;
+.vehicleCard {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(10, 10, 9, 0.15);
+  background: #0b0b0b;
+  color: var(--paper);
 }
 
-.progressSection input,
-.volume input {
+.vehicleCardFeatured {
+  grid-column: 1 / -1;
+}
+
+.vehicleLink {
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.vehicleCardFeatured .vehicleLink {
+  grid-template-columns: minmax(0, 1.3fr) minmax(360px, 0.7fr);
+}
+
+.vehicleMedia {
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
+  background: #151515;
+}
+
+.vehicleCardFeatured .vehicleMedia {
+  min-height: 610px;
+}
+
+.vehicleImage {
   width: 100%;
-  accent-color: var(--paper);
-  cursor: pointer;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.volume {
-  width: min(100%, 300px);
-  margin: 20px auto 0;
+.vehicleLink:hover .vehicleImage {
+  transform: scale(1.025);
+}
+
+.vehicleOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(5, 5, 5, 0.08), rgba(5, 5, 5, 0.1) 55%, rgba(5, 5, 5, 0.52));
+  pointer-events: none;
+}
+
+.photoSoon {
+  min-height: inherit;
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 14px;
-  align-items: center;
+  place-items: center;
+  color: rgba(242, 239, 232, 0.36);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
-.volume span {
-  color: rgba(242, 239, 232, 0.4);
+.vehicleBadges {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vehicleBadges span,
+.imageNotice {
+  border: 1px solid rgba(242, 239, 232, 0.2);
+  background: rgba(5, 5, 5, 0.72);
+  backdrop-filter: blur(8px);
+  color: var(--paper);
   font-size: 8px;
+  font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.error {
-  margin: 20px 0 0;
-  padding: 14px;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171;
-  font-size: 12px;
-  text-align: center;
+.vehicleBadges span {
+  padding: 9px 11px;
 }
 
-.trackList {
-  margin-top: 36px;
-  border-top: 1px solid rgba(242, 239, 232, 0.12);
+.imageNotice {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  padding: 9px 11px;
+  color: rgba(242, 239, 232, 0.72);
 }
 
-.trackList button {
-  width: 100%;
-  min-height: 88px;
-  padding: 0 18px;
+.vehicleContent {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  background: #0b0b0b;
+}
+
+.vehicleCardFeatured .vehicleContent {
+  padding: clamp(32px, 4vw, 54px);
+}
+
+.vehicleBrand {
+  margin: 0;
+  color: var(--orange);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.vehicleContent h2 {
+  margin: 14px 0 0;
+  font-size: clamp(38px, 4.4vw, 68px);
+  font-weight: 560;
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}
+
+.vehicleVersion {
+  margin: 12px 0 0;
+  color: rgba(242, 239, 232, 0.58);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.vehicleDetails {
   display: grid;
-  grid-template-columns: 55px 1fr auto;
-  gap: 20px;
-  align-items: center;
-  border: 0;
-  border-bottom: 1px solid rgba(242, 239, 232, 0.1);
-  background: transparent;
-  color: var(--paper);
-  text-align: left;
-  cursor: pointer;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  padding: 22px 0;
+  border-top: 1px solid rgba(242, 239, 232, 0.12);
+  border-bottom: 1px solid rgba(242, 239, 232, 0.12);
 }
 
-.trackList button:hover,
-.trackList .activeTrack {
-  background: rgba(242, 239, 232, 0.05);
-}
-
-.trackNumber {
-  color: rgba(242, 239, 232, 0.28);
-  font-size: 11px;
-}
-
-.trackName strong,
-.trackName small {
-  display: block;
-}
-
-.trackName strong {
-  font-size: 16px;
-}
-
-.trackName small {
-  margin-top: 7px;
-  color: rgba(242, 239, 232, 0.38);
-  font-size: 11px;
-}
-
-.trackFormat {
-  color: rgba(242, 239, 232, 0.35);
+.detailItem p {
+  margin: 0;
+  color: rgba(242, 239, 232, 0.36);
   font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.detailItem strong {
+  display: block;
+  margin-top: 8px;
+  color: rgba(242, 239, 232, 0.84);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vehicleBottom {
+  margin-top: auto;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.vehicleBottom > strong {
+  max-width: 78%;
+  font-size: clamp(22px, 2.8vw, 34px);
+  font-weight: 560;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.vehicleAction {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(242, 239, 232, 0.2);
+  border-radius: 50%;
+  color: var(--orange);
+  font-size: 20px;
+  transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.vehicleLink:hover .vehicleAction {
+  transform: translate(2px, -2px);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.emptyState {
+  min-height: 520px;
+  padding: clamp(46px, 6vw, 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  border: 1px solid rgba(10, 10, 9, 0.15);
+  background: #0b0b0b;
+  color: var(--paper);
+}
+
+.emptyState h2 {
+  margin: 18px 0 0;
+  max-width: 900px;
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 560;
+  line-height: 0.88;
+  letter-spacing: -0.065em;
+  text-transform: uppercase;
+}
+
+.emptyState > p:not(.sectionLabel) {
+  margin: 28px 0 0;
+  max-width: 620px;
+  color: rgba(242, 239, 232, 0.58);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.emptyAction {
+  margin-top: 34px;
+  min-width: 240px;
+  padding: 17px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid rgba(242, 239, 232, 0.24);
+  border-bottom: 1px solid rgba(242, 239, 232, 0.24);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
   text-transform: uppercase;
 }
 
@@ -596,22 +632,31 @@
   color: var(--paper);
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1050px) {
+  .vehicleCardFeatured .vehicleLink,
   .introGrid,
-  .playerIntro,
-  .nowPlaying,
   .manifestoSection,
   .manifestoRow,
   .footer {
     grid-template-columns: 1fr;
   }
 
-  .manifestoSection,
-  .contactSection {
-    align-items: flex-start;
+  .vehicleCardFeatured .vehicleMedia {
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 820px) {
+  .vehicleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .vehicleCardFeatured {
+    grid-column: auto;
   }
 
   .contactSection {
+    align-items: flex-start;
     flex-direction: column;
   }
 
@@ -649,7 +694,11 @@
   }
 
   .hero {
-    min-height: 760px;
+    min-height: 780px;
+  }
+
+  .heroImage {
+    object-position: 56% center;
   }
 
   .heroTopline {
@@ -661,11 +710,11 @@
   }
 
   .heroCopy {
-    bottom: 148px;
+    bottom: 150px;
   }
 
   .heroCopy h1 {
-    font-size: clamp(56px, 17vw, 86px);
+    font-size: clamp(54px, 16vw, 82px);
     line-height: 0.86;
   }
 
@@ -675,24 +724,18 @@
     gap: 13px;
   }
 
-  .heroLinks {
-    gap: 16px;
+  .inventoryCount strong {
+    font-size: 26px;
   }
 
-  .player {
-    padding: 18px;
+  .vehicleMedia,
+  .vehicleCardFeatured .vehicleMedia {
+    min-height: 420px;
   }
 
-  .cover {
-    min-height: 280px;
-  }
-
-  .trackList button {
-    grid-template-columns: 35px 1fr;
-  }
-
-  .trackFormat {
-    display: none;
+  .vehicleContent,
+  .vehicleCardFeatured .vehicleContent {
+    padding: 24px;
   }
 
   .manifestoTitle h2 {
@@ -706,7 +749,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .navigation a,
-  .navigation a::after {
+  .navigation a::after,
+  .vehicleImage,
+  .vehicleAction {
     transition: none;
   }
 }

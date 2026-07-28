@@ -16,12 +16,7 @@ const HIDDEN_PATHS = [
   "/privacidad",
   "/cookies",
   "/condiciones-compra",
-];
-
-const COMPACT_PATHS = [
-  "/",
-  "/ropa",
-  "/coleccion",
+  "/desistimiento",
 ];
 
 function matchesPath(
@@ -48,20 +43,8 @@ export default function RouteAwareMusicPlayer({
     return null;
   }
 
-  const shouldUseCompactMode =
-    COMPACT_PATHS.some(
-      (path) =>
-        matchesPath(pathname, path),
-    );
-
   return (
-    <div
-      data-music-player-mode={
-        shouldUseCompactMode
-          ? "compact"
-          : "default"
-      }
-    >
+    <div data-music-player-mode="compact">
       {children}
     </div>
   );

@@ -1,149 +1,207 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentLanguage } from "@/app/lib/language";
 
-import styles from "../legal.module.css";
+import styles from "./aviso-legal.module.css";
 
 export const dynamic = "force-dynamic";
 
-const CANONICAL_URL =
-  "https://vanmotion.es/aviso-legal";
+const CANONICAL_URL = "https://vanmotion.es/aviso-legal";
 
 const translations = {
   es: {
     metadataTitle: "Aviso legal",
     metadataDescription:
-      "Información legal, identificación y condiciones generales de uso de VANMOTION.",
-
-    eyebrow: "Información legal",
-    title: "AVISO LEGAL",
-    introduction:
-      "Información general sobre el titular, el funcionamiento y las condiciones de uso del sitio web VANMOTION.",
-
-    ownerTitle: "1. Titular del sitio web",
-    ownerText:
-      "En cumplimiento de la normativa aplicable, se informa de que el titular de este sitio web y responsable de VANMOTION es:",
-
-    ownerName: "Titular",
-    commercialName: "Nombre comercial",
-    taxId: "NIF",
-    address: "Domicilio",
-    phone: "Teléfono",
-    email: "Correo electrónico",
-    legalForm: "Condición",
-    legalFormValue:
-      "Persona física que desarrolla su actividad como trabajador autónomo",
-
-    purposeTitle: "2. Objeto del sitio web",
-    purposeText:
-      "VANMOTION es un proyecto dedicado a vehículos, música, ropa, diseño y actividades relacionadas. Este sitio permite presentar el proyecto, mostrar productos y vehículos, facilitar el contacto y, cuando corresponda, realizar contrataciones o compras por medios electrónicos.",
-
-    useTitle: "3. Condiciones de uso",
-    useText:
-      "El acceso y la utilización de este sitio atribuyen la condición de usuario e implican la aceptación de estas condiciones. El usuario se compromete a utilizar el sitio, sus contenidos y servicios de forma lícita, responsable y respetuosa, sin causar daños, interferencias o accesos no autorizados.",
-
-    pricesTitle: "4. Precios e información comercial",
-    pricesText:
-      "Cuando el sitio muestre precios, se informará de manera clara sobre los impuestos aplicables, los gastos de envío y cualquier otro coste que deba asumir el cliente antes de confirmar una compra.",
-
-    intellectualTitle:
-      "5. Propiedad intelectual e industrial",
-    intellectualText:
-      "Los textos, diseños, fotografías, vídeos, música, marcas, logotipos y demás contenidos propios de VANMOTION están protegidos por la normativa de propiedad intelectual e industrial. No se autoriza su reproducción, distribución, modificación o explotación sin permiso previo, salvo los usos permitidos por la ley.",
-
-    responsibilityTitle: "6. Responsabilidad",
-    responsibilityText:
-      "VANMOTION procura que la información publicada sea correcta y esté actualizada, pero no puede garantizar la ausencia absoluta de errores, interrupciones, incidencias técnicas o contenidos desactualizados. El titular podrá modificar, suspender o actualizar el sitio cuando resulte necesario.",
-
-    linksTitle: "7. Enlaces externos",
-    linksText:
-      "Este sitio puede incluir enlaces a páginas o servicios de terceros. VANMOTION no controla esos sitios ni responde de sus contenidos, políticas, disponibilidad o seguridad. La presencia de un enlace no implica necesariamente una relación, aprobación o recomendación.",
-
-    communicationsTitle: "8. Comunicaciones",
-    communicationsText:
-      "Para consultas relacionadas con este sitio web, sus contenidos, productos o servicios, el usuario puede contactar mediante el correo electrónico o el teléfono indicados en este aviso.",
-
-    lawTitle: "9. Legislación y jurisdicción",
-    lawText:
-      "Este aviso se rige por la legislación española. Cuando el usuario tenga la condición de consumidor, cualquier controversia se resolverá conforme a las normas imperativas de protección de consumidores y competencia territorial. En los demás casos, y salvo disposición legal obligatoria, las partes se someten a los juzgados y tribunales de Madrid.",
-
-    update: "Última actualización: 22 de julio de 2026",
-    back: "Volver a VANMOTION",
+      "Información esencial sobre el titular, el uso y los contenidos de VANMOTION.",
+    navigation: {
+      vehicles: "Vehículos",
+      music: "Música",
+      clothing: "Ropa",
+      contact: "Contacto",
+    },
+    hero: {
+      location: "Madrid · España",
+      label: "Información legal · VANMOTION",
+      titleFirst: "Información clara.",
+      titleSecond: "Uso responsable.",
+      caption: "Titular · contenidos · responsabilidades",
+      update: "Actualizado · 28 julio 2026",
+    },
+    owner: {
+      eyebrow: "Identificación",
+      title: "Quién responde de VANMOTION.",
+      ownerName: "Titular",
+      commercialName: "Marca",
+      taxId: "NIF",
+      legalStatus: "Condición",
+      legalStatusValue: "Trabajador autónomo",
+      phone: "Teléfono",
+      email: "Correo",
+    },
+    legal: {
+      eyebrow: "Uso esencial",
+      title: "Lo importante, sin letra pequeña.",
+      items: [
+        {
+          title: "Objeto del sitio",
+          text:
+            "VANMOTION presenta un proyecto propio de vehículos, música, ropa y diseño. La web permite informar, mostrar productos y vehículos, recibir consultas y, cuando proceda, formalizar compras o contrataciones electrónicas.",
+        },
+        {
+          title: "Uso permitido",
+          text:
+            "La persona usuaria debe navegar y utilizar los servicios de forma lícita, responsable y respetuosa. No se permite dañar la web, intentar accesos no autorizados, introducir código malicioso, falsear datos o utilizar los contenidos para actividades ilegales.",
+        },
+        {
+          title: "Contenido y propiedad",
+          text:
+            "Los textos, diseños, fotografías, vídeos, música, marcas, logotipos y demás materiales originales pertenecen a VANMOTION o se utilizan con autorización. No pueden copiarse, modificarse, distribuirse ni explotarse comercialmente sin permiso o habilitación legal.",
+        },
+        {
+          title: "Información comercial",
+          text:
+            "Las fichas, precios, impuestos, disponibilidad, envío y condiciones aplicables se muestran antes de confirmar una compra. Las condiciones específicas aceptadas en cada pedido prevalecen para esa operación.",
+        },
+        {
+          title: "Disponibilidad y enlaces",
+          text:
+            "VANMOTION procura mantener la información correcta y el servicio disponible, aunque pueden existir actualizaciones, errores puntuales o interrupciones técnicas. Los enlaces externos conducen a servicios de terceros con sus propias condiciones y políticas.",
+        },
+        {
+          title: "Responsabilidad razonable",
+          text:
+            "VANMOTION responde de sus obligaciones legales y contractuales. No responde de usos contrarios a estas condiciones, daños causados por terceros, incidencias inevitables fuera de su control o decisiones tomadas únicamente con información externa o desactualizada.",
+        },
+        {
+          title: "Ley aplicable y contacto",
+          text:
+            "El sitio se rige por la legislación española. Los derechos irrenunciables de consumidores y usuarios permanecen plenamente aplicables. Para cualquier consulta, incidencia o comunicación legal deben utilizarse el teléfono o el correo indicados en esta página.",
+        },
+      ],
+    },
+    documents: {
+      eyebrow: "Documentos relacionados",
+      title: "Todo conectado.",
+      privacy: "Privacidad",
+      purchase: "Condiciones de compra",
+      cookies: "Cookies",
+      withdrawal: "Desistimiento",
+    },
+    references: {
+      title: "Referencias oficiales",
+      lssi: "LSSI-CE · BOE",
+      consumers: "Consumidores · BOE",
+      intellectualProperty: "Propiedad intelectual · BOE",
+      note:
+        "Los enlaces oficiales se facilitan como referencia normativa y no implican certificación o respaldo institucional.",
+    },
+    footer: {
+      city: "Madrid · España",
+      contact: "Contactar",
+      back: "Volver a VANMOTION",
+    },
   },
-
   en: {
     metadataTitle: "Legal notice",
     metadataDescription:
-      "Legal information, identification and general terms of use for VANMOTION.",
-
-    eyebrow: "Legal information",
-    title: "LEGAL NOTICE",
-    introduction:
-      "General information about the owner, operation and terms of use of the VANMOTION website.",
-
-    ownerTitle: "1. Website owner",
-    ownerText:
-      "In compliance with the applicable regulations, the owner of this website and the person responsible for VANMOTION is:",
-
-    ownerName: "Owner",
-    commercialName: "Trading name",
-    taxId: "Tax identification number",
-    address: "Address",
-    phone: "Telephone",
-    email: "Email",
-    legalForm: "Legal status",
-    legalFormValue:
-      "Individual carrying out their professional activity as a self-employed worker",
-
-    purposeTitle: "2. Purpose of the website",
-    purposeText:
-      "VANMOTION is a project dedicated to vehicles, music, clothing, design and related activities. This website presents the project, displays products and vehicles, facilitates contact and, where applicable, enables purchases or contracts through electronic means.",
-
-    useTitle: "3. Terms of use",
-    useText:
-      "Accessing and using this website grants the status of user and implies acceptance of these conditions. Users must use the website, its content and services lawfully and responsibly, without causing damage, interference or unauthorised access.",
-
-    pricesTitle: "4. Prices and commercial information",
-    pricesText:
-      "Whenever prices are displayed, the website will clearly provide information about applicable taxes, shipping costs and any other charges payable by the customer before a purchase is confirmed.",
-
-    intellectualTitle:
-      "5. Intellectual and industrial property",
-    intellectualText:
-      "The texts, designs, photographs, videos, music, trademarks, logos and other original VANMOTION content are protected by intellectual and industrial property laws. Reproduction, distribution, modification or commercial exploitation is not authorised without prior permission, except where permitted by law.",
-
-    responsibilityTitle: "6. Liability",
-    responsibilityText:
-      "VANMOTION aims to keep the published information accurate and updated but cannot guarantee the complete absence of errors, interruptions, technical incidents or outdated information. The owner may modify, suspend or update the website whenever necessary.",
-
-    linksTitle: "7. External links",
-    linksText:
-      "This website may contain links to third-party websites or services. VANMOTION does not control those websites and is not responsible for their content, policies, availability or security. A link does not necessarily imply a relationship, approval or recommendation.",
-
-    communicationsTitle: "8. Communications",
-    communicationsText:
-      "For enquiries about this website, its content, products or services, users may contact the owner using the email address or telephone number stated in this notice.",
-
-    lawTitle: "9. Applicable law and jurisdiction",
-    lawText:
-      "This notice is governed by Spanish law. Where the user is a consumer, disputes will be handled according to mandatory consumer-protection and territorial-jurisdiction rules. In all other cases, unless mandatory law provides otherwise, the parties submit to the courts of Madrid.",
-
-    update: "Last updated: July 22, 2026",
-    back: "Return to VANMOTION",
+      "Essential information about the owner, use and content of VANMOTION.",
+    navigation: {
+      vehicles: "Vehicles",
+      music: "Music",
+      clothing: "Clothing",
+      contact: "Contact",
+    },
+    hero: {
+      location: "Madrid · Spain",
+      label: "Legal information · VANMOTION",
+      titleFirst: "Clear information.",
+      titleSecond: "Responsible use.",
+      caption: "Owner · content · responsibilities",
+      update: "Updated · 28 July 2026",
+    },
+    owner: {
+      eyebrow: "Identification",
+      title: "Who is responsible for VANMOTION.",
+      ownerName: "Owner",
+      commercialName: "Brand",
+      taxId: "Tax ID",
+      legalStatus: "Status",
+      legalStatusValue: "Self-employed professional",
+      phone: "Telephone",
+      email: "Email",
+    },
+    legal: {
+      eyebrow: "Essential use",
+      title: "What matters, without fine print.",
+      items: [
+        {
+          title: "Purpose of the website",
+          text:
+            "VANMOTION presents an original project involving vehicles, music, clothing and design. The website provides information, displays products and vehicles, receives enquiries and, where applicable, enables electronic purchases or contracts.",
+        },
+        {
+          title: "Permitted use",
+          text:
+            "Users must browse and use the services lawfully, responsibly and respectfully. Damaging the website, attempting unauthorised access, introducing malicious code, providing false data or using the content for unlawful activities is prohibited.",
+        },
+        {
+          title: "Content and ownership",
+          text:
+            "Original texts, designs, photographs, videos, music, trademarks, logos and other materials belong to VANMOTION or are used with permission. They may not be copied, modified, distributed or commercially exploited without permission or a legal entitlement.",
+        },
+        {
+          title: "Commercial information",
+          text:
+            "Product details, prices, taxes, availability, delivery and applicable terms are shown before a purchase is confirmed. The specific terms accepted for each order govern that transaction.",
+        },
+        {
+          title: "Availability and links",
+          text:
+            "VANMOTION aims to keep information accurate and the service available, although updates, occasional errors or technical interruptions may occur. External links lead to third-party services governed by their own terms and policies.",
+        },
+        {
+          title: "Reasonable liability",
+          text:
+            "VANMOTION remains responsible for its legal and contractual obligations. It is not responsible for use contrary to these terms, damage caused by third parties, unavoidable incidents outside its control or decisions based solely on external or outdated information.",
+        },
+        {
+          title: "Applicable law and contact",
+          text:
+            "The website is governed by Spanish law. Mandatory consumer rights remain fully applicable. Any enquiry, incident or legal communication should be sent using the telephone number or email address shown on this page.",
+        },
+      ],
+    },
+    documents: {
+      eyebrow: "Related documents",
+      title: "Everything connected.",
+      privacy: "Privacy",
+      purchase: "Purchase conditions",
+      cookies: "Cookies",
+      withdrawal: "Withdrawal",
+    },
+    references: {
+      title: "Official references",
+      lssi: "E-commerce law · BOE",
+      consumers: "Consumer law · BOE",
+      intellectualProperty: "Intellectual property · BOE",
+      note:
+        "Official links are provided as legal references and do not imply certification or institutional endorsement.",
+    },
+    footer: {
+      city: "Madrid · Spain",
+      contact: "Contact",
+      back: "Return to VANMOTION",
+    },
   },
 } as const;
 
-function requireLegalValue(
-  variableName: string,
-) {
-  const value =
-    process.env[variableName]?.trim();
+function requireLegalValue(variableName: string): string {
+  const value = process.env[variableName]?.trim();
 
   if (!value) {
-    throw new Error(
-      `Falta la variable legal ${variableName}.`,
-    );
+    throw new Error(`Falta la variable legal ${variableName}.`);
   }
 
   return value;
@@ -156,11 +214,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: content.metadataTitle,
     description: content.metadataDescription,
-
     alternates: {
       canonical: CANONICAL_URL,
     },
-
     robots: {
       index: true,
       follow: true,
@@ -173,162 +229,191 @@ export default async function LegalNoticePage() {
   const content = translations[language];
 
   const legal = {
-    ownerName:
-      requireLegalValue(
-        "LEGAL_OWNER_NAME",
-      ),
-
-    nif:
-      requireLegalValue(
-        "LEGAL_OWNER_NIF",
-      ),
-
-    address:
-      requireLegalValue(
-        "LEGAL_ADDRESS",
-      ),
-
-    phone:
-      requireLegalValue(
-        "LEGAL_PHONE",
-      ),
-
-    email:
-      requireLegalValue(
-        "LEGAL_EMAIL",
-      ),
+    ownerName: requireLegalValue("LEGAL_OWNER_NAME"),
+    nif: requireLegalValue("LEGAL_OWNER_NIF"),
+    phone: requireLegalValue("LEGAL_PHONE"),
+    email: requireLegalValue("LEGAL_EMAIL"),
   };
 
-  const telephoneHref =
-    legal.phone.replace(/[^\d+]/g, "");
+  const telephoneHref = legal.phone.replace(/[^\d+]/g, "");
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <header className={styles.header}>
-        <Link
-          href="/proximamente"
-          className={styles.brand}
-        >
-          VANMOTION
+        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+          <Image
+            src="/brand/vanmotion-mark.webp"
+            alt=""
+            width={76}
+            height={36}
+            priority
+            className={styles.brandMark}
+          />
+          <span>Vanmotion</span>
         </Link>
 
-        <span>
-          MADRID · SPAIN
-        </span>
+        <nav
+          className={styles.navigation}
+          aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
+        >
+          <Link href="/coleccion">{content.navigation.vehicles}</Link>
+          <Link href="/musica">{content.navigation.music}</Link>
+          <Link href="/ropa">{content.navigation.clothing}</Link>
+          <Link href="/contacto">{content.navigation.contact}</Link>
+        </nav>
       </header>
 
-      <div className={styles.hero}>
-        <p className={styles.eyebrow}>
-          {content.eyebrow}
-        </p>
+      <main>
+        <section className={styles.hero} aria-labelledby="legal-title">
+          <div className={styles.heroTopline}>
+            <span>{content.hero.location}</span>
+            <span>{content.hero.update}</span>
+          </div>
 
-        <h1>{content.title}</h1>
+          <div className={styles.heroCopy}>
+            <p>{content.hero.label}</p>
+            <h1 id="legal-title">
+              <span>{content.hero.titleFirst}</span>
+              <span>{content.hero.titleSecond}</span>
+            </h1>
+          </div>
 
-        <p className={styles.introduction}>
-          {content.introduction}
-        </p>
-      </div>
+          <div className={styles.heroFoot}>
+            <span>{content.hero.caption}</span>
+            <Link href="/contacto">{content.navigation.contact}</Link>
+          </div>
+        </section>
 
-      <article className={styles.content}>
-        <section className={styles.section}>
-          <h2>{content.ownerTitle}</h2>
+        <section className={styles.ownerSection}>
+          <div className={styles.ownerHeading}>
+            <p className={styles.sectionLabel}>{content.owner.eyebrow}</p>
+            <h2>{content.owner.title}</h2>
+          </div>
 
-          <p>{content.ownerText}</p>
-
-          <address className={styles.dataGrid}>
+          <dl className={styles.ownerGrid}>
             <div>
-              <span>{content.ownerName}</span>
-              <strong>{legal.ownerName}</strong>
+              <dt>{content.owner.ownerName}</dt>
+              <dd>{legal.ownerName}</dd>
             </div>
-
             <div>
-              <span>{content.commercialName}</span>
-              <strong>VANMOTION</strong>
+              <dt>{content.owner.commercialName}</dt>
+              <dd>VANMOTION</dd>
             </div>
-
             <div>
-              <span>{content.taxId}</span>
-              <strong>{legal.nif}</strong>
+              <dt>{content.owner.taxId}</dt>
+              <dd>{legal.nif}</dd>
             </div>
-
             <div>
-              <span>{content.legalForm}</span>
-              <strong>
-                {content.legalFormValue}
-              </strong>
+              <dt>{content.owner.legalStatus}</dt>
+              <dd>{content.owner.legalStatusValue}</dd>
             </div>
-
             <div>
-              <span>{content.address}</span>
-              <strong>{legal.address}</strong>
+              <dt>{content.owner.phone}</dt>
+              <dd>
+                <a href={`tel:${telephoneHref}`}>{legal.phone}</a>
+              </dd>
             </div>
-
             <div>
-              <span>{content.phone}</span>
-
-              <a href={`tel:${telephoneHref}`}>
-                {legal.phone}
-              </a>
+              <dt>{content.owner.email}</dt>
+              <dd>
+                <a href={`mailto:${legal.email}`}>{legal.email}</a>
+              </dd>
             </div>
-
-            <div>
-              <span>{content.email}</span>
-
-              <a href={`mailto:${legal.email}`}>
-                {legal.email}
-              </a>
-            </div>
-          </address>
+          </dl>
         </section>
 
-        <section className={styles.section}>
-          <h2>{content.purposeTitle}</h2>
-          <p>{content.purposeText}</p>
+        <section className={styles.legalSection}>
+          <div className={styles.legalHeading}>
+            <p className={styles.sectionLabel}>{content.legal.eyebrow}</p>
+            <h2>{content.legal.title}</h2>
+          </div>
+
+          <ol className={styles.legalList}>
+            {content.legal.items.map((item, index) => (
+              <li key={item.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </li>
+            ))}
+          </ol>
         </section>
 
-        <section className={styles.section}>
-          <h2>{content.useTitle}</h2>
-          <p>{content.useText}</p>
+        <section className={styles.documentsSection}>
+          <div>
+            <p className={styles.documentsLabel}>{content.documents.eyebrow}</p>
+            <h2>{content.documents.title}</h2>
+          </div>
+
+          <nav className={styles.documentsNav} aria-label={content.documents.eyebrow}>
+            <Link href="/privacidad">
+              <span>01</span>
+              <strong>{content.documents.privacy}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+            <Link href="/condiciones-compra">
+              <span>02</span>
+              <strong>{content.documents.purchase}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+            <Link href="/cookies">
+              <span>03</span>
+              <strong>{content.documents.cookies}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+            <Link href="/desistimiento">
+              <span>04</span>
+              <strong>{content.documents.withdrawal}</strong>
+              <b aria-hidden="true">↗</b>
+            </Link>
+          </nav>
         </section>
 
-        <section className={styles.section}>
-          <h2>{content.pricesTitle}</h2>
-          <p>{content.pricesText}</p>
-        </section>
+        <section className={styles.referencesSection}>
+          <div>
+            <p className={styles.sectionLabel}>{content.references.title}</p>
+            <p>{content.references.note}</p>
+          </div>
 
-        <section className={styles.section}>
-          <h2>{content.intellectualTitle}</h2>
-          <p>{content.intellectualText}</p>
+          <div className={styles.referencesLinks}>
+            <a
+              href="https://www.boe.es/buscar/act.php?id=BOE-A-2002-13758"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {content.references.lssi}
+            </a>
+            <a
+              href="https://www.boe.es/buscar/act.php?id=BOE-A-2007-20555"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {content.references.consumers}
+            </a>
+            <a
+              href="https://www.boe.es/buscar/act.php?id=BOE-A-1996-8930"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {content.references.intellectualProperty}
+            </a>
+          </div>
         </section>
-
-        <section className={styles.section}>
-          <h2>{content.responsibilityTitle}</h2>
-          <p>{content.responsibilityText}</p>
-        </section>
-
-        <section className={styles.section}>
-          <h2>{content.linksTitle}</h2>
-          <p>{content.linksText}</p>
-        </section>
-
-        <section className={styles.section}>
-          <h2>{content.communicationsTitle}</h2>
-          <p>{content.communicationsText}</p>
-        </section>
-
-        <section className={styles.section}>
-          <h2>{content.lawTitle}</h2>
-          <p>{content.lawText}</p>
-        </section>
-      </article>
+      </main>
 
       <footer className={styles.footer}>
-        <p>{content.update}</p>
+        <div className={styles.footerBrand}>
+          <strong>Vanmotion</strong>
+          <span>{content.footer.city}</span>
+        </div>
 
-        <Link href="/proximamente">
-          {content.back} →
-        </Link>
+        <div className={styles.footerLinks}>
+          <a href={`mailto:${legal.email}`}>{content.footer.contact}</a>
+          <Link href="/">{content.footer.back}</Link>
+        </div>
+
+        <span className={styles.copyright}>© 2026</span>
       </footer>
-    </main>
+    </div>
   );
 }
