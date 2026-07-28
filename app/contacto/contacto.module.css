@@ -133,6 +133,7 @@
 
 .heroTopline {
   top: 110px;
+  padding-right: clamp(120px, 10vw, 150px);
 }
 
 .heroCopy {
