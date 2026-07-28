@@ -106,6 +106,8 @@ const colorLabels: Record<Language, Record<string, string>> = {
     Amarillo: "Amarillo",
     Orange: "Naranja",
     Naranja: "Naranja",
+    "Gris y Negro": "Gris y negro",
+    "Azul marino": "Azul marino",
   },
   en: {
     White: "White",
@@ -130,6 +132,8 @@ const colorLabels: Record<Language, Record<string, string>> = {
     Amarillo: "Yellow",
     Orange: "Orange",
     Naranja: "Orange",
+    "Gris y Negro": "Grey and black",
+    "Azul marino": "Navy blue",
   },
 };
 
@@ -208,7 +212,7 @@ const translations = {
     metadataDescription:
       "View photographs, specifications and price for this vehicle available from VANMOTION.",
     emblemMetadataDescription:
-      "Discover the VANMOTION emblem vehicle, a unit representing the history and identity of the brand.",
+      "Discover the VANMOTION icon, a vehicle representing the history and identity of the brand.",
     navigation: {
       vehicles: "Vehicles",
       music: "Music",
@@ -253,7 +257,7 @@ const translations = {
       privacyLink: "Read the Privacy Policy.",
     },
     emblem: {
-      badge: "Emblem vehicle",
+      badge: "VANMOTION icon",
       title: "Part of our story.",
       description:
         "This unit represents the work, journey and identity of VANMOTION. It is shown as part of the brand and is not available for sale.",
@@ -459,7 +463,7 @@ export default async function PublicVehiclePage({
       <main>
         <section className={styles.hero}>
           <div className={styles.heroTopline}>
-            <span>Madrid · España</span>
+            <span>{language === "es" ? "Madrid · España" : "Madrid · Spain"}</span>
             <span>{isEmblem ? content.emblem.badge : content.detailsLabel}</span>
           </div>
 

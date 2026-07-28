@@ -117,8 +117,8 @@ const translations = {
     hero: {
       location: "Madrid · Spain",
       label: "Direct contact · VANMOTION",
-      first: "Let us talk.",
-      second: "Straight.",
+      first: "Let's talk.",
+      second: "Straight to the point.",
       foot: "Vehicles · music · clothing · collaborations",
     },
     intro: {
@@ -336,7 +336,9 @@ export default async function ContactoPage({
             <span>{content.hero.label}</span>
           </div>
 
-          <div className={styles.heroCopy}>
+          <div
+            className={`${styles.heroCopy} ${language === "en" ? styles.heroCopyEnglish : ""}`}
+          >
             <p>{content.hero.label}</p>
             <h1 id="contact-hero-title">
               <span>{content.hero.first}</span>

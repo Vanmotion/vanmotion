@@ -142,11 +142,11 @@ const translations = {
       headingFirst: "One garment.",
       headingSecond: "One idea.",
       intro:
-        "Black, direct and free from excess. The identity appears through movement, not through trying to attract attention.",
+        "Black, direct and free from excess. Identity comes through in movement, without trying to attract attention.",
       name: "CARPE DIEM T-shirt",
       edition: "Black Edition · Drop 01",
       description:
-        "An everyday T-shirt with a completely clean front and the CARPE DIEM design placed in the lower-right corner of the back.",
+        "An everyday T-shirt with a completely clean front and the CARPE DIEM design placed at the lower right of the back.",
       galleryBack: "Back",
       galleryFront: "Front",
       galleryDetail: "Design",

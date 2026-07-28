@@ -135,6 +135,10 @@
   text-transform: uppercase;
 }
 
+.heroTopline {
+  padding-right: clamp(120px, 10vw, 150px);
+}
+
 .backLink {
   position: relative;
   z-index: 1;
