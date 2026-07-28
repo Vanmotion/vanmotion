@@ -94,7 +94,8 @@
 
 .hero {
   position: relative;
-  min-height: 100svh;
+  min-height: 700px;
+  min-height: max(700px, 100svh);
   isolation: isolate;
   overflow: hidden;
   background: #101010;
@@ -141,8 +142,8 @@
   position: absolute;
   left: clamp(20px, 6vw, 92px);
   right: clamp(20px, 6vw, 92px);
-  bottom: clamp(126px, 17vh, 184px);
-  max-width: 1040px;
+  bottom: clamp(112px, 14vh, 154px);
+  max-width: 940px;
 }
 
 .heroCopy p,
@@ -158,11 +159,11 @@
 
 .heroCopy h1 {
   margin: 22px 0 0;
-  max-width: 1040px;
-  font-size: clamp(58px, 9.2vw, 138px);
+  max-width: 940px;
+  font-size: clamp(58px, 8.4vw, 126px);
   font-weight: 560;
-  line-height: 0.83;
-  letter-spacing: -0.075em;
+  line-height: 0.84;
+  letter-spacing: -0.07em;
   text-transform: uppercase;
 }
 
@@ -630,6 +631,34 @@
 
 .footerNav a:hover {
   color: var(--paper);
+}
+
+
+@media (max-height: 760px) and (min-width: 721px) {
+  .hero {
+    min-height: 620px;
+  }
+
+  .heroTopline {
+    top: 100px;
+  }
+
+  .heroCopy {
+    bottom: 84px;
+    max-width: 900px;
+  }
+
+  .heroCopy h1 {
+    max-width: 900px;
+    font-size: clamp(56px, 7.4vw, 96px);
+    line-height: 0.86;
+    letter-spacing: -0.065em;
+  }
+
+  .heroFoot {
+    bottom: 18px;
+    padding-top: 14px;
+  }
 }
 
 @media (max-width: 1050px) {
