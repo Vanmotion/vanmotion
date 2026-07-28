@@ -153,6 +153,9 @@ const translations = {
     success: {
       title: "Solicitud enviada correctamente",
       description: "VANMOTION se pondrá en contacto contigo.",
+      deliveryWarningTitle: "Solicitud registrada",
+      deliveryWarningDescription:
+        "Tu solicitud está guardada en VANMOTION, pero no hemos podido enviar la confirmación automática. No es necesario que vuelvas a enviarla.",
     },
     photoSoon: "Fotografía próximamente",
     imageNotice: "Imágenes ilustrativas. La unidad real puede presentar diferencias.",
@@ -199,7 +202,7 @@ const translations = {
       titleSecond: "Sin esconder.",
       heading: "Descripción del vehículo",
       fallback:
-        "Vehículo seleccionado por VANMOTION. Contacta con nosotros para recibir más información.",
+        "Vehículo seleccionado por VANMOTION. Contacta con nosotros para recibirmás información.",
     },
     footer: {
       city: "Madrid · España",
@@ -223,6 +226,9 @@ const translations = {
     success: {
       title: "Enquiry sent successfully",
       description: "VANMOTION will contact you shortly.",
+      deliveryWarningTitle: "Enquiry registered",
+      deliveryWarningDescription:
+        "Your enquiry is safely stored by VANMOTION, but we could not send the automatic confirmation. You do not need to submit it again.",
     },
     photoSoon: "Photography coming soon",
     imageNotice: "Illustrative images. The actual vehicle may differ.",
@@ -260,7 +266,7 @@ const translations = {
       badge: "VANMOTION icon",
       title: "Part of our story.",
       description:
-        "This unit represents the work, journey and identity of VANMOTION. It is shown as part of the brand and is not available for sale.",
+        "This unit represents the work, journey and identity of VANMOTION. It isshown as part of the brand and is not available for sale.",
       notForSale: "Not available for sale",
     },
     information: {
@@ -282,7 +288,7 @@ const translations = {
 
 interface PublicVehiclePageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ enviado?: string }>;
+  searchParams: Promise<{ enviado?: string; error?: string }>;
 }
 
 function formatPrice(price: unknown, locale: string): string {
@@ -349,7 +355,7 @@ export default async function PublicVehiclePage({
   params,
   searchParams,
 }: PublicVehiclePageProps) {
-  const [{ id }, { enviado }, language] = await Promise.all([
+  const [{ id }, { enviado, error }, language] = await Promise.all([
     params,
     searchParams,
     getCurrentLanguage(),
@@ -491,6 +497,21 @@ export default async function PublicVehiclePage({
           </div>
         )}
 
+        {!isEmblem && enviado === "0" && error === "correo" && (
+          <div
+            className={styles.successMessage}
+            role="alert"
+            style={{
+              borderColor: "rgba(217, 120, 39, 0.65)",
+              background: "rgba(217, 120, 39, 0.09)",
+              color: "#f4d7bd",
+            }}
+          >
+            <strong>{content.success.deliveryWarningTitle}</strong>
+            <span>{content.success.deliveryWarningDescription}</span>
+          </div>
+        )}
+
         <section className={styles.productSection}>
           <div className={styles.galleryColumn}>
             <div className={styles.imageNotice} role="note">
@@ -558,7 +579,7 @@ export default async function PublicVehiclePage({
 
                 <div className={styles.formGrid}>
                   <ContactField
-                    id="name"
+                    id="contactName"
                     label={content.contact.name}
                     type="text"
                     placeholder={content.contact.namePlaceholder}
