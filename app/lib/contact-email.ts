@@ -1,5 +1,10 @@
 import { Resend } from "resend";
 
+import {
+  renderCustomerEmail,
+  renderEmailDetails,
+  renderEmailNotice,
+} from "@/app/lib/customer-email-template";
 import { prisma } from "@/app/lib/prisma";
 
 type ContactNotificationInput = {
@@ -149,8 +154,8 @@ export async function sendContactNotification(
     : `We received your enquiry · ${reference}`;
 
   const confirmationTitle = isSpanish
-    ? "Hemos recibido tu solicitud"
-    : "We received your enquiry";
+    ? "SOLICITUD RECIBIDA"
+    : "ENQUIRY RECEIVED";
 
   const confirmationGreeting = isSpanish
     ? `Hola ${safeName},`
@@ -158,48 +163,121 @@ export async function sendContactNotification(
 
   const confirmationText = isVehicleEnquiry
     ? isSpanish
-      ? `
-          Gracias por contactar con VANMOTION.
-          Hemos recibido tu solicitud sobre el vehículo
-          <strong>${safeReference}</strong>.
-          Revisaremos la información y contactaremos contigo personalmente.
-        `
-      : `
-          Thank you for contacting VANMOTION.
-          We received your enquiry regarding
-          <strong>${safeReference}</strong>.
-          We will review the information and contact you personally.
-        `
+      ? `Gracias por contactar con VANMOTION. Hemos recibido tu solicitud sobre <strong>${safeReference}</strong>. Revisaremos la información y contactaremos contigo personalmente.`
+      : `Thank you for contacting VANMOTION. We received your enquiry regarding <strong>${safeReference}</strong>. We will review the information and contact you personally.`
     : isSpanish
-      ? `
-          Gracias por contactar con VANMOTION.
-          Hemos recibido tu consulta sobre
-          <strong>${safeReference}</strong>.
-          Revisaremos tu mensaje y contactaremos contigo personalmente.
-        `
-      : `
-          Thank you for contacting VANMOTION.
-          We received your enquiry about
-          <strong>${safeReference}</strong>.
-          We will review your message and contact you personally.
-        `;
-
-  const confirmationMessageLabel =
-    isSpanish
-      ? "Tu mensaje"
-      : "Your message";
+      ? `Gracias por contactar con VANMOTION. Hemos recibido tu consulta sobre <strong>${safeReference}</strong>. Revisaremos tu mensaje y contactaremos contigo personalmente.`
+      : `Thank you for contacting VANMOTION. We received your enquiry about <strong>${safeReference}</strong>. We will review your message and contact you personally.`;
 
   const confirmationFooter = isSpanish
     ? "Este es un mensaje automático de confirmación. Puedes responder directamente a este correo."
     : "This is an automatic confirmation message. You can reply directly to this email.";
 
-  /*
-   * Ambos correos se intentan de forma independiente.
-   *
-   * Si uno falla, el otro todavía puede enviarse.
-   * La solicitud ya está guardada en PostgreSQL antes
-   * de llegar a esta función.
-   */
+  const customerDetails = renderEmailDetails([
+    {
+      label:
+        isVehicleEnquiry
+          ? isSpanish
+            ? "Vehículo"
+            : "Vehicle"
+          : isSpanish
+            ? "Asunto"
+            : "Subject",
+      valueHtml:
+        safeReference,
+    },
+    {
+      label:
+        isSpanish
+          ? "Correo"
+          : "Email",
+      valueHtml:
+        safeEmail,
+    },
+    ...(input.phone
+      ? [
+          {
+            label:
+              isSpanish
+                ? "Teléfono"
+                : "Phone",
+            valueHtml:
+              safePhone,
+          },
+        ]
+      : []),
+  ]);
+
+  const messageNotice = renderEmailNotice(
+    isSpanish
+      ? "Tu mensaje"
+      : "Your message",
+    safeMessage,
+  );
+
+  const customerHtml = renderCustomerEmail({
+    language:
+      input.language,
+    preheader:
+      isSpanish
+        ? "VANMOTION ha recibido tu solicitud."
+        : "VANMOTION has received your enquiry.",
+    eyebrow:
+      isVehicleEnquiry
+        ? isSpanish
+          ? "Vehículos · Contacto directo"
+          : "Vehicles · Direct contact"
+        : isSpanish
+          ? "Contacto directo · VANMOTION"
+          : "Direct contact · VANMOTION",
+    title:
+      confirmationTitle,
+    introductionHtml:
+      `${confirmationGreeting}<br><br>${confirmationText}`,
+    contentHtml:
+      customerDetails + messageNotice,
+    footerText:
+      confirmationFooter,
+    action: {
+      label:
+        isSpanish
+          ? "Visitar VANMOTION"
+          : "Visit VANMOTION",
+      href:
+        isVehicleEnquiry
+          ? "https://www.vanmotion.es/coleccion"
+          : "https://www.vanmotion.es/contacto",
+    },
+  });
+
+  const customerText = [
+    confirmationTitle,
+    "",
+    isSpanish
+      ? `Hola ${input.name},`
+      : `Hello ${input.name},`,
+    isVehicleEnquiry
+      ? isSpanish
+        ? `Gracias por contactar con VANMOTION. Hemos recibido tu solicitud sobre ${reference}. Revisaremos la información y contactaremos contigo personalmente.`
+        : `Thank you for contacting VANMOTION. We received your enquiry regarding ${reference}. We will review the information and contact you personally.`
+      : isSpanish
+        ? `Gracias por contactar con VANMOTION. Hemos recibido tu consulta sobre ${reference}. Revisaremos tu mensaje y contactaremos contigo personalmente.`
+        : `Thank you for contacting VANMOTION. We received your enquiry about ${reference}. We will review your message and contact you personally.`,
+    "",
+    `${isVehicleEnquiry ? (isSpanish ? "Vehículo" : "Vehicle") : (isSpanish ? "Asunto" : "Subject")}: ${reference}`,
+    `${isSpanish ? "Correo" : "Email"}: ${input.email}`,
+    ...(input.phone
+      ? [
+          `${isSpanish ? "Teléfono" : "Phone"}: ${input.phone}`,
+        ]
+      : []),
+    "",
+    `${isSpanish ? "Tu mensaje" : "Your message"}:`,
+    input.message,
+    "",
+    confirmationFooter,
+  ].join("\n");
+
   const [
     notificationResult,
     confirmationResult,
@@ -238,7 +316,7 @@ export async function sendContactNotification(
                 margin:0 0 20px;
                 font-size:11px;
                 letter-spacing:3px;
-                color:#888888;
+                color:#d97827;
               "
             >
               VANMOTION · ${notificationType}
@@ -253,30 +331,12 @@ export async function sendContactNotification(
               ${notificationTitle}
             </h1>
 
-            <p>
-              <strong>${referenceLabel}:</strong><br>
-              ${safeReference}
-            </p>
-
-            <p>
-              <strong>Nombre:</strong><br>
-              ${safeName}
-            </p>
-
-            <p>
-              <strong>Correo:</strong><br>
-              ${safeEmail}
-            </p>
-
-            <p>
-              <strong>Teléfono:</strong><br>
-              ${safePhone}
-            </p>
-
-            <p>
-              <strong>Mensaje:</strong><br>
-              ${safeMessage}
-            </p>
+            <p><strong>${referenceLabel}:</strong><br>${safeReference}</p>
+            <p><strong>Nombre:</strong><br>${safeName}</p>
+            <p><strong>Correo:</strong><br>${safeEmail}</p>
+            <p><strong>Teléfono:</strong><br>${safePhone}</p>
+            <p><strong>Idioma:</strong><br>${input.language.toUpperCase()}</p>
+            <p><strong>Mensaje:</strong><br>${safeMessage}</p>
 
             <div
               style="
@@ -289,8 +349,8 @@ export async function sendContactNotification(
                 href="mailto:${safeEmail}"
                 style="
                   display:inline-block;
-                  background:#ffffff;
-                  color:#000000;
+                  background:#d97827;
+                  color:#080808;
                   padding:14px 20px;
                   text-decoration:none;
                   font-size:12px;
@@ -316,6 +376,21 @@ export async function sendContactNotification(
           </div>
         </div>
       `,
+
+      text: [
+        `VANMOTION · ${notificationType}`,
+        "",
+        notificationTitle,
+        "",
+        `${referenceLabel}: ${reference}`,
+        `Nombre: ${input.name}`,
+        `Correo: ${input.email}`,
+        `Teléfono: ${input.phone || "No indicado"}`,
+        `Idioma: ${input.language.toUpperCase()}`,
+        "",
+        "Mensaje:",
+        input.message,
+      ].join("\n"),
     }),
 
     resend.emails.send({
@@ -327,120 +402,14 @@ export async function sendContactNotification(
 
       replyTo: notificationEmail,
 
-      subject: confirmationSubject,
+      subject:
+        confirmationSubject,
 
-      html: `
-        <div
-          style="
-            background:#080808;
-            color:#ffffff;
-            padding:30px;
-            font-family:Arial,sans-serif;
-          "
-        >
-          <div
-            style="
-              max-width:620px;
-              margin:auto;
-              border:1px solid #333333;
-              padding:30px;
-            "
-          >
-            <p
-              style="
-                margin:0 0 22px;
-                font-size:11px;
-                letter-spacing:4px;
-                color:#888888;
-              "
-            >
-              VANMOTION · MADRID
-            </p>
+      html:
+        customerHtml,
 
-            <h1
-              style="
-                margin:0 0 24px;
-                font-size:28px;
-                line-height:34px;
-              "
-            >
-              ${confirmationTitle}
-            </h1>
-
-            <p
-              style="
-                margin:0 0 18px;
-                color:#ffffff;
-                line-height:26px;
-              "
-            >
-              ${confirmationGreeting}
-            </p>
-
-            <p
-              style="
-                margin:0;
-                color:#cccccc;
-                line-height:26px;
-              "
-            >
-              ${confirmationText}
-            </p>
-
-            <div
-              style="
-                margin-top:28px;
-                padding:20px;
-                border:1px solid #333333;
-                background:#111111;
-              "
-            >
-              <p
-                style="
-                  margin:0 0 10px;
-                  font-size:11px;
-                  letter-spacing:2px;
-                  color:#777777;
-                "
-              >
-                ${confirmationMessageLabel}
-              </p>
-
-              <p
-                style="
-                  margin:0;
-                  color:#ffffff;
-                  line-height:24px;
-                "
-              >
-                ${safeMessage}
-              </p>
-            </div>
-
-            <p
-              style="
-                margin-top:28px;
-                color:#777777;
-                font-size:12px;
-                line-height:19px;
-              "
-            >
-              ${confirmationFooter}
-            </p>
-
-            <p
-              style="
-                margin-top:28px;
-                font-size:12px;
-                letter-spacing:2px;
-                color:#ffffff;
-              "
-            >
-              HUMILDAD · TRABAJO · MOVIMIENTO
-            </p>
-          </div>
-        </div>
-      `,
+      text:
+        customerText,
     }),
   ]);
 

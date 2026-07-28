@@ -252,6 +252,13 @@ model Order {
   customerName  String?
   customerPhone String?
 
+  /**
+   * Idioma utilizado durante la compra.
+   * Permite mantener los correos del pedido
+   * en español o inglés durante todo el proceso.
+   */
+  customerLanguage String @default("es")
+
   shippingName       String?
   shippingLine1      String?
   shippingLine2      String?

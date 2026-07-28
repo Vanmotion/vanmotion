@@ -403,6 +403,7 @@ export default function ProductPurchasePanel({
             productSlug,
             size: selectedSize,
             quantity,
+            language,
             termsAccepted,
             termsVersion:
               PURCHASE_TERMS_VERSION,

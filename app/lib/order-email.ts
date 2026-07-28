@@ -1,5 +1,13 @@
 import { Resend } from "resend";
 
+import {
+  normalizeCustomerEmailLanguage,
+  renderCustomerEmail,
+  renderEmailDetails,
+  renderEmailNotice,
+  type CustomerEmailLanguage,
+} from "@/app/lib/customer-email-template";
+
 type OrderEmailInput = {
   orderId: string;
   checkoutSessionId: string;
@@ -10,6 +18,7 @@ type OrderEmailInput = {
 
   amountTotal: number;
   currency: string;
+  language: CustomerEmailLanguage;
 
   customerEmail: string | null;
   customerName: string | null;
@@ -54,12 +63,18 @@ function getErrorMessage(
 function formatAmount(
   amount: number,
   currency: string,
+  language: CustomerEmailLanguage,
 ): string {
   try {
-    return new Intl.NumberFormat("es-ES", {
-      style: "currency",
-      currency: currency.toUpperCase(),
-    }).format(amount / 100);
+    return new Intl.NumberFormat(
+      language === "es"
+        ? "es-ES"
+        : "en-GB",
+      {
+        style: "currency",
+        currency: currency.toUpperCase(),
+      },
+    ).format(amount / 100);
   } catch {
     return `${(amount / 100).toFixed(2)} ${currency.toUpperCase()}`;
   }
@@ -71,10 +86,6 @@ export async function sendOrderEmails(
   const apiKey =
     process.env.RESEND_API_KEY?.trim();
 
-  /*
-   * Reutilizamos la configuración de correo que ya
-   * funciona para los formularios de contacto.
-   */
   const notificationEmail =
     process.env.CONTACT_NOTIFICATION_EMAIL?.trim();
 
@@ -103,10 +114,18 @@ export async function sendOrderEmails(
 
   const resend = new Resend(apiKey);
 
+  const language =
+    normalizeCustomerEmailLanguage(
+      input.language,
+    );
+
+  const isSpanish =
+    language === "es";
+
   const customerName =
     input.customerName?.trim() ||
     input.shippingName?.trim() ||
-    "Cliente";
+    (isSpanish ? "Cliente" : "Customer");
 
   const safeCustomerName =
     escapeHtml(customerName);
@@ -126,12 +145,19 @@ export async function sendOrderEmails(
   const safeOrderId =
     escapeHtml(input.orderId);
 
-  const total = formatAmount(
+  const totalAdmin = formatAmount(
     input.amountTotal,
     input.currency,
+    "es",
   );
 
-  const addressParts = [
+  const totalCustomer = formatAmount(
+    input.amountTotal,
+    input.currency,
+    language,
+  );
+
+  const rawAddressParts = [
     input.shippingName,
     input.shippingLine1,
     input.shippingLine2,
@@ -143,19 +169,28 @@ export async function sendOrderEmails(
       .join(" "),
     input.shippingState,
     input.shippingCountry,
-  ]
-    .filter(
-      (value): value is string =>
-        Boolean(value?.trim()),
-    )
-    .map((value) =>
-      escapeHtml(value.trim()),
-    );
+  ].filter(
+    (value): value is string =>
+      Boolean(value?.trim()),
+  );
 
-  const shippingAddress =
-    addressParts.length > 0
-      ? addressParts.join("<br>")
-      : "No indicada";
+  const shippingAddressHtml =
+    rawAddressParts.length > 0
+      ? rawAddressParts
+          .map((value) =>
+            escapeHtml(value.trim()),
+          )
+          .join("<br>")
+      : isSpanish
+        ? "No indicada"
+        : "Not provided";
+
+  const shippingAddressText =
+    rawAddressParts.length > 0
+      ? rawAddressParts.join("\n")
+      : isSpanish
+        ? "No indicada"
+        : "Not provided";
 
   const orderStatusText =
     input.stockUpdated
@@ -203,7 +238,7 @@ export async function sendOrderEmails(
                     margin:0 0 20px;
                     font-size:11px;
                     letter-spacing:3px;
-                    color:#888888;
+                    color:#d97827;
                   "
                 >
                   VANMOTION · NUEVO PEDIDO
@@ -218,40 +253,14 @@ export async function sendOrderEmails(
                   Compra confirmada
                 </h1>
 
-                <p>
-                  <strong>Pedido:</strong><br>
-                  ${safeOrderId}
-                </p>
-
-                <p>
-                  <strong>Cliente:</strong><br>
-                  ${safeCustomerName}
-                </p>
-
-                <p>
-                  <strong>Correo:</strong><br>
-                  ${safeCustomerEmail}
-                </p>
-
-                <p>
-                  <strong>Producto:</strong><br>
-                  ${safeProductName}
-                </p>
-
-                <p>
-                  <strong>Talla:</strong>
-                  ${safeSize}
-                </p>
-
-                <p>
-                  <strong>Cantidad:</strong>
-                  ${input.quantity}
-                </p>
-
-                <p>
-                  <strong>Total:</strong>
-                  ${escapeHtml(total)}
-                </p>
+                <p><strong>Pedido:</strong><br>${safeOrderId}</p>
+                <p><strong>Cliente:</strong><br>${safeCustomerName}</p>
+                <p><strong>Correo:</strong><br>${safeCustomerEmail}</p>
+                <p><strong>Idioma:</strong><br>${language.toUpperCase()}</p>
+                <p><strong>Producto:</strong><br>${safeProductName}</p>
+                <p><strong>Talla:</strong> ${safeSize}</p>
+                <p><strong>Cantidad:</strong> ${input.quantity}</p>
+                <p><strong>Total:</strong> ${escapeHtml(totalAdmin)}</p>
 
                 <div
                   style="
@@ -264,7 +273,7 @@ export async function sendOrderEmails(
                 >
                   <strong>Dirección de envío</strong>
                   <br><br>
-                  ${shippingAddress}
+                  ${shippingAddressHtml}
                 </div>
 
                 <p
@@ -279,11 +288,148 @@ export async function sendOrderEmails(
               </div>
             </div>
           `,
+
+          text: [
+            "VANMOTION · NUEVO PEDIDO",
+            "",
+            `Pedido: ${input.orderId}`,
+            `Cliente: ${customerName}`,
+            `Correo: ${customerEmail || "No indicado"}`,
+            `Idioma: ${language.toUpperCase()}`,
+            `Producto: ${input.productName}`,
+            `Talla: ${input.size}`,
+            `Cantidad: ${input.quantity}`,
+            `Total: ${totalAdmin}`,
+            "",
+            "Dirección de envío:",
+            shippingAddressText,
+            "",
+            orderStatusText,
+          ].join("\n"),
         })
       : Promise.resolve({
           data: null,
           error: null,
         });
+
+  const title = isSpanish
+    ? "PEDIDO CONFIRMADO"
+    : "ORDER CONFIRMED";
+
+  const subject = isSpanish
+    ? `Pedido confirmado · ${input.productName}`
+    : `Order confirmed · ${input.productName}`;
+
+  const greeting = isSpanish
+    ? `Hola ${safeCustomerName},`
+    : `Hello ${safeCustomerName},`;
+
+  const introductionHtml = isSpanish
+    ? `${greeting}<br><br>Hemos recibido correctamente tu pago. Tu pedido ya está registrado en VANMOTION y comenzaremos a prepararlo.`
+    : `${greeting}<br><br>We have received your payment. Your order is now registered with VANMOTION and we will begin preparing it.`;
+
+  const detailsHtml = renderEmailDetails([
+    {
+      label:
+        isSpanish
+          ? "Pedido"
+          : "Order",
+      valueHtml:
+        safeOrderId,
+    },
+    {
+      label:
+        isSpanish
+          ? "Producto"
+          : "Product",
+      valueHtml:
+        safeProductName,
+    },
+    {
+      label:
+        isSpanish
+          ? "Talla"
+          : "Size",
+      valueHtml:
+        safeSize,
+    },
+    {
+      label:
+        isSpanish
+          ? "Cantidad"
+          : "Quantity",
+      valueHtml:
+        String(input.quantity),
+    },
+    {
+      label:
+        isSpanish
+          ? "Total"
+          : "Total",
+      valueHtml:
+        escapeHtml(totalCustomer),
+    },
+  ]);
+
+  const addressNotice = renderEmailNotice(
+    isSpanish
+      ? "Dirección de envío"
+      : "Shipping address",
+    shippingAddressHtml,
+  );
+
+  const customerHtml = renderCustomerEmail({
+    language,
+    preheader:
+      isSpanish
+        ? "Tu pedido VANMOTION ha sido confirmado."
+        : "Your VANMOTION order has been confirmed.",
+    eyebrow:
+      isSpanish
+        ? "Compra online · VANMOTION"
+        : "Online purchase · VANMOTION",
+    title,
+    introductionHtml,
+    contentHtml:
+      detailsHtml + addressNotice,
+    footerText:
+      isSpanish
+        ? "Conserva este correo como referencia de tu compra. Puedes responder directamente si necesitas ayuda."
+        : "Keep this email as your purchase reference. You can reply directly if you need assistance.",
+    action: {
+      label:
+        isSpanish
+          ? "Visitar la web"
+          : "Visit the website",
+      href:
+        "https://www.vanmotion.es/ropa",
+    },
+  });
+
+  const customerText = [
+    title,
+    "",
+    isSpanish
+      ? `Hola ${customerName},`
+      : `Hello ${customerName},`,
+    isSpanish
+      ? "Hemos recibido correctamente tu pago. Tu pedido ya está registrado en VANMOTION y comenzaremos a prepararlo."
+      : "We have received your payment. Your order is now registered with VANMOTION and we will begin preparing it.",
+    "",
+    `${isSpanish ? "Pedido" : "Order"}: ${input.orderId}`,
+    `${isSpanish ? "Producto" : "Product"}: ${input.productName}`,
+    `${isSpanish ? "Talla" : "Size"}: ${input.size}`,
+    `${isSpanish ? "Cantidad" : "Quantity"}: ${input.quantity}`,
+    `Total: ${totalCustomer}`,
+    "",
+    `${isSpanish ? "Dirección de envío" : "Shipping address"}:`,
+    shippingAddressText,
+    "",
+    isSpanish
+      ? "Conserva este correo como referencia de tu compra."
+      : "Keep this email as your purchase reference.",
+    "https://www.vanmotion.es/ropa",
+  ].join("\n");
 
   const confirmationPromise =
     customerEmail
@@ -301,140 +447,9 @@ export async function sendOrderEmails(
               }
             : {}),
 
-          subject:
-            `Pedido confirmado · ${input.productName}`,
-
-          html: `
-            <div
-              style="
-                background:#080808;
-                color:#ffffff;
-                padding:30px;
-                font-family:Arial,sans-serif;
-              "
-            >
-              <div
-                style="
-                  max-width:620px;
-                  margin:auto;
-                  border:1px solid #333333;
-                  padding:30px;
-                "
-              >
-                <p
-                  style="
-                    margin:0 0 22px;
-                    font-size:11px;
-                    letter-spacing:4px;
-                    color:#888888;
-                  "
-                >
-                  VANMOTION · MADRID
-                </p>
-
-                <h1
-                  style="
-                    margin:0 0 24px;
-                    font-size:28px;
-                    line-height:34px;
-                  "
-                >
-                  Pedido confirmado
-                </h1>
-
-                <p
-                  style="
-                    margin:0 0 18px;
-                    line-height:26px;
-                  "
-                >
-                  Hola ${safeCustomerName},
-                </p>
-
-                <p
-                  style="
-                    margin:0;
-                    color:#cccccc;
-                    line-height:26px;
-                  "
-                >
-                  Hemos recibido correctamente tu pago.
-                  Tu pedido ya está registrado en
-                  VANMOTION.
-                </p>
-
-                <div
-                  style="
-                    margin-top:28px;
-                    padding:20px;
-                    border:1px solid #333333;
-                    background:#111111;
-                  "
-                >
-                  <p>
-                    <strong>Pedido:</strong><br>
-                    ${safeOrderId}
-                  </p>
-
-                  <p>
-                    <strong>Producto:</strong><br>
-                    ${safeProductName}
-                  </p>
-
-                  <p>
-                    <strong>Talla:</strong>
-                    ${safeSize}
-                  </p>
-
-                  <p>
-                    <strong>Cantidad:</strong>
-                    ${input.quantity}
-                  </p>
-
-                  <p>
-                    <strong>Total:</strong>
-                    ${escapeHtml(total)}
-                  </p>
-                </div>
-
-                <div
-                  style="
-                    margin-top:22px;
-                    padding:20px;
-                    border:1px solid #333333;
-                    line-height:24px;
-                  "
-                >
-                  <strong>Dirección de envío</strong>
-                  <br><br>
-                  ${shippingAddress}
-                </div>
-
-                <p
-                  style="
-                    margin-top:28px;
-                    color:#777777;
-                    font-size:12px;
-                    line-height:19px;
-                  "
-                >
-                  Este es un mensaje automático de
-                  confirmación. Conserva este correo como
-                  referencia de tu pedido.
-                </p>
-
-                <p
-                  style="
-                    margin-top:28px;
-                    font-size:12px;
-                    letter-spacing:2px;
-                  "
-                >
-                  HUMILDAD · TRABAJO · MOVIMIENTO
-                </p>
-              </div>
-            </div>
-          `,
+          subject,
+          html: customerHtml,
+          text: customerText,
         })
       : Promise.resolve({
           data: null,
@@ -495,6 +510,7 @@ export async function sendOrderEmails(
     "VANMOTION_ORDER_EMAIL_SENT:",
     {
       orderId: input.orderId,
+      language,
       customerEmailSent:
         Boolean(customerEmail),
       notificationEmailSent:

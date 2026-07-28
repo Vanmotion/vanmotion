@@ -80,6 +80,12 @@ async function registerPaidOrder(
   const quantity =
     Number(metadata.quantity);
 
+  const customerLanguage =
+    metadata.customerLanguage?.trim() ===
+    "en"
+      ? "en"
+      : "es";
+
   const termsAccepted =
     metadata.termsAccepted?.trim() ===
     "true";
@@ -255,6 +261,8 @@ async function registerPaidOrder(
                 customerDetails?.phone ??
                 null,
 
+              customerLanguage,
+
               shippingName:
                 shipping?.name ??
                 null,
@@ -327,6 +335,7 @@ async function registerPaidOrder(
         result.stockUpdated,
 
       termsVersion,
+      customerLanguage,
     },
   );
 
@@ -350,6 +359,8 @@ async function registerPaidOrder(
 
         amountTotal,
         currency,
+        language:
+          customerLanguage,
 
         customerEmail:
           customerDetails?.email ??

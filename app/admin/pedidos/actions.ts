@@ -350,6 +350,9 @@ export async function updateOrderFulfillmentStatusAction(
         customerName:
           true,
 
+        customerLanguage:
+          true,
+
         shippingName:
           true,
 
@@ -461,6 +464,9 @@ export async function updateOrderFulfillmentStatusAction(
         customerName:
           true,
 
+        customerLanguage:
+          true,
+
         shippingName:
           true,
 
@@ -502,6 +508,13 @@ export async function updateOrderFulfillmentStatusAction(
 
         quantity:
           updatedOrder.quantity,
+
+        language:
+          updatedOrder
+            .customerLanguage ===
+          "en"
+            ? "en"
+            : "es",
 
         customerEmail:
           updatedOrder

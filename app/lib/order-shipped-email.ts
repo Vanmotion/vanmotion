@@ -1,11 +1,20 @@
 import { Resend } from "resend";
 
+import {
+  normalizeCustomerEmailLanguage,
+  renderCustomerEmail,
+  renderEmailDetails,
+  renderEmailNotice,
+  type CustomerEmailLanguage,
+} from "@/app/lib/customer-email-template";
+
 type OrderShippedEmailInput = {
   orderId: string;
 
   productName: string;
   size: string;
   quantity: number;
+  language: CustomerEmailLanguage;
 
   customerEmail: string | null;
   customerName: string | null;
@@ -110,9 +119,17 @@ export async function sendOrderShippedEmail(
   const resend =
     new Resend(apiKey);
 
+  const language =
+    normalizeCustomerEmailLanguage(
+      input.language,
+    );
+
+  const isSpanish =
+    language === "es";
+
   const customerName =
     input.customerName?.trim() ||
-    "Cliente";
+    (isSpanish ? "Cliente" : "Customer");
 
   const shippingCarrier =
     normalizeOptionalText(
@@ -164,109 +181,193 @@ export async function sendOrderShippedEmail(
         )
       : null;
 
-  const trackingInformation =
-    safeShippingCarrier ||
-    safeTrackingNumber ||
-    safeTrackingUrl
-      ? `
-        <div
-          style="
-            margin-top:22px;
-            padding:20px;
-            border:1px solid #333333;
-            background:#111111;
-          "
+  const detailsHtml = renderEmailDetails([
+    {
+      label:
+        isSpanish
+          ? "Pedido"
+          : "Order",
+      valueHtml:
+        safeOrderId,
+    },
+    {
+      label:
+        isSpanish
+          ? "Producto"
+          : "Product",
+      valueHtml:
+        safeProductName,
+    },
+    {
+      label:
+        isSpanish
+          ? "Talla"
+          : "Size",
+      valueHtml:
+        safeSize,
+    },
+    {
+      label:
+        isSpanish
+          ? "Cantidad"
+          : "Quantity",
+      valueHtml:
+        String(input.quantity),
+    },
+  ]);
+
+  const trackingRows: Array<{
+    label: string;
+    valueHtml: string;
+  }> = [];
+
+  if (safeShippingCarrier) {
+    trackingRows.push({
+      label:
+        isSpanish
+          ? "Transportista"
+          : "Carrier",
+      valueHtml:
+        safeShippingCarrier,
+    });
+  }
+
+  if (safeTrackingNumber) {
+    trackingRows.push({
+      label:
+        isSpanish
+          ? "Número de seguimiento"
+          : "Tracking number",
+      valueHtml:
+        safeTrackingNumber,
+    });
+  }
+
+  if (safeTrackingUrl) {
+    trackingRows.push({
+      label:
+        isSpanish
+          ? "Seguimiento"
+          : "Tracking",
+      valueHtml: `
+        <a
+          href="${safeTrackingUrl}"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="color:#d97827;text-decoration:underline;font-weight:800;"
         >
-          <p
-            style="
-              margin:0 0 18px;
-              font-size:11px;
-              letter-spacing:3px;
-              color:#888888;
-            "
-          >
-            INFORMACIÓN DE SEGUIMIENTO
-          </p>
+          ${isSpanish ? "Consultar envío" : "Track shipment"} →
+        </a>
+      `,
+    });
+  }
 
-          ${
-            safeShippingCarrier
-              ? `
-                <p
-                  style="
-                    margin:0 0 14px;
-                    line-height:24px;
-                  "
-                >
-                  <strong>
-                    Empresa de transporte:
-                  </strong>
-                  <br>
-                  ${safeShippingCarrier}
-                </p>
-              `
-              : ""
-          }
+  const trackingHtml =
+    trackingRows.length > 0
+      ? renderEmailNotice(
+          isSpanish
+            ? "Información de seguimiento"
+            : "Tracking information",
+          renderEmailDetails(
+            trackingRows,
+          ),
+        )
+      : renderEmailNotice(
+          isSpanish
+            ? "Estado del envío"
+            : "Shipping status",
+          isSpanish
+            ? "El pedido ha sido enviado. Te comunicaremos los datos de seguimiento cuando estén disponibles."
+            : "Your order has been shipped. We will share the tracking details as soon as they are available.",
+        );
 
-          ${
-            safeTrackingNumber
-              ? `
-                <p
-                  style="
-                    margin:0 0 14px;
-                    line-height:24px;
-                  "
-                >
-                  <strong>
-                    Número de seguimiento:
-                  </strong>
-                  <br>
-                  ${safeTrackingNumber}
-                </p>
-              `
-              : ""
-          }
+  const subject = isSpanish
+    ? `Tu pedido VANMOTION ha sido enviado · ${input.productName}`
+    : `Your VANMOTION order has shipped · ${input.productName}`;
 
-          ${
-            safeTrackingUrl
-              ? `
-                <a
-                  href="${safeTrackingUrl}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style="
-                    display:inline-block;
-                    margin-top:6px;
-                    padding:14px 18px;
-                    background:#ffffff;
-                    color:#000000;
-                    font-size:11px;
-                    font-weight:bold;
-                    letter-spacing:2px;
-                    text-decoration:none;
-                  "
-                >
-                  CONSULTAR SEGUIMIENTO →
-                </a>
-              `
-              : ""
-          }
-        </div>
-      `
-      : `
-        <div
-          style="
-            margin-top:22px;
-            padding:20px;
-            border:1px solid #333333;
-            color:#aaaaaa;
-            line-height:24px;
-          "
-        >
-          El pedido ha sido enviado.
-          VANMOTION te comunicará los datos
-          de seguimiento cuando estén disponibles.
-        </div>
-      `;
+  const title = isSpanish
+    ? "PEDIDO ENVIADO"
+    : "ORDER SHIPPED";
+
+  const introductionHtml = isSpanish
+    ? `Hola ${safeCustomerName},<br><br>Tu pedido ya ha sido preparado y ha salido de VANMOTION.`
+    : `Hello ${safeCustomerName},<br><br>Your order has been prepared and has now left VANMOTION.`;
+
+  const html = renderCustomerEmail({
+    language,
+    preheader:
+      isSpanish
+        ? "Tu pedido VANMOTION ya está en camino."
+        : "Your VANMOTION order is on its way.",
+    eyebrow:
+      isSpanish
+        ? "Envío · VANMOTION"
+        : "Shipping · VANMOTION",
+    title,
+    introductionHtml,
+    contentHtml:
+      detailsHtml + trackingHtml,
+    footerText:
+      isSpanish
+        ? "Puedes responder directamente a este correo para contactar con VANMOTION."
+        : "You can reply directly to this email to contact VANMOTION.",
+    ...(trackingUrl
+      ? {
+          action: {
+            label:
+              isSpanish
+                ? "Seguir el pedido"
+                : "Track order",
+            href:
+              trackingUrl,
+          },
+        }
+      : {
+          action: {
+            label:
+              isSpanish
+                ? "Visitar la web"
+                : "Visit the website",
+            href:
+              "https://www.vanmotion.es",
+          },
+        }),
+  });
+
+  const trackingText = [
+    shippingCarrier
+      ? `${isSpanish ? "Transportista" : "Carrier"}: ${shippingCarrier}`
+      : null,
+    trackingNumber
+      ? `${isSpanish ? "Número de seguimiento" : "Tracking number"}: ${trackingNumber}`
+      : null,
+    trackingUrl
+      ? `${isSpanish ? "Seguimiento" : "Tracking"}: ${trackingUrl}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const text = [
+    title,
+    "",
+    isSpanish
+      ? `Hola ${customerName},`
+      : `Hello ${customerName},`,
+    isSpanish
+      ? "Tu pedido ya ha sido preparado y ha salido de VANMOTION."
+      : "Your order has been prepared and has now left VANMOTION.",
+    "",
+    `${isSpanish ? "Pedido" : "Order"}: ${input.orderId}`,
+    `${isSpanish ? "Producto" : "Product"}: ${input.productName}`,
+    `${isSpanish ? "Talla" : "Size"}: ${input.size}`,
+    `${isSpanish ? "Cantidad" : "Quantity"}: ${input.quantity}`,
+    "",
+    trackingText ||
+      (isSpanish
+        ? "Te comunicaremos los datos de seguimiento cuando estén disponibles."
+        : "We will share the tracking details as soon as they are available."),
+  ].join("\n");
 
   const result =
     await resend.emails.send({
@@ -283,125 +384,9 @@ export async function sendOrderShippedEmail(
           }
         : {}),
 
-      subject:
-        `Tu pedido VANMOTION ha sido enviado · ${input.productName}`,
-
-      html: `
-        <div
-          style="
-            background:#080808;
-            color:#ffffff;
-            padding:30px;
-            font-family:Arial,sans-serif;
-          "
-        >
-          <div
-            style="
-              max-width:620px;
-              margin:auto;
-              border:1px solid #333333;
-              padding:30px;
-            "
-          >
-            <p
-              style="
-                margin:0 0 22px;
-                font-size:11px;
-                letter-spacing:4px;
-                color:#888888;
-              "
-            >
-              VANMOTION · MADRID
-            </p>
-
-            <h1
-              style="
-                margin:0 0 24px;
-                font-size:28px;
-                line-height:34px;
-              "
-            >
-              Tu pedido ha sido enviado
-            </h1>
-
-            <p
-              style="
-                margin:0 0 18px;
-                line-height:26px;
-              "
-            >
-              Hola ${safeCustomerName},
-            </p>
-
-            <p
-              style="
-                margin:0;
-                color:#cccccc;
-                line-height:26px;
-              "
-            >
-              Tu pedido ya ha sido preparado
-              y ha salido de VANMOTION.
-            </p>
-
-            <div
-              style="
-                margin-top:28px;
-                padding:20px;
-                border:1px solid #333333;
-                background:#111111;
-              "
-            >
-              <p>
-                <strong>Pedido:</strong>
-                <br>
-                ${safeOrderId}
-              </p>
-
-              <p>
-                <strong>Producto:</strong>
-                <br>
-                ${safeProductName}
-              </p>
-
-              <p>
-                <strong>Talla:</strong>
-                ${safeSize}
-              </p>
-
-              <p>
-                <strong>Cantidad:</strong>
-                ${input.quantity}
-              </p>
-            </div>
-
-            ${trackingInformation}
-
-            <p
-              style="
-                margin-top:28px;
-                color:#777777;
-                font-size:12px;
-                line-height:19px;
-              "
-            >
-              Este es un mensaje automático.
-              Puedes responder directamente a este
-              correo para contactar con VANMOTION.
-            </p>
-
-            <p
-              style="
-                margin-top:28px;
-                font-size:12px;
-                letter-spacing:2px;
-              "
-            >
-              HUMILDAD · TRABAJO · MOVIMIENTO
-            </p>
-          </div>
-        </div>
-      `,
+      subject,
+      html,
+      text,
     });
 
   if (result.error) {
@@ -415,6 +400,8 @@ export async function sendOrderShippedEmail(
     {
       orderId:
         input.orderId,
+
+      language,
 
       customerEmailSent:
         true,

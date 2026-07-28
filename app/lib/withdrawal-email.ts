@@ -1,5 +1,11 @@
 import { Resend } from "resend";
 
+import {
+  renderCustomerEmail,
+  renderEmailDetails,
+  renderEmailNotice,
+} from "@/app/lib/customer-email-template";
+
 type WithdrawalLanguage =
   | "es"
   | "en";
@@ -323,8 +329,8 @@ export async function sendWithdrawalEmails(
 
   const confirmationTitle =
     isSpanish
-      ? "Solicitud de desistimiento recibida"
-      : "Withdrawal request received";
+      ? "DESISTIMIENTO RECIBIDO"
+      : "WITHDRAWAL RECEIVED";
 
   const confirmationSubject =
     isSpanish
@@ -338,60 +344,136 @@ export async function sendWithdrawalEmails(
 
   const confirmationText =
     isSpanish
-      ? `
-          Hemos recibido correctamente tu solicitud
-          de desistimiento relacionada con el pedido
-          <strong>#${safeOrderId}</strong>.
-          VANMOTION revisará la solicitud y se pondrá
-          en contacto contigo para continuar la gestión.
-        `
-      : `
-          We have received your withdrawal request
-          concerning order
-          <strong>#${safeOrderId}</strong>.
-          VANMOTION will review the request and contact
-          you to continue the process.
-        `;
+      ? `Hemos recibido correctamente tu solicitud de desistimiento relacionada con el pedido <strong>#${safeOrderId}</strong>. VANMOTION revisará la solicitud y se pondrá en contacto contigo para continuar la gestión.`
+      : `We have received your withdrawal request concerning order <strong>#${safeOrderId}</strong>. VANMOTION will review the request and contact you to continue the process.`;
 
-  const referenceLabel =
-    isSpanish
-      ? "Referencia de la solicitud"
-      : "Request reference";
+  const customerDetails = renderEmailDetails([
+    {
+      label:
+        isSpanish
+          ? "Referencia de la solicitud"
+          : "Request reference",
+      valueHtml:
+        safeWithdrawalId,
+    },
+    {
+      label:
+        isSpanish
+          ? "Pedido"
+          : "Order",
+      valueHtml:
+        `#${safeOrderId}`,
+    },
+    {
+      label:
+        isSpanish
+          ? "Fecha de recepción"
+          : "Date received",
+      valueHtml:
+        safeRequestedAt,
+    },
+    {
+      label:
+        isSpanish
+          ? "Producto"
+          : "Product",
+      valueHtml:
+        safeProductName,
+    },
+    {
+      label:
+        isSpanish
+          ? "Talla"
+          : "Size",
+      valueHtml:
+        safeSize,
+    },
+    {
+      label:
+        isSpanish
+          ? "Cantidad"
+          : "Quantity",
+      valueHtml:
+        String(input.quantity),
+    },
+  ]);
 
-  const orderLabel =
-    isSpanish
-      ? "Pedido"
-      : "Order";
-
-  const dateLabel =
-    isSpanish
-      ? "Fecha de recepción"
-      : "Date received";
-
-  const productLabel =
-    isSpanish
-      ? "Producto"
-      : "Product";
-
-  const sizeLabel =
-    isSpanish
-      ? "Talla"
-      : "Size";
-
-  const quantityLabel =
-    isSpanish
-      ? "Cantidad"
-      : "Quantity";
-
-  const statementLabel =
+  const statementNotice = renderEmailNotice(
     isSpanish
       ? "Declaración registrada"
-      : "Recorded statement";
+      : "Recorded statement",
+    safeStatement,
+  );
 
-  const footerText =
+  const messageNotice = safeCustomerMessage
+    ? renderEmailNotice(
+        isSpanish
+          ? "Mensaje voluntario"
+          : "Optional message",
+        safeCustomerMessage,
+      )
+    : "";
+
+  const customerHtml = renderCustomerEmail({
+    language:
+      input.language,
+    preheader:
+      isSpanish
+        ? "VANMOTION ha recibido tu solicitud de desistimiento."
+        : "VANMOTION has received your withdrawal request.",
+    eyebrow:
+      isSpanish
+        ? "Gestión directa · VANMOTION"
+        : "Direct management · VANMOTION",
+    title:
+      confirmationTitle,
+    introductionHtml:
+      `${confirmationGreeting}<br><br>${confirmationText}`,
+    contentHtml:
+      customerDetails +
+      statementNotice +
+      messageNotice,
+    footerText:
+      isSpanish
+        ? "Conserva este correo como confirmación de que VANMOTION ha recibido tu solicitud."
+        : "Keep this email as confirmation that VANMOTION has received your request.",
+    action: {
+      label:
+        isSpanish
+          ? "Consultar desistimiento"
+          : "View withdrawal information",
+      href:
+        "https://www.vanmotion.es/desistimiento",
+    },
+  });
+
+  const customerText = [
+    confirmationTitle,
+    "",
     isSpanish
-      ? "Conserva este correo como confirmación de que VANMOTION ha recibido tu solicitud."
-      : "Keep this email as confirmation that VANMOTION has received your request.";
+      ? `Hola ${input.customerName},`
+      : `Hello ${input.customerName},`,
+    isSpanish
+      ? `Hemos recibido correctamente tu solicitud de desistimiento relacionada con el pedido #${displayOrderId}. VANMOTION revisará la solicitud y se pondrá en contacto contigo para continuar la gestión.`
+      : `We have received your withdrawal request concerning order #${displayOrderId}. VANMOTION will review the request and contact you to continue the process.`,
+    "",
+    `${isSpanish ? "Referencia de la solicitud" : "Request reference"}: ${input.withdrawalId}`,
+    `${isSpanish ? "Pedido" : "Order"}: #${displayOrderId}`,
+    `${isSpanish ? "Fecha de recepción" : "Date received"}: ${formatDate(input.requestedAt, input.language)}`,
+    `${isSpanish ? "Producto" : "Product"}: ${input.productName}`,
+    `${isSpanish ? "Talla" : "Size"}: ${input.size}`,
+    `${isSpanish ? "Cantidad" : "Quantity"}: ${input.quantity}`,
+    "",
+    `${isSpanish ? "Declaración registrada" : "Recorded statement"}:`,
+    input.statement,
+    ...(input.customerMessage
+      ? [
+          "",
+          `${isSpanish ? "Mensaje voluntario" : "Optional message"}:`,
+          input.customerMessage,
+        ]
+      : []),
+  ].join("\n");
 
   const confirmationPromise =
     resend.emails.send({
@@ -411,139 +493,11 @@ export async function sendWithdrawalEmails(
       subject:
         confirmationSubject,
 
-      html: `
-        <div
-          style="
-            background:#080808;
-            color:#ffffff;
-            padding:30px;
-            font-family:Arial,sans-serif;
-          "
-        >
-          <div
-            style="
-              max-width:640px;
-              margin:auto;
-              border:1px solid #333333;
-              padding:30px;
-            "
-          >
-            <p
-              style="
-                margin:0 0 22px;
-                font-size:11px;
-                letter-spacing:4px;
-                color:#888888;
-              "
-            >
-              VANMOTION · MADRID
-            </p>
+      html:
+        customerHtml,
 
-            <h1
-              style="
-                margin:0 0 24px;
-                font-size:28px;
-                line-height:34px;
-              "
-            >
-              ${confirmationTitle}
-            </h1>
-
-            <p
-              style="
-                margin:0 0 18px;
-                line-height:26px;
-              "
-            >
-              ${confirmationGreeting}
-            </p>
-
-            <p
-              style="
-                margin:0;
-                color:#cccccc;
-                line-height:26px;
-              "
-            >
-              ${confirmationText}
-            </p>
-
-            <div
-              style="
-                margin-top:28px;
-                padding:20px;
-                border:1px solid #333333;
-                background:#111111;
-                line-height:24px;
-              "
-            >
-              <p>
-                <strong>${referenceLabel}:</strong><br>
-                ${safeWithdrawalId}
-              </p>
-
-              <p>
-                <strong>${orderLabel}:</strong><br>
-                #${safeOrderId}
-              </p>
-
-              <p>
-                <strong>${dateLabel}:</strong><br>
-                ${safeRequestedAt}
-              </p>
-
-              <p>
-                <strong>${productLabel}:</strong><br>
-                ${safeProductName}
-              </p>
-
-              <p>
-                <strong>${sizeLabel}:</strong>
-                ${safeSize}
-              </p>
-
-              <p>
-                <strong>${quantityLabel}:</strong>
-                ${input.quantity}
-              </p>
-            </div>
-
-            <div
-              style="
-                margin-top:22px;
-                padding:20px;
-                border:1px solid #333333;
-                line-height:24px;
-              "
-            >
-              <strong>${statementLabel}</strong>
-              <br><br>
-              ${safeStatement}
-            </div>
-
-            <p
-              style="
-                margin-top:28px;
-                color:#777777;
-                font-size:12px;
-                line-height:19px;
-              "
-            >
-              ${footerText}
-            </p>
-
-            <p
-              style="
-                margin-top:28px;
-                font-size:12px;
-                letter-spacing:2px;
-              "
-            >
-              HUMILDAD · TRABAJO · MOVIMIENTO
-            </p>
-          </div>
-        </div>
-      `,
+      text:
+        customerText,
     });
 
   const [

@@ -28,6 +28,7 @@ type CheckoutBody = {
   productSlug?: unknown;
   size?: unknown;
   quantity?: unknown;
+  language?: unknown;
   termsAccepted?: unknown;
   termsVersion?: unknown;
 };
@@ -75,6 +76,11 @@ export async function POST(
       .toUpperCase();
 
     const quantity = Number(body.quantity);
+
+    const language =
+      body.language === "en"
+        ? "en"
+        : "es";
 
     const termsVersion = String(
       body.termsVersion ?? "",
@@ -269,6 +275,7 @@ export async function POST(
           sku: variant.sku,
           size: variant.size,
           quantity: String(quantity),
+          customerLanguage: language,
 
           termsAccepted: "true",
           termsAcceptedAt,
