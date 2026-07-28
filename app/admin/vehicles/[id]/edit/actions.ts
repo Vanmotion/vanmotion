@@ -845,7 +845,7 @@ export async function updateVehicle(
   refreshVehiclePages(id);
 
   redirect(
-    `/admin/vehicles/${id}/edit`,
+    `/admin/vehicles/${id}/edit?saved=1`,
   );
 }
 

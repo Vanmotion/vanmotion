@@ -12,6 +12,9 @@ type EditVehiclePageProps = {
   params: Promise<{
     id: string;
   }>;
+  searchParams: Promise<{
+    saved?: string | string[];
+  }>;
 };
 
 type SelectOption = {
@@ -119,8 +122,13 @@ function optionsWithCurrentValue(
 
 export default async function EditVehiclePage({
   params,
+  searchParams,
 }: EditVehiclePageProps) {
   const { id } = await params;
+  const { saved } = await searchParams;
+  const changesSaved = Array.isArray(saved)
+    ? saved.includes("1")
+    : saved === "1";
 
   const [vehicle, brands] = await Promise.all([
     prisma.vehicle.findUnique({
@@ -216,6 +224,23 @@ export default async function EditVehiclePage({
             </Link>
           </div>
         </header>
+
+        {changesSaved && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="mb-8 border border-emerald-400/30 bg-emerald-400/[0.08] px-5 py-4"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">
+              Cambios guardados correctamente
+            </p>
+
+            <p className="mt-2 text-sm leading-6 text-white/55">
+              La información del vehículo y su versión pública ya están
+              actualizadas.
+            </p>
+          </div>
+        )}
 
         <form
           action={updateVehicle}
