@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentLanguage } from "./lib/language";
+import { prisma } from "./lib/prisma";
 import styles from "./home.module.css";
 
 export const dynamic = "force-dynamic";
@@ -150,6 +151,30 @@ const translations = {
   },
 } as const;
 
+function SocialIcon({ name }: { name: string }) {
+  if (name === "youtube") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21.4 7.2a2.8 2.8 0 0 0-2-2C17.7 4.7 12 4.7 12 4.7s-5.7 0-7.4.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 2.1 12a29 29 0 0 0 .5 4.8 2.8 2.8 0 0 0 2 2c1.7.5 7.4.5 7.4.5s5.7 0 7.4-.5a2.8 2.8 0 0 0 2-2 29 29 0 0 0 .5-4.8 29 29 0 0 0-.5-4.8ZM10 15.3V8.7l5.8 3.3L10 15.3Z" />
+      </svg>
+    );
+  }
+
+  if (name === "tiktok") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15.8 3c.3 2.2 1.6 3.6 3.8 3.9v3.2a8 8 0 0 1-3.8-1.2v6.4a5.8 5.8 0 1 1-5-5.7v3.3a2.6 2.6 0 1 0 1.8 2.4V3h3.2Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm0 2A3.2 3.2 0 0 0 4 7.2v9.6A3.2 3.2 0 0 0 7.2 20h9.6a3.2 3.2 0 0 0 3.2-3.2V7.2A3.2 3.2 0 0 0 16.8 4H7.2Zm10.1 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
+    </svg>
+  );
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
   const content = translations[language];
@@ -163,6 +188,44 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const language = await getCurrentLanguage();
   const content = translations[language];
+
+  const settings = await prisma.siteSettings.findFirst({
+    select: {
+      instagram: true,
+      youtube: true,
+      tiktok: true,
+    },
+  });
+
+  const socialLinks = [
+    {
+      label: "Instagram",
+      handle: "@vanmotion_madrid",
+      href: settings?.instagram,
+      icon: "instagram",
+    },
+    {
+      label: "TikTok",
+      handle: "@vanmotion_madrid",
+      href: settings?.tiktok,
+      icon: "tiktok",
+    },
+    {
+      label: "YouTube",
+      handle: "@Vanmotion-s2d",
+      href: settings?.youtube,
+      icon: "youtube",
+    },
+  ].filter(
+    (
+      social,
+    ): social is {
+      label: string;
+      handle: string;
+      href: string;
+      icon: string;
+    } => Boolean(social.href),
+  );
 
   return (
     <div className={styles.page} id="inicio">
@@ -222,11 +285,28 @@ export default async function Home() {
 
           <div className={styles.heroFoot}>
             <span>{content.hero.vehicle}</span>
-            <div className={styles.heroLinks}>
-              <Link href="/coleccion">{content.navigation.vehicles}</Link>
-              <Link href="/musica">{content.navigation.music}</Link>
-              <Link href="/ropa">{content.navigation.clothing}</Link>
-            </div>
+            <div
+                className={styles.heroSocials}
+                aria-label={
+                  language === "es"
+                    ? "Redes sociales de VANMOTION"
+                    : "VANMOTION social media"
+                }
+              >
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${social.label} ${social.handle}`}
+                    title={`${social.label} · ${social.handle}`}
+                  >
+                    <SocialIcon name={social.icon} />
+                    <span>{social.handle}</span>
+                  </a>
+                ))}
+              </div>
           </div>
         </section>
 

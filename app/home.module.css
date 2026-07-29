@@ -195,6 +195,43 @@
   color: var(--orange);
 }
 
+.heroSocials {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(14px, 2vw, 26px);
+}
+
+.heroSocials a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--paper-soft);
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.heroSocials svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
+
+.heroSocials span {
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+
+.heroSocials a:hover {
+  color: var(--paper);
+  transform: translateY(-1px);
+}
+
 .paths {
   padding: clamp(70px, 8vw, 112px) clamp(20px, 4vw, 58px) clamp(54px, 6vw, 82px);
   background: var(--paper);
@@ -586,8 +623,27 @@
     letter-spacing: 0.14em;
   }
 
-  .heroLinks {
-    display: none;
+  .heroSocials {
+    margin-left: auto;
+    gap: 13px;
+  }
+
+  .heroSocials a {
+    gap: 0;
+  }
+
+  .heroSocials svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .heroSocials span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 
   .paths {
@@ -736,3 +792,56 @@
     transition: none;
   }
 }
+
+
+/* VANMOTION HERO SOCIALS OVERRIDE START */
+.heroSocials {
+  margin-left: auto;
+  margin-right: 92px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.heroSocials a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(245, 242, 237, 0.92);
+}
+
+.heroSocials a span {
+  color: rgba(245, 242, 237, 0.92);
+}
+
+.heroSocials a[href*="instagram.com"] svg {
+  color: #E4405F;
+}
+
+.heroSocials a[href*="youtube.com"] svg {
+  color: #FF0000;
+}
+
+.heroSocials a[href*="tiktok.com"] svg {
+  color: #25F4EE;
+  filter: drop-shadow(1px 0 0 #FE2C55);
+}
+
+@media (max-width: 900px) {
+  .heroSocials {
+    margin-right: 88px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 720px) {
+  .heroSocials {
+    margin-right: 78px;
+    gap: 12px;
+  }
+
+  .heroSocials a {
+    position: relative;
+  }
+}
+/* VANMOTION HERO SOCIALS OVERRIDE END */
