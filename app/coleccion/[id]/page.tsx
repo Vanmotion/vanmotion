@@ -158,7 +158,6 @@ const translations = {
         "Tu solicitud está guardada en VANMOTION, pero no hemos podido enviar la confirmación automática. No es necesario que vuelvas a enviarla.",
     },
     photoSoon: "Fotografía próximamente",
-    imageNotice: "Imágenes ilustrativas. La unidad real puede presentar diferencias.",
     selectImage: "Mostrar fotografía",
     detailsLabel: "Datos del vehículo",
     details: {
@@ -231,7 +230,6 @@ const translations = {
         "Your enquiry is safely stored by VANMOTION, but we could not send the automatic confirmation. You do not need to submit it again.",
     },
     photoSoon: "Photography coming soon",
-    imageNotice: "Illustrative images. The actual vehicle may differ.",
     selectImage: "Show photograph",
     detailsLabel: "Vehicle details",
     details: {
@@ -521,10 +519,6 @@ export default async function PublicVehiclePage({
 
         <section className={styles.productSection}>
           <div className={styles.galleryColumn}>
-            <div className={styles.imageNotice} role="note">
-              {content.imageNotice}
-            </div>
-
             <VehicleGallery
               images={vehicle.images.map((image) => ({
                 id: image.id,

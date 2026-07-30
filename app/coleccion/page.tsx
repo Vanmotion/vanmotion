@@ -94,7 +94,6 @@ const translations = {
       transmission: "Transmisión",
       viewDetails: "Ver vehículo",
       unspecified: "Sin especificar",
-      illustrativeImages: "Imágenes ilustrativas",
     },
     empty: {
       eyebrow: "Inventario VANMOTION",
@@ -174,7 +173,6 @@ const translations = {
       transmission: "Transmission",
       viewDetails: "View vehicle",
       unspecified: "Not specified",
-      illustrativeImages: "Illustrative images",
     },
     empty: {
       eyebrow: "VANMOTION Inventory",
@@ -416,11 +414,6 @@ export default async function CollectionPage() {
                           <span>{vehicle.year}</span>
                         </div>
 
-                        {image && (
-                          <span className={styles.imageNotice}>
-                            {content.card.illustrativeImages}
-                          </span>
-                        )}
                       </div>
 
                       <div className={styles.vehicleContent}>
