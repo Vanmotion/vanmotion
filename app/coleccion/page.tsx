@@ -84,7 +84,8 @@ const translations = {
     },
     card: {
       featured: "Destacado",
-      available: "Disponible",
+      reserved: "RESERVADO",
+      sold: "VENDIDO",
       emblem: "Emblema VANMOTION",
       notForSale: "No disponible para la venta",
       photoSoon: "Fotografía próximamente",
@@ -163,7 +164,8 @@ const translations = {
     },
     card: {
       featured: "Featured",
-      available: "Available",
+      reserved: "RESERVED",
+      sold: "SOLD",
       emblem: "VANMOTION emblem",
       notForSale: "Not available for sale",
       photoSoon: "Photography coming soon",
@@ -254,7 +256,7 @@ export default async function CollectionPage() {
   const vehicles = await prisma.vehicle.findMany({
     where: {
       status: {
-        in: ["AVAILABLE", "EMBLEM"],
+        in: ["AVAILABLE", "RESERVED", "SOLD", "EMBLEM"],
       },
     },
     orderBy: [
@@ -379,11 +381,33 @@ export default async function CollectionPage() {
                 const price = isEmblem
                   ? content.card.notForSale
                   : formatPrice(vehicle.price, locale);
-                const status = isEmblem
+                const primaryBadge = isEmblem
                   ? content.card.emblem
                   : vehicle.featured
                     ? content.card.featured
-                    : content.card.available;
+                    : null;
+                const saleStatus =
+                  vehicle.status === "RESERVED"
+                    ? content.card.reserved
+                    : vehicle.status === "SOLD"
+                      ? content.card.sold
+                      : null;
+                const saleStatusStyle =
+                  vehicle.status === "RESERVED"
+                    ? {
+                        background: "rgba(24, 92, 57, 0.9)",
+                        border: "1px solid rgba(121, 214, 158, 0.38)",
+                        color: "#f2fff7",
+                        letterSpacing: "0.12em",
+                      }
+                    : vehicle.status === "SOLD"
+                      ? {
+                          background: "rgba(132, 31, 31, 0.92)",
+                          border: "1px solid rgba(239, 126, 126, 0.4)",
+                          color: "#fff5f5",
+                          letterSpacing: "0.12em",
+                        }
+                      : undefined;
 
                 return (
                   <article
@@ -410,8 +434,13 @@ export default async function CollectionPage() {
                         <div className={styles.vehicleOverlay} aria-hidden="true" />
 
                         <div className={styles.vehicleBadges}>
-                          <span>{status}</span>
+                          {primaryBadge && <span>{primaryBadge}</span>}
                           <span>{vehicle.year}</span>
+                          {saleStatus && (
+                            <span style={saleStatusStyle}>
+                              {saleStatus}
+                            </span>
+                          )}
                         </div>
 
                       </div>

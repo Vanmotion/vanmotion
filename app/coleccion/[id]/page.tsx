@@ -141,6 +141,10 @@ const translations = {
   es: {
     metadataDescription:
       "Consulta fotografías, características y precio de este vehículo disponible en VANMOTION.",
+    reservedMetadataDescription:
+      "Consulta fotografías y características de este vehículo actualmente reservado en VANMOTION.",
+    soldMetadataDescription:
+      "Consulta fotografías y características de este vehículo vendido por VANMOTION.",
     emblemMetadataDescription:
       "Descubre el vehículo emblema de VANMOTION, una unidad que representa la historia y la identidad de la marca.",
     navigation: {
@@ -160,6 +164,10 @@ const translations = {
     photoSoon: "Fotografía próximamente",
     selectImage: "Mostrar fotografía",
     detailsLabel: "Datos del vehículo",
+    status: {
+      reserved: "RESERVADO",
+      sold: "VENDIDO",
+    },
     details: {
       year: "Año",
       mileage: "Kilómetros",
@@ -213,6 +221,10 @@ const translations = {
   en: {
     metadataDescription:
       "View photographs, specifications and price for this vehicle available from VANMOTION.",
+    reservedMetadataDescription:
+      "View photographs and specifications for this vehicle currently reserved at VANMOTION.",
+    soldMetadataDescription:
+      "View photographs and specifications for this vehicle sold by VANMOTION.",
     emblemMetadataDescription:
       "Discover the VANMOTION icon, a vehicle representing the history and identity of the brand.",
     navigation: {
@@ -232,6 +244,10 @@ const translations = {
     photoSoon: "Photography coming soon",
     selectImage: "Show photograph",
     detailsLabel: "Vehicle details",
+    status: {
+      reserved: "RESERVED",
+      sold: "SOLD",
+    },
     details: {
       year: "Year",
       mileage: "Mileage",
@@ -319,7 +335,7 @@ export async function generateMetadata({
     prisma.vehicle.findFirst({
       where: {
         id,
-        status: { in: ["AVAILABLE", "EMBLEM"] },
+        status: { in: ["AVAILABLE", "RESERVED", "SOLD", "EMBLEM"] },
       },
       select: {
         model: true,
@@ -345,7 +361,11 @@ export async function generateMetadata({
     description:
       vehicle.status === "EMBLEM"
         ? translations[language].emblemMetadataDescription
-        : translations[language].metadataDescription,
+        : vehicle.status === "RESERVED"
+          ? translations[language].reservedMetadataDescription
+          : vehicle.status === "SOLD"
+            ? translations[language].soldMetadataDescription
+            : translations[language].metadataDescription,
   };
 }
 
@@ -365,7 +385,7 @@ export default async function PublicVehiclePage({
   const vehicle = await prisma.vehicle.findFirst({
     where: {
       id,
-      status: { in: ["AVAILABLE", "EMBLEM"] },
+      status: { in: ["AVAILABLE", "RESERVED", "SOLD", "EMBLEM"] },
     },
     include: {
       brand: true,
@@ -380,6 +400,12 @@ export default async function PublicVehiclePage({
   }
 
   const isEmblem = vehicle.status === "EMBLEM";
+  const saleStatus =
+    vehicle.status === "RESERVED"
+      ? content.status.reserved
+      : vehicle.status === "SOLD"
+        ? content.status.sold
+        : null;
   const vehicleName = [vehicle.brand.name, vehicle.model, vehicle.version]
     .filter(Boolean)
     .join(" ");
@@ -468,7 +494,24 @@ export default async function PublicVehiclePage({
         <section className={styles.hero}>
           <div className={styles.heroTopline}>
             <span>{language === "es" ? "Madrid · España" : "Madrid · Spain"}</span>
-            <span>{isEmblem ? content.emblem.badge : content.detailsLabel}</span>
+            <span
+              style={
+                saleStatus
+                  ? {
+                      padding: "0.42rem 0.72rem",
+                      border: "1px solid rgba(255, 255, 255, 0.16)",
+                      borderRadius: "999px",
+                      background: "rgba(8, 8, 8, 0.72)",
+                      color: "rgba(255, 255, 255, 0.9)",
+                      letterSpacing: "0.12em",
+                    }
+                  : undefined
+              }
+            >
+              {isEmblem
+                ? content.emblem.badge
+                : saleStatus ?? content.detailsLabel}
+            </span>
           </div>
 
           <Link href="/coleccion" className={styles.backLink}>
