@@ -14,13 +14,20 @@ import SubmitButton from "./SubmitButton";
 
 export const dynamic = "force-dynamic";
 
-const PRODUCT_SLUG =
-  "carpe-diem-black-edition-drop-01";
+const MANAGED_PRODUCT_SLUGS = [
+  "carpe-diem-black-edition-drop-01",
+  "carpe-diem-hombre-azul-ford-e150-drop-01",
+  "carpe-diem-mujer-negra-drop-01",
+  "carpe-diem-mujer-azul-ford-e150-drop-01",
+  "bomber-hombre-negra-drop-01",
+  "bomber-hombre-azul-ford-e150-drop-01",
+  "bomber-mujer-negra-drop-01",
+  "bomber-mujer-azul-ford-e150-drop-01",
+] as const;
 
-const statusLabels: Record<
-  string,
-  string
-> = {
+const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL"] as const;
+
+const statusLabels: Record<string, string> = {
   DRAFT: "Borrador",
   COMING_SOON: "Próximamente",
   AVAILABLE: "Disponible",
@@ -28,73 +35,52 @@ const statusLabels: Record<
   HIDDEN: "Oculto",
 };
 
-const statusClassNames: Record<
-  string,
-  string
-> = {
+const statusClassNames: Record<string, string> = {
   DRAFT: styles.statusDraft,
-  COMING_SOON:
-    styles.statusComingSoon,
-  AVAILABLE:
-    styles.statusAvailable,
-  SOLD_OUT:
-    styles.statusSoldOut,
-  HIDDEN:
-    styles.statusHidden,
+  COMING_SOON: styles.statusComingSoon,
+  AVAILABLE: styles.statusAvailable,
+  SOLD_OUT: styles.statusSoldOut,
+  HIDDEN: styles.statusHidden,
 };
-
-const productSizes = [
-  "S",
-  "M",
-  "L",
-  "XL",
-] as const;
 
 const productImageSlots = [
   {
     view: "FRONT",
-    title: "Vista frontal",
-    description:
-      "Imagen limpia de la parte delantera.",
-    fallbackUrl:
-      "/ropa/carpe-diem-frontal.webp",
-    alt:
-      "Vista frontal de la camiseta CARPE DIEM Black Edition",
+    number: "1",
+    title: "Imagen frontal",
+    description: "Vista limpia de la parte delantera de la prenda.",
+    alt: "Vista frontal del producto VANMOTION",
   },
   {
     view: "BACK",
-    title: "Vista trasera",
-    description:
-      "Imagen principal con el diseño CARPE DIEM.",
-    fallbackUrl:
-      "/ropa/carpe-diem-trasera.webp",
-    alt:
-      "Vista trasera de la camiseta CARPE DIEM Black Edition",
+    number: "2",
+    title: "Imagen espalda",
+    description: "Vista trasera completa respetando el diseño original.",
+    alt: "Vista trasera del producto VANMOTION",
   },
   {
     view: "DETAIL",
-    title: "Detalle del diseño",
-    description:
-      "Acercamiento del estampado y del acabado.",
-    fallbackUrl:
-      "/ropa/carpe-diem-diseno.webp",
-    alt:
-      "Detalle del diseño CARPE DIEM",
+    number: "3",
+    title: "Imagen detalle",
+    description: "Acercamiento del logotipo, tejido, cremallera o estampado.",
+    alt: "Detalle del producto VANMOTION",
+  },
+  {
+    view: "LIFESTYLE",
+    number: "4",
+    title: "Imagen lifestyle",
+    description: "Fotografía de la prenda en modelo o ambiente urbano.",
+    alt: "Imagen lifestyle de la colección VANMOTION",
   },
 ] as const;
 
-function formatPrice(
-  price: unknown,
-): string {
-  return new Intl.NumberFormat(
-    "es-ES",
-    {
-      style: "currency",
-      currency: "EUR",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    },
-  ).format(Number(price));
+function formatPrice(price: unknown): string {
+  return new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(price));
 }
 
 function getProductStock(
@@ -104,10 +90,7 @@ function getProductStock(
   }>,
 ): number {
   return variants.reduce(
-    (total, variant) =>
-      variant.active
-        ? total + variant.stock
-        : total,
+    (total, variant) => (variant.active ? total + variant.stock : total),
     0,
   );
 }
@@ -116,10 +99,6 @@ function getStockAwareStatus(
   storedStatus: string,
   productStock: number,
 ): string {
-  /*
-   * Estos estados son manuales y deben
-   * conservarse independientemente del stock.
-   */
   if (
     storedStatus === "DRAFT" ||
     storedStatus === "COMING_SOON" ||
@@ -128,13 +107,7 @@ function getStockAwareStatus(
     return storedStatus;
   }
 
-  /*
-   * Disponible y Agotado dependen siempre
-   * del número real de unidades activas.
-   */
-  return productStock > 0
-    ? "AVAILABLE"
-    : "SOLD_OUT";
+  return productStock > 0 ? "AVAILABLE" : "SOLD_OUT";
 }
 
 function getEffectiveStatus(
@@ -146,375 +119,285 @@ function getEffectiveStatus(
     return "HIDDEN";
   }
 
-  return getStockAwareStatus(
-    storedStatus,
-    productStock,
-  );
+  return getStockAwareStatus(storedStatus, productStock);
 }
 
 export default async function ClothingAdminPage() {
-  /*
-   * Este panel administra exclusivamente el primer
-   * producto de ropa, igual que sus Server Actions.
-   */
-  const product =
-    await prisma.product.findUnique({
-      where: {
-        slug: PRODUCT_SLUG,
+  const products = await prisma.product.findMany({
+    where: {
+      category: "CLOTHING",
+      slug: {
+        in: [...MANAGED_PRODUCT_SLUGS],
       },
-
-      include: {
-        images: {
-          orderBy: [
-            {
-              sortOrder: "asc",
-            },
-            {
-              createdAt: "asc",
-            },
-          ],
-        },
-
-        variants: {
-          orderBy: {
-            sortOrder: "asc",
-          },
-        },
+    },
+    include: {
+      images: {
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
       },
-    });
+      variants: {
+        orderBy: { sortOrder: "asc" },
+      },
+    },
+    orderBy: { sortOrder: "asc" },
+  });
 
-  const products = product
-    ? [product]
-    : [];
-
-  const totalProducts =
-    products.length;
-
-  const availableProducts =
-    products.filter((product) => {
-      const productStock =
-        getProductStock(
-          product.variants,
-        );
-
-      const effectiveStatus =
-        getEffectiveStatus(
-          product.status,
-          product.active,
-          productStock,
-        );
-
-      return (
-        product.active &&
-        effectiveStatus ===
-          "AVAILABLE"
-      );
-    }).length;
-
-  const comingSoonProducts =
-    products.filter((product) => {
-      const productStock =
-        getProductStock(
-          product.variants,
-        );
-
-      const effectiveStatus =
-        getEffectiveStatus(
-          product.status,
-          product.active,
-          productStock,
-        );
-
-      return (
-        product.active &&
-        effectiveStatus ===
-          "COMING_SOON"
-      );
-    }).length;
-
-  const totalUnits =
-    products.reduce(
-      (total, product) =>
-        total +
-        getProductStock(
-          product.variants,
-        ),
-      0,
+  const availableProducts = products.filter((product) => {
+    const stock = getProductStock(product.variants);
+    return (
+      product.active &&
+      getEffectiveStatus(product.status, product.active, stock) === "AVAILABLE"
     );
+  }).length;
+
+  const comingSoonProducts = products.filter((product) => {
+    const stock = getProductStock(product.variants);
+    return (
+      product.active &&
+      getEffectiveStatus(product.status, product.active, stock) ===
+        "COMING_SOON"
+    );
+  }).length;
+
+  const totalUnits = products.reduce(
+    (total, product) => total + getProductStock(product.variants),
+    0,
+  );
 
   const statistics = [
-    {
-      label: "Productos totales",
-      value: totalProducts,
-    },
-    {
-      label: "Disponibles",
-      value: availableProducts,
-    },
-    {
-      label: "Próximamente",
-      value: comingSoonProducts,
-    },
-    {
-      label: "Unidades en stock",
-      value: totalUnits,
-    },
+    { label: "Productos totales", value: products.length },
+    { label: "Disponibles", value: availableProducts },
+    { label: "Próximamente", value: comingSoonProducts },
+    { label: "Unidades en stock", value: totalUnits },
   ];
 
   return (
     <section className={styles.page}>
-      <div
-        className={
-          styles.pageHeader
-        }
-      >
+      <div className={styles.pageHeader}>
         <div>
-          <p
-            className={
-              styles.eyebrow
-            }
-          >
-            Tienda
-          </p>
-
-          <h1
-            className={
-              styles.pageTitle
-            }
-          >
-            Ropa VANMOTION
-          </h1>
-
-          <p
-            className={
-              styles.pageDescription
-            }
-          >
-            Gestiona el precio, el
-            estado, el stock por talla
-            y las imágenes de CARPE DIEM · Drop 01.
+          <p className={styles.eyebrow}>Tienda</p>
+          <h1 className={styles.pageTitle}>Ropa VANMOTION</h1>
+          <p className={styles.pageDescription}>
+            Gestiona las imágenes, precios, estados, stock por talla y
+            visibilidad de la colección inaugural.
           </p>
         </div>
 
-        <Link
-          href="/ropa"
-          className={
-            styles.publicStoreLink
-          }
-        >
-          Ver tienda pública
-        </Link>
+        <div className={styles.headerActions}>
+          <form action={createCarpeDiemProductAction}>
+            <SubmitButton
+              idleText={
+                products.length === MANAGED_PRODUCT_SLUGS.length
+                  ? "Sincronizar colección"
+                  : "Crear colección completa"
+              }
+              pendingText="Preparando colección..."
+              className={styles.primaryButton}
+            />
+          </form>
+
+          <Link href="/ropa" className={styles.publicStoreLink}>
+            Ver tienda pública
+          </Link>
+        </div>
       </div>
 
-      <div
-        className={
-          styles.statisticsGrid
-        }
-      >
+      <div className={styles.statisticsGrid}>
         {statistics.map((item) => (
-          <article
-            key={item.label}
-            className={
-              styles.statisticCard
-            }
-          >
-            <p
-              className={
-                styles.statisticLabel
-              }
-            >
-              {item.label}
-            </p>
-
-            <p
-              className={
-                styles.statisticValue
-              }
-            >
-              {item.value}
-            </p>
+          <article key={item.label} className={styles.statisticCard}>
+            <p className={styles.statisticLabel}>{item.label}</p>
+            <p className={styles.statisticValue}>{item.value}</p>
           </article>
         ))}
       </div>
 
       {products.length === 0 ? (
-        <div
-          className={
-            styles.emptyState
-          }
-        >
-          <div
-            className={
-              styles.emptyIcon
-            }
-          >
-            +
-          </div>
-
-          <h2
-            className={
-              styles.emptyTitle
-            }
-          >
-            Todavía no hay productos
-            registrados
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>+</div>
+          <h2 className={styles.emptyTitle}>
+            Todavía no hay productos registrados
           </h2>
-
-          <p
-            className={
-              styles.emptyDescription
-            }
-          >
-            Crea automáticamente la
-            primera camiseta CARPE DIEM
-            Black Edition, con precio de
-            lanzamiento de 34,90 € y
-            tallas S, M, L y XL.
+          <p className={styles.emptyDescription}>
+            Crea la colección completa VANMOTION con camisetas y bomber para
+            hombre y mujer en negro y azul Ford E-150.
           </p>
 
           <form
-            action={
-              createCarpeDiemProductAction
-            }
-            className={
-              styles.emptyForm
-            }
+            action={createCarpeDiemProductAction}
+            className={styles.emptyForm}
           >
             <SubmitButton
-              idleText="Crear CARPE DIEM · Drop 01"
-              pendingText="Creando producto..."
-              className={
-                styles.primaryButton
-              }
+              idleText="Crear colección VANMOTION"
+              pendingText="Creando colección..."
+              className={styles.primaryButton}
             />
           </form>
         </div>
       ) : (
-        <div
-          className={
-            styles.productsList
-          }
-        >
+        <div className={styles.productsList}>
           {products.map((product) => {
-            const imagesByView =
-              new Map(
-                product.images.map(
-                  (image) => [
-                    image.view,
-                    image,
-                  ],
-                ),
-              );
+            const imagesByView = new Map(
+              product.images.map((image) => [image.view, image]),
+            );
 
-            const primaryImage =
-              imagesByView.get("FRONT");
+            const variantsBySize = new Map(
+              product.variants.map((variant) => [variant.size, variant]),
+            );
 
-            const primaryImageUrl =
-              primaryImage?.url ??
-              "/ropa/carpe-diem-frontal.webp";
+            const productSizes = SIZE_ORDER.filter((size) =>
+              variantsBySize.has(size),
+            );
 
-            const variantsBySize =
-              new Map(
-                product.variants.map(
-                  (variant) => [
-                    variant.size,
-                    variant,
-                  ],
-                ),
-              );
-
-            const productStock =
-              getProductStock(
-                product.variants,
-              );
-
-            const effectiveStatus =
-              getEffectiveStatus(
-                product.status,
-                product.active,
-                productStock,
-              );
-
-            const editableStatus =
-              getStockAwareStatus(
-                product.status,
-                productStock,
-              );
-
+            const productStock = getProductStock(product.variants);
+            const effectiveStatus = getEffectiveStatus(
+              product.status,
+              product.active,
+              productStock,
+            );
+            const editableStatus = getStockAwareStatus(
+              product.status,
+              productStock,
+            );
             const statusLabel =
-              statusLabels[
-                effectiveStatus
-              ] ?? effectiveStatus;
-
+              statusLabels[effectiveStatus] ?? effectiveStatus;
             const statusClass =
-              statusClassNames[
-                effectiveStatus
-              ] ??
-              styles.statusDefault;
+              statusClassNames[effectiveStatus] ?? styles.statusDefault;
 
             return (
-              <article
-                key={product.id}
-                className={
-                  styles.productCard
-                }
-              >
-                <div
-                  className={
-                    styles.productLayout
-                  }
-                >
-                  <aside
-                    className={
-                      styles.productMedia
-                    }
-                  >
-                    <div
-                      className={
-                        styles.imageFrame
-                      }
-                    >
-                      <img
-                        src={primaryImageUrl}
-                        alt={
-                          primaryImage?.alt ??
-                          product.name
-                        }
-                        className={
-                          styles.productImage
-                        }
-                      />
+              <article key={product.id} className={styles.productCard}>
+                <div className={styles.productEditorHeader}>
+                  <div>
+                    <p className={styles.collectionLabel}>
+                      {product.collection ?? "Colección VANMOTION"}
+                    </p>
+                    <h2 className={styles.productName}>{product.name}</h2>
+                    {product.subtitle ? (
+                      <p className={styles.productSubtitle}>
+                        {product.subtitle}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className={styles.productEditorMeta}>
+                    <span className={`${styles.statusBadge} ${statusClass}`}>
+                      {statusLabel}
+                    </span>
+                    <strong>{formatPrice(product.price)}</strong>
+                  </div>
+                </div>
+
+                <div className={styles.productEditorLayout}>
+                  <section className={styles.editorGallery}>
+                    <div className={styles.editorSectionHeading}>
+                      <div>
+                        <p className={styles.fieldLabel}>Imágenes del producto</p>
+                        <h3>Galería de la tienda</h3>
+                        <p>
+                          Sube imágenes de alta calidad. Formato recomendado:
+                          WebP o JPG.
+                        </p>
+                      </div>
+
+                      <span>JPG · PNG · WEBP · AVIF</span>
                     </div>
 
-                    <div
-                      className={
-                        styles.mediaFooter
-                      }
-                    >
-                      <span
-                        className={`${styles.statusBadge} ${statusClass}`}
-                      >
-                        {statusLabel}
-                      </span>
+                    <div className={styles.editorImagesGrid}>
+                      {productImageSlots.map((slot) => {
+                        const image = imagesByView.get(slot.view);
+                        const displayUrl = image?.url ?? null;
+                        const isCustomImage = Boolean(
+                          image?.url.startsWith("http"),
+                        );
 
-                      <span
-                        className={
-                          styles.stockSummary
-                        }
-                      >
-                        {productStock}{" "}
-                        unidades
-                      </span>
+                        return (
+                          <article
+                            key={slot.view}
+                            className={styles.editorImageCard}
+                          >
+                            <p className={styles.editorImageLabel}>
+                              {slot.number}. {slot.title}
+                            </p>
+
+                            <div className={styles.editorImagePreview}>
+                              {displayUrl ? (
+                                <img
+                                  src={displayUrl}
+                                  alt={image?.alt ?? slot.alt}
+                                />
+                              ) : (
+                                <div className={styles.noImage}>Sin imagen</div>
+                              )}
+                            </div>
+
+                            <p className={styles.editorImageDescription}>
+                              {slot.description}
+                            </p>
+
+                            <form
+                              action={saveProductImageAction}
+                              className={styles.editorImageActions}
+                            >
+                              <input
+                                type="hidden"
+                                name="productId"
+                                value={product.id}
+                              />
+                              <input
+                                type="hidden"
+                                name="view"
+                                value={slot.view}
+                              />
+                              <input
+                                type="file"
+                                name="image"
+                                accept="image/jpeg,image/png,image/webp,image/avif"
+                                required
+                                className={styles.productImageFile}
+                              />
+                              <SubmitButton
+                                idleText={
+                                  displayUrl ? "Cambiar imagen" : "Subir imagen"
+                                }
+                                pendingText="Subiendo..."
+                                className={styles.productImageUploadButton}
+                              />
+                            </form>
+
+                            {isCustomImage ? (
+                              <form
+                                action={removeProductImageAction}
+                                className={styles.productImageRestoreForm}
+                              >
+                                <input
+                                  type="hidden"
+                                  name="productId"
+                                  value={product.id}
+                                />
+                                <input
+                                  type="hidden"
+                                  name="view"
+                                  value={slot.view}
+                                />
+                                <SubmitButton
+                                  idleText="Eliminar imagen"
+                                  pendingText="Eliminando..."
+                                  className={styles.productImageRestoreButton}
+                                />
+                              </form>
+                            ) : null}
+                          </article>
+                        );
+                      })}
                     </div>
-                  </aside>
+
+                    <p className={styles.galleryOrderNote}>
+                      Las imágenes se muestran en este orden: frontal, espalda,
+                      detalle y lifestyle.
+                    </p>
+                  </section>
 
                   <form
-                    action={
-                      updateProductAction
-                    }
-                    className={
-                      styles.productForm
-                    }
+                    action={updateProductAction}
+                    className={styles.editorProductForm}
                   >
                     <input
                       type="hidden"
@@ -522,467 +405,126 @@ export default async function ClothingAdminPage() {
                       value={product.id}
                     />
 
-                    <div
-                      className={
-                        styles.productHeading
-                      }
-                    >
+                    <div className={styles.editorProductTitle}>
                       <div>
-                        <p
-                          className={
-                            styles.collectionLabel
-                          }
-                        >
-                          {product.collection ??
-                            "Colección VANMOTION"}
+                        <p className={styles.collectionLabel}>
+                          {product.collection ?? "Colección VANMOTION"}
                         </p>
-
-                        <h2
-                          className={
-                            styles.productName
-                          }
-                        >
-                          {product.name}
-                        </h2>
-
-                        {product.subtitle && (
-                          <p
-                            className={
-                              styles.productSubtitle
-                            }
-                          >
-                            {
-                              product.subtitle
-                            }
-                          </p>
-                        )}
+                        <h3>{product.name}</h3>
+                        {product.subtitle ? <p>{product.subtitle}</p> : null}
                       </div>
 
-                      <p
-                        className={
-                          styles.currentPrice
-                        }
-                      >
-                        {formatPrice(
-                          product.price,
-                        )}
-                      </p>
+                      <strong>{formatPrice(product.price)}</strong>
                     </div>
 
-                    <div
-                      className={
-                        styles.mainFieldsGrid
-                      }
-                    >
-                      <label
-                        className={
-                          styles.field
-                        }
-                      >
-                        <span
-                          className={
-                            styles.fieldLabel
-                          }
-                        >
-                          Precio
-                        </span>
-
-                        <div
-                          className={
-                            styles.priceInputWrap
-                          }
-                        >
+                    <div className={styles.mainFieldsGrid}>
+                      <label className={styles.field}>
+                        <span className={styles.fieldLabel}>Precio</span>
+                        <div className={styles.priceInputWrap}>
                           <input
                             name="price"
                             type="number"
                             min="0"
                             step="0.01"
-                            defaultValue={Number(
-                              product.price,
-                            ).toFixed(2)}
+                            defaultValue={Number(product.price).toFixed(2)}
                             required
-                            className={
-                              styles.input
-                            }
+                            className={styles.input}
                           />
-
-                          <span
-                            className={
-                              styles.currency
-                            }
-                          >
-                            €
-                          </span>
+                          <span className={styles.currency}>€</span>
                         </div>
                       </label>
 
-                      <label
-                        className={
-                          styles.field
-                        }
-                      >
-                        <span
-                          className={
-                            styles.fieldLabel
-                          }
-                        >
-                          Estado
-                        </span>
-
+                      <label className={styles.field}>
+                        <span className={styles.fieldLabel}>Estado</span>
                         <select
                           name="status"
-                          defaultValue={
-                            editableStatus
-                          }
-                          className={
-                            styles.select
-                          }
+                          defaultValue={editableStatus}
+                          className={styles.select}
                         >
-                          <option value="DRAFT">
-                            Borrador
-                          </option>
-
-                          <option value="COMING_SOON">
-                            Próximamente
-                          </option>
-
-                          <option value="AVAILABLE">
-                            Disponible
-                          </option>
-
-                          <option value="SOLD_OUT">
-                            Agotado
-                          </option>
-
-                          <option value="HIDDEN">
-                            Oculto
-                          </option>
+                          <option value="DRAFT">Borrador</option>
+                          <option value="COMING_SOON">Próximamente</option>
+                          <option value="AVAILABLE">Disponible</option>
+                          <option value="SOLD_OUT">Agotado</option>
+                          <option value="HIDDEN">Oculto</option>
                         </select>
                       </label>
                     </div>
 
-                    <div
-                      className={
-                        styles.stockSection
-                      }
-                    >
-                      <p
-                        className={
-                          styles.fieldLabel
-                        }
-                      >
-                        Stock por talla
-                      </p>
+                    <div className={styles.stockSection}>
+                      <p className={styles.fieldLabel}>Stock por talla</p>
 
-                      <div
-                        className={
-                          styles.sizesGrid
-                        }
-                      >
-                        {productSizes.map(
-                          (size) => {
-                            const variant =
-                              variantsBySize.get(
-                                size,
-                              );
+                      <div className={styles.sizesGrid}>
+                        {productSizes.map((size) => {
+                          const variant = variantsBySize.get(size);
 
-                            return (
-                              <label
-                                key={size}
-                                className={
-                                  styles.sizeCard
-                                }
-                              >
-                                <span
-                                  className={
-                                    styles.sizeHeader
-                                  }
-                                >
-                                  <span
-                                    className={
-                                      styles.sizeName
-                                    }
-                                  >
-                                    Talla{" "}
-                                    {size}
-                                  </span>
-
-                                  <span
-                                    className={
-                                      styles.sku
-                                    }
-                                  >
-                                    {variant?.sku ??
-                                      "Sin SKU"}
-                                  </span>
+                          return (
+                            <label key={size} className={styles.sizeCard}>
+                              <span className={styles.sizeHeader}>
+                                <span className={styles.sizeName}>
+                                  Talla {size}
                                 </span>
+                                <span className={styles.sku}>
+                                  {variant?.sku ?? "Sin SKU"}
+                                </span>
+                              </span>
 
-                                <input
-                                  name={`stock_${size}`}
-                                  type="number"
-                                  min="0"
-                                  step="1"
-                                  required
-                                  defaultValue={
-                                    variant?.stock ??
-                                    0
-                                  }
-                                  className={
-                                    styles.stockInput
-                                  }
-                                />
-                              </label>
-                            );
-                          },
-                        )}
+                              <input
+                                name={`stock_${size}`}
+                                type="number"
+                                min="0"
+                                step="1"
+                                required
+                                defaultValue={variant?.stock ?? 0}
+                                className={styles.stockInput}
+                              />
+                            </label>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    <div
-                      className={
-                        styles.formFooter
-                      }
-                    >
-                      <div
-                        className={
-                          styles.checkboxGroup
-                        }
-                      >
-                        <label
-                          className={
-                            styles.checkboxLabel
-                          }
-                        >
+                    <div className={styles.visibilitySection}>
+                      <p className={styles.fieldLabel}>
+                        Opciones de visibilidad
+                      </p>
+
+                      <div className={styles.checkboxGroup}>
+                        <label className={styles.checkboxLabel}>
                           <input
                             name="active"
                             type="checkbox"
-                            defaultChecked={
-                              product.active
-                            }
-                            className={
-                              styles.checkbox
-                            }
+                            defaultChecked={product.active}
+                            className={styles.checkbox}
                           />
-
                           Visible en la tienda
                         </label>
 
-                        <label
-                          className={
-                            styles.checkboxLabel
-                          }
-                        >
+                        <label className={styles.checkboxLabel}>
                           <input
                             name="featured"
                             type="checkbox"
-                            defaultChecked={
-                              product.featured
-                            }
-                            className={
-                              styles.checkbox
-                            }
+                            defaultChecked={product.featured}
+                            className={styles.checkbox}
                           />
-
                           Producto destacado
                         </label>
                       </div>
+                    </div>
+
+                    <div className={styles.editorFormFooter}>
+                      <span>
+                        {productStock}{" "}
+                        {productStock === 1 ? "unidad" : "unidades"} en stock
+                      </span>
 
                       <SubmitButton
                         idleText="Guardar cambios"
                         pendingText="Guardando..."
-                        className={
-                          styles.primaryButton
-                        }
+                        className={styles.primaryButton}
                       />
                     </div>
                   </form>
                 </div>
-
-                <section
-                  className={
-                    styles.imageManager
-                  }
-                >
-                  <div
-                    className={
-                      styles.imageManagerHeading
-                    }
-                  >
-                    <div>
-                      <p
-                        className={
-                          styles.fieldLabel
-                        }
-                      >
-                        Imágenes del producto
-                      </p>
-
-                      <h3>
-                        Galería de la tienda
-                      </h3>
-
-                      <p>
-                        Sube cada vista por separado.
-                        Las imágenes se guardan de forma
-                        permanente y se actualizan
-                        directamente en la tienda pública.
-                      </p>
-                    </div>
-
-                    <span>
-                      JPG · PNG · WEBP · AVIF
-                    </span>
-                  </div>
-
-                  <div
-                    className={
-                      styles.productImagesGrid
-                    }
-                  >
-                    {productImageSlots.map(
-                      (slot) => {
-                        const image =
-                          imagesByView.get(
-                            slot.view,
-                          );
-
-                        const displayUrl =
-                          image?.url ??
-                          slot.fallbackUrl;
-
-                        const isCustomImage =
-                          Boolean(
-                            image?.url.startsWith(
-                              "http",
-                            ),
-                          );
-
-                        return (
-                          <article
-                            key={slot.view}
-                            className={
-                              styles.productImageCard
-                            }
-                          >
-                            <div
-                              className={
-                                styles.productImagePreview
-                              }
-                            >
-                              <img
-                                src={displayUrl}
-                                alt={
-                                  image?.alt ??
-                                  slot.alt
-                                }
-                              />
-
-                              <span>
-                                {isCustomImage
-                                  ? "Personalizada"
-                                  : "Predeterminada"}
-                              </span>
-                            </div>
-
-                            <div
-                              className={
-                                styles.productImageInformation
-                              }
-                            >
-                              <h4>
-                                {slot.title}
-                              </h4>
-
-                              <p>
-                                {
-                                  slot.description
-                                }
-                              </p>
-                            </div>
-
-                            <form
-                              action={
-                                saveProductImageAction
-                              }
-                              className={
-                                styles.productImageUploadForm
-                              }
-                            >
-                              <input
-                                type="hidden"
-                                name="productId"
-                                value={product.id}
-                              />
-
-                              <input
-                                type="hidden"
-                                name="view"
-                                value={slot.view}
-                              />
-
-                              <input
-                                type="file"
-                                name="image"
-                                accept="image/jpeg,image/png,image/webp,image/avif"
-                                required
-                                className={
-                                  styles.productImageFile
-                                }
-                              />
-
-                              <SubmitButton
-                                idleText={
-                                  isCustomImage
-                                    ? "Sustituir imagen"
-                                    : "Subir imagen"
-                                }
-                                pendingText="Subiendo..."
-                                className={
-                                  styles.productImageUploadButton
-                                }
-                              />
-                            </form>
-
-                            {isCustomImage && (
-                              <form
-                                action={
-                                  removeProductImageAction
-                                }
-                                className={
-                                  styles.productImageRestoreForm
-                                }
-                              >
-                                <input
-                                  type="hidden"
-                                  name="productId"
-                                  value={
-                                    product.id
-                                  }
-                                />
-
-                                <input
-                                  type="hidden"
-                                  name="view"
-                                  value={
-                                    slot.view
-                                  }
-                                />
-
-                                <SubmitButton
-                                  idleText="Restaurar predeterminada"
-                                  pendingText="Restaurando..."
-                                  className={
-                                    styles.productImageRestoreButton
-                                  }
-                                />
-                              </form>
-                            )}
-                          </article>
-                        );
-                      },
-                    )}
-                  </div>
-                </section>
               </article>
             );
           })}

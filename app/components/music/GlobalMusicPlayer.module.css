@@ -1,7 +1,7 @@
 .player {
   position: fixed;
   right: 18px;
-  bottom: calc(18px + env(safe-area-inset-bottom));
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
   z-index: 90;
 
   width: min(390px, calc(100vw - 36px));
@@ -38,7 +38,7 @@
 .expanded {
   width: min(420px, calc(100vw - 36px));
   max-height: calc(
-    100dvh - 36px - env(safe-area-inset-bottom)
+    100dvh - 36px - env(safe-area-inset-bottom, 0px)
   );
 }
 
@@ -74,7 +74,6 @@
 
 .trackText small {
   display: block;
-
   margin-bottom: 3px;
   overflow: hidden;
 
@@ -129,10 +128,8 @@
 
 .centerLogo img {
   display: block;
-
   width: 44px;
   max-height: 34px;
-
   object-fit: contain;
 }
 
@@ -211,7 +208,6 @@
 
 .expandedContent {
   overflow-y: auto;
-
   border-top: 1px solid rgb(255 255 255 / 9%);
   padding: 10px 12px 12px;
 }
@@ -237,13 +233,11 @@
   grid-template-columns: 30px 1fr;
   align-items: center;
   gap: 8px;
-
   margin-top: 9px;
 }
 
 .volume span {
   color: rgb(255 255 255 / 45%);
-
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -252,7 +246,6 @@
 .trackList {
   display: grid;
   gap: 3px;
-
   max-height: 220px;
   margin-top: 10px;
   overflow-y: auto;
@@ -302,7 +295,6 @@
 .trackList small {
   display: block;
   overflow: hidden;
-
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -314,7 +306,6 @@
 
 .trackList small {
   margin-top: 2px;
-
   color: rgb(255 255 255 / 38%);
   font-size: 9px;
 }
@@ -327,33 +318,31 @@
 
 .error {
   margin: 9px 0 0;
-
   color: rgb(255 190 190);
   font-size: 10px;
   line-height: 1.4;
 }
 
-/* Móvil: reproductor mínimo para no tapar fotografías ni contenido. */
+/* Móvil: control discreto, sin tapar las fichas ni el selector de idioma. */
 @media (max-width: 640px) {
   .player {
-    right: 8px;
-    bottom: calc(8px + env(safe-area-inset-bottom));
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     left: auto;
-
     border-radius: 999px;
   }
 
   .player:not(.expanded) {
-    width: 76px;
+    width: 64px;
   }
 
   .player:not(.expanded) .mainRow {
     display: grid;
-    grid-template-columns: 34px 30px;
-    gap: 4px;
+    grid-template-columns: 30px 24px;
+    gap: 2px;
 
-    min-height: 44px;
-    padding: 5px 4px;
+    min-height: 40px;
+    padding: 4px;
   }
 
   .player:not(.expanded) .trackButton,
@@ -371,25 +360,26 @@
   }
 
   .player:not(.expanded) .controls .playButton {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
   }
 
   .player:not(.expanded) .expandButton {
-    width: 28px;
-    height: 28px;
-
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
+    font-size: 15px;
   }
 
   .player.expanded {
     right: 8px;
-    bottom: calc(8px + env(safe-area-inset-bottom));
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
     left: 8px;
 
     width: auto;
     max-height: calc(
-      100dvh - 16px - env(safe-area-inset-bottom)
+      100dvh - 16px - env(safe-area-inset-bottom, 0px)
     );
     overflow-y: auto;
 
@@ -435,7 +425,7 @@
 
   .expandedContent {
     padding-bottom: calc(
-      12px + env(safe-area-inset-bottom)
+      12px + env(safe-area-inset-bottom, 0px)
     );
   }
 }
@@ -462,12 +452,12 @@
 /* Reproductor compacto en Inicio, Ropa y Colección. */
 :global([data-music-player-mode="compact"])
   .player:not(.expanded) {
-  right: 12px !important;
+  right: 10px !important;
   bottom: calc(
-    12px + env(safe-area-inset-bottom)
+    10px + env(safe-area-inset-bottom, 0px)
   ) !important;
 
-  width: 76px !important;
+  width: 64px !important;
   border-radius: 999px !important;
 }
 
@@ -475,11 +465,11 @@
   .player:not(.expanded)
   .mainRow {
   display: grid !important;
-  grid-template-columns: 34px 30px !important;
-  gap: 4px !important;
+  grid-template-columns: 30px 24px !important;
+  gap: 2px !important;
 
-  min-height: 44px !important;
-  padding: 5px 4px !important;
+  min-height: 40px !important;
+  padding: 4px !important;
 }
 
 :global([data-music-player-mode="compact"])
@@ -508,19 +498,25 @@
   display: none !important;
 }
 
-/*
-  Escritorio:
-  el reproductor compacto se mantiene pegado al borde.
-  Antes estaba a 96 px y se metía dentro del contenido
-  de las fichas de vehículos.
-*/
 @media (min-width: 641px) {
   :global([data-music-player-mode="compact"])
     .player:not(.expanded) {
     right: 18px !important;
     bottom: calc(
-      18px + env(safe-area-inset-bottom)
+      18px + env(safe-area-inset-bottom, 0px)
     ) !important;
+
+    width: 76px !important;
+  }
+
+  :global([data-music-player-mode="compact"])
+    .player:not(.expanded)
+    .mainRow {
+    grid-template-columns: 34px 30px !important;
+    gap: 4px !important;
+
+    min-height: 44px !important;
+    padding: 5px 4px !important;
   }
 }
 
@@ -531,5 +527,18 @@
   .expandButton,
   .trackList button {
     transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .player,
+  :global([data-music-player-mode="compact"]) .player:not(.expanded) {
+    position: fixed !important;
+    top: auto !important;
+    right: 12px !important;
+    bottom: 12px !important;
+    left: auto !important;
+    transform: none !important;
+    z-index: 2147483646 !important;
   }
 }
