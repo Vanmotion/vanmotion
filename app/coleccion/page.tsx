@@ -70,7 +70,7 @@ const translations = {
     hero: {
       location: "Madrid · España",
       label: "VANMOTION vehicles · collection",
-      titleFirst: "Vehículos reales.",
+      titleFirst: "Vehículos con historia.",
       titleSecond: "Movimiento propio.",
       caption: "Selección · historia · atención directa",
       inventory: "Inventario activo",
@@ -150,7 +150,7 @@ const translations = {
     hero: {
       location: "Madrid · Spain",
       label: "VANMOTION vehicles · collection",
-      titleFirst: "Real vehicles.",
+      titleFirst: "Vehicles with a story.",
       titleSecond: "Our own movement.",
       caption: "Selection · history · direct attention",
       inventory: "Active inventory",
