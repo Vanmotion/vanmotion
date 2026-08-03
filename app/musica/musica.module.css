@@ -120,7 +120,7 @@
 .heroShade {
   z-index: -2;
   background:
-    linear-gradient(90deg, rgba(5, 5, 5, 0.88) 0%, rgba(5, 5, 5, 0.55) 36%, rgba(5, 5, 5, 0.38) 100%),
+    linear-gradient(90deg, rgba(5, 5, 5, 0.88) 0%, rgba(5, 5, 5, 0.55)36%, rgba(5, 5, 5, 0.38) 100%),
     linear-gradient(180deg, rgba(5, 5, 5, 0.22) 0%, rgba(5, 5, 5, 0.04) 42%, rgba(5, 5, 5, 0.84) 100%);
 }
 
@@ -178,7 +178,14 @@
 }
 
 .heroCopy h1 span:last-child {
+  max-width: 820px;
+  margin-top: 0.12em;
   color: rgba(242, 239, 232, 0.64);
+  font-size: clamp(34px, 5.3vw, 76px);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .heroFoot {
@@ -665,8 +672,17 @@
   }
 
   .heroCopy h1 {
+    max-width: 100%;
     font-size: clamp(56px, 17vw, 86px);
     line-height: 0.86;
+  }
+
+  .heroCopy h1 span:last-child {
+    max-width: 100%;
+    margin-top: 0.16em;
+    font-size: clamp(32px, 10.8vw, 43px);
+    line-height: 0.94;
+    letter-spacing: -0.045em;
   }
 
   .heroFoot {

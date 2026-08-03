@@ -286,7 +286,7 @@
 .vehicleOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(5, 5, 5, 0.08), rgba(5, 5, 5, 0.1) 55%, rgba(5, 5, 5, 0.52));
+  background: linear-gradient(180deg, rgba(5, 5, 5, 0.08), rgba(5, 5, 5, 0.1) 55%,rgba(5, 5, 5, 0.52));
   pointer-events: none;
 }
 
@@ -405,12 +405,53 @@
   gap: 20px;
 }
 
-.vehicleBottom > strong {
-  max-width: 78%;
+.vehiclePriceBlock {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.previousPrice {
+  color: rgba(242, 239, 232, 0.42);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(242, 239, 232, 0.52);
+}
+
+.currentPriceRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.currentPriceRow > strong {
   font-size: clamp(22px, 2.8vw, 34px);
   font-weight: 560;
   line-height: 1.1;
   letter-spacing: -0.035em;
+}
+
+.offerBadge {
+  min-height: 25px;
+  padding: 6px 9px 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(242, 239, 232, 0.2);
+  background: var(--orange);
+  color: #090909;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .vehicleAction {

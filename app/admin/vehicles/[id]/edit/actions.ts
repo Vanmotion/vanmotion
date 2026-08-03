@@ -215,6 +215,53 @@ function requiredPrice(
   return amount.toFixed(2);
 }
 
+function optionalPrice(
+  formData: FormData,
+  field: string,
+): string | null {
+  const rawValue = optionalString(
+    formData,
+    field,
+  );
+
+  if (rawValue === null) {
+    return null;
+  }
+
+  let normalized = rawValue
+    .replace(/[€\s]/g, "")
+    .trim();
+
+  if (
+    normalized.includes(".") &&
+    normalized.includes(",")
+  ) {
+    normalized = normalized
+      .replace(/\./g, "")
+      .replace(",", ".");
+  } else if (normalized.includes(",")) {
+    normalized = normalized.replace(",", ".");
+  }
+
+  normalized = normalized.replace(
+    /[^\d.-]/g,
+    "",
+  );
+
+  const amount = Number(normalized);
+
+  if (
+    !Number.isFinite(amount) ||
+    amount < 0
+  ) {
+    throw new Error(
+      "El precio anterior debe ser un número válido.",
+    );
+  }
+
+  return amount.toFixed(2);
+}
+
 function checkboxValue(
   formData: FormData,
   field: string,
@@ -681,6 +728,11 @@ export async function updateVehicle(
     "price",
   );
 
+  const previousPrice = optionalPrice(
+    formData,
+    "previousPrice",
+  );
+
   const fuel = requiredString(
     formData,
     "fuel",
@@ -738,6 +790,15 @@ export async function updateVehicle(
   if (mileage < 0) {
     throw new Error(
       "El kilometraje no puede ser negativo.",
+    );
+  }
+
+  if (
+    previousPrice !== null &&
+    Number(previousPrice) <= Number(price)
+  ) {
+    throw new Error(
+      "El precio anterior debe ser mayor que el precio actual para activar la oferta.",
     );
   }
 
@@ -820,6 +881,7 @@ export async function updateVehicle(
       year,
       mileage,
       price,
+      previousPrice,
       fuel,
       transmission,
       drivetrain,

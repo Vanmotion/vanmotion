@@ -23,8 +23,8 @@ const translations = {
     },
     hero: {
       location: "Madrid · España",
-      titleFirst: "Sonido real.",
-      titleSecond: "Desde dentro.",
+      titleFirst: "Sonido propio.",
+      titleSecond: "En nuestra productora.",
       label: "VANMOTION music · sessions",
       caption: "Temas oficiales · estudio · lanzamientos",
     },
@@ -43,7 +43,7 @@ const translations = {
     philosophy: {
       eyebrow: "La idea",
       first: "Sin ruido.",
-      second: "Con verdad.",
+      second: "Con identidad.",
       rows: [
         {
           number: "01",
@@ -86,8 +86,8 @@ const translations = {
     },
     hero: {
       location: "Madrid · Spain",
-      titleFirst: "Real sound.",
-      titleSecond: "From within.",
+      titleFirst: "Our own sound.",
+      titleSecond: "In our production studio.",
       label: "VANMOTION music · sessions",
       caption: "Official tracks · studio · releases",
     },
@@ -106,7 +106,7 @@ const translations = {
     philosophy: {
       eyebrow: "The idea",
       first: "No noise.",
-      second: "Only truth.",
+      second: "With identity.",
       rows: [
         {
           number: "01",
@@ -170,17 +170,26 @@ export default async function MusicPage() {
 
         <nav
           className={styles.navigation}
-          aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
+          aria-label={
+            language === "es"
+              ? "Navegación principal"
+              : "Main navigation"
+          }
         >
           <Link href="/coleccion">{content.navigation.vehicles}</Link>
-          <Link href="/musica" aria-current="page">{content.navigation.music}</Link>
+          <Link href="/musica" aria-current="page">
+            {content.navigation.music}
+          </Link>
           <Link href="/ropa">{content.navigation.clothing}</Link>
           <Link href="/contacto">{content.navigation.contact}</Link>
         </nav>
       </header>
 
       <main>
-        <section className={styles.hero} aria-labelledby="music-hero-title">
+        <section
+          className={styles.hero}
+          aria-labelledby="music-hero-title"
+        >
           <div className={styles.heroMedia} aria-hidden="true">
             <Image
               src="/uploads/music-covers/vanmotion-1784378515490.png"
@@ -209,25 +218,38 @@ export default async function MusicPage() {
           <div className={styles.heroFoot}>
             <span>{content.hero.caption}</span>
             <div className={styles.heroLinks}>
-              <Link href="#reproductor">{content.navigation.music}</Link>
-              <Link href="/ropa">{content.navigation.clothing}</Link>
-              <Link href="/contacto">{content.navigation.contact}</Link>
+              <Link href="#reproductor">
+                {content.navigation.music}
+              </Link>
+              <Link href="/ropa">
+                {content.navigation.clothing}
+              </Link>
+              <Link href="/contacto">
+                {content.navigation.contact}
+              </Link>
             </div>
           </div>
         </section>
 
         <section className={styles.introSection}>
-          <p className={styles.sectionLabel}>{content.intro.eyebrow}</p>
+          <p className={styles.sectionLabel}>
+            {content.intro.eyebrow}
+          </p>
           <div className={styles.introGrid}>
             <h2>{content.intro.title}</h2>
             <p>{content.intro.text}</p>
           </div>
         </section>
 
-        <section className={styles.playerSection} id="reproductor">
+        <section
+          className={styles.playerSection}
+          id="reproductor"
+        >
           <div className={styles.playerIntro}>
             <div>
-              <p className={styles.sectionLabel}>{content.player.eyebrow}</p>
+              <p className={styles.sectionLabel}>
+                {content.player.eyebrow}
+              </p>
               <h2>{content.player.title}</h2>
             </div>
             <p>{content.player.text}</p>
@@ -238,7 +260,9 @@ export default async function MusicPage() {
 
         <section className={styles.manifestoSection}>
           <div className={styles.manifestoTitle}>
-            <p className={styles.sectionLabel}>{content.philosophy.eyebrow}</p>
+            <p className={styles.sectionLabel}>
+              {content.philosophy.eyebrow}
+            </p>
             <h2>
               <span>{content.philosophy.first}</span>
               <span>{content.philosophy.second}</span>
@@ -247,7 +271,10 @@ export default async function MusicPage() {
 
           <div className={styles.manifestoList}>
             {content.philosophy.rows.map((row) => (
-              <article key={row.number} className={styles.manifestoRow}>
+              <article
+                key={row.number}
+                className={styles.manifestoRow}
+              >
                 <span>{row.number}</span>
                 <h3>{row.title}</h3>
                 <p>{row.text}</p>
@@ -258,11 +285,16 @@ export default async function MusicPage() {
 
         <section className={styles.contactSection}>
           <div>
-            <p className={styles.contactLabel}>{content.contact.eyebrow}</p>
+            <p className={styles.contactLabel}>
+              {content.contact.eyebrow}
+            </p>
             <h2>{content.contact.title}</h2>
           </div>
 
-          <Link href="/contacto" className={styles.contactLink}>
+          <Link
+            href="/contacto"
+            className={styles.contactLink}
+          >
             {content.contact.action}
             <span aria-hidden="true">↗</span>
           </Link>
@@ -275,10 +307,23 @@ export default async function MusicPage() {
           <span>{content.footer.city}</span>
         </div>
 
-        <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaces legales" : "Legal links"}>
-          <Link href="/condiciones-compra">{content.footer.purchaseConditions}</Link>
-          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
-          <Link href="/privacidad">{content.footer.privacy}</Link>
+        <nav
+          className={styles.footerNav}
+          aria-label={
+            language === "es"
+              ? "Enlaces legales"
+              : "Legal links"
+          }
+        >
+          <Link href="/condiciones-compra">
+            {content.footer.purchaseConditions}
+          </Link>
+          <Link href="/desistimiento">
+            {content.footer.withdrawal}
+          </Link>
+          <Link href="/privacidad">
+            {content.footer.privacy}
+          </Link>
         </nav>
 
         <span className={styles.copyright}>© 2026</span>

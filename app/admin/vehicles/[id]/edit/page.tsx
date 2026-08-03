@@ -191,7 +191,7 @@ export default async function EditVehiclePage({
   return (
     <main className="min-h-screen bg-[#080808] text-white">
       <div className="mx-auto w-full max-w-7xl px-6 py-10 lg:px-10">
-        <header className="mb-10 flex flex-col gap-6 border-b border-white/10 pb-8 lg:flex-row lg:items-end lg:justify-between">
+        <header className="mb-10 flex flex-col gap-6 border-b border-white/10 pb-8lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/35">
               Administración · Vehículos
@@ -521,7 +521,7 @@ export default async function EditVehiclePage({
 
             <div className="grid gap-5 p-6 md:grid-cols-2">
               <Field
-                label="Precio en euros"
+                label="Precio actual en euros"
                 htmlFor="price"
                 required
               >
@@ -533,10 +533,38 @@ export default async function EditVehiclePage({
                   min="0"
                   step="0.01"
                   defaultValue={vehicle.price.toString()}
-                  placeholder="25000"
+                  placeholder="9950"
                   className={inputClasses}
                 />
               </Field>
+
+              <Field
+                label="Precio anterior (opcional)"
+                htmlFor="previousPrice"
+              >
+                <input
+                  id="previousPrice"
+                  name="previousPrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  defaultValue={vehicle.previousPrice?.toString() ?? ""}
+                  placeholder="10800"
+                  className={inputClasses}
+                />
+              </Field>
+
+              <div className="border border-[#d47728]/25 bg-[#d47728]/[0.07] px-5 py-4 md:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#e59a57]">
+                  Oferta automática
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-white/55">
+                  Cuando el precio anterior sea mayor que el precio actual,
+                  VANMOTION mostrará el precio anterior tachado y la etiqueta
+                  OFERTA. Déjalo vacío para publicar solamente el precio normal.
+                </p>
+              </div>
 
               <Field
                 label="Estado"
@@ -666,7 +694,7 @@ export default async function EditVehiclePage({
                           className="overflow-hidden border border-white/10 bg-black/30"
                         >
                           <div className="relative aspect-[4/3] bg-white/5">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            {/* eslint-disable-next-line @next/next/no-img-element*/}
                             <img
                               src={image.url}
                               alt={
@@ -677,7 +705,7 @@ export default async function EditVehiclePage({
                             />
 
                             {index === 0 && (
-                              <span className="absolute left-3 top-3 bg-white px-3 py-2 text-[9px] font-bold uppercase tracking-[0.12em] text-black">
+                              <span className="absolute left-3 top-3 bg-white px-3py-2 text-[9px] font-bold uppercase tracking-[0.12em] text-black">
                                 Portada
                               </span>
                             )}
@@ -715,7 +743,7 @@ export default async function EditVehiclePage({
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/admin/vehicles"
-                className="inline-flex min-h-12 items-center justify-center border border-white/15 px-6 text-xs font-semibold uppercase tracking-[0.14em] transition hover:bg-white/5"
+                className="inline-flex min-h-12 items-center justify-center borderborder-white/15 px-6 text-xs font-semibold uppercase tracking-[0.14em] transition hover:bg-white/5"
               >
                 Cancelar
               </Link>

@@ -86,6 +86,7 @@ const translations = {
       featured: "Destacado",
       reserved: "RESERVADO",
       sold: "VENDIDO",
+      offer: "OFERTA",
       emblem: "Emblema VANMOTION",
       notForSale: "No disponible para la venta",
       photoSoon: "Fotografía próximamente",
@@ -166,6 +167,7 @@ const translations = {
       featured: "Featured",
       reserved: "RESERVED",
       sold: "SOLD",
+      offer: "OFFER",
       emblem: "VANMOTION emblem",
       notForSale: "Not available for sale",
       photoSoon: "Photography coming soon",
@@ -381,6 +383,13 @@ export default async function CollectionPage() {
                 const price = isEmblem
                   ? content.card.notForSale
                   : formatPrice(vehicle.price, locale);
+                const hasOffer =
+                  !isEmblem &&
+                  vehicle.previousPrice !== null &&
+                  Number(vehicle.previousPrice) > Number(vehicle.price);
+                const previousPrice = hasOffer
+                  ? formatPrice(vehicle.previousPrice, locale)
+                  : null;
                 const primaryBadge = isEmblem
                   ? content.card.emblem
                   : vehicle.featured
@@ -460,8 +469,27 @@ export default async function CollectionPage() {
                         </div>
 
                         <div className={styles.vehicleBottom}>
-                          <strong>{price}</strong>
-                          <span className={styles.vehicleAction} aria-hidden="true">↗</span>
+                          <div className={styles.vehiclePriceBlock}>
+                            {previousPrice && (
+                              <span className={styles.previousPrice}>
+                                {previousPrice}
+                              </span>
+                            )}
+
+                            <div className={styles.currentPriceRow}>
+                              <strong>{price}</strong>
+
+                              {hasOffer && (
+                                <span className={styles.offerBadge}>
+                                  {content.card.offer}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <span className={styles.vehicleAction} aria-hidden="true">
+                            ↗
+                          </span>
                         </div>
                       </div>
                     </Link>
@@ -511,7 +539,7 @@ export default async function CollectionPage() {
           <span>{content.footer.city}</span>
         </div>
 
-        <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaces legales" : "Legal links"}>
+        <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaceslegales" : "Legal links"}>
           <Link href="/condiciones-compra">{content.footer.purchaseConditions}</Link>
           <Link href="/desistimiento">{content.footer.withdrawal}</Link>
           <Link href="/privacidad">{content.footer.privacy}</Link>
