@@ -120,7 +120,7 @@
   z-index: -2;
   background:
     linear-gradient(90deg, rgba(3, 3, 3, 0.84) 0%, rgba(3, 3, 3, 0.34) 44%, rgba(3, 3, 3, 0.08) 74%),
-    linear-gradient(180deg, rgba(3, 3, 3, 0.34) 0%, rgba(3, 3, 3, 0.03) 42%, rgba(3, 3, 3, 0.68) 100%);
+    linear-gradient(180deg, rgba(3, 3, 3, 0.34) 0%, rgba(3, 3, 3, 0.03) 42%, rgba(3, 3,3, 0.68) 100%);
 }
 
 .heroTopline,
@@ -919,7 +919,7 @@
   z-index: 1;
   background:
     linear-gradient(90deg, rgba(3, 3, 3, 0.9) 0%, rgba(3, 3, 3, 0.52) 38%, rgba(3, 3, 3, 0.12) 72%),
-    linear-gradient(180deg, rgba(3, 3, 3, 0.44) 0%, rgba(3, 3, 3, 0.06) 42%, rgba(3, 3, 3, 0.84) 100%);
+    linear-gradient(180deg, rgba(3, 3, 3, 0.44) 0%, rgba(3, 3, 3, 0.06) 42%, rgba(3, 3,3, 0.84) 100%);
 }
 
 .heroTopline,
@@ -1212,5 +1212,231 @@
 
   .collectionInformation .productSpecs dd {
     max-width: 58%;
+  }
+}
+
+/* =========================================================
+   FICHAS DE ROPA COMPACTAS · VANMOTION
+   Mantiene compra, tallas y stock; solo cambia presentación.
+   ========================================================= */
+
+.collectionGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+
+.collectionCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.collectionCard > a {
+  flex: 0 0 auto;
+}
+
+.collectionMedia {
+  min-height: 0;
+  aspect-ratio: 4 / 5;
+}
+
+.collectionMediaMeta {
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  gap: 8px;
+}
+
+.collectionMediaMeta span {
+  min-height: 25px;
+  padding: 0 8px;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+
+.collectionInformation {
+  flex: 1;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.collectionInformation > h3 {
+  margin-top: 10px;
+  font-size: clamp(22px, 1.8vw, 32px);
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+
+.collectionInformation > h4 {
+  margin-top: 8px;
+  font-size: 9px;
+  letter-spacing: 0.11em;
+}
+
+.collectionInformation .productDescription {
+  min-height: 0;
+  margin-top: 15px;
+  display: -webkit-box;
+  overflow: hidden;
+  color: rgba(9, 9, 9, 0.58);
+  font-size: 12px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.collectionInformation .productSpecs {
+  margin-top: 17px;
+}
+
+.collectionInformation .productSpecs > div {
+  padding: 9px 0;
+  gap: 10px;
+}
+
+.collectionInformation .productSpecs dt,
+.collectionInformation .productSpecs dd {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+.collectionInformation .productSpecs dd {
+  max-width: 58%;
+}
+
+.collectionInformation .purchasePanel {
+  margin-top: auto;
+  padding: 14px;
+}
+
+.collectionInformation .purchaseStatus {
+  gap: 7px;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.collectionInformation .purchaseStatus span {
+  width: 7px;
+  height: 7px;
+}
+
+.collectionInformation .priceRow {
+  margin-top: 15px;
+  padding: 12px 0;
+}
+
+.collectionInformation .priceRow span,
+.collectionInformation .quantityRow > span,
+.collectionInformation .sizeSelector legend {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.collectionInformation .priceRow strong {
+  font-size: 17px;
+}
+
+.collectionInformation .sizeSelector {
+  margin-top: 15px;
+}
+
+.collectionInformation .sizeSelector legend {
+  margin-bottom: 9px;
+}
+
+.collectionInformation .sizeSelector > div {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.collectionInformation .sizeSelector span {
+  min-height: 36px;
+  font-size: 10px;
+}
+
+.collectionInformation .quantityRow {
+  margin-top: 15px;
+  gap: 12px;
+}
+
+.collectionInformation .quantityControl {
+  grid-template-columns: 30px 38px 30px;
+}
+
+.collectionInformation .quantityControl button {
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+}
+
+.collectionInformation .quantityControl strong {
+  font-size: 11px;
+}
+
+.collectionInformation .termsAcceptance {
+  margin-top: 15px;
+  padding: 11px;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: 9px;
+}
+
+.collectionInformation .termsAcceptance input {
+  width: 16px;
+  height: 16px;
+}
+
+.collectionInformation .termsAcceptance label {
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.collectionInformation .purchaseButton {
+  min-height: 44px;
+  margin-top: 15px;
+  padding: 0 13px;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.collectionInformation .purchaseNote {
+  margin-top: 10px;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1180px) {
+  .collectionGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .collectionGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .collectionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .collectionMedia {
+    aspect-ratio: 4 / 5;
+  }
+
+  .collectionInformation > h3 {
+    font-size: clamp(28px, 9vw, 40px);
+  }
+
+  .collectionInformation .productDescription {
+    -webkit-line-clamp: 6;
+  }
+
+  .collectionInformation .sizeSelector > div {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }

@@ -240,6 +240,32 @@ function formatPrice(price: unknown, locale: string): string {
   }).format(Number(price));
 }
 
+function getVehicleDisplayPriority(vehicle: {
+  status: string;
+  price: unknown;
+  previousPrice: unknown;
+}): number {
+  const hasOffer =
+    vehicle.status !== "SOLD" &&
+    vehicle.status !== "EMBLEM" &&
+    vehicle.previousPrice !== null &&
+    Number(vehicle.previousPrice) > Number(vehicle.price);
+
+  if (hasOffer) {
+    return 0;
+  }
+
+  if (vehicle.status === "EMBLEM") {
+    return 2;
+  }
+
+  if (vehicle.status === "SOLD") {
+    return 3;
+  }
+
+  return 1;
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
   const content = translations[language];
@@ -275,6 +301,22 @@ export default async function CollectionPage() {
         take: 1,
       },
     },
+  });
+
+  const orderedVehicles = [...vehicles].sort((first, second) => {
+    const priorityDifference =
+      getVehicleDisplayPriority(first) -
+      getVehicleDisplayPriority(second);
+
+    if (priorityDifference !== 0) {
+      return priorityDifference;
+    }
+
+    if (first.featured !== second.featured) {
+      return first.featured ? -1 : 1;
+    }
+
+    return second.createdAt.getTime() - first.createdAt.getTime();
   });
 
   return (
@@ -358,7 +400,7 @@ export default async function CollectionPage() {
             </div>
           ) : (
             <div className={styles.vehicleGrid}>
-              {vehicles.map((vehicle, index) => {
+              {orderedVehicles.map((vehicle) => {
                 const vehicleName = [
                   vehicle.brand.name,
                   vehicle.model,
@@ -421,7 +463,7 @@ export default async function CollectionPage() {
                 return (
                   <article
                     key={vehicle.id}
-                    className={`${styles.vehicleCard} ${index === 0 ? styles.vehicleCardFeatured : ""}`}
+                    className={styles.vehicleCard}
                   >
                     <Link
                       href={`/coleccion/${vehicle.id}`}

@@ -234,8 +234,8 @@
 
 .vehicleGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .vehicleCard {
@@ -246,29 +246,18 @@
   color: var(--paper);
 }
 
-.vehicleCardFeatured {
-  grid-column: 1 / -1;
-}
-
 .vehicleLink {
   min-height: 100%;
   display: grid;
   grid-template-columns: 1fr;
 }
 
-.vehicleCardFeatured .vehicleLink {
-  grid-template-columns: minmax(0, 1.3fr) minmax(360px, 0.7fr);
-}
-
 .vehicleMedia {
   position: relative;
-  min-height: 420px;
+  min-height: 0;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   background: #151515;
-}
-
-.vehicleCardFeatured .vehicleMedia {
-  min-height: 610px;
 }
 
 .vehicleImage {
@@ -303,11 +292,11 @@
 
 .vehicleBadges {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 12px;
+  left: 12px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .vehicleBadges span,
@@ -323,7 +312,7 @@
 }
 
 .vehicleBadges span {
-  padding: 9px 11px;
+  padding: 7px 8px;
 }
 
 .imageNotice {
@@ -335,15 +324,11 @@
 }
 
 .vehicleContent {
-  padding: 28px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 16px;
   background: #0b0b0b;
-}
-
-.vehicleCardFeatured .vehicleContent {
-  padding: clamp(32px, 4vw, 54px);
 }
 
 .vehicleBrand {
@@ -356,26 +341,27 @@
 }
 
 .vehicleContent h2 {
-  margin: 14px 0 0;
-  font-size: clamp(38px, 4.4vw, 68px);
+  margin: 10px 0 0;
+  font-size: clamp(28px, 2.4vw, 42px);
   font-weight: 560;
   line-height: 0.92;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.05em;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
 }
 
 .vehicleVersion {
-  margin: 12px 0 0;
+  margin: 8px 0 0;
   color: rgba(242, 239, 232, 0.58);
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .vehicleDetails {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  padding: 22px 0;
+  gap: 10px 12px;
+  padding: 14px 0;
   border-top: 1px solid rgba(242, 239, 232, 0.12);
   border-bottom: 1px solid rgba(242, 239, 232, 0.12);
 }
@@ -391,9 +377,9 @@
 
 .detailItem strong {
   display: block;
-  margin-top: 8px;
+  margin-top: 6px;
   color: rgba(242, 239, 232, 0.84);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -402,7 +388,7 @@
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
 }
 
 .vehiclePriceBlock {
@@ -415,7 +401,7 @@
 
 .previousPrice {
   color: rgba(242, 239, 232, 0.42);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.01em;
@@ -432,15 +418,15 @@
 }
 
 .currentPriceRow > strong {
-  font-size: clamp(22px, 2.8vw, 34px);
+  font-size: clamp(20px, 1.8vw, 28px);
   font-weight: 560;
   line-height: 1.1;
   letter-spacing: -0.035em;
 }
 
 .offerBadge {
-  min-height: 25px;
-  padding: 6px 9px 5px;
+  min-height: 22px;
+  padding: 5px 7px 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -455,15 +441,15 @@
 }
 
 .vehicleAction {
-  width: 48px;
-  height: 48px;
+  width: 38px;
+  height: 38px;
   flex: 0 0 auto;
   display: grid;
   place-items: center;
   border: 1px solid rgba(242, 239, 232, 0.2);
   border-radius: 50%;
   color: var(--orange);
-  font-size: 20px;
+  font-size: 17px;
   transition: transform 180ms ease, background 180ms ease, color 180ms ease;
 }
 
@@ -702,27 +688,24 @@
   }
 }
 
+@media (max-width: 1180px) {
+  .vehicleGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1050px) {
-  .vehicleCardFeatured .vehicleLink,
   .introGrid,
   .manifestoSection,
   .manifestoRow,
   .footer {
     grid-template-columns: 1fr;
   }
-
-  .vehicleCardFeatured .vehicleMedia {
-    min-height: 520px;
-  }
 }
 
 @media (max-width: 820px) {
   .vehicleGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .vehicleCardFeatured {
-    grid-column: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .contactSection {
@@ -732,6 +715,16 @@
 
   .contactLink {
     width: min(100%, 360px);
+  }
+}
+
+@media (max-width: 620px) {
+  .vehicleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .vehicleMedia {
+    aspect-ratio: 16 / 10;
   }
 }
 
@@ -798,14 +791,12 @@
     font-size: 26px;
   }
 
-  .vehicleMedia,
-  .vehicleCardFeatured .vehicleMedia {
-    min-height: 420px;
+  .vehicleMedia {
+    min-height: 0;
   }
 
-  .vehicleContent,
-  .vehicleCardFeatured .vehicleContent {
-    padding: 24px;
+  .vehicleContent {
+    padding: 18px;
   }
 
   .manifestoTitle h2 {
