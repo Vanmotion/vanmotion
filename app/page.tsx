@@ -13,7 +13,7 @@ const translations = {
     metadata: {
       title: "Vanmotion",
       description:
-        "Vehículos, música y ropa. Trabajo real, identidad propia y movimiento.",
+        "Vehículos, música y ropa de VANMOTION en Madrid.",
     },
     navigation: {
       vehicles: "Vehículos",
@@ -83,7 +83,7 @@ const translations = {
     metadata: {
       title: "Vanmotion",
       description:
-        "Vehicles, music and clothing. Real work, original identity and movement.",
+        "VANMOTION vehicles, music and clothing in Madrid.",
     },
     navigation: {
       vehicles: "Vehicles",
@@ -275,13 +275,9 @@ export default async function Home() {
             <span>{content.hero.year}</span>
           </div>
 
-          <div className={styles.heroCopy}>
-            <p className={styles.heroKicker}>{content.hero.title}</p>
-            <h1 id="hero-title">
-              <span>{content.hero.statementFirst}</span>
-              <span>{content.hero.statementSecond}</span>
-            </h1>
-          </div>
+          <h1 id="hero-title" className={styles.srOnly}>
+            {content.hero.title}
+          </h1>
 
           <div className={styles.heroFoot}>
             <span>{content.hero.vehicle}</span>
@@ -311,10 +307,9 @@ export default async function Home() {
         </section>
 
         <section className={styles.paths} aria-labelledby="paths-title">
-          <div className={styles.pathsIntro}>
-            <p>{content.paths.eyebrow}</p>
-            <h2 id="paths-title">{content.paths.title}</h2>
-          </div>
+          <h2 id="paths-title" className={styles.srOnly}>
+            {language === "es" ? "Áreas" : "Areas"}
+          </h2>
 
           <div className={styles.pathGrid}>
             {content.paths.items.map((item) => (
@@ -337,7 +332,6 @@ export default async function Home() {
                 <div className={styles.pathNumber}>{item.number}</div>
 
                 <div className={styles.pathContent}>
-                  <p>{item.note}</p>
                   <h3>{item.title}</h3>
                   <span>
                     {item.action}
@@ -349,14 +343,13 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className={styles.contact} id="contacto">
-          <div>
-            <p>{content.contact.label}</p>
-            <h2>{content.contact.title}</h2>
-          </div>
-
+        <section
+          className={styles.contact}
+          id="contacto"
+          aria-label={content.navigation.contact}
+        >
           <Link href="/contacto" className={styles.contactLink}>
-            {content.contact.action}
+            <span>{content.navigation.contact}</span>
             <span aria-hidden="true">↗</span>
           </Link>
         </section>

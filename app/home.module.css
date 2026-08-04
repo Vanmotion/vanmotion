@@ -845,3 +845,125 @@
   }
 }
 /* VANMOTION HERO SOCIALS OVERRIDE END */
+
+/* VANMOTION · INICIO DIRECTO Y COMPACTO */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+}
+
+.hero {
+  min-height: 78svh;
+}
+
+.paths {
+  padding: 28px clamp(20px, 4vw, 58px) 32px;
+}
+
+.pathsIntro {
+  display: none;
+}
+
+.pathCard {
+  min-height: clamp(320px, 32vw, 430px);
+}
+
+.pathContent {
+  padding: 13px 14px 12px;
+}
+
+.pathContent p {
+  display: none;
+}
+
+.pathContent h3 {
+  font-size: clamp(30px, 3vw, 44px);
+}
+
+.pathContent > span {
+  margin-top: 11px;
+  padding-top: 9px;
+}
+
+.contact {
+  min-height: 0;
+  padding: 0 clamp(20px, 4vw, 58px);
+  display: block;
+}
+
+.contactLink {
+  width: 100%;
+  min-width: 0;
+  padding: 20px 0;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+@media (max-width: 980px) {
+  .pathCard {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero {
+    min-height: 420px;
+    height: 72svh;
+    max-height: 520px;
+  }
+
+  .heroTopline {
+    top: 76px;
+  }
+
+  .heroFoot {
+    bottom: 16px;
+  }
+
+  .paths {
+    padding: 12px 10px 14px;
+  }
+
+  .pathGrid {
+    gap: 10px;
+  }
+
+  .pathCard {
+    min-height: 300px;
+  }
+
+  .pathContent {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    padding: 11px 12px 10px;
+  }
+
+  .pathContent h3 {
+    font-size: 31px;
+  }
+
+  .pathContent > span {
+    margin-top: 9px;
+    padding-top: 8px;
+  }
+
+  .contact {
+    padding: 0 14px;
+  }
+
+  .contactLink {
+    padding: 16px 0;
+  }
+
+  .footer {
+    padding: 18px 20px 22px;
+  }
+}
