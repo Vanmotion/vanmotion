@@ -821,3 +821,93 @@
     transition: none;
   }
 }
+
+/* VANMOTION · VEHÍCULOS COMPACTOS EN MÓVIL */
+@media (max-width: 620px) {
+  .vehiclesSection {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .vehicleGrid {
+    gap: 8px;
+    align-items: start;
+  }
+
+  .vehicleCard {
+    align-self: start;
+  }
+
+  .vehicleMedia {
+    aspect-ratio: 16 / 9;
+  }
+
+  .vehicleBadges {
+    top: 7px;
+    left: 7px;
+    gap: 4px;
+  }
+
+  .vehicleBadges span {
+    padding: 5px 6px;
+    font-size: 6px;
+  }
+
+  .vehicleContent {
+    padding: 10px;
+    gap: 9px;
+  }
+
+  .vehicleBrand {
+    font-size: 7px;
+    letter-spacing: 0.16em;
+  }
+
+  .vehicleContent h2 {
+    margin-top: 5px;
+    font-size: clamp(19px, 5.2vw, 22px);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    overflow-wrap: normal;
+  }
+
+  .vehicleVersion {
+    margin-top: 5px;
+    font-size: 10px;
+    line-height: 1.3;
+  }
+
+  .vehicleDetails {
+    gap: 7px 8px;
+    padding: 9px 0;
+  }
+
+  .detailItem p {
+    font-size: 5.5px;
+    line-height: 1.2;
+    letter-spacing: 0.1em;
+  }
+
+  .detailItem strong {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .vehicleBottom {
+    gap: 7px;
+  }
+
+  .vehiclePriceBlock {
+    gap: 4px;
+  }
+
+  .previousPrice {
+    font-size: 9px;
+  }
+
+  .vehicleAction {
+    width: 31px;
+    height: 31px;
+    font-size: 14px;
+  }
+}
