@@ -1867,3 +1867,105 @@
     line-height: 1.4;
   }
 }
+
+/* VANMOTION · COMPRA MÓVIL AJUSTE FINAL */
+@media (max-width: 760px) {
+  .purchasePanel {
+    margin-top: 7px;
+    padding: 10px;
+  }
+
+  .purchaseStatus {
+    min-height: auto;
+    gap: 5px;
+    font-size: 6px;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+  }
+
+  .purchaseStatus span {
+    width: 5px;
+    height: 5px;
+  }
+
+  .priceRow {
+    margin-top: 7px;
+    padding: 7px 0;
+    gap: 10px;
+  }
+
+  .priceRow span,
+  .quantityRow > span,
+  .sizeSelector legend {
+    font-size: 6px;
+    letter-spacing: 0.08em;
+  }
+
+  .priceRow strong {
+    font-size: 17px;
+  }
+
+  .sizeSelector {
+    margin-top: 8px;
+  }
+
+  .sizeSelector legend {
+    margin-bottom: 5px;
+  }
+
+  .sizeSelector > div {
+    gap: 3px;
+  }
+
+  .sizeSelector span {
+    min-height: 27px;
+    padding: 2px 1px;
+  }
+
+  .sizeSelector strong {
+    font-size: 8px;
+  }
+
+  .sizeSelector small {
+    margin-top: 1px;
+    font-size: 4.5px;
+    line-height: 1;
+  }
+
+  .quantityRow {
+    margin-top: 8px;
+  }
+
+  .quantityControl {
+    grid-template-columns: 24px 28px 24px;
+  }
+
+  .quantityControl button {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+  }
+
+  .quantityControl strong {
+    font-size: 9px;
+  }
+
+  .termsAcceptance {
+    margin-top: 8px;
+    padding: 6px;
+  }
+
+  .purchaseButton {
+    min-height: 30px;
+    margin-top: 8px;
+    padding: 0 8px;
+    font-size: 6px;
+    letter-spacing: 0.08em;
+  }
+
+  .purchaseNote {
+    margin-top: 5px;
+    font-size: 6px;
+    line-height: 1.3;
+  }
+}
