@@ -8,241 +8,270 @@ export type DailyNewsItem = {
 
 type Language = "es" | "en";
 
-type UnknownRecord = Record<string, unknown>;
-
-type DailyNewsResult = [
-  DailyNewsItem | null,
-  DailyNewsItem | null,
-  DailyNewsItem | null,
-];
-
 const DAILY_SECONDS = 60 * 60 * 24;
 
-const SPANISH_QUERY = [
-  "(",
-  "(",
-  "coche OR coches OR automovil OR automocion OR vehiculo OR motor OR ",
-  "tesla OR ford OR volkswagen OR bmw OR mercedes OR audi OR porsche",
-  ")",
-  " OR ",
-  "(",
-  "musica OR cantante OR album OR concierto OR festival OR spotify OR ",
-  "rap OR trap",
-  ")",
-  " OR ",
-  "(",
-  "moda OR ropa OR disenador OR fashion OR streetwear OR textil OR pasarela",
-  ")",
-  ")",
-  " sourcelang:spanish sourcecountry:spain",
-].join("");
+const TOPICS = [
+  "vehicles",
+  "music",
+  "clothing",
+] as const;
 
-const ENGLISH_QUERY = [
-  "(",
-  "(",
-  "car OR cars OR automotive OR vehicle OR motor OR tesla OR ford OR ",
-  "volkswagen OR bmw OR mercedes OR audi OR porsche",
-  ")",
-  " OR ",
-  "(",
-  "music OR singer OR album OR concert OR festival OR spotify OR rap OR trap",
-  ")",
-  " OR ",
-  "(",
-  "fashion OR clothing OR designer OR streetwear OR textile OR runway",
-  ")",
-  ")",
-  " sourcelang:english",
-].join("");
+type Topic = (typeof TOPICS)[number];
 
-const VEHICLE_PATTERN =
-  /\b(coche|coches|automovil|automoviles|automocion|vehiculo|vehiculos|motor|motores|car|cars|automotive|vehicle|vehicles|tesla|ford|volkswagen|bmw|mercedes|audi|porsche|ferrari|renault|peugeot|citroen|seat|cupra)\b/i;
+type DailyNewsResult = [
+  DailyNewsItem,
+  DailyNewsItem,
+  DailyNewsItem,
+];
 
-const MUSIC_PATTERN =
-  /\b(musica|cantante|cantantes|album|disco|cancion|canciones|concierto|conciertos|festival|festivales|gira|artista|artistas|music|singer|song|concert|spotify|grammy|billboard|rap|trap)\b/i;
+const QUERIES: Record<
+  Language,
+  Record<Topic, string>
+> = {
+  es: {
+    vehicles:
+      "automoción coches vehículos industria automóvil",
+    music:
+      "música cantante álbum concierto festival",
+    clothing:
+      "moda ropa industria textil diseñadores",
+  },
+  en: {
+    vehicles:
+      "automotive cars vehicles motor industry",
+    music:
+      "music singer album concert festival",
+    clothing:
+      "fashion clothing textile industry designers",
+  },
+};
 
-const CLOTHING_PATTERN =
-  /\b(moda|ropa|disenador|disenadora|disenadores|coleccion|pasarela|textil|prenda|prendas|vestido|vestidos|costura|fashion|clothing|designer|streetwear|runway)\b/i;
+const FALLBACK_TITLES: Record<
+  Language,
+  Record<Topic, string>
+> = {
+  es: {
+    vehicles: "Últimas noticias de vehículos",
+    music: "Últimas noticias de música",
+    clothing: "Últimas noticias de moda y ropa",
+  },
+  en: {
+    vehicles: "Latest vehicle news",
+    music: "Latest music news",
+    clothing: "Latest fashion and clothing news",
+  },
+};
 
-function isRecord(value: unknown): value is UnknownRecord {
-  return typeof value === "object" && value !== null;
-}
-
-function cleanText(value: unknown): string {
-  return typeof value === "string"
-    ? value.replace(/\s+/g, " ").trim()
-    : "";
-}
-
-function normalizeText(value: string): string {
+function decodeXml(value: string): string {
   return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+    .replace(/&#(\d+);/g, (_, code: string) =>
+      String.fromCharCode(Number(code)),
+    )
+    .replace(/&#x([0-9a-f]+);/gi, (_, code: string) =>
+      String.fromCharCode(parseInt(code, 16)),
+    )
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-function getSource(
-  article: UnknownRecord,
-  articleUrl: string,
+function extractTag(
+  block: string,
+  tag: string,
 ): string {
-  const suppliedDomain = cleanText(article.domain)
-    .replace(/^www\./i, "");
+  const expression = new RegExp(
+    `<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`,
+    "i",
+  );
 
-  if (suppliedDomain) {
-    return suppliedDomain;
-  }
+  const match = block.match(expression);
 
-  try {
-    return new URL(articleUrl).hostname.replace(/^www\./i, "");
-  } catch {
-    return "";
-  }
+  return match ? decodeXml(match[1]) : "";
 }
 
-function toNewsItem(
-  article: UnknownRecord,
+function buildRssUrl(
+  topic: Topic,
   language: Language,
-): DailyNewsItem | null {
-  const title = cleanText(article.title);
-  const url = cleanText(article.url);
+  period: "1d" | "7d",
+): string {
+  const endpoint = new URL(
+    "https://news.google.com/rss/search",
+  );
 
-  if (
-    title.length < 15 ||
-    (!url.startsWith("https://") &&
-      !url.startsWith("http://"))
-  ) {
-    return null;
+  const query = `${QUERIES[language][topic]} when:${period}`;
+
+  endpoint.searchParams.set("q", query);
+
+  if (language === "es") {
+    endpoint.searchParams.set("hl", "es");
+    endpoint.searchParams.set("gl", "ES");
+    endpoint.searchParams.set("ceid", "ES:es");
+  } else {
+    endpoint.searchParams.set("hl", "en-US");
+    endpoint.searchParams.set("gl", "US");
+    endpoint.searchParams.set("ceid", "US:en");
   }
 
+  return endpoint.toString();
+}
+
+function buildSearchUrl(
+  topic: Topic,
+  language: Language,
+): string {
+  const endpoint = new URL(
+    "https://news.google.com/search",
+  );
+
+  endpoint.searchParams.set(
+    "q",
+    QUERIES[language][topic],
+  );
+
+  if (language === "es") {
+    endpoint.searchParams.set("hl", "es");
+    endpoint.searchParams.set("gl", "ES");
+    endpoint.searchParams.set("ceid", "ES:es");
+  } else {
+    endpoint.searchParams.set("hl", "en-US");
+    endpoint.searchParams.set("gl", "US");
+    endpoint.searchParams.set("ceid", "US:en");
+  }
+
+  return endpoint.toString();
+}
+
+function fallbackNews(
+  topic: Topic,
+  language: Language,
+): DailyNewsItem {
   return {
-    title,
-    source:
-      getSource(article, url) ||
-      (language === "es"
-        ? "Medio de comunicación"
-        : "News source"),
-    url,
+    title: FALLBACK_TITLES[language][topic],
+    source: "Google News",
+    url: buildSearchUrl(topic, language),
   };
 }
 
-function selectArticle(
-  articles: UnknownRecord[],
-  pattern: RegExp,
-  usedUrls: Set<string>,
-  language: Language,
+function parseFirstArticle(
+  xml: string,
 ): DailyNewsItem | null {
-  for (const article of articles) {
-    const newsItem = toNewsItem(article, language);
+  const items =
+    xml.match(/<item\b[\s\S]*?<\/item>/gi) ?? [];
 
-    if (!newsItem || usedUrls.has(newsItem.url)) {
+  for (const item of items) {
+    let title = extractTag(item, "title");
+    const url = extractTag(item, "link");
+    const source = extractTag(item, "source");
+
+    if (
+      title.length < 10 ||
+      (!url.startsWith("https://") &&
+        !url.startsWith("http://"))
+    ) {
       continue;
     }
 
-    const searchableText = normalizeText(
-      [
-        newsItem.title,
-        newsItem.source,
-        newsItem.url,
-      ].join(" "),
-    );
-
-    if (!pattern.test(searchableText)) {
-      continue;
+    if (
+      source &&
+      title.toLowerCase().endsWith(
+        ` - ${source.toLowerCase()}`,
+      )
+    ) {
+      title = title.slice(
+        0,
+        -(source.length + 3),
+      );
     }
 
-    usedUrls.add(newsItem.url);
-    return newsItem;
+    return {
+      title,
+      source: source || "Google News",
+      url,
+    };
   }
 
   return null;
 }
 
-async function fetchDailyNewsOnce(
+async function fetchTopic(
+  topic: Topic,
   language: Language,
-): Promise<DailyNewsResult> {
-  const endpoint = new URL(
-    "https://api.gdeltproject.org/api/v2/doc/doc",
-  );
-
-  endpoint.searchParams.set(
-    "query",
-    language === "es"
-      ? SPANISH_QUERY
-      : ENGLISH_QUERY,
-  );
-  endpoint.searchParams.set("mode", "artlist");
-  endpoint.searchParams.set("format", "json");
-  endpoint.searchParams.set("maxrecords", "100");
-  endpoint.searchParams.set("timespan", "7d");
-  endpoint.searchParams.set("sort", "hybridrel");
-
+  period: "1d" | "7d",
+): Promise<DailyNewsItem | null> {
   const controller = new AbortController();
+
   const timeout = setTimeout(
     () => controller.abort(),
-    10000,
+    9000,
   );
 
   try {
-    const response = await fetch(endpoint, {
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "VANMOTION/1.0",
+    const response = await fetch(
+      buildRssUrl(topic, language, period),
+      {
+        headers: {
+          Accept:
+            "application/rss+xml, application/xml, text/xml",
+          "User-Agent":
+            "Mozilla/5.0 VANMOTION/1.0",
+        },
+        cache: "no-store",
+        signal: controller.signal,
       },
-      cache: "no-store",
-      signal: controller.signal,
-    });
+    );
 
     if (!response.ok) {
-      throw new Error(
-        `GDELT respondió con estado ${response.status}`,
-      );
+      return null;
     }
 
-    const data = (await response.json()) as unknown;
-
-    if (!isRecord(data) || !Array.isArray(data.articles)) {
-      throw new Error(
-        "GDELT no devolvió una lista válida de artículos",
-      );
-    }
-
-    const articles = data.articles.filter(isRecord);
-
-    if (articles.length === 0) {
-      throw new Error("GDELT no devolvió artículos");
-    }
-
-    const usedUrls = new Set<string>();
-
-    return [
-      selectArticle(
-        articles,
-        VEHICLE_PATTERN,
-        usedUrls,
-        language,
-      ),
-      selectArticle(
-        articles,
-        MUSIC_PATTERN,
-        usedUrls,
-        language,
-      ),
-      selectArticle(
-        articles,
-        CLOTHING_PATTERN,
-        usedUrls,
-        language,
-      ),
-    ];
+    return parseFirstArticle(
+      await response.text(),
+    );
+  } catch {
+    return null;
   } finally {
     clearTimeout(timeout);
   }
 }
 
+async function fetchDailyNewsOnce(
+  language: Language,
+): Promise<DailyNewsResult> {
+  const results = await Promise.all(
+    TOPICS.map(async (topic) => {
+      const today = await fetchTopic(
+        topic,
+        language,
+        "1d",
+      );
+
+      if (today) {
+        return today;
+      }
+
+      const week = await fetchTopic(
+        topic,
+        language,
+        "7d",
+      );
+
+      return week ?? fallbackNews(topic, language);
+    }),
+  );
+
+  return results as DailyNewsResult;
+}
+
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-daily-news-v3"],
+  ["vanmotion-google-news-v1"],
   {
     revalidate: DAILY_SECONDS,
     tags: ["vanmotion-daily-news"],
@@ -262,6 +291,10 @@ export async function getDailyNews(
         : String(error),
     );
 
-    return [null, null, null];
+    return [
+      fallbackNews("vehicles", language),
+      fallbackNews("music", language),
+      fallbackNews("clothing", language),
+    ];
   }
 }

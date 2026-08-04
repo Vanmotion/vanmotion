@@ -78,7 +78,7 @@ export default function LanguageSwitcher({
         aria-pressed={currentLanguage === "es"}
         title="Español"
       >
-        <span aria-hidden="true">🇪🇸</span>
+        <span aria-hidden="true">ES</span>
       </button>
 
       <span aria-hidden="true">/</span>
@@ -96,7 +96,7 @@ export default function LanguageSwitcher({
         aria-pressed={currentLanguage === "en"}
         title="English"
       >
-        <span aria-hidden="true">🇬🇧</span>
+        <span aria-hidden="true">EN</span>
       </button>
     </div>
   );

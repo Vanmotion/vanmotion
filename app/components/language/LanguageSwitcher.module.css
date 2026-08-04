@@ -132,3 +132,47 @@
     left: 58px !important;
   }
 }
+
+/* VANMOTION · IDIOMA SUPERIOR DEFINITIVO */
+@media (max-width: 720px) {
+  .switcher,
+  .clothingPage {
+    position: fixed !important;
+    top: 78px !important;
+    right: 12px !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    width: auto !important;
+    min-width: 78px;
+    min-height: 32px;
+    padding: 0 8px;
+
+    gap: 4px;
+    border-radius: 3px;
+
+    background: rgba(8, 8, 8, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+
+    transform: none !important;
+  }
+
+  .switcher button {
+    min-width: 25px;
+    height: 30px;
+
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+  }
+
+  .switcher .active {
+    color: #ffffff;
+  }
+
+  .switcher > span {
+    color: rgba(255, 255, 255, 0.28);
+    font-size: 8px;
+  }
+}
