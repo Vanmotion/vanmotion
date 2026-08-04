@@ -706,3 +706,224 @@
     transition: none;
   }
 }
+
+/* VANMOTION · FICHA VEHÍCULO COMPACTA EN MÓVIL */
+@media (max-width: 720px) {
+  .hero {
+    min-height: 390px;
+    padding: 88px 14px 24px;
+  }
+
+  .heroTopline {
+    padding-right: 0;
+    font-size: 8px;
+    letter-spacing: 0.12em;
+  }
+
+  .backLink {
+    font-size: 8px;
+    letter-spacing: 0.12em;
+  }
+
+  .heroCopy p {
+    font-size: 8px;
+    letter-spacing: 0.16em;
+  }
+
+  .heroCopy h1 {
+    max-width: 100%;
+    margin-top: 8px;
+    font-size: clamp(36px, 11.5vw, 46px);
+    line-height: 0.86;
+    letter-spacing: -0.055em;
+    overflow-wrap: anywhere;
+  }
+
+  .heroCopy > span {
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  .heroMeta {
+    gap: 10px 16px;
+    padding-top: 10px;
+    font-size: 8px;
+    letter-spacing: 0.12em;
+  }
+
+  .productSection {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .mainImage {
+    aspect-ratio: 16 / 9;
+  }
+
+  .thumbnailGrid {
+    margin-top: 6px;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 78px;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .thumbnailGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .thumbnailButton {
+    scroll-snap-align: start;
+  }
+
+  .thumbnailImage {
+    aspect-ratio: 4 / 3;
+  }
+
+  .thumbnailButton span {
+    right: 4px;
+    bottom: 4px;
+    padding: 3px 4px;
+    font-size: 6px;
+  }
+
+  .galleryArrow {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .infoPanel {
+    padding: 14px;
+  }
+
+  .infoHeading h2 {
+    margin-top: 6px;
+    font-size: clamp(32px, 9.5vw, 40px);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    overflow-wrap: anywhere;
+  }
+
+  .infoHeading > span {
+    margin-top: 7px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .priceBlock {
+    margin-top: 14px;
+    padding: 12px 0;
+  }
+
+  .priceBlock strong {
+    margin-top: 5px;
+    font-size: 28px;
+  }
+
+  .detailItem {
+    padding: 10px 0;
+  }
+
+  .detailItem:nth-child(odd) {
+    padding-right: 8px;
+  }
+
+  .detailItem:nth-child(even) {
+    padding-left: 8px;
+  }
+
+  .detailItem span,
+  .field label,
+  .messageField label {
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+
+  .detailItem strong {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .contactForm {
+    margin-top: 14px;
+    padding-top: 14px;
+  }
+
+  .formHeading h3 {
+    margin-top: 6px;
+    font-size: 24px;
+  }
+
+  .formHeading > span {
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .formGrid {
+    margin-top: 12px;
+    gap: 8px;
+  }
+
+  .field input,
+  .messageField textarea {
+    margin-top: 4px;
+    padding: 8px 0;
+    font-size: 13px;
+  }
+
+  .messageField textarea {
+    height: 72px;
+    min-height: 72px;
+  }
+
+  .privacyText {
+    margin-top: 10px;
+    font-size: 8px;
+    line-height: 1.45;
+  }
+
+  .submitButton {
+    min-height: 40px;
+    margin-top: 10px;
+    padding: 0 12px;
+    font-size: 8px;
+    letter-spacing: 0.12em;
+  }
+
+  .descriptionSection {
+    padding: 34px 14px;
+    gap: 20px;
+  }
+
+  .descriptionTitle h2 {
+    margin-top: 8px;
+    font-size: clamp(36px, 10vw, 46px);
+    line-height: 0.88;
+  }
+
+  .descriptionCopy h3 {
+    margin-top: 14px;
+    font-size: 22px;
+  }
+
+  .descriptionCopy p {
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .footer {
+    padding: 20px 14px;
+    gap: 14px;
+  }
+}
