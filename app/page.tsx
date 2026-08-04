@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentLanguage } from "./lib/language";
+import { getDailyNews } from "./lib/daily-news";
 import { prisma } from "./lib/prisma";
 import styles from "./home.module.css";
 
@@ -189,13 +190,18 @@ export default async function Home() {
   const language = await getCurrentLanguage();
   const content = translations[language];
 
-  const settings = await prisma.siteSettings.findFirst({
-    select: {
-      instagram: true,
-      youtube: true,
-      tiktok: true,
-    },
-  });
+  const [settings, dailyNews] = await Promise.all([
+    prisma.siteSettings.findFirst({
+      select: {
+        instagram: true,
+        youtube: true,
+        tiktok: true,
+      },
+    }),
+    getDailyNews(language),
+  ]);
+
+  // VANMOTION_DAILY_NEWS_V1
 
   const socialLinks = [
     {
@@ -312,7 +318,7 @@ export default async function Home() {
           </h2>
 
           <div className={styles.pathGrid}>
-            {content.paths.items.map((item) => (
+            {content.paths.items.map((item, index) => (
               <Link
                 href={item.href}
                 className={styles.pathCard}
@@ -333,6 +339,17 @@ export default async function Home() {
 
                 <div className={styles.pathContent}>
                   <h3>{item.title}</h3>
+
+                {dailyNews[index] ? (
+                  <div className={styles.pathNews}>
+                    <span>
+                      {language === "es" ? "Actualidad" : "Latest"}
+                    </span>
+
+                    <p>{dailyNews[index]?.title}</p>
+                    <small>{dailyNews[index]?.source}</small>
+                  </div>
+                ) : null}
                   <span>
                     {item.action}
                     <b aria-hidden="true">↗</b>
