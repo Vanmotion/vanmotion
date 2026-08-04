@@ -950,3 +950,172 @@
     gap: 12px;
   }
 }
+
+/* VANMOTION · MÚSICA COMPACTA EN ESCRITORIO */
+@media (min-width: 981px) {
+  .hero {
+    min-height: clamp(500px, 72svh, 680px);
+  }
+
+  .heroTopline {
+    top: 92px;
+  }
+
+  .heroCopy {
+    bottom: 112px;
+  }
+
+  .heroCopy h1 {
+    margin-top: 14px;
+    font-size: clamp(68px, 8vw, 112px);
+  }
+
+  .heroCopy h1 span:last-child {
+    font-size: clamp(34px, 4.4vw, 62px);
+  }
+
+  .heroFoot {
+    bottom: 20px;
+    padding-top: 13px;
+  }
+
+  .introSection,
+  .playerSection {
+    padding: 50px clamp(20px, 4vw, 58px);
+  }
+
+  .introGrid,
+  .playerIntro {
+    gap: 22px;
+  }
+
+  .introGrid h2,
+  .playerIntro h2 {
+    margin-top: 10px;
+    font-size: clamp(42px, 4.6vw, 70px);
+  }
+
+  .introGrid p,
+  .playerIntro p {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .playerSection {
+    padding-top: 0;
+    padding-bottom: 50px;
+  }
+
+  .playerIntro {
+    padding-bottom: 26px;
+  }
+
+  .player {
+    padding: 24px;
+  }
+
+  .nowPlaying {
+    grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+    gap: 28px;
+    align-items: center;
+  }
+
+  .nowPlaying img {
+    width: 100%;
+    height: auto;
+    max-height: 420px;
+    object-fit: cover;
+  }
+
+  .trackInformation h2 {
+    margin-top: 10px;
+    font-size: clamp(34px, 3.4vw, 52px);
+  }
+
+  .trackInformation > span {
+    margin-top: 8px;
+    font-size: 13px;
+  }
+
+  .playerControls {
+    margin-top: 22px;
+  }
+
+  .playerControls button {
+    width: 46px;
+    height: 46px;
+  }
+
+  .playerControls .playButton {
+    width: 60px;
+    height: 60px;
+  }
+
+  .progressSection {
+    margin-top: 20px;
+  }
+
+  .trackList {
+    margin-top: 24px;
+  }
+
+  .trackList button {
+    min-height: 64px;
+    padding: 0 14px;
+    grid-template-columns: 44px 1fr auto;
+    gap: 14px;
+  }
+
+  .trackName strong {
+    font-size: 14px;
+  }
+
+  .trackName small {
+    margin-top: 4px;
+    font-size: 9px;
+  }
+
+  .manifestoSection {
+    padding: 48px clamp(20px, 4vw, 58px);
+    gap: 36px;
+  }
+
+  .manifestoTitle h2 {
+    margin-top: 12px;
+    font-size: clamp(62px, 6vw, 92px);
+  }
+
+  .manifestoRow {
+    padding: 18px 0;
+    grid-template-columns: 42px minmax(170px, 230px) 1fr;
+    gap: 14px;
+  }
+
+  .manifestoRow h3 {
+    font-size: clamp(25px, 2.5vw, 34px);
+  }
+
+  .manifestoRow p {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .contactSection {
+    min-height: 220px;
+    padding: 44px clamp(20px, 4vw, 58px);
+  }
+
+  .contactSection h2 {
+    margin-top: 8px;
+    font-size: clamp(68px, 8vw, 108px);
+  }
+
+  .contactLink {
+    padding: 14px 0;
+  }
+
+  .footer {
+    padding-top: 20px;
+    padding-bottom: 22px;
+  }
+}

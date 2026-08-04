@@ -48,7 +48,7 @@ const translations = {
         {
           number: "01",
           title: "Producción propia",
-          text: "Las canciones salen del estudio, no de una imagen vacía.",
+          text: "Cada tema nace del trabajo real en el estudio y se construye con tiempo, intención y verdad.",
         },
         {
           number: "02",
@@ -111,7 +111,7 @@ const translations = {
         {
           number: "01",
           title: "Original production",
-          text: "The songs come out of the studio, not from an empty image.",
+          text: "Every track begins with real studio work and is built with time, intention and honesty.",
         },
         {
           number: "02",
