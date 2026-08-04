@@ -254,22 +254,22 @@ export default async function LegalNoticePage() {
             {
               href: "/privacidad",
               label: "Privacidad",
-              note: "Cómo tratamos y protegemos tus datos.",
+              note: "Usamos solo los datos necesarios para responder consultas, gestionar pedidos y mantener la seguridad del servicio. Puedes ejercer tus derechos mediante el correo indicado.",
             },
             {
               href: "/cookies",
               label: "Cookies",
-              note: "Información sobre el uso de cookies.",
+              note: "La navegación pública utiliza únicamente cookies técnicas necesarias. Los servicios externos aplican sus propias políticas cuando se abren.",
             },
             {
               href: "/condiciones-compra",
               label: "Compra",
-              note: "Condiciones aplicables a los pedidos.",
+              note: "Antes del pago se muestran el producto, el precio y las condiciones. El cobro se realiza mediante Stripe y VANMOTION no guarda el número completo de la tarjeta.",
             },
             {
               href: "/desistimiento",
               label: "Desistimiento",
-              note: "Plazos y procedimiento de devolución.",
+              note: "Las solicitudes de devolución se comunican mediante el formulario de desistimiento y se tramitan conforme a las condiciones de compra.",
             },
           ],
           contact: "Contacto",
@@ -290,22 +290,22 @@ export default async function LegalNoticePage() {
             {
               href: "/privacidad",
               label: "Privacy",
-              note: "How we process and protect your data.",
+              note: "We use only the data needed to answer enquiries, manage orders and maintain service security. You may exercise your rights through the email shown.",
             },
             {
               href: "/cookies",
               label: "Cookies",
-              note: "Information about the use of cookies.",
+              note: "Public browsing uses only necessary technical cookies. External services apply their own policies when opened.",
             },
             {
               href: "/condiciones-compra",
               label: "Purchases",
-              note: "Terms applicable to orders.",
+              note: "The product, price and terms are shown before payment. Payment is processed through Stripe and VANMOTION does not store the full card number.",
             },
             {
               href: "/desistimiento",
               label: "Withdrawal",
-              note: "Return periods and procedure.",
+              note: "Return requests are submitted through the withdrawal form and processed according to the purchase conditions.",
             },
           ],
           contact: "Contact",
@@ -392,23 +392,21 @@ export default async function LegalNoticePage() {
               </dl>
             </section>
 
-            <nav
+            <section
               className={styles.compactDocuments}
               aria-label={compact.documentsLabel}
             >
               {compact.documents.map((document, index) => (
-                <Link key={document.href} href={document.href}>
+                <article key={document.label}>
                   <span>{String(index + 1).padStart(2, "0")}</span>
 
                   <div>
                     <strong>{document.label}</strong>
                     <small>{document.note}</small>
                   </div>
-
-                  <b aria-hidden="true">↗</b>
-                </Link>
+                </article>
               ))}
-            </nav>
+            </section>
           </div>
 
           <div className={styles.compactActions}>
