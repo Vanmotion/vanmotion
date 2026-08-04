@@ -547,30 +547,24 @@ export default async function ContactoPage({
           </section>
         </section>
 
-        <section className={styles.pathsSection}>
-          <div>
-            <p>{content.paths.eyebrow}</p>
-            <h2>{content.paths.title}</h2>
-          </div>
-
-          <nav className={styles.pathLinks}>
-            <Link href="/coleccion">
-              <span>01</span>
-              <strong>{content.paths.vehicles}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-            <Link href="/musica">
-              <span>02</span>
-              <strong>{content.paths.music}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-            <Link href="/ropa">
-              <span>03</span>
-              <strong>{content.paths.clothing}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-          </nav>
-        </section>
+        <nav
+          className={styles.pathStrip}
+          aria-label={
+            language === "es"
+              ? "Áreas de VANMOTION"
+              : "VANMOTION areas"
+          }
+        >
+          <Link href="/coleccion">
+            {content.navigation.vehicles}
+          </Link>
+          <Link href="/musica">
+            {content.navigation.music}
+          </Link>
+          <Link href="/ropa">
+            {content.navigation.clothing}
+          </Link>
+        </nav>
       </main>
 
       <footer className={styles.footer}>

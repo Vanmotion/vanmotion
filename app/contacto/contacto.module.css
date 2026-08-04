@@ -1188,3 +1188,45 @@
     font-size: clamp(39px, 11.8vw, 47px);
   }
 }
+
+/* VANMOTION · ENLACES FINALES MÍNIMOS */
+.pathStrip {
+  min-height: 0;
+  padding: 14px clamp(20px, 4vw, 58px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(22px, 5vw, 58px);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #090909;
+}
+
+.pathStrip a {
+  color: rgba(255, 255, 255, 0.68);
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+
+  transition: color 160ms ease;
+}
+
+.pathStrip a:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 720px) {
+  .pathStrip {
+    padding: 13px 18px;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .pathStrip a {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+  }
+}
