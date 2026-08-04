@@ -11,23 +11,29 @@ import "./globals.css";
 
 export const dynamic = "force-dynamic";
 
+const siteUrl = "https://www.vanmotion.es";
+
 const metadataTranslations = {
   es: {
+    title: "VANMOTION | Vehículos, ropa y música en Madrid",
     description:
-      "Vehículos, música, diseño y proyectos con identidad. Trabajo real y movimiento real.",
+      "VANMOTION une vehículos seleccionados, ropa urbana y música con identidad propia desde Madrid. Trabajo real, humildad y movimiento.",
     openGraphDescription:
-      "Vehículos, música, diseño y proyectos con identidad.",
+      "Vehículos seleccionados, ropa urbana y música con identidad propia desde Madrid.",
     locale: "es_ES",
     alternateLocale: ["en_US"],
+    languageTag: "es-ES",
   },
 
   en: {
+    title: "VANMOTION | Vehicles, clothing and music from Madrid",
     description:
-      "Vehicles, music, design and projects with identity. Real work and real movement.",
+      "VANMOTION brings together selected vehicles, urban clothing and original music from Madrid. Real work, humility and movement.",
     openGraphDescription:
-      "Vehicles, music, design and projects with identity.",
+      "Selected vehicles, urban clothing and original music with identity from Madrid.",
     locale: "en_US",
     alternateLocale: ["es_ES"],
+    languageTag: "en-US",
   },
 } as const;
 
@@ -36,41 +42,63 @@ export async function generateMetadata(): Promise<Metadata> {
   const content = metadataTranslations[language];
 
   return {
+    metadataBase: new URL(siteUrl),
+
+    applicationName: "VANMOTION",
+
     title: {
-      default: "VANMOTION",
+      default: content.title,
       template: "%s | VANMOTION",
     },
 
     description: content.description,
 
-    keywords: [
-      "VANMOTION",
-      "vehículos",
-      "vehicles",
-      "música",
-      "music",
-      "diseño",
-      "design",
-      "Madrid",
-      "Mejorada del Campo",
-    ],
-
     authors: [
       {
         name: "VANMOTION",
+        url: siteUrl,
       },
     ],
 
     creator: "VANMOTION",
     publisher: "VANMOTION",
 
+    category: "Automoción, moda y música",
+
+    referrer: "origin-when-cross-origin",
+
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        noimageindex: false,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
+
     openGraph: {
-      title: "VANMOTION",
+      title: content.title,
       description: content.openGraphDescription,
       type: "website",
       locale: content.locale,
       alternateLocale: [...content.alternateLocale],
       siteName: "VANMOTION",
+    },
+
+    twitter: {
+      card: "summary",
+      title: content.title,
+      description: content.openGraphDescription,
     },
   };
 }
@@ -83,10 +111,33 @@ export default async function RootLayout({
   children,
 }: RootLayoutProps) {
   const language = await getCurrentLanguage();
+  const content = metadataTranslations[language];
+
+  const websiteStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "VANMOTION",
+    alternateName: "Vanmotion",
+    url: siteUrl,
+    inLanguage: content.languageTag,
+    description: content.description,
+    publisher: {
+      "@type": "Organization",
+      name: "VANMOTION",
+      url: siteUrl,
+    },
+  };
 
   return (
     <html lang={language}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteStructuredData),
+          }}
+        />
+
         {children}
 
         <LanguageSwitcher currentLanguage={language} />
