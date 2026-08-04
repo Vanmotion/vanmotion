@@ -59,9 +59,9 @@ const transmissionLabels: Record<Language, Record<string, string>> = {
 
 const translations = {
   es: {
-    metadataTitle: "Colección de vehículos",
+    metadataTitle: "Vehículos y furgonetas de ocasión en Madrid",
     metadataDescription:
-      "Vehículos seleccionados por VANMOTION. Información clara, fotografías reales y atención directa.",
+      "Vehículos y furgonetas de ocasión seleccionados por VANMOTION en Madrid. Datos claros, fotografías reales y atención directa.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",
@@ -140,9 +140,9 @@ const translations = {
     },
   },
   en: {
-    metadataTitle: "Vehicle collection",
+    metadataTitle: "Used vehicles and vans in Madrid",
     metadataDescription:
-      "Vehicles selected by VANMOTION. Clear information, real photographs and direct attention.",
+      "Selected used vehicles and vans from VANMOTION in Madrid. Clear information, real photographs and direct assistance.",
     navigation: {
       vehicles: "Vehicles",
       music: "Music",
@@ -274,6 +274,15 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: content.metadataTitle,
     description: content.metadataDescription,
+    alternates: {
+      canonical: "/coleccion",
+    },
+    openGraph: {
+      title: content.metadataTitle,
+      description: content.metadataDescription,
+      type: "website",
+      url: "/coleccion",
+    },
   };
 }
 
@@ -365,7 +374,7 @@ export default async function CollectionPage() {
             </div>
 
             <h1 id="collection-hero-title" className={styles.srOnly}>
-              {content.navigation.vehicles}
+              {content.metadataTitle}
             </h1>
 
             <a
