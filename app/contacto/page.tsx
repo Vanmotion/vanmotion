@@ -44,7 +44,7 @@ const translations = {
     },
     intro: {
       eyebrow: "Un punto de contacto",
-      title: "Una conversación real.",
+      title: "Una conversación cercana.",
       text:
         "Cuéntanos qué necesitas. Las consultas se revisan directamente desde VANMOTION y respondemos de forma personal.",
     },
