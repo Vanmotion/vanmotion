@@ -323,3 +323,111 @@
     padding: 20px;
   }
 }
+
+/* VANMOTION · FICHA INDIVIDUAL COMPACTA EN MÓVIL */
+@media (max-width: 760px) {
+  .product {
+    width: min(94vw, 680px);
+    padding-top: 20px;
+  }
+
+  .topline {
+    gap: 8px;
+  }
+
+  .productHeading {
+    padding-top: 22px;
+    gap: 12px;
+  }
+
+  .productHeading h1 {
+    font-size: clamp(30px, 10vw, 44px);
+    line-height: 0.9;
+  }
+
+  .productHeading h2 {
+    margin-top: 9px;
+    font-size: 0.68rem;
+  }
+
+  .productHeading > strong {
+    font-size: 1.45rem;
+  }
+
+  .layout {
+    gap: 14px;
+  }
+
+  .gallery {
+    width: 100%;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 86%;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 7px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .gallery::-webkit-scrollbar {
+    display: none;
+  }
+
+  .galleryItem {
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .imageWrap {
+    aspect-ratio: 1 / 1;
+  }
+
+  .galleryItem > span {
+    margin-top: 6px;
+    font-size: 0.56rem;
+  }
+
+  .information {
+    padding: 14px;
+  }
+
+  .description {
+    padding-bottom: 12px;
+  }
+
+  .description p {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .specifications {
+    padding: 4px 0 12px;
+  }
+
+  .specifications > div {
+    padding: 9px 0;
+    gap: 10px;
+  }
+
+  .specifications dt {
+    font-size: 0.54rem;
+  }
+
+  .specifications dd {
+    font-size: 0.66rem;
+    line-height: 1.35;
+  }
+
+  .footer {
+    min-height: 86px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+}
