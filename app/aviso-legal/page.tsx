@@ -243,7 +243,7 @@ export default async function LegalNoticePage() {
           eyebrow: "Información esencial",
           title: "Legal.",
           introduction:
-            "Lo imprescindible, claro y accesible. El contenido completo permanece disponible en cada documento.",
+            "Lo imprescindible, claro y accesible, reunido en una sola página.",
           identity: "Identificación",
           owner: "Titular",
           taxId: "NIF",
@@ -279,7 +279,7 @@ export default async function LegalNoticePage() {
           eyebrow: "Essential information",
           title: "Legal.",
           introduction:
-            "The essentials, clear and accessible. Full information remains available in each document.",
+            "The essentials, clear and accessible, brought together on one page.",
           identity: "Identification",
           owner: "Owner",
           taxId: "Tax ID",
