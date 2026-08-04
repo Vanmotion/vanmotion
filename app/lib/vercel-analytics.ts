@@ -132,13 +132,43 @@ async function queryVercel<T>(
     cache: "no-store",
   });
 
+  const responseBody = await response.text();
+
   if (!response.ok) {
     throw new Error(
-      `Vercel Analytics respondió ${response.status}.`,
+      `Vercel Analytics respondió ${response.status}: ${responseBody.slice(
+        0,
+        500,
+      )}`,
     );
   }
 
-  return (await response.json()) as T;
+  return JSON.parse(responseBody) as T;
+}
+
+async function verifyTeamAccess(
+  token: string,
+): Promise<void> {
+  const response = await fetch(
+    `https://api.vercel.com/v2/teams/${TEAM_ID}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    },
+  );
+
+  const responseBody = await response.text();
+
+  if (!response.ok) {
+    throw new Error(
+      `El token no puede acceder al equipo VANMOTION. Vercel respondió ${response.status}: ${responseBody.slice(
+        0,
+        500,
+      )}`,
+    );
+  }
 }
 
 function countryFlag(countryCode: string): string {
@@ -232,6 +262,8 @@ export async function getVercelAnalytics(): Promise<VercelAnalytics> {
   }
 
   try {
+    await verifyTeamAccess(token);
+
     const count = await queryVercel<CountResponse>(
       "visits/count",
       token,
