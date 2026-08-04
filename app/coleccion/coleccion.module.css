@@ -839,7 +839,7 @@
   }
 
   .vehicleMedia {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 2 / 1;
   }
 
   .vehicleBadges {
@@ -854,8 +854,8 @@
   }
 
   .vehicleContent {
-    padding: 10px;
-    gap: 9px;
+    padding: 8px;
+    gap: 5px;
   }
 
   .vehicleBrand {
@@ -879,7 +879,7 @@
 
   .vehicleDetails {
     gap: 7px 8px;
-    padding: 9px 0;
+    padding: 7px 0;
   }
 
   .detailItem p {
@@ -906,8 +906,8 @@
   }
 
   .vehicleAction {
-    width: 31px;
-    height: 31px;
+    width: 28px;
+    height: 28px;
     font-size: 14px;
   }
 }
