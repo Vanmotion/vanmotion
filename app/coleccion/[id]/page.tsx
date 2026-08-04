@@ -13,6 +13,16 @@ import styles from "./vehicle.module.css";
 
 export const dynamic = "force-dynamic";
 
+const SITE_URL = "https://www.vanmotion.es";
+
+function absoluteUrl(value: string): string {
+  try {
+    return new URL(value, SITE_URL).toString();
+  } catch {
+    return SITE_URL;
+  }
+}
+
 const fuelLabels: Record<Language, Record<string, string>> = {
   es: {
     Diesel: "Diésel",
@@ -209,7 +219,7 @@ const translations = {
       titleSecond: "Sin esconder.",
       heading: "Descripción del vehículo",
       fallback:
-        "Vehículo seleccionado por VANMOTION. Contacta con nosotros para recibirmás información.",
+        "Vehículo seleccionado por VANMOTION. Contacta con nosotros para recibir más información.",
     },
     footer: {
       city: "Madrid · España",
@@ -280,7 +290,7 @@ const translations = {
       badge: "VANMOTION icon",
       title: "Part of our story.",
       description:
-        "This unit represents the work, journey and identity of VANMOTION. It isshown as part of the brand and is not available for sale.",
+        "This unit represents the work, journey and identity of VANMOTION. It is shown as part of the brand and is not available for sale.",
       notForSale: "Not available for sale",
     },
     information: {
@@ -340,8 +350,17 @@ export async function generateMetadata({
       select: {
         model: true,
         version: true,
+        year: true,
+        mileage: true,
+        fuel: true,
+        price: true,
         status: true,
         brand: { select: { name: true } },
+        images: {
+          take: 1,
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          select: { url: true },
+        },
       },
     }),
   ]);
@@ -349,23 +368,94 @@ export async function generateMetadata({
   if (!vehicle) {
     return {
       title: language === "es" ? "Vehículo no disponible" : "Vehicle unavailable",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
+  const locale = language === "es" ? "es-ES" : "en-GB";
   const vehicleName = [vehicle.brand.name, vehicle.model, vehicle.version]
     .filter(Boolean)
     .join(" ");
+  const canonicalUrl = `${SITE_URL}/coleccion/${id}`;
+  const mileage = `${vehicle.mileage.toLocaleString(locale)} km`;
+  const fuel =
+    fuelLabels[language][vehicle.fuel] ??
+    vehicle.fuel ??
+    (language === "es" ? "combustible sin especificar" : "fuel not specified");
+  const price = formatPrice(vehicle.price, locale);
+
+  const title =
+    language === "es"
+      ? vehicle.status === "EMBLEM"
+        ? `${vehicleName} ${vehicle.year} · Vehículo emblema`
+        : vehicle.status === "RESERVED"
+          ? `${vehicleName} ${vehicle.year} reservado`
+          : vehicle.status === "SOLD"
+            ? `${vehicleName} ${vehicle.year} vendido`
+            : `${vehicleName} ${vehicle.year} de ocasión en Madrid`
+      : vehicle.status === "EMBLEM"
+        ? `${vehicleName} ${vehicle.year} · VANMOTION icon`
+        : vehicle.status === "RESERVED"
+          ? `${vehicleName} ${vehicle.year} reserved`
+          : vehicle.status === "SOLD"
+            ? `${vehicleName} ${vehicle.year} sold`
+            : `${vehicleName} ${vehicle.year} used vehicle in Madrid`;
+
+  const description =
+    language === "es"
+      ? vehicle.status === "EMBLEM"
+        ? `${vehicleName} (${vehicle.year}), vehículo emblema de VANMOTION en Madrid. Historia e identidad de la marca.`
+        : vehicle.status === "RESERVED"
+          ? `${vehicleName} (${vehicle.year}), ${mileage}, ${fuel}. Vehículo de ocasión actualmente reservado en VANMOTION Madrid.`
+          : vehicle.status === "SOLD"
+            ? `${vehicleName} (${vehicle.year}), ${mileage}, ${fuel}. Vehículo vendido por VANMOTION en Madrid.`
+            : `${vehicleName} (${vehicle.year}), ${mileage}, ${fuel}. Precio ${price}. Vehículo de ocasión disponible en VANMOTION Madrid.`
+      : vehicle.status === "EMBLEM"
+        ? `${vehicleName} (${vehicle.year}), the VANMOTION icon in Madrid. A vehicle representing the history and identity of the brand.`
+        : vehicle.status === "RESERVED"
+          ? `${vehicleName} (${vehicle.year}), ${mileage}, ${fuel}. Used vehicle currently reserved at VANMOTION Madrid.`
+          : vehicle.status === "SOLD"
+            ? `${vehicleName} (${vehicle.year}), ${mileage}, ${fuel}. Vehicle sold by VANMOTION in Madrid.`
+            : `${vehicleName} (${vehicle.year}), ${mileage}, ${fuel}. Price ${price}. Used vehicle available from VANMOTION Madrid.`;
+
+  const socialImage = vehicle.images[0]?.url
+    ? absoluteUrl(vehicle.images[0].url)
+    : undefined;
 
   return {
-    title: vehicleName,
-    description:
-      vehicle.status === "EMBLEM"
-        ? translations[language].emblemMetadataDescription
-        : vehicle.status === "RESERVED"
-          ? translations[language].reservedMetadataDescription
-          : vehicle.status === "SOLD"
-            ? translations[language].soldMetadataDescription
-            : translations[language].metadataDescription,
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: canonicalUrl,
+      siteName: "VANMOTION",
+      images: socialImage
+        ? [
+            {
+              url: socialImage,
+              alt: vehicleName,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: socialImage ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: socialImage ? [socialImage] : undefined,
+    },
   };
 }
 
@@ -465,8 +555,64 @@ export default async function PublicVehiclePage({
     { label: content.details.color, value: translatedColor },
   ];
 
+  const canonicalUrl = `${SITE_URL}/coleccion/${vehicle.id}`;
+  const vehicleImages = vehicle.images.map((image) => absoluteUrl(image.url));
+  const schemaAvailability =
+    vehicle.status === "AVAILABLE"
+      ? "https://schema.org/InStock"
+      : vehicle.status === "RESERVED"
+        ? "https://schema.org/LimitedAvailability"
+        : "https://schema.org/SoldOut";
+
+  const vehicleStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Vehicle",
+    name: `${vehicleName} ${vehicle.year}`,
+    url: canonicalUrl,
+    image: vehicleImages.length > 0 ? vehicleImages : undefined,
+    description: vehicleDescription,
+    sku: vehicle.id,
+    brand: {
+      "@type": "Brand",
+      name: vehicle.brand.name,
+    },
+    model: vehicle.model,
+    vehicleModelDate: String(vehicle.year),
+    mileageFromOdometer: {
+      "@type": "QuantitativeValue",
+      value: vehicle.mileage,
+      unitCode: "KMT",
+    },
+    fuelType: translatedFuel,
+    vehicleTransmission: translatedTransmission,
+    driveWheelConfiguration: translatedDrivetrain,
+    color: translatedColor,
+    offers: isEmblem
+      ? undefined
+      : {
+          "@type": "Offer",
+          url: canonicalUrl,
+          priceCurrency: "EUR",
+          price: Number(vehicle.price),
+          availability: schemaAvailability,
+          itemCondition: "https://schema.org/UsedCondition",
+          seller: {
+            "@type": "Organization",
+            name: "VANMOTION",
+            url: SITE_URL,
+          },
+        },
+  };
+
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
+        }}
+      />
+
       <header className={styles.header}>
         <Link href="/" className={styles.brand} aria-label="Vanmotion">
           <Image
