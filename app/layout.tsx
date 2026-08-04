@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import PublicAnalytics from "@/app/components/analytics/PublicAnalytics";
 import LanguageSwitcher from "@/app/components/language/LanguageSwitcher";
 import RouteAwareMusicPlayer from "@/app/components/layout/RouteAwareMusicPlayer";
 import GlobalMusicPlayerServer from "@/app/components/music/GlobalMusicPlayerServer";
@@ -93,6 +94,8 @@ export default async function RootLayout({
         <RouteAwareMusicPlayer>
           <GlobalMusicPlayerServer />
         </RouteAwareMusicPlayer>
+
+        <PublicAnalytics />
       </body>
     </html>
   );
