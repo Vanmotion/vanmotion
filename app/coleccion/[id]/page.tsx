@@ -431,7 +431,10 @@ export default async function PublicVehiclePage({
     content.details.unspecified,
   );
 
-  const messagePlaceholder = `${content.contact.messagePlaceholder} ${vehicleName}.`;
+  const messagePlaceholder =
+    language === "es"
+      ? "Escribe aquí tu consulta."
+      : "Write your enquiry here.";
   const vehicleDescription =
     language === "en"
       ? vehicle.descriptionEn ??
@@ -612,7 +615,13 @@ export default async function PublicVehiclePage({
                 <span>{content.emblem.description}</span>
               </section>
             ) : (
-              <form action={createContactRequest} className={styles.contactForm}>
+              <details className={styles.contactDisclosure}>
+                <summary>
+                  <span>{content.contact.title}</span>
+                  <span aria-hidden="true">+</span>
+                </summary>
+
+                <form action={createContactRequest} className={styles.contactForm}>
                 <input type="hidden" name="vehicleId" value={vehicle.id} />
 
                 <div className={styles.formHeading}>
@@ -662,24 +671,34 @@ export default async function PublicVehiclePage({
                   {content.contact.submit}
                   <span aria-hidden="true">↗</span>
                 </button>
-              </form>
+                </form>
+              </details>
             )}
           </aside>
         </section>
 
         <section className={styles.descriptionSection}>
-          <div className={styles.descriptionTitle}>
-            <p>{content.information.eyebrow}</p>
-            <h2>
-              <span>{content.information.titleFirst}</span>
-              <span>{content.information.titleSecond}</span>
-            </h2>
-          </div>
+          <details className={styles.descriptionDisclosure}>
+            <summary>
+              <span>{content.information.heading}</span>
+              <span aria-hidden="true">+</span>
+            </summary>
 
-          <div className={styles.descriptionCopy}>
-            <h3>{content.information.heading}</h3>
-            <p>{vehicleDescription}</p>
-          </div>
+            <div className={styles.descriptionContent}>
+              <div className={styles.descriptionTitle}>
+                <p>{content.information.eyebrow}</p>
+                <h2>
+                  <span>{content.information.titleFirst}</span>
+                  <span>{content.information.titleSecond}</span>
+                </h2>
+              </div>
+
+              <div className={styles.descriptionCopy}>
+                <h3>{content.information.heading}</h3>
+                <p>{vehicleDescription}</p>
+              </div>
+            </div>
+          </details>
         </section>
       </main>
 

@@ -927,3 +927,146 @@
     gap: 14px;
   }
 }
+
+/* VANMOTION · FICHA VEHÍCULO MÓVIL RESUMIDA */
+.contactDisclosure,
+.descriptionDisclosure {
+  min-width: 0;
+}
+
+.contactDisclosure > summary,
+.descriptionDisclosure > summary {
+  display: none;
+}
+
+.contactDisclosure:not([open]) > .contactForm {
+  display: block !important;
+}
+
+.descriptionSection {
+  display: block;
+}
+
+.descriptionContent {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.92fr) minmax(0, 1.08fr);
+  gap: 64px;
+}
+
+.descriptionDisclosure:not([open]) > .descriptionContent {
+  display: grid !important;
+}
+
+@media (max-width: 1050px) {
+  .descriptionContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero {
+    min-height: 330px;
+    padding-top: 82px;
+    padding-bottom: 18px;
+  }
+
+  .infoHeading {
+    display: none;
+  }
+
+  .priceBlock {
+    margin-top: 0;
+  }
+
+  .contactDisclosure {
+    margin-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  .contactDisclosure > summary,
+  .descriptionDisclosure > summary {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+    color: var(--paper);
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.13em;
+    list-style: none;
+    text-transform: uppercase;
+  }
+
+  .contactDisclosure > summary::-webkit-details-marker,
+  .descriptionDisclosure > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .contactDisclosure > summary span:last-child,
+  .descriptionDisclosure > summary span:last-child {
+    color: var(--orange);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 180ms ease;
+  }
+
+  .contactDisclosure[open] > summary span:last-child,
+  .descriptionDisclosure[open] > summary span:last-child {
+    transform: rotate(45deg);
+  }
+
+  .contactDisclosure:not([open]) > .contactForm {
+    display: none !important;
+  }
+
+  .contactDisclosure[open] > .contactForm {
+    display: block;
+  }
+
+  .contactForm {
+    margin-top: 0;
+    padding-top: 10px;
+    border-top: 0;
+  }
+
+  .formHeading {
+    display: none;
+  }
+
+  .descriptionSection {
+    padding: 0 14px 20px;
+  }
+
+  .descriptionDisclosure {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .descriptionDisclosure:not([open]) > .descriptionContent {
+    display: none !important;
+  }
+
+  .descriptionDisclosure[open] > .descriptionContent {
+    display: block;
+    padding: 4px 0 18px;
+  }
+
+  .descriptionTitle,
+  .descriptionCopy h3 {
+    display: none;
+  }
+
+  .descriptionCopy {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .descriptionCopy p {
+    margin-top: 0;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+}
