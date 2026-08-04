@@ -1070,3 +1070,92 @@
     line-height: 1.55;
   }
 }
+
+/* VANMOTION · FICHA VEHÍCULO ESCRITORIO SIN HUECOS */
+@media (min-width: 721px) {
+  .productSection {
+    padding-bottom: 32px;
+  }
+
+  .infoHeading {
+    display: none;
+  }
+
+  .priceBlock {
+    margin-top: 0;
+  }
+
+  .contactDisclosure {
+    margin-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .contactDisclosure > summary,
+  .descriptionDisclosure > summary {
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    cursor: pointer;
+    color: var(--paper);
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.14em;
+    list-style: none;
+    text-transform: uppercase;
+  }
+
+  .contactDisclosure > summary::-webkit-details-marker,
+  .descriptionDisclosure > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .contactDisclosure > summary span:last-child,
+  .descriptionDisclosure > summary span:last-child {
+    color: var(--orange);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 180ms ease;
+  }
+
+  .contactDisclosure[open] > summary span:last-child,
+  .descriptionDisclosure[open] > summary span:last-child {
+    transform: rotate(45deg);
+  }
+
+  .contactDisclosure:not([open]) > .contactForm {
+    display: none !important;
+  }
+
+  .contactDisclosure[open] > .contactForm {
+    display: block;
+    margin-top: 0;
+    padding-top: 20px;
+  }
+
+  .descriptionSection {
+    padding: 0 clamp(20px, 4vw, 58px) 30px;
+  }
+
+  .descriptionDisclosure {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .descriptionDisclosure:not([open]) > .descriptionContent {
+    display: none !important;
+  }
+
+  .descriptionDisclosure[open] > .descriptionContent {
+    display: grid;
+    padding: 44px 0 26px;
+    gap: 42px;
+  }
+
+  .footer {
+    padding-top: 22px;
+    padding-bottom: 24px;
+  }
+}
