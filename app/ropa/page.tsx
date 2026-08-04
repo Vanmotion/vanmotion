@@ -24,9 +24,9 @@ const MANAGED_PRODUCT_SLUGS = [
 const translations = {
   es: {
     metadata: {
-      title: "Ropa · Colección inaugural",
+      title: "Ropa urbana, camisetas y bomber en Madrid",
       description:
-        "Colección inaugural VANMOTION: camisetas CARPE DIEM y bomber en negro y azul Ford E-150.",
+        "Ropa urbana VANMOTION diseñada en Madrid: camisetas CARPE DIEM y bomber para hombre y mujer en negro y azul Ford E-150.",
     },
     navigation: {
       vehicles: "Vehículos",
@@ -117,9 +117,9 @@ const translations = {
   },
   en: {
     metadata: {
-      title: "Clothing · Inaugural collection",
+      title: "Urban clothing, T-shirts and bomber jackets from Madrid",
       description:
-        "VANMOTION inaugural collection: CARPE DIEM T-shirts and bomber jackets in black and Ford E-150 blue.",
+        "VANMOTION urban clothing designed in Madrid: CARPE DIEM T-shirts and bomber jackets for men and women in black and Ford E-150 blue.",
     },
     navigation: {
       vehicles: "Vehicles",
@@ -237,6 +237,24 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: content.metadata.title,
     description: content.metadata.description,
+    alternates: {
+      canonical: "/ropa",
+    },
+    openGraph: {
+      title: content.metadata.title,
+      description: content.metadata.description,
+      type: "website",
+      url: "/ropa",
+      images: [
+        {
+          url: "/ropa/editorial/ropa-madrid-negro.png",
+          alt:
+            language === "es"
+              ? "Colección de ropa urbana VANMOTION en Madrid"
+              : "VANMOTION urban clothing collection in Madrid",
+        },
+      ],
+    },
   };
 }
 
@@ -320,7 +338,7 @@ export default async function RopaPage() {
         </div>
 
         <h1 id="clothing-title" className={styles.srOnly}>
-          {content.navigation.clothing}
+          {content.metadata.title}
         </h1>
 
         <a
