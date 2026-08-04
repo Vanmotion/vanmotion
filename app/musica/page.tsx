@@ -13,9 +13,9 @@ export const dynamic = "force-dynamic";
 
 const translations = {
   es: {
-    metadataTitle: "Música",
+    metadataTitle: "Música original y producción musical en Madrid",
     metadataDescription:
-      "Música de VANMOTION: temas y lanzamientos disponibles para escuchar.",
+      "Música original y producción musical de VANMOTION en Madrid. Escucha temas oficiales, sesiones de estudio y nuevos lanzamientos.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",
@@ -76,9 +76,9 @@ const translations = {
     },
   },
   en: {
-    metadataTitle: "Music",
+    metadataTitle: "Original music and music production from Madrid",
     metadataDescription:
-      "VANMOTION music: tracks and releases available to listen to.",
+      "Original music and music production by VANMOTION in Madrid. Listen to official tracks, studio sessions and new releases.",
     navigation: {
       vehicles: "Vehicles",
       music: "Music",
@@ -147,6 +147,24 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: content.metadataTitle,
     description: content.metadataDescription,
+    alternates: {
+      canonical: "/musica",
+    },
+    openGraph: {
+      title: content.metadataTitle,
+      description: content.metadataDescription,
+      type: "website",
+      url: "/musica",
+      images: [
+        {
+          url: "/uploads/music-covers/vanmotion-1784378515490.png",
+          alt:
+            language === "es"
+              ? "Música original y producción musical de VANMOTION"
+              : "Original music and music production by VANMOTION",
+        },
+      ],
+    },
   };
 }
 
@@ -210,7 +228,7 @@ export default async function MusicPage() {
           </div>
 
           <h1 id="music-hero-title" className={styles.srOnly}>
-            {content.navigation.music}
+            {content.metadataTitle}
           </h1>
 
           {musicNews ? (
