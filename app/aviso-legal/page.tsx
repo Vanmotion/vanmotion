@@ -237,6 +237,81 @@ export default async function LegalNoticePage() {
 
   const telephoneHref = legal.phone.replace(/[^\d+]/g, "");
 
+  const compact =
+    language === "es"
+      ? {
+          eyebrow: "Información esencial",
+          title: "Legal.",
+          introduction:
+            "Lo imprescindible, claro y accesible. El contenido completo permanece disponible en cada documento.",
+          identity: "Identificación",
+          owner: "Titular",
+          taxId: "NIF",
+          phone: "Teléfono",
+          email: "Correo electrónico",
+          documentsLabel: "Documentación legal",
+          documents: [
+            {
+              href: "/privacidad",
+              label: "Privacidad",
+              note: "Cómo tratamos y protegemos tus datos.",
+            },
+            {
+              href: "/cookies",
+              label: "Cookies",
+              note: "Información sobre el uso de cookies.",
+            },
+            {
+              href: "/condiciones-compra",
+              label: "Compra",
+              note: "Condiciones aplicables a los pedidos.",
+            },
+            {
+              href: "/desistimiento",
+              label: "Desistimiento",
+              note: "Plazos y procedimiento de devolución.",
+            },
+          ],
+          contact: "Contacto",
+          back: "Volver al inicio",
+        }
+      : {
+          eyebrow: "Essential information",
+          title: "Legal.",
+          introduction:
+            "The essentials, clear and accessible. Full information remains available in each document.",
+          identity: "Identification",
+          owner: "Owner",
+          taxId: "Tax ID",
+          phone: "Telephone",
+          email: "Email",
+          documentsLabel: "Legal documentation",
+          documents: [
+            {
+              href: "/privacidad",
+              label: "Privacy",
+              note: "How we process and protect your data.",
+            },
+            {
+              href: "/cookies",
+              label: "Cookies",
+              note: "Information about the use of cookies.",
+            },
+            {
+              href: "/condiciones-compra",
+              label: "Purchases",
+              note: "Terms applicable to orders.",
+            },
+            {
+              href: "/desistimiento",
+              label: "Withdrawal",
+              note: "Return periods and procedure.",
+            },
+          ],
+          contact: "Contact",
+          back: "Back to home",
+        };
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -263,156 +338,93 @@ export default async function LegalNoticePage() {
         </nav>
       </header>
 
-      <main>
-        <section className={styles.hero} aria-labelledby="legal-title">
-          <div className={styles.heroTopline}>
-            <span>{content.hero.location}</span>
-            <span>{content.hero.update}</span>
+      <main className={styles.compactMain}>
+        <section
+          className={styles.compactLegal}
+          aria-labelledby="legal-title"
+        >
+          <div className={styles.compactTopline}>
+            <span>VANMOTION · MADRID</span>
+            <span>© 2026</span>
           </div>
 
-          <div className={styles.heroCopy}>
-            <p>{content.hero.label}</p>
-            <h1 id="legal-title">
-              <span>{content.hero.titleFirst}</span>
-              <span>{content.hero.titleSecond}</span>
-            </h1>
-          </div>
-
-          <div className={styles.heroFoot}>
-            <span>{content.hero.caption}</span>
-            <Link href="/contacto">{content.navigation.contact}</Link>
-          </div>
-        </section>
-
-        <section className={styles.ownerSection}>
-          <div className={styles.ownerHeading}>
-            <p className={styles.sectionLabel}>{content.owner.eyebrow}</p>
-            <h2>{content.owner.title}</h2>
-          </div>
-
-          <dl className={styles.ownerGrid}>
+          <div className={styles.compactHeading}>
             <div>
-              <dt>{content.owner.ownerName}</dt>
-              <dd>{legal.ownerName}</dd>
+              <p className={styles.compactEyebrow}>{compact.eyebrow}</p>
+              <h1 id="legal-title" className={styles.compactTitle}>
+                {compact.title}
+              </h1>
             </div>
-            <div>
-              <dt>{content.owner.commercialName}</dt>
-              <dd>VANMOTION</dd>
-            </div>
-            <div>
-              <dt>{content.owner.taxId}</dt>
-              <dd>{legal.nif}</dd>
-            </div>
-            <div>
-              <dt>{content.owner.legalStatus}</dt>
-              <dd>{content.owner.legalStatusValue}</dd>
-            </div>
-            <div>
-              <dt>{content.owner.phone}</dt>
-              <dd>
-                <a href={`tel:${telephoneHref}`}>{legal.phone}</a>
-              </dd>
-            </div>
-            <div>
-              <dt>{content.owner.email}</dt>
-              <dd>
-                <a href={`mailto:${legal.email}`}>{legal.email}</a>
-              </dd>
-            </div>
-          </dl>
-        </section>
 
-        <section className={styles.legalSection}>
-          <div className={styles.legalHeading}>
-            <p className={styles.sectionLabel}>{content.legal.eyebrow}</p>
-            <h2>{content.legal.title}</h2>
+            <p className={styles.compactIntroduction}>
+              {compact.introduction}
+            </p>
           </div>
 
-          <ol className={styles.legalList}>
-            {content.legal.items.map((item, index) => (
-              <li key={item.title}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
+          <div className={styles.compactGrid}>
+            <section className={styles.compactIdentity}>
+              <h2>{compact.identity}</h2>
 
-        <section className={styles.documentsSection}>
-          <div>
-            <p className={styles.documentsLabel}>{content.documents.eyebrow}</p>
-            <h2>{content.documents.title}</h2>
-          </div>
+              <dl>
+                <div>
+                  <dt>{compact.owner}</dt>
+                  <dd>{legal.ownerName} · VANMOTION</dd>
+                </div>
 
-          <nav className={styles.documentsNav} aria-label={content.documents.eyebrow}>
-            <Link href="/privacidad">
-              <span>01</span>
-              <strong>{content.documents.privacy}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-            <Link href="/condiciones-compra">
-              <span>02</span>
-              <strong>{content.documents.purchase}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-            <Link href="/cookies">
-              <span>03</span>
-              <strong>{content.documents.cookies}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-            <Link href="/desistimiento">
-              <span>04</span>
-              <strong>{content.documents.withdrawal}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-          </nav>
-        </section>
+                <div>
+                  <dt>{compact.taxId}</dt>
+                  <dd>{legal.nif}</dd>
+                </div>
 
-        <section className={styles.referencesSection}>
-          <div>
-            <p className={styles.sectionLabel}>{content.references.title}</p>
-            <p>{content.references.note}</p>
-          </div>
+                <div>
+                  <dt>{compact.phone}</dt>
+                  <dd>
+                    <a href={`tel:${telephoneHref}`}>{legal.phone}</a>
+                  </dd>
+                </div>
 
-          <div className={styles.referencesLinks}>
-            <a
-              href="https://www.boe.es/buscar/act.php?id=BOE-A-2002-13758"
-              target="_blank"
-              rel="noreferrer"
+                <div>
+                  <dt>{compact.email}</dt>
+                  <dd>
+                    <a href={`mailto:${legal.email}`}>{legal.email}</a>
+                  </dd>
+                </div>
+              </dl>
+            </section>
+
+            <nav
+              className={styles.compactDocuments}
+              aria-label={compact.documentsLabel}
             >
-              {content.references.lssi}
-            </a>
-            <a
-              href="https://www.boe.es/buscar/act.php?id=BOE-A-2007-20555"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {content.references.consumers}
-            </a>
-            <a
-              href="https://www.boe.es/buscar/act.php?id=BOE-A-1996-8930"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {content.references.intellectualProperty}
-            </a>
+              {compact.documents.map((document, index) => (
+                <Link key={document.href} href={document.href}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+
+                  <div>
+                    <strong>{document.label}</strong>
+                    <small>{document.note}</small>
+                  </div>
+
+                  <b aria-hidden="true">↗</b>
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className={styles.compactActions}>
+            <Link href="/contacto">
+              {compact.contact}
+              <span aria-hidden="true">↗</span>
+            </Link>
+
+            <Link href="/">{compact.back}</Link>
           </div>
         </section>
       </main>
 
-      <footer className={styles.footer}>
-        <div className={styles.footerBrand}>
-          <strong>Vanmotion</strong>
-          <span>{content.footer.city}</span>
-        </div>
-
-        <div className={styles.footerLinks}>
-          <a href={`mailto:${legal.email}`}>{content.footer.contact}</a>
-          <Link href="/">{content.footer.back}</Link>
-        </div>
-
-        <span className={styles.copyright}>© 2026</span>
+      <footer className={styles.compactFooter}>
+        <strong>VANMOTION</strong>
+        <span>Madrid · España · © 2026</span>
       </footer>
     </div>
   );
