@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { prisma } from "@/app/lib/prisma";
+import { getVercelAnalytics } from "@/app/lib/vercel-analytics";
 
 import styles from "./admin-dashboard.module.css";
 
@@ -96,6 +97,7 @@ export default async function AdminDashboardPage() {
     recentOrders,
 
     settings,
+    analytics,
   ] = await Promise.all([
     prisma.vehicle.count(),
 
@@ -219,6 +221,8 @@ export default async function AdminDashboardPage() {
         id: "main",
       },
     }),
+
+    getVercelAnalytics(),
   ]);
 
   const businessName =
@@ -429,6 +433,257 @@ export default async function AdminDashboardPage() {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className={styles.analyticsSection}>
+        <div className={styles.analyticsHeader}>
+          <div>
+            <p className={styles.eyebrow}>
+              Analítica web
+            </p>
+
+            <h2>
+              Personas que llegan
+              <br />
+              a VANMOTION.
+            </h2>
+          </div>
+
+          <div className={styles.analyticsPeriod}>
+            <span
+              data-state={
+                analytics.available
+                  ? "success"
+                  : "warning"
+              }
+            />
+
+            <div>
+              <strong>
+                {analytics.available
+                  ? "Datos en directo"
+                  : "Datos no disponibles"}
+              </strong>
+
+              <small>
+                Desde el 4 de agosto de 2026
+                <br />
+                Administración excluida
+              </small>
+            </div>
+          </div>
+        </div>
+
+        {analytics.available ? (
+          <>
+            <div className={styles.analyticsTotals}>
+              <article>
+                <strong>
+                  {analytics.pageviews.toLocaleString(
+                    "es-ES",
+                  )}
+                </strong>
+
+                <span>Visualizaciones</span>
+                <small>Páginas abiertas</small>
+              </article>
+
+              <article>
+                <strong>
+                  {analytics.visitors.toLocaleString(
+                    "es-ES",
+                  )}
+                </strong>
+
+                <span>Visitantes</span>
+                <small>Personas diferentes</small>
+              </article>
+
+              <article>
+                <strong>
+                  {analytics.countries.length.toLocaleString(
+                    "es-ES",
+                  )}
+                </strong>
+
+                <span>Países</span>
+                <small>Procedencia detectada</small>
+              </article>
+
+              <article>
+                <strong>
+                  {analytics.visitors > 0
+                    ? (
+                        analytics.pageviews /
+                        analytics.visitors
+                      )
+                        .toFixed(1)
+                        .replace(".", ",")
+                    : "0"}
+                </strong>
+
+                <span>Páginas por persona</span>
+                <small>Promedio de navegación</small>
+              </article>
+            </div>
+
+            <div className={styles.analyticsGrid}>
+              <article className={styles.analyticsPanel}>
+                <div className={styles.analyticsPanelHeader}>
+                  <div>
+                    <p className={styles.eyebrow}>
+                      Procedencia
+                    </p>
+
+                    <h3>Países</h3>
+                  </div>
+
+                  <span>
+                    {analytics.countries.length}
+                  </span>
+                </div>
+
+                {analytics.countries.length === 0 ? (
+                  <div className={styles.analyticsEmpty}>
+                    Aún no hay países registrados.
+                  </div>
+                ) : (
+                  <div className={styles.analyticsList}>
+                    {analytics.countries.map(
+                      (country) => (
+                        <div key={country.code}>
+                          <div
+                            className={
+                              styles.analyticsIdentity
+                            }
+                          >
+                            <b>{country.flag}</b>
+
+                            <span>
+                              <strong>
+                                {country.name}
+                              </strong>
+
+                              <small>
+                                {country.visitors}{" "}
+                                {country.visitors === 1
+                                  ? "visitante"
+                                  : "visitantes"}
+                              </small>
+                            </span>
+                          </div>
+
+                          <em>
+                            {country.pageviews}
+                          </em>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                )}
+              </article>
+
+              <article className={styles.analyticsPanel}>
+                <div className={styles.analyticsPanelHeader}>
+                  <div>
+                    <p className={styles.eyebrow}>
+                      Tecnología
+                    </p>
+
+                    <h3>Dispositivos</h3>
+                  </div>
+
+                  <span>3</span>
+                </div>
+
+                <div className={styles.analyticsList}>
+                  {analytics.devices.map((device) => (
+                    <div key={device.type}>
+                      <div
+                        className={
+                          styles.analyticsIdentity
+                        }
+                      >
+                        <b aria-hidden="true">
+                          {device.symbol}
+                        </b>
+
+                        <span>
+                          <strong>
+                            {device.label}
+                          </strong>
+
+                          <small>
+                            {device.visitors}{" "}
+                            {device.visitors === 1
+                              ? "visitante"
+                              : "visitantes"}
+                          </small>
+                        </span>
+                      </div>
+
+                      <em>{device.pageviews}</em>
+                    </div>
+                  ))}
+                </div>
+              </article>
+
+              <article className={styles.analyticsPanel}>
+                <div className={styles.analyticsPanelHeader}>
+                  <div>
+                    <p className={styles.eyebrow}>
+                      Navegación
+                    </p>
+
+                    <h3>Páginas más vistas</h3>
+                  </div>
+
+                  <span>
+                    {analytics.pages.length}
+                  </span>
+                </div>
+
+                {analytics.pages.length === 0 ? (
+                  <div className={styles.analyticsEmpty}>
+                    Aún no hay páginas registradas.
+                  </div>
+                ) : (
+                  <div
+                    className={styles.analyticsList}
+                    data-kind="pages"
+                  >
+                    {analytics.pages.map((page) => (
+                      <div key={page.path}>
+                        <div
+                          className={
+                            styles.analyticsPage
+                          }
+                        >
+                          <strong>{page.label}</strong>
+                          <small>{page.path}</small>
+                        </div>
+
+                        <em>{page.pageviews}</em>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+            </div>
+          </>
+        ) : (
+          <div className={styles.analyticsUnavailable}>
+            <strong>
+              No se han podido cargar las visitas.
+            </strong>
+
+            <p>
+              El resto del panel continúa funcionando.
+              Revisa la variable protegida
+              VERCEL_ANALYTICS_TOKEN en Vercel.
+            </p>
+          </div>
+        )}
       </section>
 
       {needsAttention && (
