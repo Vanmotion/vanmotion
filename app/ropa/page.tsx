@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { getCurrentLanguage } from "@/app/lib/language";
+import { getDailyNews } from "@/app/lib/daily-news";
 import { prisma } from "@/app/lib/prisma";
 
 import styles from "./ropa.module.css";
@@ -242,6 +243,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RopaPage() {
   const language = await getCurrentLanguage();
   const content = translations[language];
+  const [, , clothingNews] = await getDailyNews(language);
 
   const products = await prisma.product.findMany({
     where: {
@@ -314,19 +316,34 @@ export default async function RopaPage() {
 
         <div className={styles.heroTopline}>
           <span>{content.hero.location}</span>
-          <span>{content.hero.year}</span>
+          <span>{content.navigation.clothing}</span>
         </div>
 
-        <div className={styles.heroCopy}>
-          <p>{content.hero.label}</p>
-          <h1 id="clothing-title">
-            <span>{content.hero.titleFirst}</span>
-            <span>{content.hero.titleSecond}</span>
-          </h1>
-        </div>
+        <h1 id="clothing-title" className={styles.srOnly}>
+          {content.navigation.clothing}
+        </h1>
+
+        <a
+          href={clothingNews.url}
+          target="_blank"
+          rel="noreferrer"
+          className={styles.heroNews}
+        >
+          <span className={styles.heroNewsLabel}>
+            {language === "es"
+              ? "Actualidad · Moda y textil"
+              : "Latest · Fashion and clothing"}
+          </span>
+
+          <strong>{clothingNews.title}</strong>
+
+          <small>
+            {clothingNews.source}
+            <span aria-hidden="true"> ↗</span>
+          </small>
+        </a>
 
         <div className={styles.heroFoot}>
-          <span>{content.hero.statement}</span>
           <div>
             <Link href="#coleccion">{content.hero.productAction}</Link>
             <Link href="/contacto?motivo=ropa#formulario">
@@ -336,62 +353,11 @@ export default async function RopaPage() {
         </div>
       </section>
 
-      <section className={styles.editorialSection}>
-        <div className={styles.productHeading}>
-          <p>{content.editorial.eyebrow}</p>
-          <h2>
-            <span>{content.editorial.headingFirst}</span>
-            <span>{content.editorial.headingSecond}</span>
-          </h2>
-          <p className={styles.productIntro}>{content.editorial.intro}</p>
-        </div>
-
-        <div className={styles.editorialGrid}>
-          <article className={styles.editorialCard}>
-            <div className={styles.editorialImageWrap}>
-              <Image
-                src="/ropa/editorial/ropa-madrid-negro.png"
-                alt="Colección negra VANMOTION en Madrid"
-                fill
-                sizes="(max-width: 900px) 100vw, 50vw"
-                className={styles.editorialImage}
-              />
-            </div>
-            <div className={styles.editorialCopy}>
-              <span>01</span>
-              <h3>{content.editorial.blackTitle}</h3>
-              <p>{content.editorial.blackText}</p>
-            </div>
-          </article>
-
-          <article className={styles.editorialCard}>
-            <div className={styles.editorialImageWrap}>
-              <Image
-                src="/ropa/editorial/ropa-new-york-azul.png"
-                alt="Colección azul Ford E-150 VANMOTION en Nueva York"
-                fill
-                sizes="(max-width: 900px) 100vw, 50vw"
-                className={styles.editorialImage}
-              />
-            </div>
-            <div className={styles.editorialCopy}>
-              <span>02</span>
-              <h3>{content.editorial.blueTitle}</h3>
-              <p>{content.editorial.blueText}</p>
-            </div>
-          </article>
-        </div>
-      </section>
 
       <section className={styles.collectionSection} id="coleccion">
-        <div className={styles.productHeading}>
-          <p>{content.collection.eyebrow}</p>
-          <h2>
-            <span>{content.collection.headingFirst}</span>
-            <span>{content.collection.headingSecond}</span>
+          <h2 className={styles.srOnly}>
+            {content.navigation.clothing}
           </h2>
-          <p className={styles.productIntro}>{content.collection.intro}</p>
-        </div>
 
         {products.length === 0 ? (
           <p className={styles.collectionEmpty}>{content.collection.empty}</p>
@@ -494,37 +460,16 @@ export default async function RopaPage() {
         )}
       </section>
 
-      <section className={styles.manifesto}>
-        <div className={styles.manifestoTitle}>
-          <p>{content.principles.eyebrow}</p>
-          <h2>
-            <span>{content.principles.titleFirst}</span>
-            <span>{content.principles.titleSecond}</span>
-          </h2>
-        </div>
 
-        <div className={styles.principles}>
-          {content.principles.items.map((item) => (
-            <article key={item.number}>
-              <span>{item.number}</span>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.contact}>
-        <div>
-          <p>{content.contact.label}</p>
-          <h2>{content.contact.title}</h2>
-        </div>
-
-        <Link href="/contacto?motivo=ropa#formulario">
-          {content.contact.action}
-          <span aria-hidden="true">↗</span>
-        </Link>
-      </section>
+        <section
+          className={styles.contact}
+          aria-label={content.navigation.contact}
+        >
+          <Link href="/contacto?motivo=ropa#formulario">
+            <span>{content.navigation.contact}</span>
+            <span aria-hidden="true">↗</span>
+          </Link>
+        </section>
 
       <footer className={styles.footer}>
         <div>
