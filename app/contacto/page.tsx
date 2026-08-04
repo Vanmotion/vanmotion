@@ -10,7 +10,7 @@ import styles from "./contacto.module.css";
 
 export const dynamic = "force-dynamic";
 
-const CANONICAL_URL = "https://vanmotion.es/contacto";
+const CANONICAL_URL = "https://www.vanmotion.es/contacto";
 
 type ContactoPageProps = {
   searchParams: Promise<{
@@ -26,9 +26,9 @@ type ContactoPageProps = {
 
 const translations = {
   es: {
-    metadataTitle: "Contacto directo",
+    metadataTitle: "Contacto para vehículos, ropa y música en Madrid",
     metadataDescription:
-      "Contacta directamente con VANMOTION para consultas sobre vehículos, música, ropa y colaboraciones.",
+      "Contacta con VANMOTION en Madrid para consultas sobre vehículos, ropa urbana, música, compras y colaboraciones. Atención directa y personal.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",
@@ -109,9 +109,9 @@ const translations = {
     },
   },
   en: {
-    metadataTitle: "Direct contact",
+    metadataTitle: "Contact for vehicles, clothing and music in Madrid",
     metadataDescription:
-      "Contact VANMOTION directly about vehicles, music, clothing and collaborations.",
+      "Contact VANMOTION in Madrid about vehicles, urban clothing, music, purchases and collaborations. Direct and personal assistance.",
     navigation: {
       vehicles: "Vehicles",
       music: "Music",
@@ -238,6 +238,13 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: {
       index: true,
       follow: true,
+    },
+    openGraph: {
+      title: content.metadataTitle,
+      description: content.metadataDescription,
+      type: "website",
+      url: CANONICAL_URL,
+      siteName: "VANMOTION",
     },
   };
 }
