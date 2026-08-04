@@ -5,7 +5,6 @@ import Link from "next/link";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
 
-import ProductPurchasePanel from "./ProductPurchasePanel";
 import styles from "./ropa.module.css";
 
 export const dynamic = "force-dynamic";
@@ -403,29 +402,6 @@ export default async function RopaPage() {
                 product.images.map((image) => [image.view, image.url]),
               );
 
-              const productVariants = product.variants.map((variant) => ({
-                size: variant.size,
-                stock: variant.stock,
-                active: variant.active,
-              }));
-
-              const totalProductStock = productVariants.reduce(
-                (total, variant) =>
-                  variant.active ? total + variant.stock : total,
-                0,
-              );
-
-              const productStatus = getEffectiveProductStatus(
-                product.status,
-                product.active,
-                totalProductStock,
-              );
-
-              const productDescription =
-                language === "es"
-                  ? product.description ?? ""
-                  : product.descriptionEn ?? product.description ?? "";
-
               const primaryImage =
                 imagesByView.get("FRONT") ??
                 imagesByView.get("LIFESTYLE") ??
@@ -435,6 +411,14 @@ export default async function RopaPage() {
                 product.productType === "BOMBER"
                   ? content.collection.productTypes.BOMBER
                   : content.collection.productTypes.TSHIRT;
+
+              const formattedPrice = new Intl.NumberFormat(
+                language === "es" ? "es-ES" : "en-US",
+                {
+                  style: "currency",
+                  currency: product.currency,
+                },
+              ).format(Number(product.price));
 
               return (
                 <article key={product.id} className={styles.collectionCard}>
@@ -453,7 +437,7 @@ export default async function RopaPage() {
                           src={primaryImage}
                           alt={product.name}
                           fill
-                          sizes="(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          sizes="(max-width: 620px) 50vw, (max-width: 1200px) 50vw, 25vw"
                           className={styles.collectionImage}
                         />
                       ) : (
@@ -473,6 +457,7 @@ export default async function RopaPage() {
                     <p className={styles.productLabel}>
                       {product.collection ?? "Drop 01"}
                     </p>
+
                     <h3>
                       <Link
                         href={`/ropa/${product.slug}`}
@@ -484,41 +469,23 @@ export default async function RopaPage() {
                         {product.name}
                       </Link>
                     </h3>
+
                     {product.subtitle ? <h4>{product.subtitle}</h4> : null}
-                    <p className={styles.productDescription}>
-                      {productDescription}
-                    </p>
 
-                    <dl className={styles.productSpecs}>
-                      <div>
-                        <dt>{content.collection.specs.type}</dt>
-                        <dd>{productType}</dd>
-                      </div>
-                      <div>
-                        <dt>{content.collection.specs.color}</dt>
-                        <dd>{product.color ?? "—"}</dd>
-                      </div>
-                      <div>
-                        <dt>{content.collection.specs.material}</dt>
-                        <dd>{product.material ?? "—"}</dd>
-                      </div>
-                      <div>
-                        <dt>{content.collection.specs.sizes}</dt>
-                        <dd>
-                          {productVariants.map((variant) => variant.size).join(" · ")}
-                        </dd>
-                      </div>
-                    </dl>
+                    <div className={styles.collectionSummary}>
+                      <span>
+                        {productType} · {product.color ?? "VANMOTION"}
+                      </span>
+                      <strong>{formattedPrice}</strong>
+                    </div>
 
-                    <ProductPurchasePanel
-                      language={language}
-                      productName={product.name}
-                      productSlug={product.slug}
-                      price={Number(product.price)}
-                      currency={product.currency}
-                      status={productStatus}
-                      variants={productVariants}
-                    />
+                    <Link
+                      href={`/ropa/${product.slug}`}
+                      className={styles.collectionAction}
+                    >
+                      {language === "es" ? "Ver producto" : "View product"}
+                      <span aria-hidden="true">↗</span>
+                    </Link>
                   </div>
                 </article>
               );

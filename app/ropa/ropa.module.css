@@ -1609,3 +1609,148 @@
     line-height: 1.35;
   }
 }
+
+/* VANMOTION · TARJETAS DE ROPA RESUMIDAS */
+.collectionCard {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.collectionInformation {
+  flex: 1;
+  padding: clamp(16px, 1.7vw, 24px);
+  display: flex;
+  flex-direction: column;
+}
+
+.collectionInformation > h3 {
+  margin-top: 9px;
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: clamp(20px, 1.65vw, 28px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  overflow-wrap: normal;
+  word-break: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.collectionInformation > h4 {
+  margin-top: 8px;
+  font-size: 8px;
+  line-height: 1.35;
+  letter-spacing: 0.11em;
+}
+
+.collectionSummary {
+  margin-top: 18px;
+  padding-top: 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--dark-line);
+}
+
+.collectionSummary span {
+  max-width: 62%;
+  color: rgba(9, 9, 9, 0.5);
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.collectionSummary strong {
+  flex: 0 0 auto;
+  font-size: 19px;
+  font-weight: 760;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.collectionAction {
+  min-height: 42px;
+  margin-top: 16px;
+  padding: 0 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.collectionAction:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.collectionAction span {
+  color: var(--orange);
+  font-size: 14px;
+}
+
+@media (max-width: 620px) {
+  .collectionMedia {
+    aspect-ratio: 1 / 1;
+  }
+
+  .collectionInformation {
+    padding: 9px;
+  }
+
+  .collectionInformation > h3 {
+    margin-top: 6px;
+    font-size: clamp(15px, 4.1vw, 17px);
+    line-height: 0.98;
+  }
+
+  .collectionInformation > h4 {
+    margin-top: 5px;
+    font-size: 6px;
+    line-height: 1.3;
+    letter-spacing: 0.07em;
+  }
+
+  .collectionSummary {
+    margin-top: 10px;
+    padding-top: 8px;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .collectionSummary span {
+    max-width: 58%;
+    font-size: 5.5px;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+  }
+
+  .collectionSummary strong {
+    font-size: 14px;
+  }
+
+  .collectionAction {
+    min-height: 32px;
+    margin-top: 9px;
+    padding: 0 8px;
+    font-size: 6px;
+    letter-spacing: 0.08em;
+  }
+
+  .collectionAction span {
+    font-size: 11px;
+  }
+}
