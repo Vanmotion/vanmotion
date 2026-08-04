@@ -242,7 +242,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-daily-news-v2"],
+  ["vanmotion-daily-news-v3"],
   {
     revalidate: DAILY_SECONDS,
     tags: ["vanmotion-daily-news"],

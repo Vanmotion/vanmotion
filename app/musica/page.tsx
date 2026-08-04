@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
+import { getDailyNews } from "@/app/lib/daily-news";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
 import styles from "./musica.module.css";
@@ -14,7 +15,7 @@ const translations = {
   es: {
     metadataTitle: "Música",
     metadataDescription:
-      "Música oficial de VANMOTION. Sonido propio, trabajo real y lanzamientos con identidad.",
+      "Música de VANMOTION: temas y lanzamientos disponibles para escuchar.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",
@@ -77,7 +78,7 @@ const translations = {
   en: {
     metadataTitle: "Music",
     metadataDescription:
-      "Official VANMOTION music. Original sound, real work and releases with identity.",
+      "VANMOTION music: tracks and releases available to listen to.",
     navigation: {
       vehicles: "Vehicles",
       music: "Music",
@@ -152,6 +153,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function MusicPage() {
   const language = await getCurrentLanguage();
   const content = translations[language];
+  const [, musicNews] = await getDailyNews(language);
 
   return (
     <div className={styles.page}>
@@ -204,19 +206,36 @@ export default async function MusicPage() {
 
           <div className={styles.heroTopline}>
             <span>{content.hero.location}</span>
-            <span>{content.hero.label}</span>
+            <span>{content.navigation.music}</span>
           </div>
 
-          <div className={styles.heroCopy}>
-            <p>{content.hero.label}</p>
-            <h1 id="music-hero-title">
-              <span>{content.hero.titleFirst}</span>
-              <span>{content.hero.titleSecond}</span>
-            </h1>
-          </div>
+          <h1 id="music-hero-title" className={styles.srOnly}>
+            {content.navigation.music}
+          </h1>
+
+          {musicNews ? (
+            <a
+              href={musicNews.url}
+              target="_blank"
+              rel="noreferrer"
+              className={styles.heroNews}
+            >
+              <span className={styles.heroNewsLabel}>
+                {language === "es"
+                  ? "Actualidad · Música"
+                  : "Latest · Music"}
+              </span>
+
+              <strong>{musicNews.title}</strong>
+
+              <small>
+                {musicNews.source}
+                <span aria-hidden="true"> ↗</span>
+              </small>
+            </a>
+          ) : null}
 
           <div className={styles.heroFoot}>
-            <span>{content.hero.caption}</span>
             <div className={styles.heroLinks}>
               <Link href="#reproductor">
                 {content.navigation.music}
@@ -231,74 +250,31 @@ export default async function MusicPage() {
           </div>
         </section>
 
-        <section className={styles.introSection}>
-          <p className={styles.sectionLabel}>
-            {content.intro.eyebrow}
-          </p>
-          <div className={styles.introGrid}>
-            <h2>{content.intro.title}</h2>
-            <p>{content.intro.text}</p>
-          </div>
-        </section>
 
         <section
           className={styles.playerSection}
           id="reproductor"
         >
-          <div className={styles.playerIntro}>
-            <div>
-              <p className={styles.sectionLabel}>
-                {content.player.eyebrow}
-              </p>
-              <h2>{content.player.title}</h2>
-            </div>
-            <p>{content.player.text}</p>
-          </div>
+            <h2 className={styles.srOnly}>
+              {content.navigation.music}
+            </h2>
 
           <DatabaseMusicPlayer language={language} />
         </section>
 
-        <section className={styles.manifestoSection}>
-          <div className={styles.manifestoTitle}>
-            <p className={styles.sectionLabel}>
-              {content.philosophy.eyebrow}
-            </p>
-            <h2>
-              <span>{content.philosophy.first}</span>
-              <span>{content.philosophy.second}</span>
-            </h2>
-          </div>
 
-          <div className={styles.manifestoList}>
-            {content.philosophy.rows.map((row) => (
-              <article
-                key={row.number}
-                className={styles.manifestoRow}
-              >
-                <span>{row.number}</span>
-                <h3>{row.title}</h3>
-                <p>{row.text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.contactSection}>
-          <div>
-            <p className={styles.contactLabel}>
-              {content.contact.eyebrow}
-            </p>
-            <h2>{content.contact.title}</h2>
-          </div>
-
-          <Link
-            href="/contacto"
-            className={styles.contactLink}
+          <section
+            className={styles.contactSection}
+            aria-label={content.navigation.contact}
           >
-            {content.contact.action}
-            <span aria-hidden="true">↗</span>
-          </Link>
-        </section>
+            <Link
+              href="/contacto?tema=musica"
+              className={styles.contactLink}
+            >
+              <span>{content.navigation.contact}</span>
+              <span aria-hidden="true">↗</span>
+            </Link>
+          </section>
       </main>
 
       <footer className={styles.footer}>
