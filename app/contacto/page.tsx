@@ -37,34 +37,34 @@ const translations = {
     },
     hero: {
       location: "Madrid · España",
-      label: "Contacto directo · VANMOTION",
-      first: "Hablemos.",
-      second: "Sin rodeos.",
+      label: "Contacto · VANMOTION",
+      first: "Estamos aquí.",
+      second: "Para ayudarte.",
       foot: "Vehículos · música · ropa · colaboraciones",
     },
     intro: {
-      eyebrow: "Un punto de contacto",
-      title: "Una conversación cercana.",
+      eyebrow: "Contacto",
+      title: "Cuéntanos en qué podemos ayudarte.",
       text:
-        "Cuéntanos qué necesitas. Las consultas se revisan directamente desde VANMOTION y respondemos de forma personal.",
+        "Leemos cada mensaje con atención y respondemos personalmente, con calma y cercanía.",
     },
     channels: {
-      eyebrow: "Canales directos",
+      eyebrow: "Formas de contacto",
       email: "Correo",
       phone: "Teléfono",
       whatsapp: "WhatsApp",
       pending: "Pendiente de configurar",
-      noteTitle: "Atención directa",
+      noteTitle: "Atención personal",
       note:
-        "Las visitas y reuniones se coordinan siempre mediante contacto previo.",
+        "Las visitas y reuniones se coordinan previamente para poder atenderte bien.",
       social: "Redes",
       comingSoon: "Próximamente",
     },
     form: {
-      eyebrow: "Envía tu consulta",
-      title: "Dinos lo necesario.",
+      eyebrow: "Envíanos tu mensaje",
+      title: "Cuéntanos lo que necesites.",
       description:
-        "Selecciona el área y facilita solo los datos imprescindibles para poder responderte.",
+        "Elige el área y comparte solo la información que consideres necesaria. Te responderemos personalmente.",
       successTitle: "Mensaje recibido",
       successDescription:
         "Tu consulta se ha registrado correctamente. VANMOTION se pondrá en contacto contigo.",
@@ -120,34 +120,34 @@ const translations = {
     },
     hero: {
       location: "Madrid · Spain",
-      label: "Direct contact · VANMOTION",
-      first: "Let's talk.",
-      second: "Straight to the point.",
+      label: "Contact · VANMOTION",
+      first: "We are here.",
+      second: "To help.",
       foot: "Vehicles · music · clothing · collaborations",
     },
     intro: {
-      eyebrow: "One contact point",
-      title: "A real conversation.",
+      eyebrow: "Contact",
+      title: "Tell us how we can help.",
       text:
-        "Tell us what you need. Every enquiry is reviewed directly by VANMOTION and answered personally.",
+        "We read every message carefully and reply personally, with time and care.",
     },
     channels: {
-      eyebrow: "Direct channels",
+      eyebrow: "Ways to contact us",
       email: "Email",
       phone: "Telephone",
       whatsapp: "WhatsApp",
       pending: "Pending configuration",
-      noteTitle: "Direct assistance",
+      noteTitle: "Personal attention",
       note:
-        "Visits and meetings are always arranged through prior contact.",
+        "Visits and meetings are arranged in advance so we can give you proper attention.",
       social: "Social media",
       comingSoon: "Coming soon",
     },
     form: {
-      eyebrow: "Send your enquiry",
-      title: "Tell us what matters.",
+      eyebrow: "Send us a message",
+      title: "Tell us what you need.",
       description:
-        "Choose the relevant area and provide only the details we need to answer.",
+        "Choose the area and share only the information you consider necessary. We will reply personally.",
       successTitle: "Message received",
       successDescription:
         "Your enquiry has been registered successfully. VANMOTION will contact you.",
@@ -588,3 +588,5 @@ export default async function ContactoPage({
     </div>
   );
 }
+
+// CONTACTO HUMANO VANMOTION
