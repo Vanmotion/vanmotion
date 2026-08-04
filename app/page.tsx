@@ -12,9 +12,9 @@ export const dynamic = "force-dynamic";
 const translations = {
   es: {
     metadata: {
-      title: "Vanmotion",
+      title: "Vehículos, ropa y música en Madrid",
       description:
-        "Vehículos, música y ropa de VANMOTION en Madrid.",
+        "VANMOTION une vehículos seleccionados, ropa urbana y música con identidad propia desde Madrid.",
     },
     navigation: {
       vehicles: "Vehículos",
@@ -82,9 +82,9 @@ const translations = {
   },
   en: {
     metadata: {
-      title: "Vanmotion",
+      title: "Vehicles, clothing and music from Madrid",
       description:
-        "VANMOTION vehicles, music and clothing in Madrid.",
+        "VANMOTION brings together selected vehicles, urban clothing and original music from Madrid.",
     },
     navigation: {
       vehicles: "Vehicles",
