@@ -11,6 +11,16 @@ import styles from "./producto.module.css";
 
 export const dynamic = "force-dynamic";
 
+const SITE_URL = "https://www.vanmotion.es";
+
+function absoluteUrl(value: string): string {
+  try {
+    return new URL(value, SITE_URL).toString();
+  } catch {
+    return SITE_URL;
+  }
+}
+
 const MANAGED_PRODUCT_SLUGS = [
   "carpe-diem-black-edition-drop-01",
   "carpe-diem-hombre-azul-ford-e150-drop-01",
@@ -132,26 +142,112 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProduct(slug);
+  const [language, product] = await Promise.all([
+    getCurrentLanguage(),
+    getProduct(slug),
+  ]);
 
   if (!product) {
     return {
-      title: "Producto no encontrado · VANMOTION",
+      title: language === "es" ? "Producto no encontrado" : "Product not found",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
-  const language = await getCurrentLanguage();
+  const totalStock = product.variants.reduce(
+    (total, variant) => (variant.active ? total + variant.stock : total),
+    0,
+  );
+  const productStatus = getEffectiveProductStatus(
+    product.status,
+    product.active,
+    totalStock,
+  );
+  const shouldIndex =
+    productStatus !== "DRAFT" &&
+    productStatus !== "HIDDEN";
+
+  const locale = language === "es" ? "es-ES" : "en-GB";
+  const productType =
+    product.productType === "BOMBER"
+      ? language === "es"
+        ? "Bomber"
+        : "Bomber jacket"
+      : language === "es"
+        ? "Camiseta"
+        : "T-shirt";
+  const price = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: product.currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(product.price));
+  const canonicalUrl = `${SITE_URL}/ropa/${product.slug}`;
+  const socialImage = product.images[0]?.url
+    ? absoluteUrl(product.images[0].url)
+    : undefined;
+
+  const title =
+    language === "es"
+      ? `${product.name} · ${productType} urbana`
+      : `${product.name} · ${productType}`;
+
+  const availabilityText =
+    language === "es"
+      ? productStatus === "AVAILABLE"
+        ? `Disponible online desde Madrid por ${price}.`
+        : productStatus === "SOLD_OUT"
+          ? "Actualmente agotada."
+          : productStatus === "COMING_SOON"
+            ? "Próximo lanzamiento."
+            : "Producto de la colección VANMOTION."
+      : productStatus === "AVAILABLE"
+        ? `Available online from Madrid for ${price}.`
+        : productStatus === "SOLD_OUT"
+          ? "Currently sold out."
+          : productStatus === "COMING_SOON"
+            ? "Coming soon."
+            : "Part of the VANMOTION collection.";
+
   const description =
     language === "es"
-      ? product.description ?? product.subtitle ?? product.name
-      : product.descriptionEn ??
-        product.description ??
-        product.subtitle ??
-        product.name;
+      ? `${product.name}. ${productType} VANMOTION${product.color ? ` en color ${product.color}` : ""}. Colección ${product.collection ?? "Drop 01"}. ${availabilityText}`
+      : `${product.name}. VANMOTION ${productType}${product.color ? ` in ${product.color}` : ""}. ${product.collection ?? "Drop 01"} collection. ${availabilityText}`;
 
   return {
-    title: `${product.name} · VANMOTION`,
+    title,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: {
+      index: shouldIndex,
+      follow: shouldIndex,
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: canonicalUrl,
+      siteName: "VANMOTION",
+      images: socialImage
+        ? [
+            {
+              url: socialImage,
+              alt: product.images[0]?.alt ?? product.name,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: socialImage ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: socialImage ? [socialImage] : undefined,
+    },
   };
 }
 
@@ -212,8 +308,71 @@ export default async function ProductPage({
     "LIFESTYLE",
   ] as const;
 
+  const canonicalUrl = `${SITE_URL}/ropa/${product.slug}`;
+  const productImages = product.images.map((image) => absoluteUrl(image.url));
+  const schemaAvailability =
+    productStatus === "AVAILABLE"
+      ? "https://schema.org/InStock"
+      : productStatus === "COMING_SOON"
+        ? "https://schema.org/PreOrder"
+        : productStatus === "SOLD_OUT"
+          ? "https://schema.org/OutOfStock"
+          : "https://schema.org/Discontinued";
+
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    url: canonicalUrl,
+    image: productImages.length > 0 ? productImages : undefined,
+    description:
+      productDescription ||
+      product.subtitle ||
+      product.name,
+    sku: product.slug,
+    brand: {
+      "@type": "Brand",
+      name: "VANMOTION",
+    },
+    category: productType,
+    color: product.color ?? undefined,
+    material: product.material ?? undefined,
+    additionalProperty:
+      productVariants.length > 0
+        ? [
+            {
+              "@type": "PropertyValue",
+              name: content.specs.sizes,
+              value: productVariants
+                .map((variant) => variant.size)
+                .join(", "),
+            },
+          ]
+        : undefined,
+    offers: {
+      "@type": "Offer",
+      url: canonicalUrl,
+      priceCurrency: product.currency,
+      price: Number(product.price),
+      availability: schemaAvailability,
+      itemCondition: "https://schema.org/NewCondition",
+      seller: {
+        "@type": "Organization",
+        name: "VANMOTION",
+        url: SITE_URL,
+      },
+    },
+  };
+
   return (
     <main className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productStructuredData).replace(/</g, "\\u003c"),
+        }}
+      />
+
       <header className={styles.header}>
         <Link href="/" className={styles.brand} aria-label="VANMOTION">
           <Image
