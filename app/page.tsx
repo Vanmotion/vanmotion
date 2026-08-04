@@ -40,8 +40,8 @@ const translations = {
           note: "Seleccionados con criterio.",
           action: "Ver colección",
           href: "/coleccion",
-          image: "/brand/vanmotion-ford-hero.webp",
-          alt: "Ford E-150 azul, vehículo emblema de VANMOTION",
+          image: "/vehiculos/portada-taller-vanmotion.jpg",
+          alt: "Ford VANMOTION elevada durante su revisión en el taller",
           imageClass: "vehicleImage",
         },
         {
@@ -110,8 +110,8 @@ const translations = {
           note: "Selected with purpose.",
           action: "View collection",
           href: "/coleccion",
-          image: "/brand/vanmotion-ford-hero.webp",
-          alt: "Blue Ford E-150, VANMOTION emblem vehicle",
+          image: "/vehiculos/portada-taller-vanmotion.jpg",
+          alt: "VANMOTION Ford raised during its workshop inspection",
           imageClass: "vehicleImage",
         },
         {
