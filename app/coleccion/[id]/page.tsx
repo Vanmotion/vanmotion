@@ -709,11 +709,7 @@ export default async function PublicVehiclePage({
         </div>
 
         <nav className={styles.footerNav}>
-          <Link href="/condiciones-compra">
-            {content.footer.purchaseConditions}
-          </Link>
-          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
-          <Link href="/privacidad">{content.footer.privacy}</Link>
+          <Link href="/aviso-legal">Legal</Link>
         </nav>
 
         <span className={styles.copyright}>© 2026</span>

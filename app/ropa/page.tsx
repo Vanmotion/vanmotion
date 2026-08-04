@@ -533,11 +533,7 @@ export default async function RopaPage() {
         </div>
 
         <nav aria-label={language === "es" ? "Enlaces legales" : "Legal links"}>
-          <Link href="/condiciones-compra">
-            {content.footer.purchaseConditions}
-          </Link>
-          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
-          <Link href="/privacidad">{content.footer.privacy}</Link>
+          <Link href="/aviso-legal">Legal</Link>
         </nav>
 
         <span>© 2026</span>

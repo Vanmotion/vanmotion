@@ -582,9 +582,7 @@ export default async function CollectionPage() {
         </div>
 
         <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaceslegales" : "Legal links"}>
-          <Link href="/condiciones-compra">{content.footer.purchaseConditions}</Link>
-          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
-          <Link href="/privacidad">{content.footer.privacy}</Link>
+          <Link href="/aviso-legal">Legal</Link>
         </nav>
 
         <span className={styles.copyright}>© 2026</span>

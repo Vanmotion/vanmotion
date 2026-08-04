@@ -580,11 +580,7 @@ export default async function ContactoPage({
         </div>
 
         <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaces legales" : "Legal links"}>
-          <Link href="/aviso-legal">{content.footer.legalNotice}</Link>
-          <Link href="/privacidad">{content.footer.privacy}</Link>
-          <Link href="/cookies">{content.footer.cookies}</Link>
-          <Link href="/condiciones-compra">{content.footer.purchaseConditions}</Link>
-          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
+          <Link href="/aviso-legal">Legal</Link>
         </nav>
 
         <span className={styles.copyright}>© 2026</span>
