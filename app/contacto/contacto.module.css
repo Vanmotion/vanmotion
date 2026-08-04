@@ -926,3 +926,245 @@
     padding-bottom: 20px;
   }
 }
+
+/* VANMOTION · CONTACTO COMPACTO EN MÓVIL */
+@media (max-width: 720px) {
+  .header {
+    min-height: 64px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .hero {
+    min-height: 420px;
+  }
+
+  .heroTopline {
+    top: 80px;
+    font-size: 8px;
+    letter-spacing: 0.13em;
+  }
+
+  .heroCopy {
+    left: 14px;
+    right: 14px;
+    bottom: 42px;
+  }
+
+  .heroCopy p {
+    font-size: 8px;
+    letter-spacing: 0.16em;
+  }
+
+  .heroCopy h1,
+  .heroCopyEnglish h1 {
+    margin-top: 10px;
+    font-size: clamp(42px, 13vw, 52px);
+    line-height: 0.84;
+    letter-spacing: -0.06em;
+  }
+
+  .heroFoot {
+    display: none;
+  }
+
+  .introSection {
+    padding: 28px 14px;
+  }
+
+  .introGrid {
+    margin-top: 8px;
+    gap: 12px;
+  }
+
+  .introGrid h2 {
+    font-size: 36px;
+    line-height: 0.9;
+  }
+
+  .introGrid > p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .contactSection {
+    padding: 0 14px 24px;
+    gap: 10px;
+  }
+
+  .channelsPanel {
+    padding: 16px;
+  }
+
+  .contactList {
+    margin-top: 12px;
+  }
+
+  .contactList > div {
+    padding: 9px 0;
+  }
+
+  .contactList dt {
+    font-size: 7px;
+    letter-spacing: 0.13em;
+  }
+
+  .contactList dd {
+    margin-top: 5px;
+    font-size: 16px;
+  }
+
+  .channelNote {
+    margin-top: 14px;
+    padding-top: 13px;
+  }
+
+  .channelNote strong,
+  .socialBlock strong {
+    font-size: 8px;
+    letter-spacing: 0.13em;
+  }
+
+  .channelNote p {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .socialBlock {
+    margin-top: 14px;
+  }
+
+  .socialBlock > div {
+    margin-top: 7px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 7px 14px;
+  }
+
+  .socialBlock a,
+  .socialBlock span {
+    font-size: 11px;
+  }
+
+  .formPanel {
+    padding: 16px;
+  }
+
+  .formHeading {
+    display: block;
+  }
+
+  .formHeading h2 {
+    margin-top: 8px;
+    font-size: 36px;
+    line-height: 0.9;
+  }
+
+  .formHeading > p {
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .form {
+    margin-top: 14px;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .formGrid + .fieldFull,
+  .fieldFull + .fieldFull,
+  .fieldFull + .formGrid {
+    margin-top: 8px;
+  }
+
+  .field label,
+  .fieldFull label {
+    margin-bottom: 5px;
+    font-size: 7px;
+    letter-spacing: 0.12em;
+  }
+
+  .field input,
+  .fieldFull input,
+  .fieldFull select {
+    min-height: 42px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .fieldFull textarea {
+    min-height: 86px;
+    height: 86px;
+    padding: 11px 12px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .formFooter {
+    margin-top: 10px;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .formFooter p {
+    font-size: 8px;
+    line-height: 1.4;
+  }
+
+  .formFooter button {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 0 12px;
+    font-size: 8px;
+  }
+
+  .pathsSection {
+    padding: 24px 14px;
+    gap: 16px;
+  }
+
+  .pathsSection h2 {
+    margin-top: 7px;
+    max-width: 260px;
+    font-size: 36px;
+    line-height: 0.88;
+  }
+
+  .pathLinks a {
+    min-height: 48px;
+    padding: 7px 0;
+    grid-template-columns: 28px 1fr auto;
+    gap: 9px;
+  }
+
+  .pathLinks span {
+    font-size: 7px;
+  }
+
+  .pathLinks strong {
+    font-size: 22px;
+  }
+
+  .pathLinks b {
+    font-size: 16px;
+  }
+
+  .footer {
+    padding: 16px 14px 18px;
+    gap: 10px;
+  }
+
+  .footerNav {
+    gap: 8px 12px;
+  }
+
+  .footerNav a {
+    font-size: 8px;
+  }
+}
