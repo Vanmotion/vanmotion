@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
+import { getDailyNews } from "@/app/lib/daily-news";
 import { prisma } from "@/app/lib/prisma";
 
 import styles from "./coleccion.module.css";
@@ -279,6 +280,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CollectionPage() {
   const language = await getCurrentLanguage();
   const content = translations[language];
+  const [vehicleNews] = await getDailyNews(language);
   const locale = language === "es" ? "es-ES" : "en-GB";
 
   const vehicles = await prisma.vehicle.findMany({
@@ -348,8 +350,8 @@ export default async function CollectionPage() {
       <main>
         <section className={styles.hero} aria-labelledby="collection-hero-title">
           <Image
-            src="/brand/vanmotion-ford-hero.webp"
-            alt="Ford E-150, vehículo emblema de VANMOTION"
+              src="/vehiculos/portada-taller-vanmotion.jpg"
+              alt="Ford VANMOTION elevada en el taller durante su revisión"
             fill
             priority
             sizes="100vw"
@@ -357,21 +359,36 @@ export default async function CollectionPage() {
           />
           <div className={styles.heroShade} aria-hidden="true" />
 
-          <div className={styles.heroTopline}>
-            <span>{content.hero.location}</span>
-            <span>{content.hero.label}</span>
-          </div>
+            <div className={styles.heroTopline}>
+              <span>{content.hero.location}</span>
+              <span>{content.navigation.vehicles}</span>
+            </div>
 
-          <div className={styles.heroCopy}>
-            <p>{content.hero.label}</p>
-            <h1 id="collection-hero-title">
-              <span>{content.hero.titleFirst}</span>
-              <span>{content.hero.titleSecond}</span>
+            <h1 id="collection-hero-title" className={styles.srOnly}>
+              {content.navigation.vehicles}
             </h1>
-          </div>
+
+            <a
+              href={vehicleNews.url}
+              target="_blank"
+              rel="noreferrer"
+              className={styles.heroNews}
+            >
+              <span className={styles.heroNewsLabel}>
+                {language === "es"
+                  ? "Actualidad · Automoción"
+                  : "Latest · Automotive"}
+              </span>
+
+              <strong>{vehicleNews.title}</strong>
+
+              <small>
+                {vehicleNews.source}
+                <span aria-hidden="true"> ↗</span>
+              </small>
+            </a>
 
           <div className={styles.heroFoot}>
-            <span>{content.hero.caption}</span>
             <div className={styles.inventoryCount}>
               <strong>{String(vehicles.length).padStart(2, "0")}</strong>
               <span>{content.hero.count(vehicles.length)}</span>
@@ -379,13 +396,6 @@ export default async function CollectionPage() {
           </div>
         </section>
 
-        <section className={styles.collectionIntro}>
-          <p className={styles.sectionLabel}>{content.collection.eyebrow}</p>
-          <div className={styles.introGrid}>
-            <h2>{content.collection.title}</h2>
-            <p>{content.collection.text}</p>
-          </div>
-        </section>
 
         <section className={styles.vehiclesSection}>
           {vehicles.length === 0 ? (
@@ -542,37 +552,16 @@ export default async function CollectionPage() {
           )}
         </section>
 
-        <section className={styles.manifestoSection}>
-          <div className={styles.manifestoTitle}>
-            <p className={styles.sectionLabel}>{content.philosophy.eyebrow}</p>
-            <h2>
-              <span>{content.philosophy.first}</span>
-              <span>{content.philosophy.second}</span>
-            </h2>
-          </div>
 
-          <div className={styles.manifestoList}>
-            {content.philosophy.rows.map((row) => (
-              <article key={row.number} className={styles.manifestoRow}>
-                <span>{row.number}</span>
-                <h3>{row.title}</h3>
-                <p>{row.text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.contactSection}>
-          <div>
-            <p className={styles.contactLabel}>{content.contact.eyebrow}</p>
-            <h2>{content.contact.title}</h2>
-          </div>
-
-          <Link href="/contacto" className={styles.contactLink}>
-            {content.contact.action}
-            <span aria-hidden="true">↗</span>
-          </Link>
-        </section>
+          <section
+            className={styles.contactSection}
+            aria-label={content.navigation.contact}
+          >
+            <Link href="/contacto" className={styles.contactLink}>
+              <span>{content.navigation.contact}</span>
+              <span aria-hidden="true">↗</span>
+            </Link>
+          </section>
       </main>
 
       <footer className={styles.footer}>
