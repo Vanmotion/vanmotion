@@ -212,7 +212,7 @@ export default async function MusicPage() {
         >
           <div className={styles.heroMedia} aria-hidden="true">
             <Image
-              src="/uploads/music-covers/vanmotion-1784378515490.png"
+              src="/musica/editorial/vanmotion-portada-musica.png"
               alt=""
               fill
               priority
