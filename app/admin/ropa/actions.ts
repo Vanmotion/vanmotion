@@ -416,37 +416,37 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
   "carpe-diem-black-edition-drop-01": [
     {
       view: "LIFESTYLE",
-      url: "/ropa/aprobadas/hombre/camiseta-negra/lifestyle.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/lifestyle-v2.webp",
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/hombre/camiseta-negra/frontal.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v2.webp",
     },
     {
       view: "BACK",
-      url: "/ropa/aprobadas/hombre/camiseta-negra/trasera.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/trasera-v2.webp",
     },
     {
       view: "DETAIL",
-      url: "/ropa/aprobadas/hombre/camiseta-negra/etiqueta.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/etiqueta-v2.webp",
     },
   ],
   "carpe-diem-hombre-azul-ford-e150-drop-01": [
     {
       view: "LIFESTYLE",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle-v2.webp",
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v2.webp",
     },
     {
       view: "BACK",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v2.webp",
     },
     {
       view: "DETAIL",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v2.webp",
     },
   ],
   "carpe-diem-mujer-negra-drop-01": [
