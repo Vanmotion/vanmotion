@@ -413,7 +413,7 @@ type ApprovedProductImage = {
 const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
   Record<string, readonly ApprovedProductImage[]>
 > = {
-  "carpe-diem-hombre-negra-drop-01": [
+  "carpe-diem-black-edition-drop-01": [
     {
       view: "LIFESTYLE",
       url: "/ropa/aprobadas/hombre/camiseta-negra/lifestyle.webp",
