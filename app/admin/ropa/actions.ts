@@ -413,6 +413,42 @@ type ApprovedProductImage = {
 const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
   Record<string, readonly ApprovedProductImage[]>
 > = {
+  "carpe-diem-hombre-negra-drop-01": [
+    {
+      view: "LIFESTYLE",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/lifestyle.webp",
+    },
+    {
+      view: "FRONT",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/frontal.webp",
+    },
+    {
+      view: "BACK",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/trasera.webp",
+    },
+    {
+      view: "DETAIL",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/etiqueta.webp",
+    },
+  ],
+  "carpe-diem-hombre-azul-ford-e150-drop-01": [
+    {
+      view: "LIFESTYLE",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle.webp",
+    },
+    {
+      view: "FRONT",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal.webp",
+    },
+    {
+      view: "BACK",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera.webp",
+    },
+    {
+      view: "DETAIL",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta.webp",
+    },
+  ],
   "carpe-diem-mujer-negra-drop-01": [
     {
       view: "LIFESTYLE",
