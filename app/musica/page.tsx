@@ -201,7 +201,14 @@ export default async function MusicPage() {
             {content.navigation.music}
           </Link>
           <Link href="/ropa">{content.navigation.clothing}</Link>
-          <Link href="/contacto">{content.navigation.contact}</Link>
+          <Link
+            href="/contacto"
+            aria-hidden="true"
+            tabIndex={-1}
+            style={{ visibility: "hidden", pointerEvents: "none" }}
+          >
+            {content.navigation.contact}
+          </Link>
         </nav>
       </header>
 

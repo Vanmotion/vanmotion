@@ -401,7 +401,12 @@ export default async function ProductPage({
           <Link href="/ropa" className={styles.active}>
             {language === "es" ? "Ropa" : "Clothing"}
           </Link>
-          <Link href="/contacto">
+          <Link
+            href="/contacto"
+            aria-hidden="true"
+            tabIndex={-1}
+            style={{ visibility: "hidden", pointerEvents: "none" }}
+          >
             {language === "es" ? "Contacto" : "Contact"}
           </Link>
         </nav>

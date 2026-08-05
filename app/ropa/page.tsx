@@ -318,7 +318,14 @@ export default async function RopaPage() {
           <Link href="/ropa" className={styles.active} aria-current="page">
             {content.navigation.clothing}
           </Link>
-          <Link href="/contacto">{content.navigation.contact}</Link>
+          <Link
+            href="/contacto"
+            aria-hidden="true"
+            tabIndex={-1}
+            style={{ visibility: "hidden", pointerEvents: "none" }}
+          >
+            {content.navigation.contact}
+          </Link>
         </nav>
       </header>
 
