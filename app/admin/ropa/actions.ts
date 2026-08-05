@@ -12,10 +12,10 @@ import { prisma } from "@/app/lib/prisma";
 const SESSION_COOKIE_NAME = "vanmotion_admin_session";
 
 const PRODUCT_IMAGE_VIEWS = {
-  FRONT: { sortOrder: 0 },
-  BACK: { sortOrder: 1 },
-  DETAIL: { sortOrder: 2 },
-  LIFESTYLE: { sortOrder: 3 },
+  LIFESTYLE: { sortOrder: 0 },
+  FRONT: { sortOrder: 1 },
+  BACK: { sortOrder: 2 },
+  DETAIL: { sortOrder: 3 },
 } as const;
 
 const MAX_PRODUCT_IMAGE_SIZE = 8 * 1024 * 1024;
@@ -405,6 +405,125 @@ const LEGACY_PRODUCT_IMAGE_URLS = [
   "/ropa/carpe-diem-black-edition.webp",
 ] as const;
 
+type ApprovedProductImage = {
+  view: ProductImageView;
+  url: string;
+};
+
+const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
+  Record<string, readonly ApprovedProductImage[]>
+> = {
+  "carpe-diem-mujer-negra-drop-01": [
+    {
+      view: "LIFESTYLE",
+      url: "/ropa/aprobadas/mujer/camiseta-negra/lifestyle.webp",
+    },
+    {
+      view: "FRONT",
+      url: "/ropa/aprobadas/mujer/camiseta-negra/frontal.webp",
+    },
+    {
+      view: "BACK",
+      url: "/ropa/aprobadas/mujer/camiseta-negra/trasera.webp",
+    },
+    {
+      view: "DETAIL",
+      url: "/ropa/aprobadas/mujer/camiseta-negra/etiqueta.webp",
+    },
+  ],
+  "carpe-diem-mujer-azul-ford-e150-drop-01": [
+    {
+      view: "LIFESTYLE",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/lifestyle.webp",
+    },
+    {
+      view: "FRONT",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/frontal.webp",
+    },
+    {
+      view: "BACK",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/trasera.webp",
+    },
+    {
+      view: "DETAIL",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta.webp",
+    },
+  ],
+};
+
+async function installApprovedProductImages(
+  productId: string,
+  configuration: ClothingProductConfiguration,
+): Promise<void> {
+  const approvedImages = APPROVED_PRODUCT_IMAGES_BY_SLUG[configuration.slug];
+
+  if (!approvedImages) {
+    return;
+  }
+
+  const approvedViews = approvedImages.map((image) => image.view);
+  const currentImages = await prisma.productImage.findMany({
+    where: {
+      productId,
+      view: { in: approvedViews },
+    },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+
+  const imagesByView = new Map<
+    ProductImageView,
+    typeof currentImages
+  >();
+
+  for (const image of currentImages) {
+    const view = image.view as ProductImageView;
+    const imagesForView = imagesByView.get(view) ?? [];
+    imagesForView.push(image);
+    imagesByView.set(view, imagesForView);
+  }
+
+  await prisma.$transaction(
+    approvedImages.flatMap((approvedImage) => {
+      const imagesForView = imagesByView.get(approvedImage.view) ?? [];
+      const currentImage = imagesForView[0];
+      const duplicatedImageIds = imagesForView
+        .slice(1)
+        .map((image) => image.id);
+      const imageData = {
+        url: approvedImage.url,
+        alt: getImageAlt(configuration, approvedImage.view),
+        view: approvedImage.view,
+        sortOrder: PRODUCT_IMAGE_VIEWS[approvedImage.view].sortOrder,
+      };
+
+      return [
+        currentImage
+          ? prisma.productImage.update({
+              where: { id: currentImage.id },
+              data: imageData,
+            })
+          : prisma.productImage.create({
+              data: {
+                productId,
+                ...imageData,
+              },
+            }),
+        ...(duplicatedImageIds.length > 0
+          ? [
+              prisma.productImage.deleteMany({
+                where: { id: { in: duplicatedImageIds } },
+              }),
+            ]
+          : []),
+      ];
+    }),
+  );
+
+  await Promise.all(
+    currentImages.map((image) => removeStoredProductImage(image.url)),
+  );
+}
+
 export async function createVanmotionClothingCollectionAction(): Promise<void> {
   await requireAdminSession();
 
@@ -513,6 +632,8 @@ export async function createVanmotionClothingCollectionAction(): Promise<void> {
           ]
         : []),
     ]);
+
+    await installApprovedProductImages(product.id, configuration);
   }
 
   refreshClothingPages();

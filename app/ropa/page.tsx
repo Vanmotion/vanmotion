@@ -387,8 +387,8 @@ export default async function RopaPage() {
               );
 
               const primaryImage =
-                imagesByView.get("FRONT") ??
                 imagesByView.get("LIFESTYLE") ??
+                imagesByView.get("FRONT") ??
                 imagesByView.get("BACK");
 
               const productType =
