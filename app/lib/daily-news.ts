@@ -8,7 +8,7 @@ export type DailyNewsItem = {
 
 type Language = "es" | "en";
 
-const DAILY_SECONDS = 60 * 60 * 24;
+const DAILY_SECONDS = 60 * 60;
 
 const TOPICS = [
   "vehicles",
@@ -271,7 +271,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-google-news-v1"],
+  ["vanmotion-google-news-v2"],
   {
     revalidate: DAILY_SECONDS,
     tags: ["vanmotion-daily-news"],
