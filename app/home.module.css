@@ -860,7 +860,19 @@
 }
 
 .hero {
-  min-height: 78svh;
+  min-height: clamp(560px, 74svh, 760px);
+}
+
+.heroImage {
+  object-position: 58% 42%;
+  transform: none;
+  filter: saturate(0.9) contrast(1.02) brightness(0.9);
+}
+
+.heroShade {
+  background:
+    linear-gradient(90deg, rgba(5, 5, 4, 0.66) 0%, rgba(5, 5, 4, 0.26) 40%, rgba(5, 5, 4, 0.08) 72%),
+    linear-gradient(180deg, rgba(5, 5, 4, 0.28) 0%, rgba(5, 5, 4, 0.04) 40%, rgba(5, 5, 4, 0.56) 100%);
 }
 
 .paths {

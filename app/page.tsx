@@ -266,7 +266,7 @@ export default async function Home() {
       <main>
         <section className={styles.hero} aria-labelledby="hero-title">
           <Image
-            src="/brand/vanmotion-ford-hero.webp"
+            src="/brand/vanmotion-portada-principal-v2.webp"
             alt={content.hero.vehicle}
             fill
             priority
