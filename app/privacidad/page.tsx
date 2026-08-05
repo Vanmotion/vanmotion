@@ -14,194 +14,154 @@ const translations = {
   es: {
     metadataTitle: "Política de privacidad",
     metadataDescription:
-      "Información esencial sobre el tratamiento y la protección de datos personales en VANMOTION.",
-    navigation: {
+      "Política de privacidad de VANMOTION: datos tratados, finalidades, bases jurídicas, conservación y derechos.",
+    nav: {
+      home: "Inicio",
       vehicles: "Vehículos",
       music: "Música",
       clothing: "Ropa",
-      contact: "Contacto",
     },
-    hero: {
-      location: "Madrid · España",
-      label: "Protección de datos · VANMOTION",
-      titleFirst: "Tus datos.",
-      titleSecond: "Bajo control.",
-      caption: "Uso necesario · protección · derechos",
-      update: "Actualizado · 28 julio 2026",
+    document: {
+      kicker: "Documento legal · Protección de datos",
+      title: "Política de privacidad",
+      subtitle:
+        "Información clara sobre el uso y la protección de los datos personales en VANMOTION.",
+      updated: "Última actualización: 5 de agosto de 2026",
+      legalFramework: "RGPD · LOPDGDD",
     },
-    owner: {
-      eyebrow: "Responsable",
-      title: "Quién cuida la información.",
-      ownerName: "Titular",
-      commercialName: "Marca",
-      taxId: "NIF",
-      phone: "Teléfono",
-      email: "Correo",
+    summary: {
+      title: "Información esencial",
+      controllerLabel: "Responsable",
+      controllerValue: "VANMOTION",
+      contactLabel: "Canal de contacto",
+      contactValue: "Formulario de contacto",
+      legalLabel: "Identificación legal",
+      legalValue: "Disponible en el aviso legal",
     },
-    privacy: {
-      eyebrow: "Tratamiento esencial",
-      title: "Solo lo necesario. Nada más.",
-      items: [
-        {
-          title: "Qué datos utilizamos",
-          text:
-            "Datos de identificación y contacto, consultas, pedidos, envío, identificadores de pago y datos técnicos de seguridad. VANMOTION no recibe ni almacena el número completo de la tarjeta.",
-        },
-        {
-          title: "Para qué y con qué base",
-          text:
-            "Atendemos consultas y medidas precontractuales, ejecutamos compras y entregas, cumplimos obligaciones legales y protegemos la web frente a fraude o usos indebidos. No enviamos publicidad sin una base válida.",
-        },
-        {
-          title: "Proveedores y destinatarios",
-          text:
-            "Los datos necesarios pueden ser tratados por Vercel, el proveedor de base de datos, Resend, Stripe, transportistas, asesores y autoridades cuando proceda. VANMOTION no vende datos personales ni los cede para publicidad ajena.",
-        },
-        {
-          title: "Transferencias internacionales",
-          text:
-            "Algunos proveedores tecnológicos pueden tratar datos fuera del Espacio Económico Europeo. Cuando sea necesario, se aplicarán decisiones de adecuación, cláusulas contractuales tipo u otras garantías reconocidas por el RGPD.",
-        },
-        {
-          title: "Conservación y seguridad",
-          text:
-            "Los datos se conservan solo durante la gestión solicitada y los plazos legales aplicables. Se utilizan medidas de acceso privado, pago seguro mediante Stripe y controles técnicos destinados a evitar pérdida, alteración o acceso no autorizado.",
-        },
-        {
-          title: "Tus derechos",
-          text:
-            "Puedes solicitar acceso, rectificación, supresión, oposición, limitación y portabilidad, o retirar un consentimiento cuando corresponda. Escribe al correo indicado; si la respuesta no es adecuada, puedes reclamar ante la AEPD.",
-        },
-        {
-          title: "Información adicional",
-          text:
-            "No se adoptan decisiones con efectos jurídicos basadas únicamente en procesos automatizados ni se elaboran perfiles publicitarios con formularios o pedidos. Los menores deben actuar con la intervención de sus representantes legales.",
-        },
-      ],
-    },
-    documents: {
-      eyebrow: "Documentos relacionados",
-      title: "Todo conectado.",
-      cookies: "Cookies",
-      purchase: "Condiciones de compra",
-      legal: "Aviso legal",
-      withdrawal: "Desistimiento",
-    },
-    references: {
-      title: "Referencias oficiales",
-      aepd: "Derechos · AEPD",
-      rgpd: "RGPD · EUR-Lex",
-      transfers: "Transferencias · AEPD",
-      note:
-        "Los enlaces oficiales se facilitan como referencia normativa y no implican certificación o respaldo institucional.",
-    },
-    footer: {
-      city: "Madrid · España",
+    sections: [
+      {
+        title: "Datos que tratamos",
+        text:
+          "Podemos tratar los datos que facilites al realizar una consulta o una compra: nombre, datos de contacto, dirección de entrega, información del pedido y comunicaciones relacionadas. También pueden tratarse datos técnicos necesarios para la seguridad y el funcionamiento de la web. VANMOTION no recibe ni almacena el número completo de tu tarjeta bancaria.",
+      },
+      {
+        title: "Finalidades y bases jurídicas",
+        text:
+          "Usamos los datos para responder consultas y solicitudes precontractuales, gestionar pedidos, pagos, entregas y atención posterior, cumplir obligaciones legales y proteger la web frente a fraude o usos indebidos. Las bases jurídicas son la aplicación de medidas precontractuales, la ejecución del contrato, el cumplimiento de obligaciones legales, el interés legítimo en la seguridad y, cuando corresponda, tu consentimiento.",
+      },
+      {
+        title: "Destinatarios y proveedores",
+        text:
+          "Los datos estrictamente necesarios pueden ser tratados por proveedores de alojamiento e infraestructura, base de datos, correo transaccional, pagos, transporte, soporte técnico, asesoramiento profesional y autoridades competentes cuando exista obligación legal. VANMOTION no vende datos personales ni los comunica para publicidad de terceros.",
+      },
+      {
+        title: "Transferencias internacionales",
+        text:
+          "Algunos proveedores tecnológicos pueden prestar servicios desde países situados fuera del Espacio Económico Europeo. Cuando resulte aplicable, el tratamiento se amparará en una decisión de adecuación, cláusulas contractuales tipo u otras garantías reconocidas por la normativa de protección de datos.",
+      },
+      {
+        title: "Conservación y seguridad",
+        text:
+          "Los datos se conservarán durante el tiempo necesario para atender la finalidad correspondiente y, después, durante los plazos exigidos para cumplir obligaciones legales o atender posibles responsabilidades. Se aplican medidas razonables de control de acceso, confidencialidad, integridad y seguridad de pagos.",
+      },
+      {
+        title: "Tus derechos",
+        text:
+          "Puedes solicitar acceso, rectificación, supresión, oposición, limitación y portabilidad, así como retirar el consentimiento cuando esa sea la base del tratamiento. Puedes ejercerlos mediante el formulario de contacto. También puedes presentar una reclamación ante la Agencia Española de Protección de Datos.",
+      },
+      {
+        title: "Decisiones automatizadas y menores",
+        text:
+          "No se adoptan decisiones con efectos jurídicos basadas únicamente en tratamientos automatizados ni se elaboran perfiles publicitarios a partir de consultas o pedidos. Los menores deberán utilizar los servicios con la intervención de sus representantes legales cuando sea necesario.",
+      },
+    ],
+    closing: {
+      title: "Control y transparencia",
+      text:
+        "Esta política podrá actualizarse cuando cambien los servicios, los proveedores o la normativa aplicable. La versión publicada en esta página será la vigente.",
       contact: "Ejercer derechos",
+      legal: "Consultar aviso legal",
+      cookies: "Política de cookies",
+      aepd: "Agencia Española de Protección de Datos",
       back: "Volver a VANMOTION",
     },
   },
   en: {
     metadataTitle: "Privacy policy",
     metadataDescription:
-      "Essential information about the processing and protection of personal data at VANMOTION.",
-    navigation: {
+      "VANMOTION privacy policy: data processed, purposes, legal bases, retention and rights.",
+    nav: {
+      home: "Home",
       vehicles: "Vehicles",
       music: "Music",
       clothing: "Clothing",
-      contact: "Contact",
     },
-    hero: {
-      location: "Madrid · Spain",
-      label: "Data protection · VANMOTION",
-      titleFirst: "Your data.",
-      titleSecond: "Under control.",
-      caption: "Necessary use · protection · rights",
-      update: "Updated · 28 July 2026",
+    document: {
+      kicker: "Legal document · Data protection",
+      title: "Privacy policy",
+      subtitle:
+        "Clear information about the use and protection of personal data at VANMOTION.",
+      updated: "Last updated: 5 August 2026",
+      legalFramework: "GDPR · Spanish data protection law",
     },
-    owner: {
-      eyebrow: "Controller",
-      title: "Who looks after the information.",
-      ownerName: "Owner",
-      commercialName: "Brand",
-      taxId: "Tax ID",
-      phone: "Telephone",
-      email: "Email",
+    summary: {
+      title: "Essential information",
+      controllerLabel: "Controller",
+      controllerValue: "VANMOTION",
+      contactLabel: "Contact channel",
+      contactValue: "Contact form",
+      legalLabel: "Legal identification",
+      legalValue: "Available in the legal notice",
     },
-    privacy: {
-      eyebrow: "Essential processing",
-      title: "Only what is needed. Nothing more.",
-      items: [
-        {
-          title: "Data we use",
-          text:
-            "Identification and contact details, enquiries, orders, delivery information, payment identifiers and technical security data. VANMOTION does not receive or store the full card number.",
-        },
-        {
-          title: "Purposes and legal bases",
-          text:
-            "We handle enquiries and pre-contractual steps, perform purchases and deliveries, comply with legal obligations and protect the website against fraud or misuse. We do not send advertising without a valid legal basis.",
-        },
-        {
-          title: "Providers and recipients",
-          text:
-            "Necessary data may be processed by Vercel, the database provider, Resend, Stripe, carriers, advisers and authorities where appropriate. VANMOTION does not sell personal data or disclose it for unrelated advertising.",
-        },
-        {
-          title: "International transfers",
-          text:
-            "Some technology providers may process data outside the European Economic Area. Where required, adequacy decisions, standard contractual clauses or other safeguards recognised by the GDPR will apply.",
-        },
-        {
-          title: "Retention and security",
-          text:
-            "Data is kept only for the requested service and the applicable statutory periods. Private access, secure Stripe payments and technical controls are used to prevent loss, alteration or unauthorised access.",
-        },
-        {
-          title: "Your rights",
-          text:
-            "You may request access, rectification, erasure, objection, restriction and portability, or withdraw consent where applicable. Write to the email shown; if the response is inadequate, you may complain to the Spanish Data Protection Agency.",
-        },
-        {
-          title: "Additional information",
-          text:
-            "No decisions producing legal effects are made solely through automated processing, and enquiry or order data is not used to create advertising profiles. Children must act with the involvement of their legal representatives.",
-        },
-      ],
-    },
-    documents: {
-      eyebrow: "Related documents",
-      title: "Everything connected.",
-      cookies: "Cookies",
-      purchase: "Purchase conditions",
-      legal: "Legal notice",
-      withdrawal: "Withdrawal",
-    },
-    references: {
-      title: "Official references",
-      aepd: "Rights · AEPD",
-      rgpd: "GDPR · EUR-Lex",
-      transfers: "Transfers · AEPD",
-      note:
-        "Official links are provided as legal references and do not imply certification or institutional endorsement.",
-    },
-    footer: {
-      city: "Madrid · Spain",
-      contact: "Exercise rights",
+    sections: [
+      {
+        title: "Data we process",
+        text:
+          "We may process the data you provide when making an enquiry or purchase: name, contact details, delivery address, order information and related communications. Technical data required for website security and operation may also be processed. VANMOTION does not receive or store your full card number.",
+      },
+      {
+        title: "Purposes and legal bases",
+        text:
+          "We use data to answer enquiries and pre-contractual requests, manage orders, payments, deliveries and after-sales support, comply with legal obligations and protect the website against fraud or misuse. The legal bases are pre-contractual steps, performance of a contract, compliance with legal obligations, legitimate interests in security and, where applicable, your consent.",
+      },
+      {
+        title: "Recipients and providers",
+        text:
+          "Strictly necessary data may be processed by hosting and infrastructure, database, transactional email, payment, transport, technical support and professional advisory providers, and by competent authorities where legally required. VANMOTION does not sell personal data or disclose it for third-party advertising.",
+      },
+      {
+        title: "International transfers",
+        text:
+          "Some technology providers may deliver services from countries outside the European Economic Area. Where applicable, processing will rely on an adequacy decision, standard contractual clauses or other safeguards recognised by data protection law.",
+      },
+      {
+        title: "Retention and security",
+        text:
+          "Data will be kept for as long as necessary for the relevant purpose and then for the periods required to comply with legal obligations or address potential liabilities. Reasonable access control, confidentiality, integrity and payment-security measures are applied.",
+      },
+      {
+        title: "Your rights",
+        text:
+          "You may request access, rectification, erasure, objection, restriction and portability, and withdraw consent where consent is the legal basis. You may exercise these rights through the contact form. You may also lodge a complaint with the Spanish Data Protection Agency.",
+      },
+      {
+        title: "Automated decisions and children",
+        text:
+          "No decisions producing legal effects are made solely through automated processing, and enquiry or order data is not used to create advertising profiles. Children must use the services with the involvement of their legal representatives where required.",
+      },
+    ],
+    closing: {
+      title: "Control and transparency",
+      text:
+        "This policy may be updated when services, providers or applicable law change. The version published on this page will be the current version.",
+      contact: "Exercise your rights",
+      legal: "View legal notice",
+      cookies: "Cookie policy",
+      aepd: "Spanish Data Protection Agency",
       back: "Return to VANMOTION",
     },
   },
 } as const;
-
-function requireLegalValue(variableName: string): string {
-  const value = process.env[variableName]?.trim();
-
-  if (!value) {
-    throw new Error(`Falta la variable legal ${variableName}.`);
-  }
-
-  return value;
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
@@ -224,19 +184,10 @@ export default async function PrivacyPage() {
   const language = await getCurrentLanguage();
   const content = translations[language];
 
-  const legal = {
-    ownerName: requireLegalValue("LEGAL_OWNER_NAME"),
-    nif: requireLegalValue("LEGAL_OWNER_NIF"),
-    phone: requireLegalValue("LEGAL_PHONE"),
-    email: requireLegalValue("LEGAL_EMAIL"),
-  };
-
-  const telephoneHref = legal.phone.replace(/[^\d+]/g, "");
-
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+      <header className={styles.siteHeader}>
+        <Link href="/" className={styles.brand} aria-label={content.nav.home}>
           <Image
             src="/brand/vanmotion-mark.webp"
             alt=""
@@ -245,174 +196,108 @@ export default async function PrivacyPage() {
             priority
             className={styles.brandMark}
           />
-          <span>Vanmotion</span>
+          <span>VANMOTION</span>
         </Link>
 
-        <nav
-          className={styles.navigation}
-          aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
-        >
-          <Link href="/coleccion">{content.navigation.vehicles}</Link>
-          <Link href="/musica">{content.navigation.music}</Link>
-          <Link href="/ropa">{content.navigation.clothing}</Link>
-          <Link
-            href="/contacto"
-            aria-hidden="true"
-            tabIndex={-1}
-            style={{ visibility: "hidden", pointerEvents: "none" }}
-          >
-            {content.navigation.contact}
-          </Link>
+        <nav className={styles.navigation} aria-label={content.nav.home}>
+          <Link href="/coleccion">{content.nav.vehicles}</Link>
+          <Link href="/musica">{content.nav.music}</Link>
+          <Link href="/ropa">{content.nav.clothing}</Link>
         </nav>
       </header>
 
-      <main>
-        <section className={styles.hero} aria-labelledby="privacy-title">
-          <div className={styles.heroTopline}>
-            <span>{content.hero.location}</span>
-            <span>{content.hero.update}</span>
-          </div>
-
-          <div className={styles.heroCopy}>
-            <p>{content.hero.label}</p>
-            <h1 id="privacy-title">
-              <span>{content.hero.titleFirst}</span>
-              <span>{content.hero.titleSecond}</span>
-            </h1>
-          </div>
-
-          <div className={styles.heroFoot}>
-            <span>{content.hero.caption}</span>
-            <a href={`mailto:${legal.email}`}>{content.footer.contact}</a>
-          </div>
-        </section>
-
-        <section className={styles.ownerSection}>
-          <div className={styles.ownerHeading}>
-            <p className={styles.sectionLabel}>{content.owner.eyebrow}</p>
-            <h2>{content.owner.title}</h2>
-          </div>
-
-          <dl className={styles.ownerGrid}>
-            <div>
-              <dt>{content.owner.ownerName}</dt>
-              <dd>{legal.ownerName}</dd>
+      <main className={styles.workspace}>
+        <article className={styles.sheet} aria-labelledby="privacy-title">
+          <header className={styles.documentHeader}>
+            <div className={styles.documentIdentity}>
+              <Image
+                src="/brand/vanmotion-mark.webp"
+                alt=""
+                width={90}
+                height={44}
+                className={styles.documentMark}
+              />
+              <div>
+                <strong>VANMOTION</strong>
+                <span>{content.document.legalFramework}</span>
+              </div>
             </div>
-            <div>
-              <dt>{content.owner.commercialName}</dt>
-              <dd>VANMOTION</dd>
-            </div>
-            <div>
-              <dt>{content.owner.taxId}</dt>
-              <dd>{legal.nif}</dd>
-            </div>
-            <div>
-              <dt>{content.owner.phone}</dt>
-              <dd>
-                <a href={`tel:${telephoneHref}`}>{legal.phone}</a>
-              </dd>
-            </div>
-            <div className={styles.ownerWide}>
-              <dt>{content.owner.email}</dt>
-              <dd>
-                <a href={`mailto:${legal.email}`}>{legal.email}</a>
-              </dd>
-            </div>
-          </dl>
-        </section>
 
-        <section className={styles.privacySection}>
-          <div className={styles.privacyHeading}>
-            <p className={styles.sectionLabel}>{content.privacy.eyebrow}</p>
-            <h2>{content.privacy.title}</h2>
-          </div>
+            <div className={styles.documentMeta}>
+              <span>VM · PRIVACY · 01</span>
+              <span>{content.document.updated}</span>
+            </div>
+          </header>
 
-          <ol className={styles.privacyList}>
-            {content.privacy.items.map((item, index) => (
-              <li key={item.title}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
+          <section className={styles.titleBlock}>
+            <p>{content.document.kicker}</p>
+            <h1 id="privacy-title">{content.document.title}</h1>
+            <p className={styles.subtitle}>{content.document.subtitle}</p>
+          </section>
+
+          <section className={styles.summary} aria-labelledby="summary-title">
+            <h2 id="summary-title">{content.summary.title}</h2>
+            <dl>
+              <div>
+                <dt>{content.summary.controllerLabel}</dt>
+                <dd>{content.summary.controllerValue}</dd>
+              </div>
+              <div>
+                <dt>{content.summary.contactLabel}</dt>
+                <dd>
+                  <Link href="/contacto">{content.summary.contactValue}</Link>
+                </dd>
+              </div>
+              <div>
+                <dt>{content.summary.legalLabel}</dt>
+                <dd>
+                  <Link href="/aviso-legal">{content.summary.legalValue}</Link>
+                </dd>
+              </div>
+            </dl>
+          </section>
+
+          <ol className={styles.sections}>
+            {content.sections.map((section, index) => (
+              <li key={section.title}>
+                <span className={styles.sectionNumber}>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h2>{section.title}</h2>
+                  <p>{section.text}</p>
+                </div>
               </li>
             ))}
           </ol>
-        </section>
 
-        <section className={styles.documentsSection}>
-          <div>
-            <p className={styles.documentsLabel}>{content.documents.eyebrow}</p>
-            <h2>{content.documents.title}</h2>
-          </div>
+          <section className={styles.closing}>
+            <div>
+              <span>VANMOTION · PRIVACIDAD</span>
+              <h2>{content.closing.title}</h2>
+              <p>{content.closing.text}</p>
+            </div>
 
-          <nav className={styles.documentsNav} aria-label={content.documents.eyebrow}>
-            <Link href="/cookies">
-              <span>01</span>
-              <strong>{content.documents.cookies}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-            <Link href="/condiciones-compra">
-              <span>02</span>
-              <strong>{content.documents.purchase}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-            <Link href="/aviso-legal">
-              <span>03</span>
-              <strong>{content.documents.legal}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-            <Link href="/desistimiento">
-              <span>04</span>
-              <strong>{content.documents.withdrawal}</strong>
-              <b aria-hidden="true">↗</b>
-            </Link>
-          </nav>
-        </section>
+            <nav className={styles.documentLinks} aria-label={content.closing.title}>
+              <Link href="/contacto">{content.closing.contact}</Link>
+              <Link href="/aviso-legal">{content.closing.legal}</Link>
+              <Link href="/cookies">{content.closing.cookies}</Link>
+              <a
+                href="https://www.aepd.es"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {content.closing.aepd}
+              </a>
+            </nav>
+          </section>
 
-        <section className={styles.referencesSection}>
-          <div>
-            <p className={styles.documentsLabel}>{content.references.title}</p>
-            <p>{content.references.note}</p>
-          </div>
-
-          <div className={styles.referencesLinks}>
-            <a
-              href="https://www.aepd.es/derechos-y-deberes/conoce-tus-derechos"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {content.references.aepd}
-            </a>
-            <a
-              href="https://eur-lex.europa.eu/eli/reg/2016/679/oj"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {content.references.rgpd}
-            </a>
-            <a
-              href="https://www.aepd.es/derechos-y-deberes/cumple-tus-deberes/medidas-de-cumplimiento/garantias-transferencias-datos-personales"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {content.references.transfers}
-            </a>
-          </div>
-        </section>
+          <footer className={styles.documentFooter}>
+            <span>© 2026 VANMOTION · Madrid · España</span>
+            <Link href="/">{content.closing.back}</Link>
+          </footer>
+        </article>
       </main>
-
-      <footer className={styles.footer}>
-        <div className={styles.footerBrand}>
-          <strong>Vanmotion</strong>
-          <span>{content.footer.city}</span>
-        </div>
-
-        <div className={styles.footerLinks}>
-          <a href={`mailto:${legal.email}`}>{content.footer.contact}</a>
-          <Link href="/">{content.footer.back}</Link>
-        </div>
-
-        <span className={styles.copyright}>© 2026</span>
-      </footer>
     </div>
   );
 }
