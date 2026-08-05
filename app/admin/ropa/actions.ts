@@ -80,9 +80,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro",
     material: "Algodón peinado premium · 220–240 gsm",
     description:
-      "Camiseta de algodón peinado premium, con tacto suave, gramaje consistente y corte relajado de inspiración streetwear. Una prenda cómoda, resistente y fácil de combinar.",
+      "Camiseta de algodón peinado premium con gramaje elevado y tacto suave. Su corte relajado aporta una caída estructurada y cómoda, inspirada en el streetwear contemporáneo. Una prenda resistente y versátil, pensada para mantener su presencia tanto sola como combinada con otras capas.",
     descriptionEn:
-      "Premium combed cotton T-shirt with a soft feel, substantial weight and a relaxed streetwear-inspired fit. Comfortable, durable and easy to style.",
+      "Premium combed cotton T-shirt with a substantial weight and soft feel. Its relaxed fit creates a structured, comfortable drape inspired by contemporary streetwear. A durable and versatile piece designed to hold its presence worn alone or layered.",
     sizes: MEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 0,
@@ -99,9 +99,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Algodón peinado premium · 220–240 gsm",
     description:
-      "Camiseta de algodón peinado premium en azul Ford E-150, con tacto suave, gramaje consistente y corte relajado de inspiración streetwear. Cómoda, resistente y versátil.",
+      "Camiseta de algodón peinado premium en azul Ford E-150, con gramaje elevado, tacto suave y una estructura consistente. El corte relajado ofrece comodidad y una estética streetwear moderna, con un color profundo y fácil de combinar.",
     descriptionEn:
-      "Premium combed cotton T-shirt in Ford E-150 blue, with a soft feel, substantial weight and a relaxed streetwear-inspired fit. Comfortable, durable and versatile.",
+      "Premium combed cotton T-shirt in Ford E-150 blue, with a substantial weight, soft feel and consistent structure. The relaxed fit delivers comfort and a modern streetwear look in a deep, easy-to-style colour.",
     sizes: MEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 1,
@@ -118,9 +118,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro",
     material: "Algodón peinado premium · 200–220 gsm",
     description:
-      "Camiseta de algodón peinado premium, suave y transpirable, con corte recto y relajado que aporta comodidad y una caída natural. Estilo urbano, limpio y versátil.",
+      "Camiseta de algodón peinado premium, suave y agradable al tacto. Su corte recto y relajado proporciona comodidad sin quedar demasiado entallado, creando una caída natural y favorecedora. Una prenda urbana, versátil y fácil de combinar.",
     descriptionEn:
-      "Premium combed cotton T-shirt with a soft, breathable feel and a straight, relaxed fit for comfort and a natural drape. Clean, versatile urban style.",
+      "Premium combed cotton T-shirt with a soft, pleasant feel. Its straight, relaxed fit provides comfort without feeling overly fitted, creating a natural and flattering drape. A versatile urban piece that is easy to style.",
     sizes: WOMEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 2,
@@ -137,9 +137,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Algodón peinado premium · 200–220 gsm",
     description:
-      "Camiseta de algodón peinado premium en azul Ford E-150, suave y transpirable, con corte recto y relajado para una caída natural. Estilo urbano, cómodo y versátil.",
+      "Camiseta de algodón peinado premium en azul Ford E-150, con tacto suave y una caída ligera y natural. Su corte recto y relajado ofrece libertad de movimiento y una silueta cómoda, con un estilo urbano actual y versátil.",
     descriptionEn:
-      "Premium combed cotton T-shirt in Ford E-150 blue, with a soft, breathable feel and a straight, relaxed fit for a natural drape. Comfortable, versatile urban style.",
+      "Premium combed cotton T-shirt in Ford E-150 blue, with a soft feel and a light, natural drape. Its straight, relaxed fit allows freedom of movement and a comfortable silhouette with a contemporary, versatile urban style.",
     sizes: WOMEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 3,
