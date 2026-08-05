@@ -157,7 +157,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: "/musica",
       images: [
         {
-          url: "/uploads/music-covers/vanmotion-1784378515490.png",
+          url: "/musica/editorial/vanmotion-portada-musica.png",
           alt:
             language === "es"
               ? "Música original y producción musical de VANMOTION"
