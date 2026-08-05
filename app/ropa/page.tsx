@@ -6,6 +6,7 @@ import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
 import { prisma } from "@/app/lib/prisma";
 
+import { getLocalizedProductText } from "./product-translations";
 import styles from "./ropa.module.css";
 
 export const dynamic = "force-dynamic";
@@ -382,6 +383,7 @@ export default async function RopaPage() {
         ) : (
           <div className={styles.collectionGrid}>
             {products.map((product) => {
+              const productText = getLocalizedProductText(product, language);
               const imagesByView = new Map(
                 product.images.map((image) => [image.view, image.url]),
               );
@@ -408,7 +410,7 @@ export default async function RopaPage() {
                 <article key={product.id} className={styles.collectionCard}>
                   <Link
                     href={`/ropa/${product.slug}`}
-                    aria-label={`${language === "es" ? "Ver" : "View"} ${product.name}`}
+                    aria-label={`${language === "es" ? "Ver" : "View"} ${productText.name}`}
                     style={{
                       display: "block",
                       color: "inherit",
@@ -419,7 +421,7 @@ export default async function RopaPage() {
                       {primaryImage ? (
                         <Image
                           src={primaryImage}
-                          alt={product.name}
+                          alt={productText.name}
                           fill
                           sizes="(max-width: 620px) 50vw, (max-width: 1200px) 50vw, 25vw"
                           className={styles.collectionImage}
@@ -442,13 +444,13 @@ export default async function RopaPage() {
                           textDecoration: "none",
                         }}
                       >
-                        {product.name}
+                        {productText.name}
                       </Link>
                     </h3>
 
                     <div className={styles.collectionSummary}>
                       <span>
-                        {productType} · {product.color ?? "VANMOTION"}
+                        {productType} · {productText.color ?? "VANMOTION"}
                       </span>
                       <strong>{formattedPrice}</strong>
                     </div>

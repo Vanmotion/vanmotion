@@ -7,6 +7,7 @@ import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
 
 import ProductPurchasePanel from "../ProductPurchasePanel";
+import { getLocalizedProductText } from "../product-translations";
 import styles from "./producto.module.css";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +47,7 @@ const translations = {
       FRONT: "Frontal",
       BACK: "Espalda",
       DETAIL: "Detalle",
-      LIFESTYLE: "Lifestyle",
+      LIFESTYLE: "Portada con modelo",
     },
     specs: {
       garment: "Prenda",
@@ -68,7 +69,7 @@ const translations = {
       FRONT: "Front",
       BACK: "Back",
       DETAIL: "Detail",
-      LIFESTYLE: "Lifestyle",
+      LIFESTYLE: "Model cover",
     },
     specs: {
       garment: "Garment",
@@ -157,6 +158,8 @@ export async function generateMetadata({
     };
   }
 
+  const productText = getLocalizedProductText(product, language);
+
   const totalStock = product.variants.reduce(
     (total, variant) => (variant.active ? total + variant.stock : total),
     0,
@@ -192,8 +195,8 @@ export async function generateMetadata({
 
   const title =
     language === "es"
-      ? `${product.name} · ${productType} urbana`
-      : `${product.name} · ${productType}`;
+      ? `${productText.name} · ${productType} urbana`
+      : `${productText.name} · ${productType}`;
 
   const availabilityText =
     language === "es"
@@ -214,8 +217,8 @@ export async function generateMetadata({
 
   const description =
     language === "es"
-      ? `${product.name}. ${productType} VANMOTION${product.color ? ` en color ${product.color}` : ""}. Colección ${product.collection ?? "Drop 01"}. ${availabilityText}`
-      : `${product.name}. VANMOTION ${productType}${product.color ? ` in ${product.color}` : ""}. ${product.collection ?? "Drop 01"} collection. ${availabilityText}`;
+      ? `${productText.name}. ${productType} VANMOTION${productText.color ? ` en color ${productText.color}` : ""}. Colección ${productText.collection ?? "Drop 01"}. ${availabilityText}`
+      : `${productText.name}. VANMOTION ${productType}${productText.color ? ` in ${productText.color}` : ""}. ${productText.collection ?? "Drop 01"} collection. ${availabilityText}`;
 
   return {
     title,
@@ -237,7 +240,7 @@ export async function generateMetadata({
         ? [
             {
               url: socialImage,
-              alt: product.images[0]?.alt ?? product.name,
+              alt: product.images[0]?.alt ?? productText.name,
             },
           ]
         : undefined,
@@ -281,6 +284,8 @@ export default async function ProductPage({
     totalProductStock,
   );
 
+  const productText = getLocalizedProductText(product, language);
+
   const productDescription =
     language === "es"
       ? product.description ?? ""
@@ -296,16 +301,16 @@ export default async function ProductPage({
       image.view,
       {
         url: image.url,
-        alt: image.alt ?? product.name,
+        alt: image.alt ?? productText.name,
       },
     ]),
   );
 
   const gallerySlots = [
+    "LIFESTYLE",
     "FRONT",
     "BACK",
     "DETAIL",
-    "LIFESTYLE",
   ] as const;
 
   const canonicalUrl = `${SITE_URL}/ropa/${product.slug}`;
@@ -322,21 +327,21 @@ export default async function ProductPage({
   const productStructuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.name,
+    name: productText.name,
     url: canonicalUrl,
     image: productImages.length > 0 ? productImages : undefined,
     description:
       productDescription ||
-      product.subtitle ||
-      product.name,
+      productText.subtitle ||
+      productText.name,
     sku: product.slug,
     brand: {
       "@type": "Brand",
       name: "VANMOTION",
     },
     category: productType,
-    color: product.color ?? undefined,
-    material: product.material ?? undefined,
+    color: productText.color ?? undefined,
+    material: productText.material ?? undefined,
     additionalProperty:
       productVariants.length > 0
         ? [
@@ -414,9 +419,9 @@ export default async function ProductPage({
 
         <div className={styles.productHeading}>
           <div>
-            <p>{product.collection ?? "Drop 01"}</p>
-            <h1>{product.name}</h1>
-            {product.subtitle ? <h2>{product.subtitle}</h2> : null}
+            <p>{productText.collection ?? "Drop 01"}</p>
+            <h1>{productText.name}</h1>
+            {productText.subtitle ? <h2>{productText.subtitle}</h2> : null}
           </div>
 
           <strong>
@@ -447,7 +452,7 @@ export default async function ProductPage({
                         fill
                         sizes="(max-width: 900px) 100vw, 50vw"
                         className={styles.image}
-                        priority={view === "FRONT"}
+                        priority={view === "LIFESTYLE"}
                       />
                     ) : (
                       <div className={styles.placeholder}>
@@ -474,11 +479,11 @@ export default async function ProductPage({
               </div>
               <div>
                 <dt>{content.specs.color}</dt>
-                <dd>{product.color ?? "—"}</dd>
+                <dd>{productText.color ?? "—"}</dd>
               </div>
               <div>
                 <dt>{content.specs.material}</dt>
-                <dd>{product.material ?? "—"}</dd>
+                <dd>{productText.material ?? "—"}</dd>
               </div>
               <div>
                 <dt>{content.specs.sizes}</dt>
@@ -492,7 +497,7 @@ export default async function ProductPage({
 
             <ProductPurchasePanel
               language={language}
-              productName={product.name}
+              productName={productText.name}
               productSlug={product.slug}
               price={Number(product.price)}
               currency={product.currency}
