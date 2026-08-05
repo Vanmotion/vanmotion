@@ -429,18 +429,10 @@ export default async function RopaPage() {
                           <span>{content.collection.noImage}</span>
                         </div>
                       )}
-
-                      <div className={styles.collectionMediaMeta}>
-                        <span>{productType}</span>
-                        <span>{product.color ?? "VANMOTION"}</span>
-                      </div>
                     </div>
                   </Link>
 
                   <div className={styles.collectionInformation}>
-                    <p className={styles.productLabel}>
-                      {product.collection ?? "Drop 01"}
-                    </p>
 
                     <h3>
                       <Link
@@ -453,8 +445,6 @@ export default async function RopaPage() {
                         {product.name}
                       </Link>
                     </h3>
-
-                    {product.subtitle ? <h4>{product.subtitle}</h4> : null}
 
                     <div className={styles.collectionSummary}>
                       <span>
