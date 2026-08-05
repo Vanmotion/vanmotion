@@ -932,9 +932,9 @@
 
 .heroImage {
   object-fit: cover;
-  object-position: center 43%;
+  object-position: 58% 42%;
   filter:
-    saturate(0.82)
+    saturate(0.88)
     contrast(1.06)
     brightness(0.68);
 }

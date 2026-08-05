@@ -40,8 +40,8 @@ const translations = {
           note: "Seleccionados con criterio.",
           action: "Ver colección",
           href: "/coleccion",
-          image: "/vehiculos/portada-taller-vanmotion.jpg",
-          alt: "Ford VANMOTION elevada durante su revisión en el taller",
+          image: "/vehiculos/portada-inicio-vehiculos.webp",
+          alt: "Ford E-150 de VANMOTION, vehículo emblema de la marca",
           imageClass: "vehicleImage",
         },
         {
@@ -110,8 +110,8 @@ const translations = {
           note: "Selected with purpose.",
           action: "View collection",
           href: "/coleccion",
-          image: "/vehiculos/portada-taller-vanmotion.jpg",
-          alt: "VANMOTION Ford raised during its workshop inspection",
+          image: "/vehiculos/portada-inicio-vehiculos.webp",
+          alt: "VANMOTION Ford E-150, the brand emblem vehicle",
           imageClass: "vehicleImage",
         },
         {

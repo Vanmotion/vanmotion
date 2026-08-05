@@ -359,8 +359,8 @@ export default async function CollectionPage() {
       <main>
         <section className={styles.hero} aria-labelledby="collection-hero-title">
           <Image
-              src="/vehiculos/portada-taller-vanmotion.jpg"
-              alt="Ford VANMOTION elevada en el taller durante su revisión"
+            src="/vehiculos/portada-coleccion-vanmotion.webp"
+            alt="Ford E-150 VANMOTION con Madrid al fondo"
             fill
             priority
             sizes="100vw"
