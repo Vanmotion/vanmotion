@@ -203,8 +203,8 @@ const translations = {
       messagePlaceholder: "Estoy interesado en el",
       submit: "Enviar solicitud",
       privacy:
-        "Responsable: VANMOTION. Utilizaremos tus datos para responder y gestionar esta solicitud.",
-      privacyLink: "Consulta la Política de Privacidad.",
+        "VANMOTION usará tus datos únicamente para responder a esta consulta.",
+      privacyLink: "Privacidad",
     },
     emblem: {
       badge: "Vehículo emblema",
@@ -283,8 +283,8 @@ const translations = {
       messagePlaceholder: "I am interested in the",
       submit: "Send enquiry",
       privacy:
-        "Controller: VANMOTION. We will use your details to respond to and manage this request.",
-      privacyLink: "Read the Privacy Policy.",
+        "VANMOTION will only use your details to reply to this enquiry.",
+      privacyLink: "Privacy",
     },
     emblem: {
       badge: "VANMOTION icon",
@@ -761,6 +761,16 @@ export default async function PublicVehiclePage({
               ))}
             </div>
 
+            <section
+              className={styles.sideDescription}
+              aria-labelledby="vehicle-description-title"
+            >
+              <h3 id="vehicle-description-title">
+                {content.information.heading}
+              </h3>
+              <p>{vehicleDescription}</p>
+            </section>
+
             {isEmblem ? (
               <section className={styles.emblemPanel}>
                 <p>{content.emblem.badge}</p>
@@ -830,29 +840,6 @@ export default async function PublicVehiclePage({
           </aside>
         </section>
 
-        <section className={styles.descriptionSection}>
-          <details className={styles.descriptionDisclosure}>
-            <summary>
-              <span>{content.information.heading}</span>
-              <span aria-hidden="true">+</span>
-            </summary>
-
-            <div className={styles.descriptionContent}>
-              <div className={styles.descriptionTitle}>
-                <p>{content.information.eyebrow}</p>
-                <h2>
-                  <span>{content.information.titleFirst}</span>
-                  <span>{content.information.titleSecond}</span>
-                </h2>
-              </div>
-
-              <div className={styles.descriptionCopy}>
-                <h3>{content.information.heading}</h3>
-                <p>{vehicleDescription}</p>
-              </div>
-            </div>
-          </details>
-        </section>
       </main>
 
       <footer className={styles.footer}>

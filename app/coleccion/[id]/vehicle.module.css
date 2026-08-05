@@ -1159,3 +1159,320 @@
     padding-bottom: 24px;
   }
 }
+
+/* VANMOTION · CABECERA NEGRA MUY COMPACTA EN FICHAS MÓVILES */
+@media (max-width: 720px) {
+  .header {
+    min-height: 58px;
+    padding: 9px 14px;
+    gap: 12px;
+  }
+
+  .brand {
+    gap: 7px;
+  }
+
+  .brandMark {
+    width: 38px;
+  }
+
+  .brand span {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+
+  .navigation {
+    gap: 10px;
+  }
+
+  .navigation a {
+    padding: 7px 0;
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+
+  .hero {
+    min-height: 238px;
+    padding: 66px 14px 10px;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .hero::after {
+    bottom: -0.1em;
+    font-size: 96px;
+  }
+
+  .heroTopline {
+    min-height: 18px;
+    padding-right: 0;
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+
+  .heroTopline span:last-child {
+    padding: 0.28rem 0.48rem !important;
+  }
+
+  .backLink {
+    margin-top: 1px;
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+
+  .heroCopy {
+    margin-top: 3px;
+  }
+
+  .heroCopy p {
+    font-size: 7px;
+    letter-spacing: 0.14em;
+  }
+
+  .heroCopy h1 {
+    margin-top: 4px;
+    font-size: clamp(32px, 10.5vw, 42px);
+    line-height: 0.84;
+  }
+
+  .heroCopy > span {
+    margin-top: 5px;
+    font-size: 14px;
+    line-height: 1.15;
+  }
+
+  .heroMeta {
+    margin-top: auto;
+    gap: 9px 14px;
+    padding-top: 7px;
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+
+  .productSection {
+    padding: 8px;
+    gap: 8px;
+  }
+}
+
+/* VANMOTION · DESCRIPCIÓN DEL VEHÍCULO SIEMPRE VISIBLE */
+.descriptionSection {
+  padding: clamp(42px, 5vw, 68px) clamp(20px, 4vw, 58px);
+  display: grid;
+  grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1.58fr);
+  gap: clamp(30px, 5vw, 82px);
+  align-items: start;
+  border-top: 1px solid var(--line);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.descriptionHeading p {
+  margin: 0;
+  color: var(--orange);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.descriptionHeading h2 {
+  margin: 12px 0 0;
+  max-width: 260px;
+  font-size: clamp(24px, 2.4vw, 38px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.descriptionCopy {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.descriptionCopy p {
+  max-width: 900px;
+  margin: 0;
+  white-space: pre-line;
+  color: rgba(242, 239, 232, 0.72);
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.78;
+}
+
+.privacyText {
+  margin: 12px 0 0;
+  color: rgba(242, 239, 232, 0.42);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.privacyText a {
+  color: rgba(242, 239, 232, 0.72);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(242, 239, 232, 0.34);
+}
+
+@media (max-width: 900px) {
+  .descriptionSection {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .descriptionHeading h2 {
+    max-width: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .descriptionSection {
+    padding: 28px 14px 32px;
+    display: block;
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  .descriptionHeading p {
+    font-size: 8px;
+    letter-spacing: 0.16em;
+  }
+
+  .descriptionHeading h2 {
+    margin-top: 7px;
+    font-size: 21px;
+    line-height: 1.08;
+  }
+
+  .descriptionCopy {
+    margin-top: 15px;
+  }
+
+  .descriptionCopy p {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .privacyText {
+    margin-top: 8px;
+    font-size: 8px;
+    line-height: 1.45;
+  }
+}
+
+
+/* VANMOTION · DESCRIPCIÓN JUNTO A LAS FOTOS · DISEÑO FUNCIONAL */
+.productSection {
+  grid-template-columns: minmax(0, 1.22fr) minmax(350px, 0.78fr);
+  gap: 14px;
+  padding-top: clamp(30px, 4vw, 52px);
+  padding-bottom: clamp(30px, 4vw, 52px);
+}
+
+.infoPanel {
+  padding: 24px;
+}
+
+.priceBlock {
+  margin-top: 0;
+  padding: 16px 0;
+}
+
+.priceBlock strong {
+  margin-top: 6px;
+  font-size: clamp(30px, 3.2vw, 44px);
+}
+
+.detailGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.detailItem {
+  padding: 11px 0;
+}
+
+.detailItem span {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.detailItem strong {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.sideDescription {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.sideDescription h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.sideDescription p {
+  margin: 10px 0 0;
+  white-space: pre-line;
+  color: rgba(242, 239, 232, 0.68);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.descriptionSection {
+  display: none !important;
+}
+
+.contactDisclosure {
+  margin-top: 18px;
+}
+
+@media (max-width: 1050px) {
+  .productSection {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .productSection {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .infoPanel {
+    padding: 12px;
+  }
+
+  .priceBlock {
+    padding: 10px 0;
+  }
+
+  .priceBlock strong {
+    font-size: 26px;
+  }
+
+  .detailItem {
+    padding: 8px 0;
+  }
+
+  .detailItem strong {
+    font-size: 11px;
+  }
+
+  .sideDescription {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+
+  .sideDescription h3 {
+    font-size: 16px;
+  }
+
+  .sideDescription p {
+    margin-top: 7px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}
