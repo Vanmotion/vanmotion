@@ -25,7 +25,7 @@ const MANAGED_PRODUCT_SLUGS = [
   "bomber-mujer-azul-ford-e150-drop-01",
 ] as const;
 
-const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL"] as const;
+const SIZE_ORDER = ["XS", "S", "M", "L"] as const;
 
 const statusLabels: Record<string, string> = {
   DRAFT: "Borrador",
@@ -62,7 +62,7 @@ const productImageSlots = [
     view: "DETAIL",
     number: "3",
     title: "Imagen detalle",
-    description: "Acercamiento del logotipo, tejido, cremallera o estampado.",
+    description: "Acercamiento del tejido, la cremallera o el estampado.",
     alt: "Detalle del producto VANMOTION",
   },
   {
@@ -135,6 +135,7 @@ export default async function ClothingAdminPage() {
         orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
       },
       variants: {
+        where: { active: true },
         orderBy: { sortOrder: "asc" },
       },
     },

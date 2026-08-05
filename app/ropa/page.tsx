@@ -89,12 +89,12 @@ const translations = {
         {
           number: "01",
           title: "Frontal limpio",
-          text: "Las camisetas no llevan impresión delante. El diseño aparece únicamente en la zona inferior derecha de la espalda.",
+          text: "Las camisetas no llevan impresión delante. El diseño CARPE DIEM se coloca muy cerca del bajo, en la zona inferior derecha de la espalda, para que pueda verse parcialmente al llevar una bomber.",
         },
         {
           number: "02",
-          title: "Bomber discreta",
-          text: "La bomber solo lleva el logotipo original en el pecho izquierdo. La espalda permanece completamente limpia.",
+          title: "Bomber limpia",
+          text: "La bomber queda completamente limpia por fuera, sin logotipo ni nombre VANMOTION impresos. La marca aparece únicamente en la etiqueta interior.",
         },
         {
           number: "03",
@@ -182,12 +182,12 @@ const translations = {
         {
           number: "01",
           title: "Clean front",
-          text: "The T-shirts have no front print. The artwork appears only on the lower-right area of the back.",
+          text: "The T-shirts have no front print. The CARPE DIEM artwork sits very close to the hem on the lower-right back so it can remain partially visible under a bomber.",
         },
         {
           number: "02",
-          title: "Discreet bomber",
-          text: "The bomber only carries the original logo on the left chest. The back remains completely clean.",
+          title: "Clean bomber",
+          text: "The bomber has a completely clean exterior, with no VANMOTION logo or name printed. The brand appears only on the inside label.",
         },
         {
           number: "03",
