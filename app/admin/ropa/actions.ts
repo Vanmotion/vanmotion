@@ -64,8 +64,8 @@ type ClothingProductConfiguration = {
   sortOrder: number;
 };
 
-const MEN_SIZES = ["S", "M", "L", "XL", "XXL"] as const;
-const WOMEN_SIZES = ["XS", "S", "M", "L", "XL"] as const;
+const MEN_SIZES = ["S", "M", "L"] as const;
+const WOMEN_SIZES = ["XS", "S", "M"] as const;
 
 const CLOTHING_PRODUCTS = [
   {
@@ -80,9 +80,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro",
     material: "Algodón peinado premium · 220–240 gsm",
     description:
-      "Camiseta VANMOTION para hombre, de corte relajado streetwear. Frontal completamente limpio y diseño CARPE DIEM situado únicamente en la zona inferior derecha de la espalda.",
+      "Camiseta para hombre de corte relajado streetwear. Frontal completamente limpio. Diseño CARPE DIEM colocado muy cerca del bajo, en la zona inferior derecha de la espalda, para que pueda verse parcialmente al llevar una bomber. Sin logotipo ni nombre VANMOTION impresos en el exterior; la marca aparece únicamente en la etiqueta.",
     descriptionEn:
-      "Men's VANMOTION relaxed streetwear T-shirt. Completely clean front and CARPE DIEM artwork placed only on the lower-right area of the back.",
+      "Men's relaxed streetwear T-shirt with a completely clean front. CARPE DIEM artwork placed very close to the hem on the lower-right back so it can remain partially visible under a bomber. No VANMOTION logo or name printed on the exterior; the brand appears only on the label.",
     sizes: MEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 0,
@@ -99,9 +99,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Algodón peinado premium · 220–240 gsm",
     description:
-      "Camiseta VANMOTION para hombre en azul Ford E-150, de corte relajado streetwear. Frontal limpio y diseño CARPE DIEM únicamente en la zona inferior derecha de la espalda.",
+      "Camiseta para hombre en azul Ford E-150, de corte relajado streetwear. Frontal completamente limpio. Diseño CARPE DIEM colocado muy cerca del bajo, en la zona inferior derecha de la espalda, para que pueda verse parcialmente al llevar una bomber. Sin logotipo ni nombre VANMOTION impresos en el exterior; la marca aparece únicamente en la etiqueta.",
     descriptionEn:
-      "Men's VANMOTION Ford E-150 blue relaxed streetwear T-shirt. Clean front and CARPE DIEM artwork only on the lower-right area of the back.",
+      "Men's Ford E-150 blue relaxed streetwear T-shirt with a completely clean front. CARPE DIEM artwork placed very close to the hem on the lower-right back so it can remain partially visible under a bomber. No VANMOTION logo or name printed on the exterior; the brand appears only on the label.",
     sizes: MEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 1,
@@ -118,9 +118,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro",
     material: "Algodón peinado premium · 200–220 gsm",
     description:
-      "Camiseta VANMOTION para mujer, de corte recto cómodo y relajado, no muy entallado. Frontal completamente limpio y diseño CARPE DIEM únicamente en la zona inferior derecha de la espalda.",
+      "Camiseta para mujer de corte recto, cómodo y relajado, no muy entallado. Frontal completamente limpio. Diseño CARPE DIEM colocado muy cerca del bajo, en la zona inferior derecha de la espalda, para que pueda verse parcialmente al llevar una bomber. Sin logotipo ni nombre VANMOTION impresos en el exterior; la marca aparece únicamente en la etiqueta.",
     descriptionEn:
-      "Women's VANMOTION straight, comfortable and relaxed T-shirt, not overly fitted. Completely clean front and CARPE DIEM artwork only on the lower-right area of the back.",
+      "Women's straight, comfortable and relaxed T-shirt, not overly fitted, with a completely clean front. CARPE DIEM artwork placed very close to the hem on the lower-right back so it can remain partially visible under a bomber. No VANMOTION logo or name printed on the exterior; the brand appears only on the label.",
     sizes: WOMEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 2,
@@ -137,9 +137,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Algodón peinado premium · 200–220 gsm",
     description:
-      "Camiseta VANMOTION para mujer en azul Ford E-150, de corte recto cómodo y relajado. Frontal limpio y diseño CARPE DIEM únicamente en la zona inferior derecha de la espalda.",
+      "Camiseta para mujer en azul Ford E-150, de corte recto, cómodo y relajado. Frontal completamente limpio. Diseño CARPE DIEM colocado muy cerca del bajo, en la zona inferior derecha de la espalda, para que pueda verse parcialmente al llevar una bomber. Sin logotipo ni nombre VANMOTION impresos en el exterior; la marca aparece únicamente en la etiqueta.",
     descriptionEn:
-      "Women's VANMOTION Ford E-150 blue straight and relaxed T-shirt. Clean front and CARPE DIEM artwork only on the lower-right area of the back.",
+      "Women's Ford E-150 blue straight and relaxed T-shirt with a completely clean front. CARPE DIEM artwork placed very close to the hem on the lower-right back so it can remain partially visible under a bomber. No VANMOTION logo or name printed on the exterior; the brand appears only on the label.",
     sizes: WOMEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 3,
@@ -156,9 +156,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro satinado",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber VANMOTION para hombre en negro satinado. Cuello bajo, cremallera negra tono sobre tono, sin bolsillo en manga y únicamente el logotipo original discreto en el pecho izquierdo. Espalda completamente limpia.",
+      "Bomber para hombre en negro satinado. Cuello bajo, cremallera negra tono sobre tono y sin bolsillo en manga. Exterior completamente limpio, sin logotipo ni nombre VANMOTION impresos; la marca aparece únicamente en la etiqueta interior.",
     descriptionEn:
-      "Men's VANMOTION black satin bomber. Low collar, tone-on-tone black zipper, no sleeve pocket, and only the discreet original logo on the left chest. Completely clean back.",
+      "Men's black satin bomber with a low collar, tone-on-tone black zipper and no sleeve pocket. Completely clean exterior with no VANMOTION logo or name printed; the brand appears only on the inside label.",
     sizes: MEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 4,
@@ -175,9 +175,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber VANMOTION para hombre en azul Ford E-150. Cuello bajo, cremallera azul tono sobre tono, sin bolsillo en manga y únicamente el logotipo original discreto en el pecho izquierdo. Espalda limpia.",
+      "Bomber para hombre en azul Ford E-150. Cuello bajo, cremallera azul tono sobre tono y sin bolsillo en manga. Exterior completamente limpio, sin logotipo ni nombre VANMOTION impresos; la marca aparece únicamente en la etiqueta interior.",
     descriptionEn:
-      "Men's VANMOTION Ford E-150 blue bomber. Low collar, tone-on-tone blue zipper, no sleeve pocket, and only the discreet original logo on the left chest. Clean back.",
+      "Men's Ford E-150 blue bomber with a low collar, tone-on-tone blue zipper and no sleeve pocket. Completely clean exterior with no VANMOTION logo or name printed; the brand appears only on the inside label.",
     sizes: MEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 5,
@@ -194,9 +194,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro satinado",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber VANMOTION para mujer en negro satinado, de corte urbano cómodo. Cuello bajo, cremallera negra tono sobre tono, sin bolsillo en manga y únicamente el logotipo original discreto en el pecho izquierdo. Espalda limpia.",
+      "Bomber para mujer en negro satinado, de corte urbano cómodo. Cuello bajo, cremallera negra tono sobre tono y sin bolsillo en manga. Exterior completamente limpio, sin logotipo ni nombre VANMOTION impresos; la marca aparece únicamente en la etiqueta interior.",
     descriptionEn:
-      "Women's VANMOTION black satin bomber with a comfortable urban fit. Low collar, tone-on-tone black zipper, no sleeve pocket, and only the discreet original logo on the left chest. Clean back.",
+      "Women's black satin bomber with a comfortable urban fit, low collar, tone-on-tone black zipper and no sleeve pocket. Completely clean exterior with no VANMOTION logo or name printed; the brand appears only on the inside label.",
     sizes: WOMEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 6,
@@ -213,9 +213,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber VANMOTION para mujer en azul Ford E-150, de corte urbano cómodo. Cuello bajo, cremallera azul tono sobre tono, sin bolsillo en manga y únicamente el logotipo original discreto en el pecho izquierdo. Espalda limpia.",
+      "Bomber para mujer en azul Ford E-150, de corte urbano cómodo. Cuello bajo, cremallera azul tono sobre tono y sin bolsillo en manga. Exterior completamente limpio, sin logotipo ni nombre VANMOTION impresos; la marca aparece únicamente en la etiqueta interior.",
     descriptionEn:
-      "Women's VANMOTION Ford E-150 blue bomber with a comfortable urban fit. Low collar, tone-on-tone blue zipper, no sleeve pocket, and only the discreet original logo on the left chest. Clean back.",
+      "Women's Ford E-150 blue bomber with a comfortable urban fit, low collar, tone-on-tone blue zipper and no sleeve pocket. Completely clean exterior with no VANMOTION logo or name printed; the brand appears only on the inside label.",
     sizes: WOMEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 7,
@@ -458,6 +458,16 @@ export async function createVanmotionClothingCollectionAction(): Promise<void> {
     });
 
     await prisma.$transaction([
+      prisma.productVariant.updateMany({
+        where: {
+          productId: product.id,
+          size: { notIn: [...configuration.sizes] },
+        },
+        data: {
+          stock: 0,
+          active: false,
+        },
+      }),
       ...configuration.sizes.map((size, index) =>
         prisma.productVariant.upsert({
           where: {
@@ -544,7 +554,8 @@ export async function updateProductAction(formData: FormData): Promise<void> {
   );
 
   const status = getAutomaticStatus(validatedStatus, totalStock);
-  const active = formData.get("active") === "on";
+  const requestedActive = formData.get("active") === "on";
+  const active = status === "COMING_SOON" ? true : requestedActive;
   const featured = formData.get("featured") === "on";
 
   await prisma.$transaction([
@@ -555,6 +566,16 @@ export async function updateProductAction(formData: FormData): Promise<void> {
         status,
         active,
         featured,
+      },
+    }),
+    prisma.productVariant.updateMany({
+      where: {
+        productId,
+        size: { notIn: [...configuration.sizes] },
+      },
+      data: {
+        stock: 0,
+        active: false,
       },
     }),
     ...configuration.sizes.map((size, index) =>
