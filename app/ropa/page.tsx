@@ -247,7 +247,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: "/ropa",
       images: [
         {
-          url: "/ropa/editorial/ropa-madrid-negro.png",
+          url: "/ropa/editorial/vanmotion-portada-pareja.png",
           alt:
             language === "es"
               ? "Colección de ropa urbana VANMOTION en Madrid"
@@ -323,7 +323,7 @@ export default async function RopaPage() {
 
       <section className={styles.hero} aria-labelledby="clothing-title">
         <Image
-          src="/ropa/editorial/ropa-madrid-negro.png"
+          src="/ropa/editorial/vanmotion-portada-pareja.png"
           alt="Colección negra VANMOTION en Madrid"
           fill
           priority
