@@ -80,9 +80,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro",
     material: "Algodón peinado premium · 220–240 gsm",
     description:
-      "Camiseta para hombre de corte relajado streetwear. Frontal completamente limpio. Diseño CARPE DIEM colocado muy cerca del bajo, en la zona inferior derecha de la espalda, para que pueda verse parcialmente al llevar una bomber. Sin logotipo ni nombre VANMOTION impresos en el exterior; la marca aparece únicamente en la etiqueta.",
+      "Camiseta de algodón peinado premium, con tacto suave, gramaje consistente y corte relajado de inspiración streetwear. Una prenda cómoda, resistente y fácil de combinar.",
     descriptionEn:
-      "Men's relaxed streetwear T-shirt with a completely clean front. CARPE DIEM artwork placed very close to the hem on the lower-right back so it can remain partially visible under a bomber. No VANMOTION logo or name printed on the exterior; the brand appears only on the label.",
+      "Premium combed cotton T-shirt with a soft feel, substantial weight and a relaxed streetwear-inspired fit. Comfortable, durable and easy to style.",
     sizes: MEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 0,
@@ -99,9 +99,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Algodón peinado premium · 220–240 gsm",
     description:
-      "Camiseta para hombre en azul Ford E-150, de corte relajado streetwear. Frontal completamente limpio. Diseño CARPE DIEM colocado muy cerca del bajo, en la zona inferior derecha de la espalda, para que pueda verse parcialmente al llevar una bomber. Sin logotipo ni nombre VANMOTION impresos en el exterior; la marca aparece únicamente en la etiqueta.",
+      "Camiseta de algodón peinado premium en azul Ford E-150, con tacto suave, gramaje consistente y corte relajado de inspiración streetwear. Cómoda, resistente y versátil.",
     descriptionEn:
-      "Men's Ford E-150 blue relaxed streetwear T-shirt with a completely clean front. CARPE DIEM artwork placed very close to the hem on the lower-right back so it can remain partially visible under a bomber. No VANMOTION logo or name printed on the exterior; the brand appears only on the label.",
+      "Premium combed cotton T-shirt in Ford E-150 blue, with a soft feel, substantial weight and a relaxed streetwear-inspired fit. Comfortable, durable and versatile.",
     sizes: MEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 1,
@@ -118,9 +118,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro",
     material: "Algodón peinado premium · 200–220 gsm",
     description:
-      "Camiseta para mujer de corte recto, cómodo y relajado, no muy entallado. Frontal completamente limpio. Diseño CARPE DIEM colocado muy cerca del bajo, en la zona inferior derecha de la espalda, para que pueda verse parcialmente al llevar una bomber. Sin logotipo ni nombre VANMOTION impresos en el exterior; la marca aparece únicamente en la etiqueta.",
+      "Camiseta de algodón peinado premium, suave y transpirable, con corte recto y relajado que aporta comodidad y una caída natural. Estilo urbano, limpio y versátil.",
     descriptionEn:
-      "Women's straight, comfortable and relaxed T-shirt, not overly fitted, with a completely clean front. CARPE DIEM artwork placed very close to the hem on the lower-right back so it can remain partially visible under a bomber. No VANMOTION logo or name printed on the exterior; the brand appears only on the label.",
+      "Premium combed cotton T-shirt with a soft, breathable feel and a straight, relaxed fit for comfort and a natural drape. Clean, versatile urban style.",
     sizes: WOMEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 2,
@@ -137,9 +137,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Algodón peinado premium · 200–220 gsm",
     description:
-      "Camiseta para mujer en azul Ford E-150, de corte recto, cómodo y relajado. Frontal completamente limpio. Diseño CARPE DIEM colocado muy cerca del bajo, en la zona inferior derecha de la espalda, para que pueda verse parcialmente al llevar una bomber. Sin logotipo ni nombre VANMOTION impresos en el exterior; la marca aparece únicamente en la etiqueta.",
+      "Camiseta de algodón peinado premium en azul Ford E-150, suave y transpirable, con corte recto y relajado para una caída natural. Estilo urbano, cómodo y versátil.",
     descriptionEn:
-      "Women's Ford E-150 blue straight and relaxed T-shirt with a completely clean front. CARPE DIEM artwork placed very close to the hem on the lower-right back so it can remain partially visible under a bomber. No VANMOTION logo or name printed on the exterior; the brand appears only on the label.",
+      "Premium combed cotton T-shirt in Ford E-150 blue, with a soft, breathable feel and a straight, relaxed fit for a natural drape. Comfortable, versatile urban style.",
     sizes: WOMEN_SIZES,
     initialPrice: "34.90",
     sortOrder: 3,
@@ -156,9 +156,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro satinado",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber para hombre en negro satinado. Cuello bajo, cremallera negra tono sobre tono y sin bolsillo en manga. Exterior completamente limpio, sin logotipo ni nombre VANMOTION impresos; la marca aparece únicamente en la etiqueta interior.",
+      "Bomber de nylon premium ligero, con acabado satinado, tacto suave y estructura equilibrada para entretiempo. Corte urbano cómodo y estilo limpio, moderno y versátil.",
     descriptionEn:
-      "Men's black satin bomber with a low collar, tone-on-tone black zipper and no sleeve pocket. Completely clean exterior with no VANMOTION logo or name printed; the brand appears only on the inside label.",
+      "Lightweight premium nylon bomber with a satin finish, soft feel and balanced structure for mid-season wear. Comfortable urban fit with a clean, modern and versatile style.",
     sizes: MEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 4,
@@ -175,9 +175,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber para hombre en azul Ford E-150. Cuello bajo, cremallera azul tono sobre tono y sin bolsillo en manga. Exterior completamente limpio, sin logotipo ni nombre VANMOTION impresos; la marca aparece únicamente en la etiqueta interior.",
+      "Bomber de nylon premium ligero en azul Ford E-150, con acabado satinado, tacto suave y estructura equilibrada para entretiempo. Corte urbano cómodo y estilo moderno.",
     descriptionEn:
-      "Men's Ford E-150 blue bomber with a low collar, tone-on-tone blue zipper and no sleeve pocket. Completely clean exterior with no VANMOTION logo or name printed; the brand appears only on the inside label.",
+      "Lightweight premium nylon bomber in Ford E-150 blue, with a satin finish, soft feel and balanced structure for mid-season wear. Comfortable urban fit and modern style.",
     sizes: MEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 5,
@@ -194,9 +194,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro satinado",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber para mujer en negro satinado, de corte urbano cómodo. Cuello bajo, cremallera negra tono sobre tono y sin bolsillo en manga. Exterior completamente limpio, sin logotipo ni nombre VANMOTION impresos; la marca aparece únicamente en la etiqueta interior.",
+      "Bomber de nylon premium ligero, con acabado satinado y tacto suave. Su corte urbano ofrece comodidad, una caída favorecedora y un estilo moderno para entretiempo.",
     descriptionEn:
-      "Women's black satin bomber with a comfortable urban fit, low collar, tone-on-tone black zipper and no sleeve pocket. Completely clean exterior with no VANMOTION logo or name printed; the brand appears only on the inside label.",
+      "Lightweight premium nylon bomber with a satin finish and soft feel. Its urban fit offers comfort, a flattering drape and a modern mid-season style.",
     sizes: WOMEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 6,
@@ -213,9 +213,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber para mujer en azul Ford E-150, de corte urbano cómodo. Cuello bajo, cremallera azul tono sobre tono y sin bolsillo en manga. Exterior completamente limpio, sin logotipo ni nombre VANMOTION impresos; la marca aparece únicamente en la etiqueta interior.",
+      "Bomber de nylon premium ligero en azul Ford E-150, con acabado satinado y tacto suave. Corte urbano cómodo, caída favorecedora y estilo moderno para entretiempo.",
     descriptionEn:
-      "Women's Ford E-150 blue bomber with a comfortable urban fit, low collar, tone-on-tone blue zipper and no sleeve pocket. Completely clean exterior with no VANMOTION logo or name printed; the brand appears only on the inside label.",
+      "Lightweight premium nylon bomber in Ford E-150 blue, with a satin finish and soft feel. Comfortable urban fit, flattering drape and modern mid-season style.",
     sizes: WOMEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 7,
