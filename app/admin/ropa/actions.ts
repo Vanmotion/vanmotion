@@ -499,19 +499,19 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
   "carpe-diem-hombre-azul-ford-e150-drop-01": [
     {
       view: "LIFESTYLE",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle-v2.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle-v10.webp",
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v2.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v10.webp",
     },
     {
       view: "BACK",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v2.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v10.webp",
     },
     {
       view: "DETAIL",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v3.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v10.webp",
     },
   ],
   "carpe-diem-mujer-negra-drop-01": [
@@ -535,19 +535,19 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
   "carpe-diem-mujer-azul-ford-e150-drop-01": [
     {
       view: "LIFESTYLE",
-      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/lifestyle.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/lifestyle-v10.webp",
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/frontal.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/frontal-v10.webp",
     },
     {
       view: "BACK",
-      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/trasera.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/trasera-v10.webp",
     },
     {
       view: "DETAIL",
-      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v3.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v10.webp",
     },
   ],
   "bomber-hombre-azul-ford-e150-drop-01": [

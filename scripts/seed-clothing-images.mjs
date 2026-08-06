@@ -10,10 +10,10 @@ const products = {
     { view: 'LIFESTYLE', url: '/ropa/productos/carpe-diem-black-edition-drop-01/lifestyle.webp', sortOrder: 3 },
   ],
   'carpe-diem-hombre-azul-ford-e150-drop-01': [
-    { view: 'FRONT', url: '/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/front.webp', sortOrder: 0 },
-    { view: 'BACK', url: '/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/back.webp', sortOrder: 1 },
-    { view: 'DETAIL', url: '/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v3.webp', sortOrder: 2 },
-    { view: 'LIFESTYLE', url: '/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/lifestyle.webp', sortOrder: 3 },
+    { view: 'LIFESTYLE', url: '/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle-v10.webp', sortOrder: 0 },
+    { view: 'FRONT', url: '/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v10.webp', sortOrder: 1 },
+    { view: 'BACK', url: '/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v10.webp', sortOrder: 2 },
+    { view: 'DETAIL', url: '/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v10.webp', sortOrder: 3 },
   ],
   'carpe-diem-mujer-negra-drop-01': [
     { view: 'FRONT', url: '/ropa/productos/carpe-diem-mujer-negra-drop-01/front.webp', sortOrder: 0 },
@@ -22,10 +22,10 @@ const products = {
     { view: 'LIFESTYLE', url: '/ropa/aprobadas/mujer/camiseta-negra/lifestyle-v2.webp', sortOrder: 3 },
   ],
   'carpe-diem-mujer-azul-ford-e150-drop-01': [
-    { view: 'FRONT', url: '/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/front.webp', sortOrder: 0 },
-    { view: 'BACK', url: '/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/back.webp', sortOrder: 1 },
-    { view: 'DETAIL', url: '/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v3.webp', sortOrder: 2 },
-    { view: 'LIFESTYLE', url: '/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/lifestyle.webp', sortOrder: 3 },
+    { view: 'LIFESTYLE', url: '/ropa/aprobadas/mujer/camiseta-azul-ford/lifestyle-v10.webp', sortOrder: 0 },
+    { view: 'FRONT', url: '/ropa/aprobadas/mujer/camiseta-azul-ford/frontal-v10.webp', sortOrder: 1 },
+    { view: 'BACK', url: '/ropa/aprobadas/mujer/camiseta-azul-ford/trasera-v10.webp', sortOrder: 2 },
+    { view: 'DETAIL', url: '/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v10.webp', sortOrder: 3 },
   ],
   'bomber-hombre-negra-drop-01': [
     { view: 'FRONT', url: '/ropa/productos/bomber-hombre-negra-drop-01/front.webp', sortOrder: 0 },

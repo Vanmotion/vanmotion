@@ -16,10 +16,10 @@ const manifest = {
     "LIFESTYLE": "/ropa/productos/bomber-hombre-negra-drop-01/lifestyle.webp"
   },
   "carpe-diem-hombre-azul-ford-e150-drop-01": {
-    "FRONT": "/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/front.webp",
-    "BACK": "/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/back.webp",
-    "DETAIL": "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v3.webp",
-    "LIFESTYLE": "/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/lifestyle.webp"
+    "FRONT": "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v10.webp",
+    "BACK": "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v10.webp",
+    "DETAIL": "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v10.webp",
+    "LIFESTYLE": "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle-v10.webp"
   },
   "bomber-hombre-azul-ford-e150-drop-01": {
     "FRONT": "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/front.webp",
@@ -34,10 +34,10 @@ const manifest = {
     "LIFESTYLE": "/ropa/productos/bomber-mujer-negra-drop-01/lifestyle.webp"
   },
   "carpe-diem-mujer-azul-ford-e150-drop-01": {
-    "FRONT": "/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/front.webp",
-    "BACK": "/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/back.webp",
-    "DETAIL": "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v3.webp",
-    "LIFESTYLE": "/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/lifestyle.webp"
+    "FRONT": "/ropa/aprobadas/mujer/camiseta-azul-ford/frontal-v10.webp",
+    "BACK": "/ropa/aprobadas/mujer/camiseta-azul-ford/trasera-v10.webp",
+    "DETAIL": "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v10.webp",
+    "LIFESTYLE": "/ropa/aprobadas/mujer/camiseta-azul-ford/lifestyle-v10.webp"
   },
   "carpe-diem-mujer-negra-drop-01": {
     "FRONT": "/ropa/productos/carpe-diem-mujer-negra-drop-01/front.webp",
