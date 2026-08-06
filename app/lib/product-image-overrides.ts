@@ -9,7 +9,7 @@ const PRODUCT_IMAGE_OVERRIDES: readonly ProductImageOverride[] = [
   {
     slug: "carpe-diem-black-edition-drop-01",
     view: "FRONT",
-    replacementUrl: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v2.webp",
+    replacementUrl: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v4.webp",
     legacyUrls: [
       "/ropa/aprobadas/hombre/camiseta-negra/frontal.webp",
       "/ropa/aprobadas/hombre/camiseta-negra/frontal-v2.webp",
@@ -48,7 +48,7 @@ const PRODUCT_IMAGE_OVERRIDES: readonly ProductImageOverride[] = [
   {
     slug: "carpe-diem-hombre-azul-ford-e150-drop-01",
     view: "BACK",
-    replacementUrl: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v2.webp",
+    replacementUrl: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v11.webp",
     legacyUrls: [
       "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v10.webp",
       "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera.webp",
