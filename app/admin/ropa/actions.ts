@@ -507,7 +507,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "BACK",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v10.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v2.webp",
     },
     {
       view: "DETAIL",

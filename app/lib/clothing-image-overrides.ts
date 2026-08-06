@@ -2,11 +2,12 @@ const CLOTHING_IMAGE_OVERRIDES: Readonly<
   Record<string, Readonly<Record<string, string>>>
 > = {
   "carpe-diem-black-edition-drop-01": {
-    FRONT: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v3.webp",
+    FRONT: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v2.webp",
   },
   "carpe-diem-hombre-azul-ford-e150-drop-01": {
     LIFESTYLE: "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle-v2.webp",
     FRONT: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v3.webp",
+    BACK: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v2.webp",
     DETAIL: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v4.webp",
   },
   "carpe-diem-mujer-negra-drop-01": {

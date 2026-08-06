@@ -7,6 +7,19 @@ type ProductImageOverride = {
 
 const PRODUCT_IMAGE_OVERRIDES: readonly ProductImageOverride[] = [
   {
+    slug: "carpe-diem-black-edition-drop-01",
+    view: "FRONT",
+    replacementUrl: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v2.webp",
+    legacyUrls: [
+      "/ropa/aprobadas/hombre/camiseta-negra/frontal.webp",
+      "/ropa/aprobadas/hombre/camiseta-negra/frontal-v2.webp",
+      "/ropa/aprobadas/hombre/camiseta-negra/frontal-v3.webp",
+      "/ropa/productos/carpe-diem-black-edition-drop-01/front.webp",
+      "/ropa/productos/carpe-diem-black-edition-drop-01/front.png",
+      "/ropa/carpe-diem-frontal.webp",
+    ],
+  },
+  {
     slug: "carpe-diem-hombre-azul-ford-e150-drop-01",
     view: "LIFESTYLE",
     replacementUrl: "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle-v10.webp",
@@ -35,8 +48,9 @@ const PRODUCT_IMAGE_OVERRIDES: readonly ProductImageOverride[] = [
   {
     slug: "carpe-diem-hombre-azul-ford-e150-drop-01",
     view: "BACK",
-    replacementUrl: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v10.webp",
+    replacementUrl: "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v2.webp",
     legacyUrls: [
+      "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v10.webp",
       "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera.webp",
       "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v2.webp",
       "/ropa/aprobadas/hombre/camiseta-azul-ford/trasera-v3.webp",
