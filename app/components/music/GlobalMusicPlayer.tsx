@@ -1,16 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import type { Language } from "@/app/language";
-import type { PublicMusicTrack } from "@/app/lib/music-library";
 
+import { useMusicPlayer } from "./MusicPlayerContext";
 import styles from "./GlobalMusicPlayer.module.css";
 
 type GlobalMusicPlayerProps = {
-  tracks: PublicMusicTrack[];
   language: Language;
 };
 
@@ -79,199 +78,43 @@ const translations = {
 >;
 
 export default function GlobalMusicPlayer({
-  tracks,
   language,
 }: GlobalMusicPlayerProps) {
   const pathname = usePathname();
   const content = translations[language];
-
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const resumeAfterChangeRef = useRef(false);
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [volume, setVolume] = useState(0.75);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [error, setError] = useState<string | null>(null);
 
-  const currentTrack = tracks[currentIndex] ?? tracks[0];
-
-  const hidden =
-    pathname === "/musica" ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/login-admin");
+  const {
+    tracks,
+    currentTrack,
+    currentIndex,
+    isPlaying,
+    currentTime,
+    duration,
+    volume,
+    playbackError,
+    togglePlayback,
+    selectTrack,
+    playPrevious,
+    playNext,
+    changeProgress,
+    changeVolume,
+  } = useMusicPlayer();
 
   useEffect(() => {
     setExpanded(false);
   }, [pathname]);
 
-  useEffect(() => {
-    const savedTrack = window.localStorage.getItem(
-      "vanmotion-global-track",
-    );
-
-    const savedVolume = window.localStorage.getItem(
-      "vanmotion-global-volume",
-    );
-
-    if (savedTrack !== null) {
-      const index = Number(savedTrack);
-
-      if (
-        Number.isInteger(index) &&
-        index >= 0 &&
-        index < tracks.length
-      ) {
-        setCurrentIndex(index);
-      } else {
-        setCurrentIndex(0);
-      }
-    }
-
-    if (savedVolume !== null) {
-      const parsedVolume = Number(savedVolume);
-
-      if (
-        Number.isFinite(parsedVolume) &&
-        parsedVolume >= 0 &&
-        parsedVolume <= 1
-      ) {
-        setVolume(parsedVolume);
-      }
-    }
-  }, [tracks.length]);
-
-  useEffect(() => {
-    if (
-      currentIndex >= tracks.length &&
-      tracks.length > 0
-    ) {
-      setCurrentIndex(0);
-    }
-  }, [currentIndex, tracks.length]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-
-    if (!audio || !currentTrack) {
-      return;
-    }
-
-    audio.load();
-    setProgress(0);
-    setDuration(0);
-    setError(null);
-
-    window.localStorage.setItem(
-      "vanmotion-global-track",
-      String(currentIndex),
-    );
-
-    if (resumeAfterChangeRef.current) {
-      audio
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(() => {
-          setIsPlaying(false);
-        });
-    }
-  }, [currentIndex, currentTrack?.src]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-
-    if (audio) {
-      audio.volume = volume;
-    }
-
-    window.localStorage.setItem(
-      "vanmotion-global-volume",
-      String(volume),
-    );
-  }, [volume]);
-
-  async function togglePlayback() {
-    const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
-    if (audio.paused) {
-      try {
-        await audio.play();
-        setIsPlaying(true);
-        setError(null);
-      } catch {
-        setError(content.audioActivation);
-      }
-
-      return;
-    }
-
-    audio.pause();
-    setIsPlaying(false);
-  }
-
-  function selectTrack(index: number) {
-    if (index < 0 || index >= tracks.length) {
-      return;
-    }
-
-    resumeAfterChangeRef.current = isPlaying;
-    setCurrentIndex(index);
-  }
-
-  function playPrevious() {
-    if (tracks.length === 0) {
-      return;
-    }
-
-    const nextIndex =
-      currentIndex === 0
-        ? tracks.length - 1
-        : currentIndex - 1;
-
-    resumeAfterChangeRef.current = true;
-    setCurrentIndex(nextIndex);
-  }
-
-  function playNext() {
-    if (tracks.length === 0) {
-      return;
-    }
-
-    const nextIndex =
-      currentIndex === tracks.length - 1
-        ? 0
-        : currentIndex + 1;
-
-    resumeAfterChangeRef.current = true;
-    setCurrentIndex(nextIndex);
-  }
-
-  function changeProgress(value: number) {
-    const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
-    audio.currentTime = value;
-    setProgress(value);
-  }
-
-  if (
-    hidden ||
-    tracks.length === 0 ||
-    !currentTrack
-  ) {
+  if (tracks.length === 0 || !currentTrack) {
     return null;
   }
+
+  const error =
+    playbackError === "activation"
+      ? content.audioActivation
+      : playbackError === "missing-audio"
+        ? content.missingAudio
+        : null;
 
   return (
     <aside
@@ -279,38 +122,6 @@ export default function GlobalMusicPlayer({
         expanded ? styles.expanded : ""
       }`}
     >
-      <audio
-        ref={audioRef}
-        src={currentTrack.src}
-        preload="metadata"
-        onLoadedMetadata={(event) => {
-          const audioDuration =
-            event.currentTarget.duration;
-
-          setDuration(
-            Number.isFinite(audioDuration)
-              ? audioDuration
-              : 0,
-          );
-        }}
-        onTimeUpdate={(event) => {
-          setProgress(
-            event.currentTarget.currentTime,
-          );
-        }}
-        onPlay={() => {
-          setIsPlaying(true);
-        }}
-        onPause={() => {
-          setIsPlaying(false);
-        }}
-        onEnded={playNext}
-        onError={() => {
-          setIsPlaying(false);
-          setError(content.missingAudio);
-        }}
-      />
-
       <div className={styles.mainRow}>
         <button
           type="button"
@@ -354,7 +165,9 @@ export default function GlobalMusicPlayer({
 
           <button
             type="button"
-            onClick={togglePlayback}
+            onClick={() => {
+              void togglePlayback();
+            }}
             className={styles.playButton}
             aria-label={
               isPlaying
@@ -410,7 +223,7 @@ export default function GlobalMusicPlayer({
               max={duration || 0}
               step="0.1"
               value={Math.min(
-                progress,
+                currentTime,
                 duration || 0,
               )}
               onChange={(event) => {
@@ -432,7 +245,7 @@ export default function GlobalMusicPlayer({
               step="0.01"
               value={volume}
               onChange={(event) => {
-                setVolume(
+                changeVolume(
                   Number(event.target.value),
                 );
               }}
@@ -442,8 +255,7 @@ export default function GlobalMusicPlayer({
 
           <div className={styles.trackList}>
             {tracks.map((track, index) => {
-              const active =
-                index === currentIndex;
+              const active = index === currentIndex;
 
               return (
                 <button
@@ -455,7 +267,7 @@ export default function GlobalMusicPlayer({
                       : ""
                   }
                   onClick={() => {
-                    selectTrack(index);
+                    selectTrack(index, isPlaying);
                   }}
                 >
                   <span>

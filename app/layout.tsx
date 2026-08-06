@@ -4,8 +4,10 @@ import type { ReactNode } from "react";
 import PublicAnalytics from "@/app/components/analytics/PublicAnalytics";
 import LanguageSwitcher from "@/app/components/language/LanguageSwitcher";
 import RouteAwareMusicPlayer from "@/app/components/layout/RouteAwareMusicPlayer";
-import GlobalMusicPlayerServer from "@/app/components/music/GlobalMusicPlayerServer";
+import GlobalMusicPlayer from "@/app/components/music/GlobalMusicPlayer";
+import MusicPlayerProvider from "@/app/components/music/MusicPlayerContext";
 import { getCurrentLanguage } from "@/app/lib/language";
+import { getPublicMusicTracks } from "@/app/lib/music-library";
 
 import "./globals.css";
 
@@ -110,7 +112,10 @@ type RootLayoutProps = {
 export default async function RootLayout({
   children,
 }: RootLayoutProps) {
-  const language = await getCurrentLanguage();
+  const [language, tracks] = await Promise.all([
+    getCurrentLanguage(),
+    getPublicMusicTracks(),
+  ]);
   const content = metadataTranslations[language];
 
   const websiteStructuredData = {
@@ -138,15 +143,17 @@ export default async function RootLayout({
           }}
         />
 
-        {children}
+        <MusicPlayerProvider tracks={tracks}>
+          {children}
 
-        <LanguageSwitcher currentLanguage={language} />
+          <LanguageSwitcher currentLanguage={language} />
 
-        <RouteAwareMusicPlayer>
-          <GlobalMusicPlayerServer />
-        </RouteAwareMusicPlayer>
+          <RouteAwareMusicPlayer>
+            <GlobalMusicPlayer language={language} />
+          </RouteAwareMusicPlayer>
 
-        <PublicAnalytics />
+          <PublicAnalytics />
+        </MusicPlayerProvider>
       </body>
     </html>
   );

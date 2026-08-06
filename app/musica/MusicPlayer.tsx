@@ -1,26 +1,14 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
+
+import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
 
 import styles from "./musica.module.css";
-
-export type MusicTrack = {
-  id: string;
-  title: string;
-  subtitle: string;
-  src: string;
-  coverUrl?: string | null;
-  format: string;
-};
 
 export type MusicPlayerLanguage = "es" | "en";
 
 type MusicPlayerProps = {
-  tracks: MusicTrack[];
   language?: MusicPlayerLanguage;
 };
 
@@ -28,7 +16,7 @@ const translations = {
   es: {
     empty: "No hay canciones configuradas.",
     playbackError:
-      "No se ha podido reproducir el archivo. Comprueba que existe en public/music.",
+      "No se ha podido reproducir el archivo. Pulsa reproducir otra vez.",
     audioNotFound: (title: string) =>
       `No se encuentra el audio de “${title}”.`,
     nowPlaying: "Reproduciendo ahora",
@@ -45,7 +33,7 @@ const translations = {
   en: {
     empty: "No tracks have been configured.",
     playbackError:
-      "The file could not be played. Check that it exists in public/music.",
+      "The file could not be played. Press play again.",
     audioNotFound: (title: string) =>
       `The audio file for “${title}” could not be found.`,
     nowPlaying: "Now playing",
@@ -60,220 +48,92 @@ const translations = {
   },
 } as const;
 
+const coverByTrack: Record<string, string> = {
+  "the-cool-ashtray":
+    "/uploads/music-covers/the-cool-ashtray-1784373940751.png",
+  "suenos-prestados":
+    "/uploads/music-covers/suenos-prestados-1784376509559.png",
+  "solo-en-mi-mente":
+    "/uploads/music-covers/solo-en-mi-mente-1784377787037.png",
+  "solo-con-mi-mente":
+    "/uploads/music-covers/solo-en-mi-mente-1784377787037.png",
+  vanmotion:
+    "/uploads/music-covers/vanmotion-1784378515490.png",
+};
+
+function normalizeTrackKey(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds)) {
     return "0:00";
   }
 
   const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(
-    seconds % 60,
-  );
+  const remainingSeconds = Math.floor(seconds % 60);
 
-  return `${minutes}:${String(
-    remainingSeconds,
-  ).padStart(2, "0")}`;
+  return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
 }
 
 export default function MusicPlayer({
-  tracks,
   language = "es",
 }: MusicPlayerProps) {
-  const audioRef =
-    useRef<HTMLAudioElement>(null);
-
-  const resumeAfterChangeRef =
-    useRef(false);
-
-  const [currentIndex, setCurrentIndex] =
-    useState(0);
-
-  const [isPlaying, setIsPlaying] =
-    useState(false);
-
-  const [currentTime, setCurrentTime] =
-    useState(0);
-
-  const [duration, setDuration] =
-    useState(0);
-
-  const [volume, setVolume] =
-    useState(0.8);
-
-  const [error, setError] = useState<
-    string | null
-  >(null);
-
-  const [coverError, setCoverError] =
-    useState(false);
-
+  const [coverError, setCoverError] = useState(false);
   const content = translations[language];
 
-  const currentTrack =
-    tracks[currentIndex] ?? tracks[0];
-
-  useEffect(() => {
-    const audio = audioRef.current;
-
-    if (!audio || !currentTrack) {
-      return;
-    }
-
-    audio.load();
-
-    setCurrentTime(0);
-    setDuration(0);
-    setError(null);
-
-    if (resumeAfterChangeRef.current) {
-      audio
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(() => {
-          setIsPlaying(false);
-        });
-    }
-  }, [currentTrack?.src]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-
-    if (audio) {
-      audio.volume = volume;
-    }
-  }, [volume]);
+  const {
+    tracks,
+    currentTrack,
+    currentIndex,
+    isPlaying,
+    currentTime,
+    duration,
+    volume,
+    playbackError,
+    togglePlayback,
+    selectTrack,
+    playPrevious,
+    playNext,
+    changeProgress,
+    changeVolume,
+  } = useMusicPlayer();
 
   useEffect(() => {
     setCoverError(false);
-  }, [currentTrack?.coverUrl]);
+  }, [currentTrack?.coverUrl, currentTrack?.id]);
 
   if (!currentTrack) {
     return (
       <section className={styles.player}>
-        <p className={styles.error}>
-          {content.empty}
-        </p>
+        <p className={styles.error}>{content.empty}</p>
       </section>
     );
   }
 
-  function selectTrack(
-    index: number,
-    autoplay = true,
-  ) {
-    if (
-      index < 0 ||
-      index >= tracks.length
-    ) {
-      return;
-    }
+  const idKey = normalizeTrackKey(currentTrack.id);
+  const titleKey = normalizeTrackKey(currentTrack.title);
+  const coverUrl =
+    coverByTrack[idKey] ??
+    coverByTrack[titleKey] ??
+    currentTrack.coverUrl;
+  const showCover = Boolean(coverUrl) && !coverError;
 
-    resumeAfterChangeRef.current =
-      autoplay || isPlaying;
-
-    setCurrentIndex(index);
-  }
-
-  async function togglePlayback() {
-    const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
-    if (audio.paused) {
-      try {
-        await audio.play();
-
-        setIsPlaying(true);
-        setError(null);
-      } catch {
-        setError(content.playbackError);
-      }
-
-      return;
-    }
-
-    audio.pause();
-    setIsPlaying(false);
-  }
-
-  function playPrevious() {
-    const previousIndex =
-      currentIndex === 0
-        ? tracks.length - 1
-        : currentIndex - 1;
-
-    selectTrack(previousIndex);
-  }
-
-  function playNext() {
-    const nextIndex =
-      currentIndex ===
-      tracks.length - 1
-        ? 0
-        : currentIndex + 1;
-
-    selectTrack(nextIndex);
-  }
-
-  function changeProgress(
-    value: number,
-  ) {
-    const audio = audioRef.current;
-
-    if (!audio) {
-      return;
-    }
-
-    audio.currentTime = value;
-    setCurrentTime(value);
-  }
-
-  function changeVolume(value: number) {
-    setVolume(value);
-  }
-
-  const showCover =
-    Boolean(currentTrack.coverUrl) &&
-    !coverError;
+  const error =
+    playbackError === "activation"
+      ? content.playbackError
+      : playbackError === "missing-audio"
+        ? content.audioNotFound(currentTrack.title)
+        : null;
 
   return (
     <section className={styles.player}>
-      <audio
-        ref={audioRef}
-        src={currentTrack.src}
-        preload="metadata"
-        onTimeUpdate={(event) => {
-          setCurrentTime(
-            event.currentTarget.currentTime,
-          );
-        }}
-        onLoadedMetadata={(event) => {
-          setDuration(
-            event.currentTarget.duration,
-          );
-        }}
-        onPlay={() => {
-          setIsPlaying(true);
-        }}
-        onPause={() => {
-          setIsPlaying(false);
-        }}
-        onEnded={playNext}
-        onError={() => {
-          setIsPlaying(false);
-
-          setError(
-            content.audioNotFound(
-              currentTrack.title,
-            ),
-          );
-        }}
-      />
-
       <div className={styles.nowPlaying}>
         <div
           className={styles.cover}
@@ -287,27 +147,22 @@ export default function MusicPlayer({
           }
         >
           {showCover ? (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                key={currentTrack.coverUrl}
-                src={
-                  currentTrack.coverUrl ??
-                  undefined
-                }
-                alt={`${content.coverAlt} ${currentTrack.title}`}
-                onError={() => {
-                  setCoverError(true);
-                }}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  minHeight: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
-            </>
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={coverUrl}
+              src={coverUrl ?? undefined}
+              alt={`${content.coverAlt} ${currentTrack.title}`}
+              onError={() => {
+                setCoverError(true);
+              }}
+              style={{
+                width: "100%",
+                height: "100%",
+                minHeight: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
           ) : (
             <>
               <span>V</span>
@@ -320,30 +175,18 @@ export default function MusicPlayer({
           )}
         </div>
 
-        <div
-          className={
-            styles.trackInformation
-          }
-        >
+        <div className={styles.trackInformation}>
           <p>{content.nowPlaying}</p>
-
           <h2>{currentTrack.title}</h2>
-
-          <span>
-            {currentTrack.subtitle}
-          </span>
+          <span>{currentTrack.subtitle}</span>
         </div>
       </div>
 
-      <div
-        className={styles.playerControls}
-      >
+      <div className={styles.playerControls}>
         <button
           type="button"
           onClick={playPrevious}
-          aria-label={
-            content.previousTrack
-          }
+          aria-label={content.previousTrack}
           title={content.previousTrack}
         >
           ←
@@ -351,18 +194,12 @@ export default function MusicPlayer({
 
         <button
           type="button"
-          onClick={togglePlayback}
+          onClick={() => {
+            void togglePlayback();
+          }}
           className={styles.playButton}
-          aria-label={
-            isPlaying
-              ? content.pause
-              : content.play
-          }
-          title={
-            isPlaying
-              ? content.pause
-              : content.play
-          }
+          aria-label={isPlaying ? content.pause : content.play}
+          title={isPlaying ? content.pause : content.play}
         >
           {isPlaying ? "Ⅱ" : "▶"}
         </button>
@@ -377,26 +214,17 @@ export default function MusicPlayer({
         </button>
       </div>
 
-      <div
-        className={styles.progressSection}
-      >
-        <span>
-          {formatTime(currentTime)}
-        </span>
+      <div className={styles.progressSection}>
+        <span>{formatTime(currentTime)}</span>
 
         <input
           type="range"
           min="0"
           max={duration || 0}
           step="0.1"
-          value={Math.min(
-            currentTime,
-            duration || 0,
-          )}
+          value={Math.min(currentTime, duration || 0)}
           onChange={(event) => {
-            changeProgress(
-              Number(event.target.value),
-            );
+            changeProgress(Number(event.target.value));
           }}
           aria-label={content.progress}
           title={content.progress}
@@ -415,25 +243,18 @@ export default function MusicPlayer({
           step="0.01"
           value={volume}
           onChange={(event) => {
-            changeVolume(
-              Number(event.target.value),
-            );
+            changeVolume(Number(event.target.value));
           }}
           aria-label={content.volume}
           title={content.volume}
         />
       </div>
 
-      {error && (
-        <p className={styles.error}>
-          {error}
-        </p>
-      )}
+      {error && <p className={styles.error}>{error}</p>}
 
       <div className={styles.trackList}>
         {tracks.map((track, index) => {
-          const active =
-            index === currentIndex;
+          const active = index === currentIndex;
 
           return (
             <button
@@ -442,43 +263,19 @@ export default function MusicPlayer({
               onClick={() => {
                 selectTrack(index, true);
               }}
-              className={
-                active
-                  ? styles.activeTrack
-                  : ""
-              }
+              className={active ? styles.activeTrack : ""}
               aria-label={`${content.play}: ${track.title}`}
             >
-              <span
-                className={
-                  styles.trackNumber
-                }
-              >
-                {String(index + 1).padStart(
-                  2,
-                  "0",
-                )}
+              <span className={styles.trackNumber}>
+                {String(index + 1).padStart(2, "0")}
               </span>
 
-              <span
-                className={
-                  styles.trackName
-                }
-              >
-                <strong>
-                  {track.title}
-                </strong>
-
-                <small>
-                  {track.subtitle}
-                </small>
+              <span className={styles.trackName}>
+                <strong>{track.title}</strong>
+                <small>{track.subtitle}</small>
               </span>
 
-              <span
-                className={
-                  styles.trackFormat
-                }
-              >
+              <span className={styles.trackFormat}>
                 {active && isPlaying
                   ? content.playing
                   : track.format}
