@@ -18,7 +18,7 @@ const manifest = {
   "carpe-diem-hombre-azul-ford-e150-drop-01": {
     "FRONT": "/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/front.webp",
     "BACK": "/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/back.webp",
-    "DETAIL": "/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/detail.webp",
+    "DETAIL": "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v3.webp",
     "LIFESTYLE": "/ropa/productos/carpe-diem-hombre-azul-ford-e150-drop-01/lifestyle.webp"
   },
   "bomber-hombre-azul-ford-e150-drop-01": {
@@ -31,25 +31,25 @@ const manifest = {
     "FRONT": "/ropa/productos/bomber-mujer-negra-drop-01/front.webp",
     "BACK": "/ropa/productos/bomber-mujer-negra-drop-01/back.webp",
     "DETAIL": "/ropa/productos/bomber-mujer-negra-drop-01/detail.webp",
-    "LIFESTYLE": "/ropa/productos/bomber-mujer-negra-drop-01/lifestyle-v2.webp"
+    "LIFESTYLE": "/ropa/productos/bomber-mujer-negra-drop-01/lifestyle.webp"
   },
   "carpe-diem-mujer-azul-ford-e150-drop-01": {
     "FRONT": "/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/front.webp",
     "BACK": "/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/back.webp",
-    "DETAIL": "/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/detail.webp",
+    "DETAIL": "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v3.webp",
     "LIFESTYLE": "/ropa/productos/carpe-diem-mujer-azul-ford-e150-drop-01/lifestyle.webp"
   },
   "carpe-diem-mujer-negra-drop-01": {
     "FRONT": "/ropa/productos/carpe-diem-mujer-negra-drop-01/front.webp",
     "BACK": "/ropa/productos/carpe-diem-mujer-negra-drop-01/back.webp",
     "DETAIL": "/ropa/productos/carpe-diem-mujer-negra-drop-01/detail.webp",
-    "LIFESTYLE": "/ropa/productos/carpe-diem-mujer-negra-drop-01/lifestyle.webp"
+    "LIFESTYLE": "/ropa/aprobadas/mujer/camiseta-negra/lifestyle-v2.webp"
   },
   "bomber-mujer-azul-ford-e150-drop-01": {
     "FRONT": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/front.webp",
     "BACK": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/back.webp",
     "DETAIL": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/detail.webp",
-    "LIFESTYLE": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/lifestyle-v2.webp"
+    "LIFESTYLE": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/lifestyle.webp"
   }
 };
 

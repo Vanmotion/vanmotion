@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { resolveClothingImageUrl } from "@/app/lib/clothing-image-overrides";
 import { prisma } from "@/app/lib/prisma";
+import { resolveProductImageUrl } from "@/app/lib/product-image-overrides";
 
 import {
   createCarpeDiemProductAction,
@@ -307,7 +307,7 @@ export default async function ClothingAdminPage() {
                       {productImageSlots.map((slot) => {
                         const image = imagesByView.get(slot.view);
                         const displayUrl = image
-                          ? resolveClothingImageUrl(
+                          ? resolveProductImageUrl(
                               product.slug,
                               image.view,
                               image.url,

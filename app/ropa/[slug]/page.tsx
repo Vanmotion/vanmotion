@@ -3,9 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { resolveClothingImageUrl } from "@/app/lib/clothing-image-overrides";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
+import { resolveProductImageUrl } from "@/app/lib/product-image-overrides";
 
 import ProductPurchasePanel from "../ProductPurchasePanel";
 import { getLocalizedProductText } from "../product-translations";
@@ -189,13 +189,12 @@ export async function generateMetadata({
     maximumFractionDigits: 2,
   }).format(Number(product.price));
   const canonicalUrl = `${SITE_URL}/ropa/${product.slug}`;
-  const firstImage = product.images[0];
-  const socialImage = firstImage?.url
+  const socialImage = product.images[0]?.url
     ? absoluteUrl(
-        resolveClothingImageUrl(
+        resolveProductImageUrl(
           product.slug,
-          firstImage.view,
-          firstImage.url,
+          product.images[0].view,
+          product.images[0].url,
         ),
       )
     : undefined;
@@ -307,7 +306,7 @@ export default async function ProductPage({
     product.images.map((image) => [
       image.view,
       {
-        url: resolveClothingImageUrl(product.slug, image.view, image.url),
+        url: resolveProductImageUrl(product.slug, image.view, image.url),
         alt: image.alt ?? productText.name,
       },
     ]),
@@ -322,7 +321,7 @@ export default async function ProductPage({
 
   const canonicalUrl = `${SITE_URL}/ropa/${product.slug}`;
   const productImages = product.images.map((image) =>
-    absoluteUrl(resolveClothingImageUrl(product.slug, image.view, image.url)),
+    absoluteUrl(resolveProductImageUrl(product.slug, image.view, image.url)),
   );
   const schemaAvailability =
     productStatus === "AVAILABLE"

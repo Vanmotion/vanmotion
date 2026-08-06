@@ -485,7 +485,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v3.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v2.webp",
     },
     {
       view: "BACK",
@@ -503,7 +503,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v3.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v2.webp",
     },
     {
       view: "BACK",
@@ -511,17 +511,17 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "DETAIL",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v4.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v3.webp",
     },
   ],
   "carpe-diem-mujer-negra-drop-01": [
     {
       view: "LIFESTYLE",
-      url: "/ropa/aprobadas/mujer/camiseta-negra/lifestyle-v3.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-negra/lifestyle-v2.webp",
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/mujer/camiseta-negra/frontal-v3.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-negra/frontal.webp",
     },
     {
       view: "BACK",
@@ -539,7 +539,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/frontal-v3.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/frontal.webp",
     },
     {
       view: "BACK",
@@ -547,7 +547,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "DETAIL",
-      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v4.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v3.webp",
     },
   ],
   "bomber-hombre-azul-ford-e150-drop-01": [
@@ -568,25 +568,6 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
       url: "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/detail.webp",
     },
   ],
-  "bomber-mujer-azul-ford-e150-drop-01": [
-    {
-      view: "LIFESTYLE",
-      url: "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/lifestyle-v2.webp",
-    },
-    {
-      view: "FRONT",
-      url: "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/front.webp",
-    },
-    {
-      view: "BACK",
-      url: "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/back.webp",
-    },
-    {
-      view: "DETAIL",
-      url: "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/detail.webp",
-    },
-  ],
-
 };
 
 async function installApprovedProductImages(
