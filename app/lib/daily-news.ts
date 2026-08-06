@@ -8,7 +8,8 @@ export type DailyNewsItem = {
 
 type Language = "es" | "en";
 
-const DAILY_SECONDS = 60 * 60;
+const NEWS_REFRESH_SECONDS = 60 * 60;
+const MAX_ROTATION_ITEMS = 12;
 
 const TOPICS = [
   "vehicles",
@@ -24,25 +25,29 @@ type DailyNewsResult = [
   DailyNewsItem,
 ];
 
+type NewsCandidate = DailyNewsItem & {
+  publishedAt: number;
+};
+
 const QUERIES: Record<
   Language,
   Record<Topic, string>
 > = {
   es: {
     vehicles:
-      "automoción coches vehículos industria automóvil",
+      'automoción OR coches OR vehículos OR automóvil OR motor',
     music:
-      "música cantante álbum concierto festival",
+      'música OR cantante OR álbum OR concierto OR festival',
     clothing:
-      "moda ropa industria textil diseñadores",
+      'moda OR ropa OR textil OR diseñadores OR tendencias',
   },
   en: {
     vehicles:
-      "automotive cars vehicles motor industry",
+      'automotive OR cars OR vehicles OR motoring OR auto industry',
     music:
-      "music singer album concert festival",
+      'music OR singer OR album OR concert OR festival',
     clothing:
-      "fashion clothing textile industry designers",
+      'fashion OR clothing OR textile OR designers OR trends',
   },
 };
 
@@ -104,9 +109,10 @@ function buildRssUrl(
     "https://news.google.com/rss/search",
   );
 
-  const query = `${QUERIES[language][topic]} when:${period}`;
-
-  endpoint.searchParams.set("q", query);
+  endpoint.searchParams.set(
+    "q",
+    `${QUERIES[language][topic]} when:${period}`,
+  );
 
   if (language === "es") {
     endpoint.searchParams.set("hl", "es");
@@ -158,16 +164,32 @@ function fallbackNews(
   };
 }
 
-function parseFirstArticle(
+function normalizeTitle(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function parseArticles(
   xml: string,
-): DailyNewsItem | null {
+): NewsCandidate[] {
   const items =
     xml.match(/<item\b[\s\S]*?<\/item>/gi) ?? [];
+
+  const candidates: NewsCandidate[] = [];
+  const seenTitles = new Set<string>();
 
   for (const item of items) {
     let title = extractTag(item, "title");
     const url = extractTag(item, "link");
     const source = extractTag(item, "source");
+    const publicationDate = extractTag(
+      item,
+      "pubDate",
+    );
 
     if (
       title.length < 10 ||
@@ -189,21 +211,106 @@ function parseFirstArticle(
       );
     }
 
-    return {
+    const normalizedTitle = normalizeTitle(title);
+
+    if (
+      !normalizedTitle ||
+      seenTitles.has(normalizedTitle)
+    ) {
+      continue;
+    }
+
+    seenTitles.add(normalizedTitle);
+
+    const parsedDate = Date.parse(publicationDate);
+
+    candidates.push({
       title,
       source: source || "Google News",
       url,
-    };
+      publishedAt: Number.isNaN(parsedDate)
+        ? 0
+        : parsedDate,
+    });
   }
 
-  return null;
+  return candidates
+    .sort(
+      (first, second) =>
+        second.publishedAt - first.publishedAt,
+    )
+    .slice(0, MAX_ROTATION_ITEMS);
 }
 
-async function fetchTopic(
+function mergeCandidates(
+  first: NewsCandidate[],
+  second: NewsCandidate[],
+): NewsCandidate[] {
+  const merged: NewsCandidate[] = [];
+  const seenTitles = new Set<string>();
+
+  for (const candidate of [...first, ...second]) {
+    const normalizedTitle = normalizeTitle(
+      candidate.title,
+    );
+
+    if (seenTitles.has(normalizedTitle)) {
+      continue;
+    }
+
+    seenTitles.add(normalizedTitle);
+    merged.push(candidate);
+  }
+
+  return merged
+    .sort(
+      (firstItem, secondItem) =>
+        secondItem.publishedAt -
+        firstItem.publishedAt,
+    )
+    .slice(0, MAX_ROTATION_ITEMS);
+}
+
+function selectHourlyArticle(
+  candidates: NewsCandidate[],
+  topic: Topic,
+  language: Language,
+): DailyNewsItem | null {
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  const hourlySlot = Math.floor(
+    Date.now() /
+      (NEWS_REFRESH_SECONDS * 1000),
+  );
+
+  const topicOffset =
+    TOPICS.indexOf(topic) * 3;
+
+  const languageOffset =
+    language === "en" ? 1 : 0;
+
+  const selectedIndex =
+    (hourlySlot +
+      topicOffset +
+      languageOffset) %
+    candidates.length;
+
+  const selected = candidates[selectedIndex];
+
+  return {
+    title: selected.title,
+    source: selected.source,
+    url: selected.url,
+  };
+}
+
+async function fetchTopicCandidates(
   topic: Topic,
   language: Language,
   period: "1d" | "7d",
-): Promise<DailyNewsItem | null> {
+): Promise<NewsCandidate[]> {
   const controller = new AbortController();
 
   const timeout = setTimeout(
@@ -227,42 +334,66 @@ async function fetchTopic(
     );
 
     if (!response.ok) {
-      return null;
+      return [];
     }
 
-    return parseFirstArticle(
+    return parseArticles(
       await response.text(),
     );
   } catch {
-    return null;
+    return [];
   } finally {
     clearTimeout(timeout);
   }
+}
+
+async function fetchTopic(
+  topic: Topic,
+  language: Language,
+): Promise<DailyNewsItem> {
+  const today = await fetchTopicCandidates(
+    topic,
+    language,
+    "1d",
+  );
+
+  if (today.length >= 2) {
+    return (
+      selectHourlyArticle(
+        today,
+        topic,
+        language,
+      ) ?? fallbackNews(topic, language)
+    );
+  }
+
+  const week = await fetchTopicCandidates(
+    topic,
+    language,
+    "7d",
+  );
+
+  const candidates = mergeCandidates(
+    today,
+    week,
+  );
+
+  return (
+    selectHourlyArticle(
+      candidates,
+      topic,
+      language,
+    ) ?? fallbackNews(topic, language)
+  );
 }
 
 async function fetchDailyNewsOnce(
   language: Language,
 ): Promise<DailyNewsResult> {
   const results = await Promise.all(
-    TOPICS.map(async (topic) => {
-      const today = await fetchTopic(
-        topic,
-        language,
-        "1d",
-      );
-
-      if (today) {
-        return today;
-      }
-
-      const week = await fetchTopic(
-        topic,
-        language,
-        "7d",
-      );
-
-      return week ?? fallbackNews(topic, language);
-    }),
+    TOPICS.map((topic) =>
+      fetchTopic(topic, language),
+    ),
   );
 
   return results as DailyNewsResult;
@@ -271,9 +402,9 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-google-news-v2"],
+  ["vanmotion-google-news-v3-hourly"],
   {
-    revalidate: DAILY_SECONDS,
+    revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
   },
 );
