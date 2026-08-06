@@ -485,7 +485,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v2.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v11.webp",
     },
     {
       view: "BACK",
