@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
+import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
 
 import styles from "./musica.module.css";
 
@@ -125,12 +125,16 @@ export default function MusicPlayer({
     coverByTrack[titleKey] ??
     currentTrack.coverUrl;
   const showCover = Boolean(coverUrl) && !coverError;
+  const currentTrackTitle = getLocalizedTrackTitle(
+    currentTrack,
+    language,
+  );
 
   const error =
     playbackError === "activation"
       ? content.playbackError
       : playbackError === "missing-audio"
-        ? content.audioNotFound(currentTrack.title)
+        ? content.audioNotFound(currentTrackTitle)
         : null;
 
   return (
@@ -148,15 +152,20 @@ export default function MusicPlayer({
           }
         >
           {showCover ? (
-            <Image
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               key={coverUrl}
-              src={coverUrl as string}
-              alt={`${content.coverAlt} ${currentTrack.title}`}
-              fill
-              sizes="(max-width: 980px) calc(100vw - 40px), 420px"
-              className={styles.coverImage}
+              src={coverUrl ?? undefined}
+              alt={`${content.coverAlt} ${currentTrackTitle}`}
               onError={() => {
                 setCoverError(true);
+              }}
+              style={{
+                width: "100%",
+                height: "100%",
+                minHeight: "100%",
+                objectFit: "cover",
+                display: "block",
               }}
             />
           ) : (
@@ -173,7 +182,7 @@ export default function MusicPlayer({
 
         <div className={styles.trackInformation}>
           <p>{content.nowPlaying}</p>
-          <h2>{currentTrack.title}</h2>
+          <h2>{currentTrackTitle}</h2>
           <span>{currentTrack.subtitle}</span>
         </div>
       </div>
@@ -251,6 +260,10 @@ export default function MusicPlayer({
       <div className={styles.trackList}>
         {tracks.map((track, index) => {
           const active = index === currentIndex;
+          const trackTitle = getLocalizedTrackTitle(
+            track,
+            language,
+          );
 
           return (
             <button
@@ -260,14 +273,14 @@ export default function MusicPlayer({
                 selectTrack(index, true);
               }}
               className={active ? styles.activeTrack : ""}
-              aria-label={`${content.play}: ${track.title}`}
+              aria-label={`${content.play}: ${trackTitle}`}
             >
               <span className={styles.trackNumber}>
                 {String(index + 1).padStart(2, "0")}
               </span>
 
               <span className={styles.trackName}>
-                <strong>{track.title}</strong>
+                <strong>{trackTitle}</strong>
                 <small>{track.subtitle}</small>
               </span>
 

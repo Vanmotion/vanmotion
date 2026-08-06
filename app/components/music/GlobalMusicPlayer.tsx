@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import type { Language } from "@/app/language";
+import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
 
 import { useMusicPlayer } from "./MusicPlayerContext";
 import styles from "./GlobalMusicPlayer.module.css";
@@ -109,6 +110,11 @@ export default function GlobalMusicPlayer({
     return null;
   }
 
+  const currentTrackTitle = getLocalizedTrackTitle(
+    currentTrack,
+    language,
+  );
+
   const error =
     playbackError === "activation"
       ? content.audioActivation
@@ -137,7 +143,7 @@ export default function GlobalMusicPlayer({
         >
           <span className={styles.trackText}>
             <small>{content.playerName}</small>
-            <strong>{currentTrack.title}</strong>
+            <strong>{currentTrackTitle}</strong>
           </span>
         </button>
 
@@ -256,6 +262,10 @@ export default function GlobalMusicPlayer({
           <div className={styles.trackList}>
             {tracks.map((track, index) => {
               const active = index === currentIndex;
+              const trackTitle = getLocalizedTrackTitle(
+                track,
+                language,
+              );
 
               return (
                 <button
@@ -278,7 +288,7 @@ export default function GlobalMusicPlayer({
                   </span>
 
                   <span>
-                    <strong>{track.title}</strong>
+                    <strong>{trackTitle}</strong>
                     <small>{track.subtitle}</small>
                   </span>
 
