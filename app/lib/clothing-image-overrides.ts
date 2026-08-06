@@ -2,7 +2,7 @@ const CLOTHING_IMAGE_OVERRIDES: Readonly<
   Record<string, Readonly<Record<string, string>>>
 > = {
   "carpe-diem-black-edition-drop-01": {
-    FRONT: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v12.webp",
+    FRONT: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v13.webp",
   },
   "carpe-diem-hombre-azul-ford-e150-drop-01": {
     LIFESTYLE: "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle-v2.webp",
