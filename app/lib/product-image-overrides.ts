@@ -9,11 +9,11 @@ const PRODUCT_IMAGE_OVERRIDES: readonly ProductImageOverride[] = [
   {
     slug: "carpe-diem-black-edition-drop-01",
     view: "FRONT",
-    replacementUrl: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v15.webp",
+    replacementUrl: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v16.webp",
     legacyUrls: [
-      "/ropa/aprobadas/hombre/camiseta-negra/frontal-v15.webp",
-      "/ropa/aprobadas/hombre/camiseta-negra/frontal-v15.webp",
-      "/ropa/aprobadas/hombre/camiseta-negra/frontal-v15.webp",
+      "/ropa/aprobadas/hombre/camiseta-negra/frontal-v16.webp",
+      "/ropa/aprobadas/hombre/camiseta-negra/frontal-v16.webp",
+      "/ropa/aprobadas/hombre/camiseta-negra/frontal-v16.webp",
       "/ropa/productos/carpe-diem-black-edition-drop-01/front.webp",
       "/ropa/productos/carpe-diem-black-edition-drop-01/front.png",
       "/ropa/carpe-diem-frontal.webp",
