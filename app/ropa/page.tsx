@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
+import { resolveClothingImageUrl } from "@/app/lib/clothing-image-overrides";
 import { prisma } from "@/app/lib/prisma";
 
 import { getLocalizedProductText } from "./product-translations";
@@ -392,7 +393,10 @@ export default async function RopaPage() {
             {products.map((product) => {
               const productText = getLocalizedProductText(product, language);
               const imagesByView = new Map(
-                product.images.map((image) => [image.view, image.url]),
+                product.images.map((image) => [
+                  image.view,
+                  resolveClothingImageUrl(product.slug, image.view, image.url),
+                ]),
               );
 
               const primaryImage =

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { resolveClothingImageUrl } from "@/app/lib/clothing-image-overrides";
 import { prisma } from "@/app/lib/prisma";
 
 import {
@@ -305,7 +306,13 @@ export default async function ClothingAdminPage() {
                     <div className={styles.editorImagesGrid}>
                       {productImageSlots.map((slot) => {
                         const image = imagesByView.get(slot.view);
-                        const displayUrl = image?.url ?? null;
+                        const displayUrl = image
+                          ? resolveClothingImageUrl(
+                              product.slug,
+                              image.view,
+                              image.url,
+                            )
+                          : null;
                         const isCustomImage = Boolean(
                           image?.url.startsWith("http"),
                         );

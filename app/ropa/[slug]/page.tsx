@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { resolveClothingImageUrl } from "@/app/lib/clothing-image-overrides";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
 
@@ -13,27 +14,6 @@ import styles from "./producto.module.css";
 export const dynamic = "force-dynamic";
 
 const SITE_URL = "https://www.vanmotion.es";
-const WOMEN_BLUE_DETAIL_LEGACY_URL =
-  "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta.webp";
-const WOMEN_BLUE_DETAIL_V2_URL =
-  "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v2.png";
-
-function resolveProductImageUrl(
-  productSlug: string,
-  view: string | null,
-  imageUrl: string,
-): string {
-  if (
-    productSlug === "carpe-diem-mujer-azul-ford-e150-drop-01" &&
-    view === "DETAIL" &&
-    imageUrl === WOMEN_BLUE_DETAIL_LEGACY_URL
-  ) {
-    return WOMEN_BLUE_DETAIL_V2_URL;
-  }
-
-  return imageUrl;
-}
-
 function absoluteUrl(value: string): string {
   try {
     return new URL(value, SITE_URL).toString();
@@ -209,8 +189,15 @@ export async function generateMetadata({
     maximumFractionDigits: 2,
   }).format(Number(product.price));
   const canonicalUrl = `${SITE_URL}/ropa/${product.slug}`;
-  const socialImage = product.images[0]?.url
-    ? absoluteUrl(product.images[0].url)
+  const firstImage = product.images[0];
+  const socialImage = firstImage?.url
+    ? absoluteUrl(
+        resolveClothingImageUrl(
+          product.slug,
+          firstImage.view,
+          firstImage.url,
+        ),
+      )
     : undefined;
 
   const title =
@@ -320,7 +307,7 @@ export default async function ProductPage({
     product.images.map((image) => [
       image.view,
       {
-        url: resolveProductImageUrl(product.slug, image.view, image.url),
+        url: resolveClothingImageUrl(product.slug, image.view, image.url),
         alt: image.alt ?? productText.name,
       },
     ]),
@@ -335,7 +322,7 @@ export default async function ProductPage({
 
   const canonicalUrl = `${SITE_URL}/ropa/${product.slug}`;
   const productImages = product.images.map((image) =>
-    absoluteUrl(resolveProductImageUrl(product.slug, image.view, image.url)),
+    absoluteUrl(resolveClothingImageUrl(product.slug, image.view, image.url)),
   );
   const schemaAvailability =
     productStatus === "AVAILABLE"

@@ -485,7 +485,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v2.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v3.webp",
     },
     {
       view: "BACK",
@@ -503,7 +503,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v2.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v3.webp",
     },
     {
       view: "BACK",
@@ -517,11 +517,11 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
   "carpe-diem-mujer-negra-drop-01": [
     {
       view: "LIFESTYLE",
-      url: "/ropa/aprobadas/mujer/camiseta-negra/lifestyle.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-negra/lifestyle-v3.webp",
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/mujer/camiseta-negra/frontal.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-negra/frontal-v3.webp",
     },
     {
       view: "BACK",
@@ -539,7 +539,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "FRONT",
-      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/frontal.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/frontal-v3.webp",
     },
     {
       view: "BACK",
