@@ -25,7 +25,7 @@ const manifest = {
     "FRONT": "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/front.webp",
     "BACK": "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/back.webp",
     "DETAIL": "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/detail.webp",
-    "LIFESTYLE": "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/lifestyle.webp"
+    "LIFESTYLE": "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/lifestyle-v2.webp"
   },
   "bomber-mujer-negra-drop-01": {
     "FRONT": "/ropa/productos/bomber-mujer-negra-drop-01/front.webp",

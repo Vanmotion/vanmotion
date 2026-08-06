@@ -37,7 +37,7 @@ const products = {
     { view: 'FRONT', url: '/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/front.webp', sortOrder: 0 },
     { view: 'BACK', url: '/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/back.webp', sortOrder: 1 },
     { view: 'DETAIL', url: '/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/detail.webp', sortOrder: 2 },
-    { view: 'LIFESTYLE', url: '/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/lifestyle.webp', sortOrder: 3 },
+    { view: 'LIFESTYLE', url: '/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/lifestyle-v2.webp', sortOrder: 3 },
   ],
   'bomber-mujer-negra-drop-01': [
     { view: 'FRONT', url: '/ropa/productos/bomber-mujer-negra-drop-01/front.webp', sortOrder: 0 },

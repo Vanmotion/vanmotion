@@ -17,6 +17,10 @@ const CLOTHING_IMAGE_OVERRIDES: Readonly<
     FRONT: "/ropa/aprobadas/mujer/camiseta-azul-ford/frontal-v3.webp",
     DETAIL: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v4.webp",
   },
+  "bomber-hombre-azul-ford-e150-drop-01": {
+    LIFESTYLE: "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/lifestyle-v2.webp",
+  },
+
 };
 
 export function resolveClothingImageUrl(

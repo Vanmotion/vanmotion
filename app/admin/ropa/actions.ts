@@ -550,6 +550,25 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
       url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v4.webp",
     },
   ],
+  "bomber-hombre-azul-ford-e150-drop-01": [
+    {
+      view: "LIFESTYLE",
+      url: "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/lifestyle-v2.webp",
+    },
+    {
+      view: "FRONT",
+      url: "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/front.webp",
+    },
+    {
+      view: "BACK",
+      url: "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/back.webp",
+    },
+    {
+      view: "DETAIL",
+      url: "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/detail.webp",
+    },
+  ],
+
 };
 
 async function installApprovedProductImages(
