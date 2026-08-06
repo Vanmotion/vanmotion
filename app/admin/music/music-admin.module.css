@@ -604,3 +604,86 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.directCoverUpload {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.directCoverUpload input[type="file"] {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px;
+  border: 1px solid #d5d5d5;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+}
+
+.directCoverUpload input:disabled {
+  opacity: 0.55;
+}
+
+.coverProgress {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+}
+
+.coverProgress > div {
+  height: 4px;
+  overflow: hidden;
+  background: #dedede;
+}
+
+.coverProgress span {
+  display: block;
+  height: 100%;
+  background: #111111;
+  transition: width 180ms ease;
+}
+
+.coverProgress strong {
+  min-width: 34px;
+  color: #555555;
+  font-size: 9px;
+}
+
+.coverUploadSuccess,
+.coverUploadError {
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.coverUploadSuccess {
+  color: #246c38;
+}
+
+.coverUploadError {
+  color: #a32626;
+}
+
+
+.directCoverUpload button {
+  min-height: 42px;
+  padding: 0 15px;
+  border: 0;
+  background: #111111;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.directCoverUpload button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

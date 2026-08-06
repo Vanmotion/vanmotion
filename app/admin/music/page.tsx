@@ -3,16 +3,14 @@ import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 
 import DirectMusicAudioUpload from "./DirectMusicAudioUpload";
+import DirectMusicCoverUpload from "./DirectMusicCoverUpload";
 
 import {
   initializeMusicLibrary,
   moveMusicTrack,
   saveMusicTrack,
 } from "./actions";
-import {
-  removeTrackCover,
-  saveTrackCover,
-} from "./covers/actions";
+import { removeTrackCover } from "./covers/actions";
 import styles from "./music-admin.module.css";
 
 export const dynamic = "force-dynamic";
@@ -240,36 +238,11 @@ export default async function AdminMusicPage() {
                     </strong>
                   </div>
 
-                  <form
-                    action={saveTrackCover}
-                    className={styles.coverUploadForm}
-                  >
-                    <input
-                      type="hidden"
-                      name="trackId"
-                      value={track.id}
-                    />
-
-                    <label>
-                      <span className="sr-only">
-                        Seleccionar portada para{" "}
-                        {track.title}
-                      </span>
-
-                      <input
-                        type="file"
-                        name="cover"
-                        accept="image/jpeg,image/png,image/webp,image/avif"
-                        required
-                      />
-                    </label>
-
-                    <button type="submit">
-                      {track.coverUrl
-                        ? "Sustituir portada"
-                        : "Subir portada"}
-                    </button>
-                  </form>
+                  <DirectMusicCoverUpload
+                    trackId={track.id}
+                    title={track.title}
+                    hasCover={Boolean(track.coverUrl)}
+                  />
 
                   {track.coverUrl && (
                     <form

@@ -5,11 +5,11 @@ import { prisma } from "@/app/lib/prisma";
 import {
   createCarpeDiemProductAction,
   removeProductImageAction,
-  saveProductImageAction,
   updateProductAction,
 } from "./actions";
 
 import styles from "./ropa.module.css";
+import DirectProductImageUpload from "./DirectProductImageUpload";
 import SubmitButton from "./SubmitButton";
 
 export const dynamic = "force-dynamic";
@@ -334,35 +334,12 @@ export default async function ClothingAdminPage() {
                               {slot.description}
                             </p>
 
-                            <form
-                              action={saveProductImageAction}
-                              className={styles.editorImageActions}
-                            >
-                              <input
-                                type="hidden"
-                                name="productId"
-                                value={product.id}
-                              />
-                              <input
-                                type="hidden"
-                                name="view"
-                                value={slot.view}
-                              />
-                              <input
-                                type="file"
-                                name="image"
-                                accept="image/jpeg,image/png,image/webp,image/avif"
-                                required
-                                className={styles.productImageFile}
-                              />
-                              <SubmitButton
-                                idleText={
-                                  displayUrl ? "Cambiar imagen" : "Subir imagen"
-                                }
-                                pendingText="Subiendo..."
-                                className={styles.productImageUploadButton}
-                              />
-                            </form>
+                            <DirectProductImageUpload
+                              productId={product.id}
+                              productName={product.name}
+                              view={slot.view}
+                              hasImage={Boolean(displayUrl)}
+                            />
 
                             {isCustomImage ? (
                               <form
