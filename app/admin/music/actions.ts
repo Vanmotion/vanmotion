@@ -1,23 +1,9 @@
 "use server";
 
-import {
-  mkdir,
-  writeFile,
-} from "node:fs/promises";
-import path from "node:path";
-
 import { revalidatePath } from "next/cache";
 
+import { requireAdminSession } from "@/app/lib/admin-session";
 import { prisma } from "@/app/lib/prisma";
-
-const MAX_AUDIO_SIZE = 70 * 1024 * 1024;
-
-const ALLOWED_AUDIO_EXTENSIONS = new Set([
-  ".mp3",
-  ".wav",
-  ".aac",
-  ".m4a",
-]);
 
 function requiredString(
   formData: FormData,
@@ -44,18 +30,6 @@ function optionalString(
   return value || null;
 }
 
-function safeFileName(
-  fileName: string,
-): string {
-  return fileName
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9._-]/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
 function refreshMusicPages(): void {
   revalidatePath("/admin");
   revalidatePath("/admin/music");
@@ -66,6 +40,7 @@ function refreshMusicPages(): void {
 export async function initializeMusicLibrary(
   _formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
   const defaultTracks = [
     {
       slug: "the-cool-ashtray",
@@ -200,6 +175,7 @@ export async function initializeMusicLibrary(
 export async function saveMusicTrack(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
   const id = requiredString(
     formData,
     "id",
@@ -246,79 +222,18 @@ export async function saveMusicTrack(
     );
   }
 
-  const currentTrack =
-    await prisma.musicTrack.findUnique({
-      where: {
-        id,
-      },
-    });
-
-  if (!currentTrack) {
-    throw new Error(
-      "No se ha encontrado la canción.",
-    );
-  }
-
-  let fileUrl = currentTrack.fileUrl;
-
-  const audio = formData.get("audio");
-
-  if (
-    audio instanceof File &&
-    audio.size > 0
-  ) {
-    if (audio.size > MAX_AUDIO_SIZE) {
-      throw new Error(
-        "El archivo supera el máximo de 70 MB.",
-      );
-    }
-
-    const extension = path
-      .extname(audio.name)
-      .toLowerCase();
-
-    if (
-      !ALLOWED_AUDIO_EXTENSIONS.has(
-        extension,
-      )
-    ) {
-      throw new Error(
-        "Formato no permitido. Utiliza MP3, WAV, AAC o M4A.",
-      );
-    }
-
-    const musicDirectory = path.join(
-      process.cwd(),
-      "public",
-      "music",
-    );
-
-    await mkdir(musicDirectory, {
-      recursive: true,
-    });
-
-    const fileName = safeFileName(
-      `${currentTrack.slug}-${Date.now()}${extension}`,
-    );
-
-    const destination = path.join(
-      musicDirectory,
-      fileName,
-    );
-
-    const buffer = Buffer.from(
-      await audio.arrayBuffer(),
-    );
-
-    await writeFile(
-      destination,
-      buffer,
-    );
-
-    fileUrl = `/music/${fileName}`;
-  }
-
   try {
+    const existingTrack = await prisma.musicTrack.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!existingTrack) {
+      throw new Error(
+        "No se ha encontrado la canción.",
+      );
+    }
+
     await prisma.musicTrack.update({
       where: {
         id,
@@ -327,7 +242,6 @@ export async function saveMusicTrack(
       data: {
         title,
         subtitle,
-        fileUrl,
         externalUrl,
         format,
         duration,
@@ -351,6 +265,7 @@ export async function saveMusicTrack(
 export async function moveMusicTrack(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
   const id = requiredString(
     formData,
     "id",

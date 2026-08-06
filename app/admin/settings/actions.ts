@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { requireAdminSession } from "@/app/lib/admin-session";
 import { prisma } from "@/app/lib/prisma";
 
 function requiredText(
@@ -34,6 +35,7 @@ function optionalText(
 export async function saveSiteSettings(
   formData: FormData,
 ): Promise<void> {
+  await requireAdminSession();
   const businessName = requiredText(
     formData,
     "businessName",

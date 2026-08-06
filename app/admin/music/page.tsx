@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { prisma } from "@/app/lib/prisma";
 
+import DirectMusicAudioUpload from "./DirectMusicAudioUpload";
+
 import {
   initializeMusicLibrary,
   moveMusicTrack,
@@ -297,6 +299,12 @@ export default async function AdminMusicPage() {
                   />
                 </div>
 
+                <DirectMusicAudioUpload
+                  trackId={track.id}
+                  trackSlug={track.slug}
+                  title={track.title}
+                />
+
                 <form
                   action={saveMusicTrack}
                   className={styles.editForm}
@@ -371,25 +379,6 @@ export default async function AdminMusicPage() {
                       }
                       placeholder="Spotify, HearNow..."
                     />
-                  </label>
-
-                  <label
-                    className={styles.fullField}
-                  >
-                    <span>
-                      Sustituir archivo de audio
-                    </span>
-
-                    <input
-                      type="file"
-                      name="audio"
-                      accept=".mp3,.wav,.aac,.m4a,audio/*"
-                    />
-
-                    <small>
-                      Déjalo vacío para conservar el
-                      archivo actual.
-                    </small>
                   </label>
 
                   <label className={styles.checkbox}>

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireAdminSession } from "@/app/lib/admin-session";
 import { prisma } from "@/app/lib/prisma";
 
 function requiredText(formData: FormData, fieldName: string): string {
@@ -35,6 +36,7 @@ function refreshBrandPaths() {
 }
 
 export async function createBrand(formData: FormData) {
+  await requireAdminSession();
   const name = requiredText(formData, "name");
   const slug = createSlug(name);
 
@@ -69,6 +71,7 @@ export async function updateBrand(
   brandId: string,
   formData: FormData,
 ) {
+  await requireAdminSession();
   const name = requiredText(formData, "name");
   const slug = createSlug(name);
 
@@ -119,6 +122,7 @@ export async function updateBrand(
 }
 
 export async function deleteBrand(brandId: string) {
+  await requireAdminSession();
   const brand = await prisma.brand.findUnique({
     where: {
       id: brandId,

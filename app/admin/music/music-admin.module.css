@@ -481,3 +481,126 @@
     grid-column: auto;
   }
 }
+
+
+.directAudioUpload {
+  padding: 20px 22px;
+  display: grid;
+  gap: 14px;
+  border-bottom: 1px solid #e2e2e2;
+  background: #f8f8f8;
+}
+
+.directAudioHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.directAudioHeading > div {
+  display: grid;
+  gap: 5px;
+}
+
+.directAudioHeading span {
+  color: #888888;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.directAudioHeading strong {
+  font-size: 13px;
+}
+
+.directAudioHeading small {
+  color: #888888;
+  font-size: 9px;
+  text-align: right;
+}
+
+.directAudioControls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.directAudioControls input[type="file"] {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid #d4d4d4;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+}
+
+.directAudioControls input:disabled {
+  opacity: 0.55;
+}
+
+.audioTrackSlug {
+  color: #999999;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.audioProgress {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.audioProgress > div {
+  height: 5px;
+  overflow: hidden;
+  background: #dedede;
+}
+
+.audioProgress span {
+  height: 100%;
+  display: block;
+  background: #111111;
+  transition: width 180ms ease;
+}
+
+.audioProgress strong {
+  min-width: 36px;
+  font-size: 10px;
+}
+
+.audioSuccess,
+.audioError {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.audioSuccess {
+  color: #246c38;
+}
+
+.audioError {
+  color: #a32626;
+}
+
+@media (max-width: 800px) {
+  .directAudioHeading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .directAudioHeading small {
+    text-align: left;
+  }
+
+  .directAudioControls {
+    grid-template-columns: 1fr;
+  }
+}
