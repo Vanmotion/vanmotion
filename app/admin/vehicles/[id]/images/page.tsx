@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
-
 import {
-  addVehicleImage,
   deleteVehicleImage,
   setPrimaryVehicleImage,
 } from "@/actions/vehicleActions";
 import { prisma } from "@/app/lib/prisma";
+import ConfirmVehicleImageDeleteButton from "./ConfirmVehicleImageDeleteButton";
+import DirectVehicleImageUpload from "../edit/DirectVehicleImageUpload";
 
 interface VehicleImagesPageProps {
   params: Promise<{
@@ -205,7 +204,7 @@ export default async function VehicleImagesPage({
               </p>
 
               <p>
-                Formatos permitidos: JPG, PNG y WebP.
+                Formatos permitidos: JPG, PNG, WebP y AVIF.
               </p>
 
               <p>
@@ -223,56 +222,33 @@ export default async function VehicleImagesPage({
               </p>
 
               <h2 className="mt-2 text-xl font-semibold text-white">
-                Subir fotografía
+                Subir fotografías
               </h2>
 
-              <p className="mt-2 text-sm text-white/40">
-                Selecciona una imagen directamente desde la carpeta
-                Descargas de tu Mac.
+              <p className="mt-2 text-sm leading-6 text-white/40">
+                Las imágenes se envían directamente a Vercel Blob,
+                con progreso visible y sin atravesar el servidor.
               </p>
             </div>
 
-            <form
-              action={addVehicleImage}
-              encType="multipart/form-data"
-              className="mt-7 space-y-6"
-            >
-              <input
-                type="hidden"
-                name="vehicleId"
-                value={vehicle.id}
-              />
-
-              <Field label="Archivo de imagen *">
-                <input
-                  id="image"
-                  name="image"
-                  type="file"
-                  required
-                  accept="image/jpeg,image/png,image/webp"
-                  className={`${inputClasses} cursor-pointer file:mr-4 file:rounded-lg file:border-0 file:bg-white file:px-4 file:py-2 file:text-sm file:font-semibold file:text-black`}
-                />
-              </Field>
-
-              <Field label="Descripción de la imagen">
-                <input
-                  id="alt"
-                  name="alt"
-                  type="text"
-                  placeholder="Ejemplo: vista frontal del vehículo"
-                  className={inputClasses}
-                />
-              </Field>
-
-              <div className="flex justify-end border-t border-white/10 pt-6">
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-semibold !text-black transition hover:bg-white/80"
-                >
-                  Subir fotografía
-                </button>
+            {vehicle.images.length > 8 && (
+              <div
+                className="mt-6 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-5 py-4 text-sm leading-6 text-amber-100"
+                role="status"
+              >
+                Este vehículo conserva {vehicle.images.length} fotografías
+                heredadas. No se eliminará ninguna automáticamente, pero no
+                podrás añadir más hasta dejar la galería por debajo del límite
+                de 8.
               </div>
-            </form>
+            )}
+
+            <div className="mt-7">
+              <DirectVehicleImageUpload
+                vehicleId={vehicle.id}
+                existingImageCount={vehicle.images.length}
+              />
+            </div>
           </article>
         </div>
       </div>
@@ -370,12 +346,9 @@ export default async function VehicleImagesPage({
                         value={image.id}
                       />
 
-                      <button
-                        type="submit"
-                        className="rounded-lg border border-red-500/30 px-3 py-2 text-sm text-red-400 transition hover:bg-red-500 hover:text-white"
-                      >
-                        Eliminar
-                      </button>
+                      <ConfirmVehicleImageDeleteButton
+                        isPrimary={index === 0}
+                      />
                     </form>
                   </div>
                 </div>
@@ -385,26 +358,5 @@ export default async function VehicleImagesPage({
         )}
       </article>
     </section>
-  );
-}
-
-const inputClasses =
-  "w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none transition placeholder:text-white/20 focus:border-white/30 focus:bg-black/50";
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium text-white/60">
-        {label}
-      </span>
-
-      {children}
-    </label>
   );
 }
