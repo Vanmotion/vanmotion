@@ -1,0 +1,4 @@
+VANMOTION · NOTICIA MUSICAL EN PORTADA
+
+Sustituye únicamente app/musica/page.tsx.
+Mantiene la portada y el encabezado, y muestra la noticia musical más reciente en lugar del gran mensaje fijo.

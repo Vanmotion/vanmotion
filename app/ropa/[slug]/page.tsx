@@ -13,6 +13,26 @@ import styles from "./producto.module.css";
 export const dynamic = "force-dynamic";
 
 const SITE_URL = "https://www.vanmotion.es";
+const WOMEN_BLUE_DETAIL_LEGACY_URL =
+  "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta.webp";
+const WOMEN_BLUE_DETAIL_V2_URL =
+  "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v2.png";
+
+function resolveProductImageUrl(
+  productSlug: string,
+  view: string | null,
+  imageUrl: string,
+): string {
+  if (
+    productSlug === "carpe-diem-mujer-azul-ford-e150-drop-01" &&
+    view === "DETAIL" &&
+    imageUrl === WOMEN_BLUE_DETAIL_LEGACY_URL
+  ) {
+    return WOMEN_BLUE_DETAIL_V2_URL;
+  }
+
+  return imageUrl;
+}
 
 function absoluteUrl(value: string): string {
   try {
@@ -300,7 +320,7 @@ export default async function ProductPage({
     product.images.map((image) => [
       image.view,
       {
-        url: image.url,
+        url: resolveProductImageUrl(product.slug, image.view, image.url),
         alt: image.alt ?? productText.name,
       },
     ]),
@@ -314,7 +334,9 @@ export default async function ProductPage({
   ] as const;
 
   const canonicalUrl = `${SITE_URL}/ropa/${product.slug}`;
-  const productImages = product.images.map((image) => absoluteUrl(image.url));
+  const productImages = product.images.map((image) =>
+    absoluteUrl(resolveProductImageUrl(product.slug, image.view, image.url)),
+  );
   const schemaAvailability =
     productStatus === "AVAILABLE"
       ? "https://schema.org/InStock"

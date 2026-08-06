@@ -235,15 +235,13 @@
 
 .mainImageFrame {
   position: relative;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   border: 1px solid var(--dark-line);
   background: #d9d6cf;
 }
 
 .mainImage {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  display: block;
   object-fit: cover;
 }
 
@@ -292,6 +290,7 @@
 
 .thumbnailButton {
   position: relative;
+  aspect-ratio: 4 / 3;
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--dark-line);
@@ -305,9 +304,6 @@
 }
 
 .thumbnailImage {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  display: block;
   object-fit: cover;
 }
 

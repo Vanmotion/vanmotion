@@ -12,9 +12,8 @@ export async function GET() {
     return NextResponse.json(
       {
         error: "Error al obtener los vehículos",
-        details: String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

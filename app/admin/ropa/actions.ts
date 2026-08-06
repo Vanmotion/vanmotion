@@ -1,5 +1,7 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { del, put } from "@vercel/blob";
@@ -19,6 +21,14 @@ const PRODUCT_IMAGE_VIEWS = {
 } as const;
 
 const MAX_PRODUCT_IMAGE_SIZE = 8 * 1024 * 1024;
+
+const LOCAL_PRODUCT_IMAGE_DIRECTORY = path.join(
+  process.cwd(),
+  "public",
+  "uploads",
+  "clothing",
+);
+const LOCAL_PRODUCT_IMAGE_URL_PREFIX = "/uploads/clothing/";
 
 const ALLOWED_IMAGE_FORMATS: Record<string, ReadonlySet<string>> = {
   "image/jpeg": new Set([".jpg", ".jpeg"]),
@@ -327,7 +337,62 @@ function isVercelBlobUrl(value: string | null): value is string {
   }
 }
 
+function getLocalProductImagePath(imageUrl: string | null): string | null {
+  if (!imageUrl?.startsWith(LOCAL_PRODUCT_IMAGE_URL_PREFIX)) {
+    return null;
+  }
+
+  const relativePath = imageUrl.slice(LOCAL_PRODUCT_IMAGE_URL_PREFIX.length);
+  const baseDirectory = path.resolve(LOCAL_PRODUCT_IMAGE_DIRECTORY);
+  const absolutePath = path.resolve(baseDirectory, relativePath);
+
+  if (!absolutePath.startsWith(`${baseDirectory}${path.sep}`)) {
+    return null;
+  }
+
+  return absolutePath;
+}
+
+async function saveProductImageLocally(
+  productId: string,
+  view: ProductImageView,
+  image: File,
+  extension: string,
+): Promise<string> {
+  const originalBaseName =
+    path.basename(image.name, extension) || view.toLowerCase();
+  const fileName = `${safeFileName(originalBaseName)}-${randomUUID()}${extension}`;
+  const relativeDirectory = path.join(productId, view.toLowerCase());
+  const absoluteDirectory = path.join(
+    LOCAL_PRODUCT_IMAGE_DIRECTORY,
+    relativeDirectory,
+  );
+  const absolutePath = path.join(absoluteDirectory, fileName);
+
+  await mkdir(absoluteDirectory, { recursive: true });
+  await writeFile(absolutePath, Buffer.from(await image.arrayBuffer()));
+
+  return `${LOCAL_PRODUCT_IMAGE_URL_PREFIX}${productId}/${view.toLowerCase()}/${fileName}`;
+}
+
 async function removeStoredProductImage(imageUrl: string | null): Promise<void> {
+  const localPath = getLocalProductImagePath(imageUrl);
+
+  if (localPath) {
+    try {
+      await unlink(localPath);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+        console.error(
+          "No se pudo eliminar la imagen local de ropa:",
+          error,
+        );
+      }
+    }
+
+    return;
+  }
+
   if (!isVercelBlobUrl(imageUrl)) {
     return;
   }
@@ -482,7 +547,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "DETAIL",
-      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta.webp",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v2.png",
     },
   ],
 };
@@ -789,16 +854,38 @@ export async function saveProductImageAction(
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
   });
 
-  const blob = await put(pathname, image, {
-    access: "public",
-    addRandomSuffix: true,
-  });
+  let storedImageUrl: string;
+
+  try {
+    const blob = await put(pathname, image, {
+      access: "public",
+      addRandomSuffix: true,
+    });
+
+    storedImageUrl = blob.url;
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      throw error;
+    }
+
+    console.warn(
+      "Vercel Blob no está disponible en local. La imagen se guardará dentro de public/uploads.",
+      error,
+    );
+
+    storedImageUrl = await saveProductImageLocally(
+      product.id,
+      view,
+      image,
+      extension,
+    );
+  }
 
   try {
     await prisma.$transaction(async (transaction) => {
       const currentImage = currentImages[0];
       const imageData = {
-        url: blob.url,
+        url: storedImageUrl,
         alt: getImageAlt(product.configuration, view),
         view,
         sortOrder: PRODUCT_IMAGE_VIEWS[view].sortOrder,
@@ -829,15 +916,7 @@ export async function saveProductImageAction(
       }
     });
   } catch (error) {
-    try {
-      await del(blob.url);
-    } catch (cleanupError) {
-      console.error(
-        "No se pudo limpiar la nueva imagen de ropa tras fallar la base de datos:",
-        cleanupError,
-      );
-    }
-
+    await removeStoredProductImage(storedImageUrl);
     throw error;
   }
 

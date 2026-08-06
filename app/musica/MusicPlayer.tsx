@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
@@ -147,20 +148,15 @@ export default function MusicPlayer({
           }
         >
           {showCover ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               key={coverUrl}
-              src={coverUrl ?? undefined}
+              src={coverUrl as string}
               alt={`${content.coverAlt} ${currentTrack.title}`}
+              fill
+              sizes="(max-width: 980px) calc(100vw - 40px), 420px"
+              className={styles.coverImage}
               onError={() => {
                 setCoverError(true);
-              }}
-              style={{
-                width: "100%",
-                height: "100%",
-                minHeight: "100%",
-                objectFit: "cover",
-                display: "block",
               }}
             />
           ) : (

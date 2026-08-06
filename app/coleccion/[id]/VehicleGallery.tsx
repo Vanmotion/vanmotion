@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
 import styles from "./vehicle.module.css";
@@ -101,11 +102,12 @@ export default function VehicleGallery({
   return (
     <div className={styles.gallery}>
       <div className={styles.mainImageFrame}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           key={selectedImage.id}
           src={selectedImage.url}
           alt={selectedImage.alt ?? vehicleName}
+          fill
+          sizes="(max-width: 980px) 100vw, 58vw"
           className={styles.mainImage}
           loading="eager"
           fetchPriority="high"
@@ -155,10 +157,11 @@ export default function VehicleGallery({
                   isSelected ? styles.thumbnailSelected : ""
                 }`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={image.url}
                   alt={image.alt ?? `${vehicleName} ${index + 1}`}
+                  fill
+                  sizes="(max-width: 760px) 31vw, 14vw"
                   className={styles.thumbnailImage}
                   loading="lazy"
                 />

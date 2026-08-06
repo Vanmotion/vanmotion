@@ -68,7 +68,7 @@ export async function GET(
           "Content-Length":
             String(file.byteLength),
           "Cache-Control":
-            "no-store, max-age=0",
+            "public, max-age=31536000, immutable",
         },
       },
     );

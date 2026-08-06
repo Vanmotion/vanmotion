@@ -44,6 +44,10 @@ next-env.d.ts
 .env
 
 # Copias locales de desarrollo
-*.backup
-*.backup.*
+*.backup*
+*_backup.*
+*.bak
+*.old
+*~
 backups/
+.local-archive/

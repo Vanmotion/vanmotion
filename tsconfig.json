@@ -30,5 +30,15 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    ".next",
+    "backups",
+    "**/backups/**",
+    "**/*.backup*",
+    "**/*_backup.ts",
+    "**/*_backup.tsx",
+    ".local-archive",
+    "vanmotion-bomber-portadas-hombre"
+  ]
 }

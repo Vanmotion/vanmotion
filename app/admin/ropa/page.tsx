@@ -45,32 +45,33 @@ const statusClassNames: Record<string, string> = {
 
 const productImageSlots = [
   {
-    view: "FRONT",
+    view: "LIFESTYLE",
     number: "1",
-    title: "Imagen frontal",
+    title: "Portada con modelo",
+    description:
+      "Imagen principal de la ficha: el modelo debe llevar la prenda correspondiente.",
+    alt: "Modelo llevando la prenda VANMOTION",
+  },
+  {
+    view: "FRONT",
+    number: "2",
+    title: "Imagen frontal de la prenda",
     description: "Vista limpia de la parte delantera de la prenda.",
     alt: "Vista frontal del producto VANMOTION",
   },
   {
     view: "BACK",
-    number: "2",
+    number: "3",
     title: "Imagen espalda",
     description: "Vista trasera completa respetando el diseño original.",
     alt: "Vista trasera del producto VANMOTION",
   },
   {
     view: "DETAIL",
-    number: "3",
+    number: "4",
     title: "Imagen detalle",
     description: "Acercamiento del tejido, la cremallera o el estampado.",
     alt: "Detalle del producto VANMOTION",
-  },
-  {
-    view: "LIFESTYLE",
-    number: "4",
-    title: "Imagen lifestyle",
-    description: "Fotografía de la prenda en modelo o ambiente urbano.",
-    alt: "Imagen lifestyle de la colección VANMOTION",
   },
 ] as const;
 
@@ -391,8 +392,8 @@ export default async function ClothingAdminPage() {
                     </div>
 
                     <p className={styles.galleryOrderNote}>
-                      Las imágenes se muestran en este orden: frontal, espalda,
-                      detalle y lifestyle.
+                      La portada siempre será la fotografía del modelo. Después
+                      se muestran frontal, espalda y detalle de la prenda.
                     </p>
                   </section>
 

@@ -498,10 +498,11 @@ export default async function CollectionPage() {
                     >
                       <div className={styles.vehicleMedia}>
                         {image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
+                          <Image
                             src={image.url}
                             alt={image.alt ?? vehicleName}
+                            fill
+                            sizes="(max-width: 620px) 50vw, (max-width: 1100px) 50vw, 25vw"
                             className={styles.vehicleImage}
                           />
                         ) : (
