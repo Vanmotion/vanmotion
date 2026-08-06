@@ -49,7 +49,7 @@ const manifest = {
     "FRONT": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/front.webp",
     "BACK": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/back.webp",
     "DETAIL": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/detail.webp",
-    "LIFESTYLE": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/lifestyle.webp"
+    "LIFESTYLE": "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/lifestyle-v2.webp"
   }
 };
 

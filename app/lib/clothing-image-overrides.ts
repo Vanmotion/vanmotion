@@ -24,6 +24,10 @@ const CLOTHING_IMAGE_OVERRIDES: Readonly<
   "bomber-mujer-negra-drop-01": {
     LIFESTYLE: "/ropa/productos/bomber-mujer-negra-drop-01/lifestyle-v2.webp",
   },
+  "bomber-mujer-azul-ford-e150-drop-01": {
+    LIFESTYLE: "/ropa/productos/bomber-mujer-azul-ford-e150-drop-01/lifestyle-v2.webp",
+  },
+
 };
 
 export function resolveClothingImageUrl(
