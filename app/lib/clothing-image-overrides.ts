@@ -5,6 +5,7 @@ const CLOTHING_IMAGE_OVERRIDES: Readonly<
     FRONT: "/ropa/aprobadas/hombre/camiseta-negra/frontal-v3.webp",
   },
   "carpe-diem-hombre-azul-ford-e150-drop-01": {
+    LIFESTYLE: "/ropa/aprobadas/hombre/camiseta-azul-ford/lifestyle-v2.webp",
     FRONT: "/ropa/aprobadas/hombre/camiseta-azul-ford/frontal-v3.webp",
     DETAIL: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v4.webp",
   },
