@@ -21,6 +21,9 @@ const CLOTHING_IMAGE_OVERRIDES: Readonly<
     LIFESTYLE: "/ropa/productos/bomber-hombre-azul-ford-e150-drop-01/lifestyle-v2.webp",
   },
 
+  "bomber-mujer-negra-drop-01": {
+    LIFESTYLE: "/ropa/productos/bomber-mujer-negra-drop-01/lifestyle-v2.webp",
+  },
 };
 
 export function resolveClothingImageUrl(
