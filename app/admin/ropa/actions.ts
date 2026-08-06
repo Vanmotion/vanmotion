@@ -511,7 +511,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "DETAIL",
-      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v2.webp",
+      url: "/ropa/aprobadas/hombre/camiseta-azul-ford/etiqueta-v4.webp",
     },
   ],
   "carpe-diem-mujer-negra-drop-01": [
@@ -547,7 +547,7 @@ const APPROVED_PRODUCT_IMAGES_BY_SLUG: Readonly<
     },
     {
       view: "DETAIL",
-      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v2.png",
+      url: "/ropa/aprobadas/mujer/camiseta-azul-ford/etiqueta-v4.webp",
     },
   ],
 };
