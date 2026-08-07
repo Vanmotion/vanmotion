@@ -116,7 +116,6 @@ export default function MusicPlayerProvider({
     const shouldResume = resumeAfterChangeRef.current;
     resumeAfterChangeRef.current = false;
 
-    audio.load();
     setCurrentTime(0);
     setDuration(0);
     setPlaybackError(null);
@@ -129,6 +128,8 @@ export default function MusicPlayerProvider({
     if (!shouldResume) {
       return;
     }
+
+    audio.load();
 
     audio
       .play()
@@ -268,7 +269,7 @@ export default function MusicPlayerProvider({
       <audio
         ref={audioRef}
         src={currentTrack?.src}
-        preload="metadata"
+        preload="none"
         onLoadedMetadata={(event) => {
           const audioDuration = event.currentTarget.duration;
 
