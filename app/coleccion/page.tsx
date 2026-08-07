@@ -137,6 +137,7 @@ const translations = {
       purchaseConditions: "Condiciones de compra",
       withdrawal: "Desistimiento",
       privacy: "Privacidad",
+      legal: "Aviso legal",
     },
   },
   en: {
@@ -217,6 +218,7 @@ const translations = {
       purchaseConditions: "Purchase conditions",
       withdrawal: "Withdrawal",
       privacy: "Privacy",
+      legal: "Legal notice",
     },
   },
 } as const;
@@ -588,7 +590,10 @@ export default async function CollectionPage() {
         </div>
 
         <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaceslegales" : "Legal links"}>
-          <Link href="/aviso-legal">Legal</Link>
+          <Link href="/condiciones-compra">{content.footer.purchaseConditions}</Link>
+          <Link href="/desistimiento">{content.footer.withdrawal}</Link>
+          <Link href="/privacidad">{content.footer.privacy}</Link>
+          <Link href="/aviso-legal">{content.footer.legal}</Link>
         </nav>
 
         <span className={styles.copyright}>© 2026</span>
