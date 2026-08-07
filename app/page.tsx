@@ -24,7 +24,7 @@ const translations = {
     },
     hero: {
       location: "Madrid · España",
-      title: "Vanmotion",
+      title: "VANMOTION · Vehículos, ropa urbana y música en Madrid",
       statementFirst: "Trabajo real.",
       statementSecond: "Movimiento propio.",
       vehicle: "Ford E-150 · Emblema VANMOTION",
