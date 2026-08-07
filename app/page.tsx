@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { getCurrentLanguage } from "./lib/language";
 import { getDailyNews } from "./lib/daily-news";
@@ -189,20 +190,44 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+async function PathNews({
+  newsPromise,
+  index,
+  language,
+}: {
+  newsPromise: ReturnType<typeof getDailyNews>;
+  index: number;
+  language: Awaited<ReturnType<typeof getCurrentLanguage>>;
+}) {
+  const dailyNews = await newsPromise;
+  const news = dailyNews[index];
+
+  if (!news) {
+    return <div className={styles.pathNews} aria-hidden="true" />;
+  }
+
+  return (
+    <div className={styles.pathNews}>
+      <span>{language === "es" ? "Actualidad" : "Latest"}</span>
+      <p>{news.title}</p>
+      <small>{news.source}</small>
+    </div>
+  );
+}
+
 export default async function Home() {
   const language = await getCurrentLanguage();
   const content = translations[language];
 
-  const [settings, dailyNews] = await Promise.all([
-    prisma.siteSettings.findFirst({
-      select: {
-        instagram: true,
-        youtube: true,
-        tiktok: true,
-      },
-    }),
-    getDailyNews(language),
-  ]);
+  const dailyNewsPromise = getDailyNews(language);
+
+  const settings = await prisma.siteSettings.findFirst({
+    select: {
+      instagram: true,
+      youtube: true,
+      tiktok: true,
+    },
+  });
 
   // VANMOTION_DAILY_NEWS_V1
 
@@ -351,16 +376,20 @@ export default async function Home() {
                 <div className={styles.pathContent}>
                   <h3>{item.title}</h3>
 
-                {dailyNews[index] ? (
-                  <div className={styles.pathNews}>
-                    <span>
-                      {language === "es" ? "Actualidad" : "Latest"}
-                    </span>
-
-                    <p>{dailyNews[index]?.title}</p>
-                    <small>{dailyNews[index]?.source}</small>
-                  </div>
-                ) : null}
+                <Suspense
+                  fallback={
+                    <div
+                      className={styles.pathNews}
+                      aria-hidden="true"
+                    />
+                  }
+                >
+                  <PathNews
+                    newsPromise={dailyNewsPromise}
+                    index={index}
+                    language={language}
+                  />
+                </Suspense>
                   <span>
                     {item.action}
                     <b aria-hidden="true">↗</b>
