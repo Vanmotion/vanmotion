@@ -315,7 +315,7 @@ async function fetchTopicCandidates(
 
   const timeout = setTimeout(
     () => controller.abort(),
-    9000,
+    2500,
   );
 
   try {
