@@ -457,7 +457,7 @@ export default async function ProductPage({
 
               return (
                 <article key={view} className={styles.galleryItem}>
-                  <div className={styles.imageWrap}>
+                  <div className={`${styles.imageWrap} ${view === "LIFESTYLE" ? styles.modelImageWrap : ""}`}>
                     {image ? (
                       <Image
                         src={image.url}

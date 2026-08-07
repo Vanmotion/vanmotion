@@ -404,6 +404,8 @@ export default async function RopaPage() {
                 imagesByView.get("FRONT") ??
                 imagesByView.get("BACK");
 
+                const primaryImageIsLifestyle = imagesByView.has("LIFESTYLE");
+
               const productType =
                 product.productType === "BOMBER"
                   ? content.collection.productTypes.BOMBER
@@ -435,7 +437,7 @@ export default async function RopaPage() {
                           alt={productText.name}
                           fill
                           sizes="(max-width: 620px) 50vw, (max-width: 1200px) 50vw, 25vw"
-                          className={styles.collectionImage}
+                          className={`${styles.collectionImage} ${primaryImageIsLifestyle ? styles.modelImage : ""}`}
                         />
                       ) : (
                         <div className={styles.collectionPlaceholder}>

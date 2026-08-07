@@ -2155,3 +2155,11 @@
     gap: 8px;
   }
 }
+
+
+
+
+/* VANMOTION · encuadre exclusivo para fotografías con modelo */
+.modelImage {
+  object-position: center top;
+}

@@ -430,3 +430,17 @@
     padding-bottom: 18px;
   }
 }
+
+
+
+
+/* VANMOTION · encuadre exclusivo para fotografías con modelo */
+.modelImage {
+  object-position: center top;
+}
+
+@media (max-width: 760px) {
+  .modelImageWrap {
+    aspect-ratio: 4 / 5;
+  }
+}
