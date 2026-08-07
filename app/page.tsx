@@ -279,7 +279,8 @@ export default async function Home() {
             src="/brand/vanmotion-portada-principal-v2.webp"
             alt={content.hero.vehicle}
             fill
-            priority
+            loading="eager"
+            fetchPriority="high"
             sizes="100vw"
             className={styles.heroImage}
           />
