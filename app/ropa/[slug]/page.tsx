@@ -457,14 +457,14 @@ export default async function ProductPage({
 
               return (
                 <article key={view} className={styles.galleryItem}>
-                  <div className={`${styles.imageWrap} ${view === "LIFESTYLE" ? styles.modelImageWrap : ""}`}>
+                  <div className={`${styles.imageWrap} ${view === "LIFESTYLE" ? styles.modelImageWrap : ""} ${product.productType === "BOMBER" && view !== "LIFESTYLE" ? styles.bomberGarmentWrap : ""}`}>
                     {image ? (
                       <Image
                         src={image.url}
                         alt={image.alt}
                         fill
                         sizes="(max-width: 900px) 100vw, 50vw"
-                        className={styles.image}
+                        className={`${styles.image} ${view === "LIFESTYLE" ? styles.modelImage : ""} ${product.productType === "BOMBER" && view !== "LIFESTYLE" ? styles.bomberGarmentImage : ""}`}
                         priority={view === "LIFESTYLE"}
                       />
                     ) : (

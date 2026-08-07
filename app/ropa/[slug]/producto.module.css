@@ -444,3 +444,23 @@
     aspect-ratio: 4 / 5;
   }
 }
+
+
+/* VANMOTION · encuadre móvil bombers */
+@media (max-width: 760px) {
+  .bomberGarmentWrap {
+    aspect-ratio: 4 / 5;
+  }
+
+  .bomberGarmentImage {
+    object-fit: contain;
+    object-position: center center;
+  }
+}
+
+/* VANMOTION · encuadre definitivo prenda bomber en todas las pantallas */
+.bomberGarmentImage {
+  object-fit: contain;
+  object-position: center center;
+  transform: scale(0.90);
+}
