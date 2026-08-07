@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireAdminSession } from "@/app/lib/admin-session";
@@ -125,6 +125,8 @@ export async function saveSiteSettings(
       openingHours,
     },
   });
+
+  updateTag("vanmotion-site-settings");
 
   revalidatePath("/");
   revalidatePath("/contacto");

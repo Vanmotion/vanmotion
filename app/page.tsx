@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { Suspense } from "react";
 
 import { getCurrentLanguage } from "./lib/language";
@@ -190,6 +191,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const getCachedSocialSettings = unstable_cache(
+  async () =>
+    prisma.siteSettings.findFirst({
+      select: {
+        instagram: true,
+        youtube: true,
+        tiktok: true,
+      },
+    }),
+  ["vanmotion-social-settings-v1"],
+  {
+    tags: ["vanmotion-site-settings"],
+  },
+);
+
 async function PathNews({
   newsPromise,
   index,
@@ -221,13 +237,7 @@ export default async function Home() {
 
   const dailyNewsPromise = getDailyNews(language);
 
-  const settings = await prisma.siteSettings.findFirst({
-    select: {
-      instagram: true,
-      youtube: true,
-      tiktok: true,
-    },
-  });
+  const settings = await getCachedSocialSettings();
 
   // VANMOTION_DAILY_NEWS_V1
 
