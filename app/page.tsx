@@ -183,6 +183,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: content.metadata.title,
     description: content.metadata.description,
+    alternates: {
+      canonical: "/",
+    },
   };
 }
 
