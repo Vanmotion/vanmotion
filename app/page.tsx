@@ -12,9 +12,9 @@ export const dynamic = "force-dynamic";
 const translations = {
   es: {
     metadata: {
-      title: "Vehículos, ropa y música en Madrid",
+      title: "VANMOTION | Vehículos, ropa urbana y música en Madrid",
       description:
-        "VANMOTION une vehículos seleccionados, ropa urbana y música con identidad propia desde Madrid.",
+        "VANMOTION reúne en Madrid vehículos seleccionados, ropa urbana y música con identidad propia. Descubre nuestra cultura de motor, diseño, estilo y sonido.",
     },
     navigation: {
       vehicles: "Vehículos",
