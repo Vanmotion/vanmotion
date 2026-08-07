@@ -166,9 +166,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro satinado",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber de nylon premium ligero, con acabado satinado, tacto suave y estructura equilibrada para entretiempo. Corte urbano cómodo y estilo limpio, moderno y versátil.",
+      "Bomber negra de nylon premium con acabado satinado y tacto suave. Su estructura ligera mantiene una silueta limpia y cómoda, con un corte urbano equilibrado pensado para combinar fácilmente durante el entretiempo.",
     descriptionEn:
-      "Lightweight premium nylon bomber with a satin finish, soft feel and balanced structure for mid-season wear. Comfortable urban fit with a clean, modern and versatile style.",
+      "Black premium nylon bomber with a satin finish and soft feel. Its lightweight structure creates a clean, comfortable silhouette with a balanced urban fit designed for effortless mid-season styling.",
     sizes: MEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 4,
@@ -185,9 +185,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber de nylon premium ligero en azul Ford E-150, con acabado satinado, tacto suave y estructura equilibrada para entretiempo. Corte urbano cómodo y estilo moderno.",
+      "Bomber en azul Ford E-150 confeccionada en nylon premium ligero, con brillo satinado sutil y tacto agradable. Su corte recto y relajado aporta comodidad y una presencia urbana característica, ideal para los días suaves de entretiempo.",
     descriptionEn:
-      "Lightweight premium nylon bomber in Ford E-150 blue, with a satin finish, soft feel and balanced structure for mid-season wear. Comfortable urban fit and modern style.",
+      "Ford E-150 blue bomber crafted from lightweight premium nylon with a subtle satin sheen and smooth feel. Its straight, relaxed fit provides comfort and a distinctive urban presence, ideal for mild mid-season days.",
     sizes: MEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 5,
@@ -204,9 +204,9 @@ const CLOTHING_PRODUCTS = [
     color: "Negro satinado",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber de nylon premium ligero, con acabado satinado y tacto suave. Su corte urbano ofrece comodidad, una caída favorecedora y un estilo moderno para entretiempo.",
+      "Bomber negra de nylon premium ligero con una superficie satinada suave y elegante. La caída natural y el corte cómodo crean una silueta femenina equilibrada, contemporánea y fácil de llevar tanto en looks informales como urbanos.",
     descriptionEn:
-      "Lightweight premium nylon bomber with a satin finish and soft feel. Its urban fit offers comfort, a flattering drape and a modern mid-season style.",
+      "Black lightweight premium nylon bomber with a smooth satin surface. Its natural drape and comfortable fit create a balanced feminine silhouette with a contemporary feel, easy to wear with both casual and urban looks.",
     sizes: WOMEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 6,
@@ -223,9 +223,9 @@ const CLOTHING_PRODUCTS = [
     color: "Azul Ford E-150",
     material: "Nylon premium de entretiempo · 135–145 gsm",
     description:
-      "Bomber de nylon premium ligero en azul Ford E-150, con acabado satinado y tacto suave. Corte urbano cómodo, caída favorecedora y estilo moderno para entretiempo.",
+      "Bomber azul Ford E-150 de nylon premium, ligera y suave al tacto, con un acabado satinado que realza el color. Su caída fluida y corte relajado aportan comodidad, movimiento y un estilo urbano fresco para entretiempo.",
     descriptionEn:
-      "Lightweight premium nylon bomber in Ford E-150 blue, with a satin finish and soft feel. Comfortable urban fit, flattering drape and modern mid-season style.",
+      "Ford E-150 blue premium nylon bomber with a lightweight, soft feel and satin finish that enhances its colour. Its fluid drape and relaxed fit provide comfort, movement and a fresh urban character for mid-season wear.",
     sizes: WOMEN_SIZES,
     initialPrice: "0.00",
     sortOrder: 7,
