@@ -1292,3 +1292,14 @@
     gap: 7px;
   }
 }
+
+/* VANMOTION · RESPIRACIÓN NAVEGACIÓN EN MÓVILES ESTRECHOS */
+@media (max-width: 430px) {
+  .navigation {
+    gap: 16px;
+  }
+
+  .heroLinks {
+    gap: 24px;
+  }
+}
