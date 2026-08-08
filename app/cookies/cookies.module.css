@@ -574,3 +574,46 @@
     text-wrap: balance;
   }
 }
+
+/* VANMOTION · CABECERA MÓVIL ESTABLE · INSTAGRAM / WEBVIEW */
+@media (max-width: 480px) {
+  .header {
+    padding-left: 14px;
+    padding-right: 14px;
+    gap: 10px;
+  }
+
+  .brand {
+    flex: 0 0 auto;
+    gap: 7px;
+    min-width: 0;
+  }
+
+  .brandMark {
+    width: 34px;
+  }
+
+  .brand span {
+    font-size: 9px;
+    letter-spacing: 0.10em;
+    white-space: nowrap;
+  }
+
+  .navigation {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: flex-end;
+    gap: clamp(10px, 3.5vw, 14px);
+  }
+
+  .navigation a {
+    flex: 0 0 auto;
+    font-size: 7.5px;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .navigation a[aria-hidden="true"] {
+    display: none !important;
+  }
+}
