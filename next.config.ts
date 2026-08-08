@@ -13,7 +13,8 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    serverActions: {
+    inlineCss: true,
+serverActions: {
       bodySizeLimit: "10mb",
     },
   },
