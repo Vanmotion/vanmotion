@@ -67,6 +67,33 @@ function getMadridMusicImage() {
   return "/musica/horario/vanmotion-musica-noche.webp";
 }
 
+function getMadridClothingImage() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+
+  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
+  const minute = Number(parts.find((part) => part.type === "minute")?.value ?? 0);
+  const totalMinutes = hour * 60 + minute;
+
+  if (totalMinutes >= 330 && totalMinutes < 660) {
+    return "/ropa/horario/vanmotion-ropa-manana.webp";
+  }
+
+  if (totalMinutes >= 660 && totalMinutes < 1080) {
+    return "/ropa/horario/vanmotion-ropa-dia.webp";
+  }
+
+  if (totalMinutes >= 1080 && totalMinutes < 1290) {
+    return "/ropa/horario/vanmotion-ropa-atardecer.webp";
+  }
+
+  return "/ropa/horario/vanmotion-ropa-noche.webp";
+}
+
 const translations = {
   es: {
     metadata: {
@@ -428,7 +455,7 @@ export default async function Home() {
               >
                 <div className={styles.pathMedia}>
                   <Image
-                    src={item.imageClass === "musicImage" ? getMadridMusicImage() : item.image}
+                    src={item.imageClass === "musicImage" ? getMadridMusicImage() : item.imageClass === "clothingImage" ? getMadridClothingImage() : item.image}
                     alt={item.alt}
                     fill
                     sizes="(max-width: 820px) 100vw, 33vw"

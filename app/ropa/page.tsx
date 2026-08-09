@@ -12,6 +12,33 @@ import styles from "./ropa.module.css";
 
 export const dynamic = "force-dynamic";
 
+function getMadridClothingHeroImage() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+
+  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
+  const minute = Number(parts.find((part) => part.type === "minute")?.value ?? 0);
+  const totalMinutes = hour * 60 + minute;
+
+  if (totalMinutes >= 330 && totalMinutes < 660) {
+    return "/ropa/horario/vanmotion-ropa-manana.webp";
+  }
+
+  if (totalMinutes >= 660 && totalMinutes < 1080) {
+    return "/ropa/horario/vanmotion-ropa-dia.webp";
+  }
+
+  if (totalMinutes >= 1080 && totalMinutes < 1290) {
+    return "/ropa/horario/vanmotion-ropa-atardecer.webp";
+  }
+
+  return "/ropa/horario/vanmotion-ropa-noche.webp";
+}
+
 const MANAGED_PRODUCT_SLUGS = [
   "carpe-diem-black-edition-drop-01",
   "carpe-diem-hombre-azul-ford-e150-drop-01",
@@ -332,7 +359,7 @@ export default async function RopaPage() {
 
       <section className={styles.hero} aria-labelledby="clothing-title">
         <Image
-          src="/ropa/editorial/vanmotion-portada-pareja.png"
+          src={getMadridClothingHeroImage()}
           alt="Colección negra VANMOTION en Madrid"
           fill
           priority
