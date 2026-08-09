@@ -1249,3 +1249,31 @@
     animation: none;
   }
 }
+
+
+/* VANMOTION · intermitente tarjeta Vehículos */
+.vehicleIndicatorOn {
+  opacity: 0;
+  pointer-events: none;
+  animation: vanmotionVehicleIndicator 1.4s steps(1, end) infinite;
+  will-change: opacity;
+}
+
+@keyframes vanmotionVehicleIndicator {
+  0%, 57% {
+    opacity: 0;
+  }
+  57.1%, 99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vehicleIndicatorOn {
+    animation: none;
+    opacity: 0;
+  }
+}

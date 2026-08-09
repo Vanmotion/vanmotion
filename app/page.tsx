@@ -461,6 +461,17 @@ export default async function Home() {
                     sizes="(max-width: 820px) 100vw, 33vw"
                     className={`${styles.pathImage} ${styles[item.imageClass]}`}
                   />
+                  {item.imageClass === "vehicleImage" ? (
+                    <Image
+                      src="/vehiculos/portada-inicio-vehiculos-intermitente-on.webp"
+                      alt=""
+                      fill
+                      sizes="(max-width: 820px) 100vw, 33vw"
+                      className={`${styles.pathImage} ${styles.vehicleImage} ${styles.vehicleIndicatorOn}`}
+                      aria-hidden="true"
+                    />
+                  ) : null}
+
                   <div className={styles.pathShade} aria-hidden="true" />
                 </div>
 
