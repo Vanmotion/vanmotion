@@ -9,7 +9,36 @@ import { getDailyNews } from "@/app/lib/daily-news";
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
 import styles from "./musica.module.css";
 
+
 export const dynamic = "force-dynamic";
+
+function getMadridHeroImage() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+
+  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
+  const minute = Number(parts.find((part) => part.type === "minute")?.value ?? 0);
+  const totalMinutes = hour * 60 + minute;
+
+  if (totalMinutes >= 330 && totalMinutes < 660) {
+    return "/musica/horario/vanmotion-musica-manana.webp";
+  }
+
+  if (totalMinutes >= 660 && totalMinutes < 1080) {
+    return "/musica/horario/vanmotion-musica-dia.webp";
+  }
+
+  if (totalMinutes >= 1080 && totalMinutes < 1290) {
+    return "/musica/horario/vanmotion-musica-atardecer.webp";
+  }
+
+  return "/musica/horario/vanmotion-musica-noche.webp";
+}
+
 
 const translations = {
   es: {
@@ -219,7 +248,7 @@ export default async function MusicPage() {
         >
           <div className={styles.heroMedia} aria-hidden="true">
             <Image
-              src="/musica/editorial/vanmotion-portada-musica.png"
+              src={getMadridHeroImage()}
               alt=""
               fill
               priority

@@ -112,16 +112,16 @@
 
 .heroArtwork {
   object-fit: cover;
-  object-position: center center;
-  filter: saturate(0.62) contrast(1.02) brightness(0.48);
-  transform: scale(1.04);
+  object-position: 58% 42%;
+  filter: saturate(0.9) contrast(1.02) brightness(0.9);
+  transform: none;
 }
 
 .heroShade {
   z-index: -2;
   background:
-    linear-gradient(90deg, rgba(5, 5, 5, 0.88) 0%, rgba(5, 5, 5, 0.55)36%, rgba(5, 5, 5, 0.38) 100%),
-    linear-gradient(180deg, rgba(5, 5, 5, 0.22) 0%, rgba(5, 5, 5, 0.04) 42%, rgba(5, 5, 5, 0.84) 100%);
+    linear-gradient(90deg, rgba(5, 5, 4, 0.66) 0%, rgba(5, 5, 4, 0.26) 40%, rgba(5, 5, 4, 0.08) 72%),
+    linear-gradient(180deg, rgba(5, 5, 4, 0.28) 0%, rgba(5, 5, 4, 0.04) 40%, rgba(5, 5, 4, 0.56) 100%);
 }
 
 .heroTopline,
@@ -1139,7 +1139,7 @@
 }
 
 .hero {
-  min-height: clamp(460px, 68svh, 620px);
+  min-height: clamp(560px, 74svh, 760px);
 }
 
 .heroNews {
