@@ -9,7 +9,36 @@ import { prisma } from "@/app/lib/prisma";
 
 import styles from "./coleccion.module.css";
 
+
 export const dynamic = "force-dynamic";
+
+function getMadridHeroImage() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+
+  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
+  const minute = Number(parts.find((part) => part.type === "minute")?.value ?? 0);
+  const totalMinutes = hour * 60 + minute;
+
+  if (totalMinutes >= 330 && totalMinutes < 660) {
+    return "/brand/horario-home/vanmotion-home-manana.webp";
+  }
+
+  if (totalMinutes >= 660 && totalMinutes < 1080) {
+    return "/brand/horario-home/vanmotion-home-dia.webp";
+  }
+
+  if (totalMinutes >= 1080 && totalMinutes < 1290) {
+    return "/brand/horario-home/vanmotion-home-atardecer.webp";
+  }
+
+  return "/brand/horario-home/vanmotion-home-noche.webp";
+}
+
 
 const fuelLabels: Record<Language, Record<string, string>> = {
   es: {
@@ -368,7 +397,7 @@ export default async function CollectionPage() {
       <main>
         <section className={styles.hero} aria-labelledby="collection-hero-title">
           <Image
-            src="/vehiculos/portada-coleccion-vanmotion.webp"
+            src={getMadridHeroImage()}
             alt="Ford E-150 VANMOTION con Madrid al fondo"
             fill
             priority
