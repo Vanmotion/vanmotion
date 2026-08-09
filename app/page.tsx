@@ -9,7 +9,36 @@ import { getDailyNews } from "./lib/daily-news";
 import { prisma } from "./lib/prisma";
 import styles from "./home.module.css";
 
+
 export const dynamic = "force-dynamic";
+
+function getMadridHeroImage() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+
+  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
+  const minute = Number(parts.find((part) => part.type === "minute")?.value ?? 0);
+  const totalMinutes = hour * 60 + minute;
+
+  if (totalMinutes >= 330 && totalMinutes < 660) {
+    return "/brand/horario-home/vanmotion-home-manana.webp";
+  }
+
+  if (totalMinutes >= 660 && totalMinutes < 1080) {
+    return "/brand/horario-home/vanmotion-home-dia.webp";
+  }
+
+  if (totalMinutes >= 1080 && totalMinutes < 1290) {
+    return "/brand/horario-home/vanmotion-home-atardecer.webp";
+  }
+
+  return "/brand/horario-home/vanmotion-home-noche.webp";
+}
+
 
 const translations = {
   es: {
@@ -311,7 +340,7 @@ export default async function Home() {
       <main>
         <section className={styles.hero} aria-labelledby="hero-title">
           <Image
-            src="/brand/vanmotion-portada-principal-v2.webp"
+            src={getMadridHeroImage()}
             alt={content.hero.vehicle}
             fill
             loading="eager"
