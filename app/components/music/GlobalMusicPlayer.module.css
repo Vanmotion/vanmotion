@@ -661,3 +661,64 @@
   border-color: rgba(255, 255, 255, 0.28);
   transform: translateY(-1px);
 }
+
+
+/* VANMOTION · recomendaciones · YouTube principal + Spotify secundario */
+.recommendedActions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 7px;
+}
+
+.youtubeListenButton,
+.spotifySecondaryButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.youtubeListenButton {
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.spotifySecondaryButton {
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+}
+
+.youtubeListenButton:hover,
+.spotifySecondaryButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.13);
+}
+
+
+/* VANMOTION · YouTube integrado en recomendaciones */
+.youtubeEmbed {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 160px;
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}

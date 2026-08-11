@@ -38,26 +38,12 @@ export default function RouteAwareMusicPlayer({
     (path) => matchesPath(pathname, path),
   );
 
+  if (shouldHide) {
+    return null;
+  }
+
   return (
-    <div
-      data-music-player-mode="compact"
-      data-music-player-hidden={shouldHide ? "true" : "false"}
-      aria-hidden={shouldHide}
-      style={
-        shouldHide
-          ? {
-              position: "fixed",
-              left: "-10000px",
-              top: 0,
-              width: "1px",
-              height: "1px",
-              overflow: "hidden",
-              opacity: 0,
-              pointerEvents: "none",
-            }
-          : undefined
-      }
-    >
+    <div data-music-player-mode="compact">
       {children}
     </div>
   );

@@ -346,11 +346,11 @@ export default async function MusicPage() {
 
           <div className={styles.recommendGrid}>
             <a
-              href="https://open.spotify.com/track/3HQxzXOb4p9pfpD5gP38D5"
+              href="https://www.youtube.com/watch?v=ZPJN-aWvj_U"
               target="_blank"
               rel="noreferrer"
               className={styles.recommendCard}
-              aria-label="No Te Deseo el Mal · Eladio Carrion y KAROL G · Spotify"
+              aria-label="No Te Deseo el Mal · Eladio Carrion y KAROL G · YouTube"
             >
               <span className={styles.recommendNumber}>01</span>
 
@@ -373,17 +373,17 @@ export default async function MusicPage() {
               </div>
 
               <span className={styles.recommendAction}>
-                {language === "es" ? "Escuchar en Spotify" : "Listen on Spotify"}
+                {language === "es" ? "Ver videoclip en YouTube" : "Watch on YouTube"}
                 <span aria-hidden="true"> ↗</span>
               </span>
             </a>
 
             <a
-              href="https://open.spotify.com/track/3osNsDFkJoDg5pQ4OtndfE"
+              href="https://www.youtube.com/watch?v=3WOPP2ZaoK8"
               target="_blank"
               rel="noreferrer"
               className={styles.recommendCard}
-              aria-label="Sin Ti · Jay Wheeler · Spotify"
+              aria-label="Sin Ti · Jay Wheeler · YouTube"
             >
               <span className={styles.recommendNumber}>02</span>
 
@@ -406,7 +406,7 @@ export default async function MusicPage() {
               </div>
 
               <span className={styles.recommendAction}>
-                {language === "es" ? "Escuchar en Spotify" : "Listen on Spotify"}
+                {language === "es" ? "Ver videoclip en YouTube" : "Watch on YouTube"}
                 <span aria-hidden="true"> ↗</span>
               </span>
             </a>

@@ -315,16 +315,14 @@ export default function GlobalMusicPlayer({
                 </div>
               </div>
 
-              <a
-                className={styles.spotifyListenButton}
-                href="https://open.spotify.com/track/3HQxzXOb4p9pfpD5gP38D5"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {language === "es"
-                  ? "Escuchar en Spotify"
-                  : "Listen on Spotify"}
-              </a>
+              <iframe
+                className={styles.youtubeEmbed}
+                src="https://www.youtube-nocookie.com/embed/ZPJN-aWvj_U?rel=0"
+                title="No Te Deseo el Mal · Eladio Carrión y KAROL G"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
             </div>
 
             <div className={styles.spotifyRecommendedTrack}>
@@ -336,16 +334,14 @@ export default function GlobalMusicPlayer({
                 </div>
               </div>
 
-              <a
-                className={styles.spotifyListenButton}
-                href="https://open.spotify.com/track/3osNsDFkJoDg5pQ4OtndfE"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {language === "es"
-                  ? "Escuchar en Spotify"
-                  : "Listen on Spotify"}
-              </a>
+              <iframe
+                className={styles.youtubeEmbed}
+                src="https://www.youtube-nocookie.com/embed/3WOPP2ZaoK8?rel=0"
+                title="Sin Ti · Jay Wheeler"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
             </div>
           </div>
 
