@@ -317,6 +317,103 @@ export default async function MusicPage() {
         </section>
 
 
+        <section
+          className={styles.recommendSection}
+          id="vanmotion-recomienda"
+          aria-labelledby="vanmotion-recomienda-title"
+        >
+          <div className={styles.recommendHeader}>
+            <div>
+              <span className={styles.recommendEyebrow}>
+                {language === "es"
+                  ? "Selección editorial"
+                  : "Editorial selection"}
+              </span>
+
+              <h2 id="vanmotion-recomienda-title">
+                {language === "es"
+                  ? "VANMOTION RECOMIENDA"
+                  : "VANMOTION RECOMMENDS"}
+              </h2>
+            </div>
+
+            <p>
+              {language === "es"
+                ? "Música que seguimos escuchando. Dos temas que forman parte de nuestras referencias."
+                : "Music we keep listening to. Two tracks that remain part of our references."}
+            </p>
+          </div>
+
+          <div className={styles.recommendGrid}>
+            <a
+              href="https://open.spotify.com/track/3HQxzXOb4p9pfpD5gP38D5"
+              target="_blank"
+              rel="noreferrer"
+              className={styles.recommendCard}
+              aria-label="No Te Deseo el Mal · Eladio Carrion y KAROL G · Spotify"
+            >
+              <span className={styles.recommendNumber}>01</span>
+
+              <div className={styles.recommendCardBody}>
+                <span className={styles.recommendBadge}>
+                  VANMOTION RECOMIENDA
+                </span>
+
+                <h3>NO TE DESEO EL MAL</h3>
+
+                <p className={styles.recommendArtist}>
+                  Eladio Carrion · KAROL G
+                </p>
+
+                <p className={styles.recommendNote}>
+                  {language === "es"
+                    ? "Carácter, melodía y emoción contenida."
+                    : "Character, melody and restrained emotion."}
+                </p>
+              </div>
+
+              <span className={styles.recommendAction}>
+                {language === "es" ? "Escuchar en Spotify" : "Listen on Spotify"}
+                <span aria-hidden="true"> ↗</span>
+              </span>
+            </a>
+
+            <a
+              href="https://open.spotify.com/track/3fW0dKEIibJX62i5Fk4F2J"
+              target="_blank"
+              rel="noreferrer"
+              className={styles.recommendCard}
+              aria-label="Fuiste Mala · A.B. Quintanilla III Y Los Kumbia Kings y Ricardo Muñoz · Spotify"
+            >
+              <span className={styles.recommendNumber}>02</span>
+
+              <div className={styles.recommendCardBody}>
+                <span className={styles.recommendBadge}>
+                  VANMOTION RECOMIENDA
+                </span>
+
+                <h3>FUISTE MALA</h3>
+
+                <p className={styles.recommendArtist}>
+                  A.B. Quintanilla III Y Los Kumbia Kings · Ricardo Muñoz
+                </p>
+
+                <p className={styles.recommendNote}>
+                  {language === "es"
+                    ? "Ritmo, melodía y sentimiento que siguen funcionando."
+                    : "Rhythm, melody and feeling that still work."}
+                </p>
+              </div>
+
+              <span className={styles.recommendAction}>
+                {language === "es" ? "Escuchar en Spotify" : "Listen on Spotify"}
+                <span aria-hidden="true"> ↗</span>
+              </span>
+            </a>
+          </div>
+        </section>
+
+
           <section
             className={styles.contactSection}
             aria-label={content.navigation.contact}
