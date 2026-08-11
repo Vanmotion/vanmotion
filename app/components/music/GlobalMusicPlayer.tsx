@@ -214,8 +214,11 @@ export default function GlobalMusicPlayer({
         </button>
       </div>
 
-      {expanded && (
-        <div className={styles.expandedContent}>
+      <div
+        className={`${styles.expandedContent} ${
+          expanded ? "" : styles.expandedContentHidden
+        }`}
+      >
           <div className={styles.progress}>
             <input
               type="range"
@@ -349,7 +352,6 @@ export default function GlobalMusicPlayer({
             </p>
           )}
         </div>
-      )}
     </aside>
   );
 }
