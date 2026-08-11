@@ -379,11 +379,11 @@ export default async function MusicPage() {
             </a>
 
             <a
-              href="https://open.spotify.com/track/3fW0dKEIibJX62i5Fk4F2J"
+              href="https://open.spotify.com/track/3osNsDFkJoDg5pQ4OtndfE"
               target="_blank"
               rel="noreferrer"
               className={styles.recommendCard}
-              aria-label="Fuiste Mala · A.B. Quintanilla III Y Los Kumbia Kings y Ricardo Muñoz · Spotify"
+              aria-label="Sin Ti · Jay Wheeler · Spotify"
             >
               <span className={styles.recommendNumber}>02</span>
 
@@ -392,16 +392,16 @@ export default async function MusicPage() {
                   VANMOTION RECOMIENDA
                 </span>
 
-                <h3>FUISTE MALA</h3>
+                <h3>SIN TI</h3>
 
                 <p className={styles.recommendArtist}>
-                  A.B. Quintanilla III Y Los Kumbia Kings · Ricardo Muñoz
+                  Jay Wheeler
                 </p>
 
                 <p className={styles.recommendNote}>
                   {language === "es"
-                    ? "Ritmo, melodía y sentimiento que siguen funcionando."
-                    : "Rhythm, melody and feeling that still work."}
+                    ? "Una canción sobre cerrar una etapa y aprender a seguir sin esa persona."
+                    : "A song about closing a chapter and learning to move forward without that person."}
                 </p>
               </div>
 
