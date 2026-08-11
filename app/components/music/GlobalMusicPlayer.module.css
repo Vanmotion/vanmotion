@@ -601,3 +601,12 @@
   border-radius: 10px;
   overflow: hidden;
 }
+
+/* VANMOTION · permitir scroll completo del reproductor flotante en escritorio */
+@media (min-width: 641px) {
+  .player.expanded {
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
