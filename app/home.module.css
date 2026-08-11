@@ -1255,8 +1255,11 @@
 .vehicleIndicatorOn {
   opacity: 0;
   pointer-events: none;
+  z-index: 2;
   animation: vanmotionVehicleIndicator 1.4s steps(1, end) infinite;
   will-change: opacity;
+  clip-path: inset(42% 50% 43% 35%);
+  filter: saturate(0.05) brightness(0.38) contrast(1.08);
 }
 
 @keyframes vanmotionVehicleIndicator {

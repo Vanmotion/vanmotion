@@ -67,6 +67,12 @@ function getMadridVehicleImage() {
   return "/vehiculos/horario/vanmotion-vehiculos-noche.png";
 }
 
+function getMadridVehicleImageOff() {
+  return getMadridVehicleImage()
+    .replace("/vehiculos/horario/", "/vehiculos/horario-off/")
+    .replace(".png", "-off.png");
+}
+
 
 function getMadridMusicImage() {
   const parts = new Intl.DateTimeFormat("en-GB", {
@@ -482,13 +488,33 @@ export default async function Home() {
                 key={item.number}
               >
                 <div className={styles.pathMedia}>
-                  <Image
-                    src={item.imageClass === "vehicleImage" ? getMadridVehicleImage() : item.imageClass === "musicImage" ? getMadridMusicImage() : getMadridClothingImage()}
-                    alt={item.alt}
-                    fill
-                    sizes="(max-width: 820px) 100vw, 33vw"
-                    className={`${styles.pathImage} ${styles[item.imageClass]}`}
-                  />
+                  {item.imageClass === "vehicleImage" ? (
+                    <>
+                      <Image
+                        src={getMadridVehicleImage()}
+                        alt={item.alt}
+                        fill
+                        sizes="(max-width: 820px) 100vw, 33vw"
+                        className={`${styles.pathImage} ${styles.vehicleImage}`}
+                      />
+                      <Image
+                        src={getMadridVehicleImage()}
+                        alt=""
+                        aria-hidden="true"
+                        fill
+                        sizes="(max-width: 820px) 100vw, 33vw"
+                        className={`${styles.pathImage} ${styles.vehicleImage} ${styles.vehicleIndicatorOn}`}
+                      />
+                    </>
+                  ) : (
+                    <Image
+                      src={item.imageClass === "musicImage" ? getMadridMusicImage() : getMadridClothingImage()}
+                      alt={item.alt}
+                      fill
+                      sizes="(max-width: 820px) 100vw, 33vw"
+                      className={`${styles.pathImage} ${styles[item.imageClass]}`}
+                    />
+                  )}
                   <div className={styles.pathShade} aria-hidden="true" />
                 </div>
 
