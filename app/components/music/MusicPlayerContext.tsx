@@ -3,6 +3,7 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -29,6 +30,9 @@ type MusicPlayerContextValue = {
   changeProgress: (value: number) => void;
   changeVolume: (value: number) => void;
   clearPlaybackError: () => void;
+  setLastTrackEndedHandler: (
+    handler: (() => void) | null,
+  ) => void;
 };
 
 type MusicPlayerProviderProps = {
@@ -45,6 +49,8 @@ export default function MusicPlayerProvider({
   const audioRef = useRef<HTMLAudioElement>(null);
   const resumeAfterChangeRef = useRef(false);
   const initializedRef = useRef(false);
+  const lastTrackEndedHandlerRef =
+    useRef<(() => void) | null>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -244,6 +250,29 @@ export default function MusicPlayerProvider({
     setVolume(normalizedVolume);
   }
 
+  const setLastTrackEndedHandler = useCallback(
+    (handler: (() => void) | null) => {
+      lastTrackEndedHandlerRef.current = handler;
+    },
+    [],
+  );
+
+  function handleAudioEnded() {
+    const isLastTrack =
+      currentIndex === tracks.length - 1;
+
+    if (
+      isLastTrack &&
+      lastTrackEndedHandlerRef.current
+    ) {
+      setIsPlaying(false);
+      lastTrackEndedHandlerRef.current();
+      return;
+    }
+
+    playNext();
+  }
+
   const contextValue: MusicPlayerContextValue = {
     tracks,
     currentTrack,
@@ -262,6 +291,7 @@ export default function MusicPlayerProvider({
     clearPlaybackError: () => {
       setPlaybackError(null);
     },
+    setLastTrackEndedHandler,
   };
 
   return (
@@ -289,7 +319,7 @@ export default function MusicPlayerProvider({
         onPause={() => {
           setIsPlaying(false);
         }}
-        onEnded={playNext}
+        onEnded={handleAudioEnded}
         onError={() => {
           setIsPlaying(false);
           setPlaybackError("missing-audio");
