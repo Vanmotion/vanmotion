@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 import type { Language } from "@/app/language";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
@@ -81,7 +80,6 @@ const translations = {
 export default function GlobalMusicPlayer({
   language,
 }: GlobalMusicPlayerProps) {
-  const pathname = usePathname();
   const content = translations[language];
   const [expanded, setExpanded] = useState(false);
 
@@ -101,10 +99,6 @@ export default function GlobalMusicPlayer({
     changeProgress,
     changeVolume,
   } = useMusicPlayer();
-
-  useEffect(() => {
-    setExpanded(false);
-  }, [pathname]);
 
   if (tracks.length === 0 || !currentTrack) {
     return null;
