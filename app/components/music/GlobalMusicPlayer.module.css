@@ -624,3 +624,40 @@
   opacity: 0 !important;
   pointer-events: none !important;
 }
+
+
+/* VANMOTION · recomendaciones externas de Spotify */
+.spotifyListenButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.spotifyListenButton::after {
+  content: "↗";
+  font-size: 15px;
+  font-weight: 400;
+  opacity: 0.72;
+}
+
+.spotifyListenButton:hover {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
