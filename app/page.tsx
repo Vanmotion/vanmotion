@@ -40,6 +40,34 @@ function getMadridHeroImage() {
 }
 
 
+function getMadridVehicleImage() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+
+  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
+  const minute = Number(parts.find((part) => part.type === "minute")?.value ?? 0);
+  const totalMinutes = hour * 60 + minute;
+
+  if (totalMinutes >= 330 && totalMinutes < 660) {
+    return "/vehiculos/horario/vanmotion-vehiculos-manana.png";
+  }
+
+  if (totalMinutes >= 660 && totalMinutes < 1080) {
+    return "/vehiculos/horario/vanmotion-vehiculos-dia.png";
+  }
+
+  if (totalMinutes >= 1080 && totalMinutes < 1290) {
+    return "/vehiculos/horario/vanmotion-vehiculos-atardecer.png";
+  }
+
+  return "/vehiculos/horario/vanmotion-vehiculos-noche.png";
+}
+
+
 function getMadridMusicImage() {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: "Europe/Madrid",
@@ -455,23 +483,12 @@ export default async function Home() {
               >
                 <div className={styles.pathMedia}>
                   <Image
-                    src={item.imageClass === "musicImage" ? getMadridMusicImage() : item.imageClass === "clothingImage" ? getMadridClothingImage() : item.image}
+                    src={item.imageClass === "vehicleImage" ? getMadridVehicleImage() : item.imageClass === "musicImage" ? getMadridMusicImage() : getMadridClothingImage()}
                     alt={item.alt}
                     fill
                     sizes="(max-width: 820px) 100vw, 33vw"
                     className={`${styles.pathImage} ${styles[item.imageClass]}`}
                   />
-                  {item.imageClass === "vehicleImage" ? (
-                    <Image
-                      src="/vehiculos/portada-inicio-vehiculos-intermitente-on.webp"
-                      alt=""
-                      fill
-                      sizes="(max-width: 820px) 100vw, 33vw"
-                      className={`${styles.pathImage} ${styles.vehicleImage} ${styles.vehicleIndicatorOn}`}
-                      aria-hidden="true"
-                    />
-                  ) : null}
-
                   <div className={styles.pathShade} aria-hidden="true" />
                 </div>
 
