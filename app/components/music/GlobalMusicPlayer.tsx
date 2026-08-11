@@ -82,6 +82,8 @@ export default function GlobalMusicPlayer({
 }: GlobalMusicPlayerProps) {
   const content = translations[language];
   const [expanded, setExpanded] = useState(false);
+  const [activeRecommendation, setActiveRecommendation] =
+    useState<string | null>(null);
 
   const {
     tracks,
@@ -156,7 +158,10 @@ export default function GlobalMusicPlayer({
         <div className={styles.controls}>
           <button
             type="button"
-            onClick={playPrevious}
+            onClick={() => {
+              setActiveRecommendation(null);
+              playPrevious();
+            }}
             aria-label={content.previousTrack}
             title={content.previousTrack}
           >
@@ -166,6 +171,7 @@ export default function GlobalMusicPlayer({
           <button
             type="button"
             onClick={() => {
+              setActiveRecommendation(null);
               void togglePlayback();
             }}
             className={styles.playButton}
@@ -185,7 +191,10 @@ export default function GlobalMusicPlayer({
 
           <button
             type="button"
-            onClick={playNext}
+            onClick={() => {
+              setActiveRecommendation(null);
+              playNext();
+            }}
             aria-label={content.nextTrack}
             title={content.nextTrack}
           >
@@ -274,7 +283,8 @@ export default function GlobalMusicPlayer({
                       : ""
                   }
                   onClick={() => {
-                    selectTrack(index, isPlaying);
+                    setActiveRecommendation(null);
+                    selectTrack(index, true);
                   }}
                 >
                   <span>
@@ -315,14 +325,34 @@ export default function GlobalMusicPlayer({
                 </div>
               </div>
 
-              <iframe
-                className={styles.youtubeEmbed}
-                src="https://www.youtube-nocookie.com/embed/ZPJN-aWvj_U?rel=0"
-                title="No Te Deseo el Mal · Eladio Carrión y KAROL G"
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
+              {activeRecommendation === "ZPJN-aWvj_U" ? (
+                <iframe
+                  className={styles.youtubeEmbed}
+                  src="https://www.youtube-nocookie.com/embed/ZPJN-aWvj_U?rel=0&autoplay=1"
+                  title="No Te Deseo el Mal · Eladio Carrión y KAROL G"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : (
+                <button
+                  type="button"
+                  className={styles.youtubePreviewButton}
+                  onClick={() => {
+                    if (isPlaying) {
+                      void togglePlayback();
+                    }
+                    setActiveRecommendation("ZPJN-aWvj_U");
+                  }}
+                  aria-label="Reproducir No Te Deseo el Mal"
+                >
+                  <img
+                    src="https://i.ytimg.com/vi/ZPJN-aWvj_U/hqdefault.jpg"
+                    alt=""
+                    className={styles.youtubePreviewImage}
+                  />
+                  <span className={styles.youtubePreviewPlay}>▶</span>
+                </button>
+              )}
             </div>
 
             <div className={styles.spotifyRecommendedTrack}>
@@ -334,14 +364,34 @@ export default function GlobalMusicPlayer({
                 </div>
               </div>
 
-              <iframe
-                className={styles.youtubeEmbed}
-                src="https://www.youtube-nocookie.com/embed/3WOPP2ZaoK8?rel=0"
-                title="Sin Ti · Jay Wheeler"
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
+              {activeRecommendation === "3WOPP2ZaoK8" ? (
+                <iframe
+                  className={styles.youtubeEmbed}
+                  src="https://www.youtube-nocookie.com/embed/3WOPP2ZaoK8?rel=0&autoplay=1"
+                  title="Sin Ti · Jay Wheeler"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : (
+                <button
+                  type="button"
+                  className={styles.youtubePreviewButton}
+                  onClick={() => {
+                    if (isPlaying) {
+                      void togglePlayback();
+                    }
+                    setActiveRecommendation("3WOPP2ZaoK8");
+                  }}
+                  aria-label="Reproducir Sin Ti"
+                >
+                  <img
+                    src="https://i.ytimg.com/vi/3WOPP2ZaoK8/hqdefault.jpg"
+                    alt=""
+                    className={styles.youtubePreviewImage}
+                  />
+                  <span className={styles.youtubePreviewPlay}>▶</span>
+                </button>
+              )}
             </div>
           </div>
 

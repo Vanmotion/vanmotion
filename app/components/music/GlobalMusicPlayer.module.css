@@ -722,3 +722,45 @@
   overflow: hidden;
   background: #000;
 }
+
+
+/* VANMOTION · una sola recomendación YouTube activa */
+.youtubePreviewButton {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+}
+
+.youtubePreviewImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.youtubePreviewPlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 19px;
+  transform: translate(-50%, -50%);
+  transition: transform 160ms ease;
+}
+
+.youtubePreviewButton:hover .youtubePreviewPlay {
+  transform: translate(-50%, -50%) scale(1.08);
+}
