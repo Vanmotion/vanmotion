@@ -302,6 +302,50 @@ export default function GlobalMusicPlayer({
             })}
           </div>
 
+          <div className={styles.recommendedInPlayer}>
+            <p className={styles.recommendedTitle}>
+              {language === "es"
+                ? "VANMOTION RECOMIENDA"
+                : "VANMOTION RECOMMENDS"}
+            </p>
+
+            <div className={styles.spotifyRecommendedTrack}>
+              <div className={styles.recommendedTrackLabel}>
+                <span>07</span>
+                <div>
+                  <strong>NO TE DESEO EL MAL</strong>
+                  <small>Eladio Carrión · KAROL G</small>
+                </div>
+              </div>
+
+              <iframe
+                className={styles.spotifyEmbed}
+                src="https://open.spotify.com/embed/track/3HQxzXOb4p9pfpD5gP38D5"
+                title="No Te Deseo el Mal · Eladio Carrión y KAROL G"
+                loading="lazy"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              />
+            </div>
+
+            <div className={styles.spotifyRecommendedTrack}>
+              <div className={styles.recommendedTrackLabel}>
+                <span>08</span>
+                <div>
+                  <strong>SIN TI</strong>
+                  <small>Jay Wheeler</small>
+                </div>
+              </div>
+
+              <iframe
+                className={styles.spotifyEmbed}
+                src="https://open.spotify.com/embed/track/3osNsDFkJoDg5pQ4OtndfE"
+                title="Sin Ti · Jay Wheeler"
+                loading="lazy"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              />
+            </div>
+          </div>
+
           {error && (
             <p
               className={styles.error}
