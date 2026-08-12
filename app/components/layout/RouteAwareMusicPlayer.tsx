@@ -11,7 +11,6 @@ const HIDDEN_PATHS = [
   "/admin",
   "/login-admin",
   "/proximamente",
-  "/musica",
   "/aviso-legal",
   "/privacidad",
   "/cookies",

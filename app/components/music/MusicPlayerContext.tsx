@@ -49,6 +49,9 @@ export default function MusicPlayerProvider({
   const audioRef = useRef<HTMLAudioElement>(null);
   const resumeAfterChangeRef = useRef(false);
   const initializedRef = useRef(false);
+  const restoreTimeRef = useRef<number | null>(null);
+  const restorePlayingRef = useRef(false);
+  const restoreTrackRef = useRef<number | null>(null);
   const lastTrackEndedHandlerRef =
     useRef<(() => void) | null>(null);
 
@@ -76,6 +79,25 @@ export default function MusicPlayerProvider({
       "vanmotion-global-volume",
     );
 
+    restoreTrackRef.current = 0;
+
+    const savedTime = window.sessionStorage.getItem(
+      "vanmotion-global-time",
+    );
+    const savedPlaying = window.sessionStorage.getItem(
+      "vanmotion-global-playing",
+    );
+
+    if (savedTime !== null) {
+      const parsedTime = Number(savedTime);
+
+      if (Number.isFinite(parsedTime) && parsedTime >= 0) {
+        restoreTimeRef.current = parsedTime;
+      }
+    }
+
+    restorePlayingRef.current = savedPlaying === "1";
+
     if (savedTrack !== null) {
       const index = Number(savedTrack);
 
@@ -84,6 +106,7 @@ export default function MusicPlayerProvider({
         index >= 0 &&
         index < tracks.length
       ) {
+        restoreTrackRef.current = index;
         setCurrentIndex(index);
       }
     }
@@ -130,6 +153,15 @@ export default function MusicPlayerProvider({
       "vanmotion-global-track",
       String(currentIndex),
     );
+
+    const shouldRestore =
+      restoreTimeRef.current !== null &&
+      restoreTrackRef.current === currentIndex;
+
+    if (shouldRestore) {
+      audio.load();
+      return;
+    }
 
     if (!shouldResume) {
       return;
@@ -181,6 +213,11 @@ export default function MusicPlayerProvider({
       return;
     }
 
+    window.sessionStorage.setItem(
+      "vanmotion-global-playing",
+      "0",
+    );
+
     audio.pause();
     setIsPlaying(false);
   }
@@ -199,6 +236,11 @@ export default function MusicPlayerProvider({
       }
       return;
     }
+
+    window.sessionStorage.setItem(
+      "vanmotion-global-time",
+      "0",
+    );
 
     resumeAfterChangeRef.current = autoplay;
     setCurrentIndex(index);
@@ -308,11 +350,58 @@ export default function MusicPlayerProvider({
               ? audioDuration
               : 0,
           );
+
+          if (
+            restoreTimeRef.current !== null &&
+            restoreTrackRef.current === currentIndex
+          ) {
+            const savedTime = restoreTimeRef.current;
+            const duration = event.currentTarget.duration;
+
+            const safeTime =
+              Number.isFinite(duration) && duration > 0
+                ? Math.min(savedTime, duration)
+                : savedTime;
+
+            event.currentTarget.currentTime = safeTime;
+            setCurrentTime(safeTime);
+
+            const shouldPlay = restorePlayingRef.current;
+
+            restoreTimeRef.current = null;
+            restorePlayingRef.current = false;
+            restoreTrackRef.current = null;
+
+            if (shouldPlay) {
+              void event.currentTarget
+                .play()
+                .then(() => {
+                  setIsPlaying(true);
+                  setPlaybackError(null);
+                })
+                .catch(() => {
+                  setIsPlaying(false);
+                  setPlaybackError("activation");
+                });
+            }
+          }
         }}
         onTimeUpdate={(event) => {
-          setCurrentTime(event.currentTarget.currentTime);
+          const time = event.currentTarget.currentTime;
+
+          setCurrentTime(time);
+
+          window.sessionStorage.setItem(
+            "vanmotion-global-time",
+            String(time),
+          );
         }}
         onPlay={() => {
+          window.sessionStorage.setItem(
+            "vanmotion-global-playing",
+            "1",
+          );
+
           setIsPlaying(true);
           setPlaybackError(null);
         }}
