@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import type { Language } from "@/app/language";
+import type { PublicMusicRecommendation } from "@/app/lib/music-library";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
 
 import { useMusicPlayer } from "./MusicPlayerContext";
@@ -11,6 +12,7 @@ import styles from "./GlobalMusicPlayer.module.css";
 
 type GlobalMusicPlayerProps = {
   language: Language;
+  recommendations: PublicMusicRecommendation[];
 };
 
 type YouTubePlayerInstance = {
@@ -212,6 +214,7 @@ const translations = {
 
 export default function GlobalMusicPlayer({
   language,
+  recommendations,
 }: GlobalMusicPlayerProps) {
   const content = translations[language];
   const [expanded, setExpanded] = useState(false);
@@ -238,13 +241,25 @@ export default function GlobalMusicPlayer({
 
   useEffect(() => {
     setLastTrackEndedHandler(() => {
-      setActiveRecommendation("ZPJN-aWvj_U");
+      const firstRecommendation = recommendations[0];
+
+      if (firstRecommendation) {
+        setActiveRecommendation(
+          firstRecommendation.youtubeVideoId,
+        );
+      } else {
+        selectTrack(0, true);
+      }
     });
 
     return () => {
       setLastTrackEndedHandler(null);
     };
-  }, [setLastTrackEndedHandler]);
+  }, [
+    recommendations,
+    selectTrack,
+    setLastTrackEndedHandler,
+  ]);
 
   if (tracks.length === 0 || !currentTrack) {
     return null;
@@ -453,94 +468,107 @@ export default function GlobalMusicPlayer({
             })}
           </div>
 
-          <div className={styles.recommendedInPlayer}>
-            <p className={styles.recommendedTitle}>
-              {language === "es"
-                ? "VANMOTION RECOMIENDA"
-                : "VANMOTION RECOMMENDS"}
-            </p>
+          {recommendations.length > 0 && (
+            <div className={styles.recommendedInPlayer}>
+              <p className={styles.recommendedTitle}>
+                {language === "es"
+                  ? "VANMOTION RECOMIENDA"
+                  : "VANMOTION RECOMMENDS"}
+              </p>
 
-            <div className={styles.spotifyRecommendedTrack}>
-              <div className={styles.recommendedTrackLabel}>
-                <span>07</span>
-                <div>
-                  <strong>NO TE DESEO EL MAL</strong>
-                  <small>Eladio Carrión · KAROL G</small>
-                </div>
-              </div>
+              {recommendations.map(
+                (recommendation, index) => {
+                  const nextRecommendation =
+                    recommendations[index + 1];
 
-              {activeRecommendation === "ZPJN-aWvj_U" ? (
-                <YouTubeRecommendationPlayer
-                  videoId="ZPJN-aWvj_U"
-                  title="No Te Deseo el Mal · Eladio Carrión y KAROL G"
-                  onEnded={() => {
-                    setActiveRecommendation(
-                      "3WOPP2ZaoK8",
-                    );
-                  }}
-                />
-              ) : (
-                <button
-                  type="button"
-                  className={styles.youtubePreviewButton}
-                  onClick={() => {
-                    if (isPlaying) {
-                      void togglePlayback();
-                    }
-                    setActiveRecommendation("ZPJN-aWvj_U");
-                  }}
-                  aria-label="Reproducir No Te Deseo el Mal"
-                >
-                  <img
-                    src="https://i.ytimg.com/vi/ZPJN-aWvj_U/hqdefault.jpg"
-                    alt=""
-                    className={styles.youtubePreviewImage}
-                  />
-                  <span className={styles.youtubePreviewPlay}>▶</span>
-                </button>
+                  const displayNumber = String(
+                    tracks.length + index + 1,
+                  ).padStart(2, "0");
+
+                  return (
+                    <div
+                      className={
+                        styles.spotifyRecommendedTrack
+                      }
+                      key={recommendation.id}
+                    >
+                      <div
+                        className={
+                          styles.recommendedTrackLabel
+                        }
+                      >
+                        <span>{displayNumber}</span>
+
+                        <div>
+                          <strong>
+                            {recommendation.title}
+                          </strong>
+
+                          <small>
+                            {recommendation.artist}
+                          </small>
+                        </div>
+                      </div>
+
+                      {activeRecommendation ===
+                      recommendation.youtubeVideoId ? (
+                        <YouTubeRecommendationPlayer
+                          videoId={
+                            recommendation.youtubeVideoId
+                          }
+                          title={`${recommendation.title} · ${recommendation.artist}`}
+                          onEnded={() => {
+                            if (nextRecommendation) {
+                              setActiveRecommendation(
+                                nextRecommendation.youtubeVideoId,
+                              );
+                              return;
+                            }
+
+                            setActiveRecommendation(null);
+                            selectTrack(0, true);
+                          }}
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          className={
+                            styles.youtubePreviewButton
+                          }
+                          onClick={() => {
+                            if (isPlaying) {
+                              void togglePlayback();
+                            }
+
+                            setActiveRecommendation(
+                              recommendation.youtubeVideoId,
+                            );
+                          }}
+                          aria-label={`Reproducir ${recommendation.title}`}
+                        >
+                          <img
+                            src={`https://i.ytimg.com/vi/${recommendation.youtubeVideoId}/hqdefault.jpg`}
+                            alt=""
+                            className={
+                              styles.youtubePreviewImage
+                            }
+                          />
+
+                          <span
+                            className={
+                              styles.youtubePreviewPlay
+                            }
+                          >
+                            ▶
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  );
+                },
               )}
             </div>
-
-            <div className={styles.spotifyRecommendedTrack}>
-              <div className={styles.recommendedTrackLabel}>
-                <span>08</span>
-                <div>
-                  <strong>SIN TI</strong>
-                  <small>Jay Wheeler</small>
-                </div>
-              </div>
-
-              {activeRecommendation === "3WOPP2ZaoK8" ? (
-                <YouTubeRecommendationPlayer
-                  videoId="3WOPP2ZaoK8"
-                  title="Sin Ti · Jay Wheeler"
-                  onEnded={() => {
-                    setActiveRecommendation(null);
-                    selectTrack(0, true);
-                  }}
-                />
-              ) : (
-                <button
-                  type="button"
-                  className={styles.youtubePreviewButton}
-                  onClick={() => {
-                    if (isPlaying) {
-                      void togglePlayback();
-                    }
-                    setActiveRecommendation("3WOPP2ZaoK8");
-                  }}
-                  aria-label="Reproducir Sin Ti"
-                >
-                  <img
-                    src="https://i.ytimg.com/vi/3WOPP2ZaoK8/hqdefault.jpg"
-                    alt=""
-                    className={styles.youtubePreviewImage}
-                  />
-                  <span className={styles.youtubePreviewPlay}>▶</span>
-                </button>
-              )}
-            </div>
-          </div>
+          )}
 
           {error && (
             <p

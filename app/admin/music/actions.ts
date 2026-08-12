@@ -364,3 +364,232 @@ export async function moveMusicTrack(
     );
   }
 }
+function youtubeVideoIdFromInput(value: string): string {
+  const input = value.trim();
+
+  if (!input) {
+    return "";
+  }
+
+  if (/^[A-Za-z0-9_-]{11}$/.test(input)) {
+    return input;
+  }
+
+  try {
+    const url = new URL(input);
+
+    if (url.hostname === "youtu.be") {
+      return url.pathname.split("/").filter(Boolean)[0] ?? "";
+    }
+
+    if (
+      url.hostname.includes("youtube.com") ||
+      url.hostname.includes("youtube-nocookie.com")
+    ) {
+      const watchId = url.searchParams.get("v");
+
+      if (watchId) {
+        return watchId;
+      }
+
+      const parts = url.pathname.split("/").filter(Boolean);
+      const markerIndex = parts.findIndex(
+        (part) =>
+          part === "embed" ||
+          part === "shorts" ||
+          part === "live",
+      );
+
+      if (markerIndex >= 0) {
+        return parts[markerIndex + 1] ?? "";
+      }
+    }
+  } catch {
+    return "";
+  }
+
+  return "";
+}
+
+export async function createMusicRecommendation(
+  formData: FormData,
+): Promise<void> {
+  await requireAdminSession();
+
+  const title = requiredString(formData, "title");
+  const artist = requiredString(formData, "artist");
+  const youtubeInput = requiredString(
+    formData,
+    "youtube",
+  );
+  const youtubeVideoId =
+    youtubeVideoIdFromInput(youtubeInput);
+
+  if (!title || !artist || !youtubeVideoId) {
+    throw new Error(
+      "Título, artista y un enlace válido de YouTube son obligatorios.",
+    );
+  }
+
+  const last = await prisma.musicRecommendation.findFirst({
+    orderBy: {
+      sortOrder: "desc",
+    },
+    select: {
+      sortOrder: true,
+    },
+  });
+
+  await prisma.musicRecommendation.create({
+    data: {
+      title,
+      artist,
+      youtubeVideoId,
+      active: true,
+      sortOrder: (last?.sortOrder ?? -1) + 1,
+    },
+  });
+
+  refreshMusicPages();
+}
+
+export async function saveMusicRecommendation(
+  formData: FormData,
+): Promise<void> {
+  await requireAdminSession();
+
+  const id = requiredString(formData, "id");
+  const title = requiredString(formData, "title");
+  const artist = requiredString(formData, "artist");
+  const youtubeInput = requiredString(
+    formData,
+    "youtube",
+  );
+  const youtubeVideoId =
+    youtubeVideoIdFromInput(youtubeInput);
+  const active =
+    formData.get("active") === "on";
+
+  if (!id) {
+    throw new Error(
+      "No se ha identificado el tema recomendado.",
+    );
+  }
+
+  if (!title || !artist || !youtubeVideoId) {
+    throw new Error(
+      "Título, artista y un enlace válido de YouTube son obligatorios.",
+    );
+  }
+
+  await prisma.musicRecommendation.update({
+    where: {
+      id,
+    },
+    data: {
+      title,
+      artist,
+      youtubeVideoId,
+      active,
+    },
+  });
+
+  refreshMusicPages();
+}
+
+export async function moveMusicRecommendation(
+  formData: FormData,
+): Promise<void> {
+  await requireAdminSession();
+
+  const id = requiredString(formData, "id");
+  const direction = requiredString(
+    formData,
+    "direction",
+  );
+
+  if (
+    !id ||
+    (direction !== "up" && direction !== "down")
+  ) {
+    return;
+  }
+
+  const items =
+    await prisma.musicRecommendation.findMany({
+      orderBy: [
+        {
+          sortOrder: "asc",
+        },
+        {
+          createdAt: "asc",
+        },
+      ],
+      select: {
+        id: true,
+        sortOrder: true,
+      },
+    });
+
+  const index = items.findIndex(
+    (item) => item.id === id,
+  );
+
+  if (index < 0) {
+    return;
+  }
+
+  const swapIndex =
+    direction === "up" ? index - 1 : index + 1;
+
+  if (
+    swapIndex < 0 ||
+    swapIndex >= items.length
+  ) {
+    return;
+  }
+
+  const current = items[index];
+  const other = items[swapIndex];
+
+  await prisma.$transaction([
+    prisma.musicRecommendation.update({
+      where: {
+        id: current.id,
+      },
+      data: {
+        sortOrder: other.sortOrder,
+      },
+    }),
+    prisma.musicRecommendation.update({
+      where: {
+        id: other.id,
+      },
+      data: {
+        sortOrder: current.sortOrder,
+      },
+    }),
+  ]);
+
+  refreshMusicPages();
+}
+
+export async function deleteMusicRecommendation(
+  formData: FormData,
+): Promise<void> {
+  await requireAdminSession();
+
+  const id = requiredString(formData, "id");
+
+  if (!id) {
+    return;
+  }
+
+  await prisma.musicRecommendation.delete({
+    where: {
+      id,
+    },
+  });
+
+  refreshMusicPages();
+}

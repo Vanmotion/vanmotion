@@ -6,8 +6,12 @@ import DirectMusicAudioUpload from "./DirectMusicAudioUpload";
 import DirectMusicCoverUpload from "./DirectMusicCoverUpload";
 
 import {
+  createMusicRecommendation,
+  deleteMusicRecommendation,
   initializeMusicLibrary,
+  moveMusicRecommendation,
   moveMusicTrack,
+  saveMusicRecommendation,
   saveMusicTrack,
 } from "./actions";
 import { removeTrackCover } from "./covers/actions";
@@ -26,6 +30,18 @@ export default async function AdminMusicPage() {
       },
     ],
   });
+
+  const recommendations =
+    await prisma.musicRecommendation.findMany({
+      orderBy: [
+        {
+          sortOrder: "asc",
+        },
+        {
+          createdAt: "asc",
+        },
+      ],
+    });
 
   const activeTracks = tracks.filter(
     (track) => track.active,
@@ -379,6 +395,223 @@ export default async function AdminMusicPage() {
           </div>
         </section>
       )}
+
+      <section className={styles.trackSection}>
+        <div className={styles.sectionHeading}>
+          <div>
+            <p className={styles.eyebrow}>
+              Selección editorial
+            </p>
+
+            <h2>Temas recomendados</h2>
+          </div>
+
+          <span className={styles.recommendationCount}>
+            {recommendations.filter((item) => item.active).length}
+            {" "}activos
+          </span>
+        </div>
+
+        <p className={styles.recommendationIntro}>
+          Estos temas aparecen después de la música oficial de
+          VANMOTION. Puedes pegar directamente un enlace de YouTube.
+        </p>
+
+        <form
+          action={createMusicRecommendation}
+          className={styles.recommendationCreateForm}
+        >
+          <label>
+            <span>Título</span>
+            <input
+              type="text"
+              name="title"
+              placeholder="Nombre de la canción"
+              required
+            />
+          </label>
+
+          <label>
+            <span>Artista</span>
+            <input
+              type="text"
+              name="artist"
+              placeholder="Artista"
+              required
+            />
+          </label>
+
+          <label className={styles.fullField}>
+            <span>Enlace de YouTube</span>
+            <input
+              type="url"
+              name="youtube"
+              placeholder="https://www.youtube.com/watch?v=..."
+              required
+            />
+          </label>
+
+          <button
+            type="submit"
+            className={styles.saveButton}
+          >
+            Añadir recomendado
+            <span>＋</span>
+          </button>
+        </form>
+
+        <div className={styles.trackList}>
+          {recommendations.map((item, index) => (
+            <article
+              className={styles.trackCard}
+              key={item.id}
+            >
+              <div className={styles.trackHeader}>
+                <div className={styles.trackNumber}>
+                  R{String(index + 1).padStart(2, "0")}
+                </div>
+
+                <div className={styles.coverThumbnail}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://i.ytimg.com/vi/${item.youtubeVideoId}/hqdefault.jpg`}
+                    alt=""
+                  />
+                </div>
+
+                <div className={styles.trackTitle}>
+                  <span>
+                    {item.active
+                      ? "Recomendado activo"
+                      : "Recomendado oculto"}
+                  </span>
+
+                  <h3>{item.title}</h3>
+                  <p>{item.artist}</p>
+                </div>
+
+                <div className={styles.orderButtons}>
+                  <form action={moveMusicRecommendation}>
+                    <input
+                      type="hidden"
+                      name="id"
+                      value={item.id}
+                    />
+                    <input
+                      type="hidden"
+                      name="direction"
+                      value="up"
+                    />
+                    <button
+                      type="submit"
+                      disabled={index === 0}
+                      aria-label="Subir recomendado"
+                    >
+                      ↑
+                    </button>
+                  </form>
+
+                  <form action={moveMusicRecommendation}>
+                    <input
+                      type="hidden"
+                      name="id"
+                      value={item.id}
+                    />
+                    <input
+                      type="hidden"
+                      name="direction"
+                      value="down"
+                    />
+                    <button
+                      type="submit"
+                      disabled={
+                        index === recommendations.length - 1
+                      }
+                      aria-label="Bajar recomendado"
+                    >
+                      ↓
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <form
+                action={saveMusicRecommendation}
+                className={styles.editForm}
+              >
+                <input
+                  type="hidden"
+                  name="id"
+                  value={item.id}
+                />
+
+                <label>
+                  <span>Título</span>
+                  <input
+                    type="text"
+                    name="title"
+                    defaultValue={item.title}
+                    required
+                  />
+                </label>
+
+                <label>
+                  <span>Artista</span>
+                  <input
+                    type="text"
+                    name="artist"
+                    defaultValue={item.artist}
+                    required
+                  />
+                </label>
+
+                <label className={styles.fullField}>
+                  <span>Enlace de YouTube</span>
+                  <input
+                    type="url"
+                    name="youtube"
+                    defaultValue={`https://www.youtube.com/watch?v=${item.youtubeVideoId}`}
+                    required
+                  />
+                </label>
+
+                <label className={styles.checkbox}>
+                  <input
+                    type="checkbox"
+                    name="active"
+                    defaultChecked={item.active}
+                  />
+
+                  <span>
+                    Mostrar este tema recomendado
+                  </span>
+                </label>
+
+                <button
+                  type="submit"
+                  className={styles.saveButton}
+                >
+                  Guardar recomendado
+                  <span>→</span>
+                </button>
+              </form>
+
+              <div className={styles.recommendationDelete}>
+                <form action={deleteMusicRecommendation}>
+                  <input
+                    type="hidden"
+                    name="id"
+                    value={item.id}
+                  />
+                  <button type="submit">
+                    Eliminar recomendado
+                  </button>
+                </form>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

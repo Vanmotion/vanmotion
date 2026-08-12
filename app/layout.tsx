@@ -7,7 +7,10 @@ import RouteAwareMusicPlayer from "@/app/components/layout/RouteAwareMusicPlayer
 import GlobalMusicPlayer from "@/app/components/music/GlobalMusicPlayer";
 import MusicPlayerProvider from "@/app/components/music/MusicPlayerContext";
 import { getCurrentLanguage } from "@/app/lib/language";
-import { getPublicMusicTracks } from "@/app/lib/music-library";
+import {
+  getPublicMusicRecommendations,
+  getPublicMusicTracks,
+} from "@/app/lib/music-library";
 
 import "./globals.css";
 
@@ -112,10 +115,12 @@ type RootLayoutProps = {
 export default async function RootLayout({
   children,
 }: RootLayoutProps) {
-  const [language, tracks] = await Promise.all([
-    getCurrentLanguage(),
-    getPublicMusicTracks(),
-  ]);
+  const [language, tracks, recommendations] =
+    await Promise.all([
+      getCurrentLanguage(),
+      getPublicMusicTracks(),
+      getPublicMusicRecommendations(),
+    ]);
   const content = metadataTranslations[language];
 
   const websiteStructuredData = {
@@ -149,7 +154,10 @@ export default async function RootLayout({
           <LanguageSwitcher currentLanguage={language} />
 
           <RouteAwareMusicPlayer>
-            <GlobalMusicPlayer language={language} />
+            <GlobalMusicPlayer
+              language={language}
+              recommendations={recommendations}
+            />
           </RouteAwareMusicPlayer>
 
           <PublicAnalytics />

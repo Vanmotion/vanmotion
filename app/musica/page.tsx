@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
+import { getPublicMusicRecommendations } from "@/app/lib/music-library";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
 import styles from "./musica.module.css";
@@ -201,6 +202,8 @@ export default async function MusicPage() {
   const language = await getCurrentLanguage();
   const content = translations[language];
   const [, musicNews] = await getDailyNews(language);
+  const recommendations =
+    await getPublicMusicRecommendations();
 
   return (
     <div className={styles.page}>
@@ -317,101 +320,81 @@ export default async function MusicPage() {
         </section>
 
 
-        <section
-          className={styles.recommendSection}
-          id="vanmotion-recomienda"
-          aria-labelledby="vanmotion-recomienda-title"
-        >
-          <div className={styles.recommendHeader}>
-            <div>
-              <span className={styles.recommendEyebrow}>
-                {language === "es"
-                  ? "Selección editorial"
-                  : "Editorial selection"}
-              </span>
+        {recommendations.length > 0 && (
+          <section
+            className={styles.recommendSection}
+            id="vanmotion-recomienda"
+            aria-labelledby="vanmotion-recomienda-title"
+          >
+            <div className={styles.recommendHeader}>
+              <div>
+                <span className={styles.recommendEyebrow}>
+                  {language === "es"
+                    ? "Selección editorial"
+                    : "Editorial selection"}
+                </span>
 
-              <h2 id="vanmotion-recomienda-title">
+                <h2 id="vanmotion-recomienda-title">
+                  {language === "es"
+                    ? "VANMOTION RECOMIENDA"
+                    : "VANMOTION RECOMMENDS"}
+                </h2>
+              </div>
+
+              <p>
                 {language === "es"
-                  ? "VANMOTION RECOMIENDA"
-                  : "VANMOTION RECOMMENDS"}
-              </h2>
+                  ? "Música que seguimos escuchando. Una selección que forma parte de nuestras referencias."
+                  : "Music we keep listening to. A selection that remains part of our references."}
+              </p>
             </div>
 
-            <p>
-              {language === "es"
-                ? "Música que seguimos escuchando. Dos temas que forman parte de nuestras referencias."
-                : "Music we keep listening to. Two tracks that remain part of our references."}
-            </p>
-          </div>
+            <div className={styles.recommendGrid}>
+              {recommendations.map(
+                (recommendation, index) => (
+                  <a
+                    key={recommendation.id}
+                    href={`https://www.youtube.com/watch?v=${recommendation.youtubeVideoId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.recommendCard}
+                    aria-label={`${recommendation.title} · ${recommendation.artist} · YouTube`}
+                  >
+                    <span className={styles.recommendNumber}>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
 
-          <div className={styles.recommendGrid}>
-            <a
-              href="https://www.youtube.com/watch?v=ZPJN-aWvj_U"
-              target="_blank"
-              rel="noreferrer"
-              className={styles.recommendCard}
-              aria-label="No Te Deseo el Mal · Eladio Carrion y KAROL G · YouTube"
-            >
-              <span className={styles.recommendNumber}>01</span>
+                    <div className={styles.recommendCardBody}>
+                      <span className={styles.recommendBadge}>
+                        {language === "es"
+                          ? "VANMOTION RECOMIENDA"
+                          : "VANMOTION RECOMMENDS"}
+                      </span>
 
-              <div className={styles.recommendCardBody}>
-                <span className={styles.recommendBadge}>
-                  VANMOTION RECOMIENDA
-                </span>
+                      <h3>{recommendation.title}</h3>
 
-                <h3>NO TE DESEO EL MAL</h3>
+                      <p className={styles.recommendArtist}>
+                        {recommendation.artist}
+                      </p>
 
-                <p className={styles.recommendArtist}>
-                  Eladio Carrion · KAROL G
-                </p>
+                      <p className={styles.recommendNote}>
+                        {language === "es"
+                          ? "Una referencia seleccionada por VANMOTION."
+                          : "A reference selected by VANMOTION."}
+                      </p>
+                    </div>
 
-                <p className={styles.recommendNote}>
-                  {language === "es"
-                    ? "Carácter, melodía y emoción contenida."
-                    : "Character, melody and restrained emotion."}
-                </p>
-              </div>
-
-              <span className={styles.recommendAction}>
-                {language === "es" ? "Ver videoclip en YouTube" : "Watch on YouTube"}
-                <span aria-hidden="true"> ↗</span>
-              </span>
-            </a>
-
-            <a
-              href="https://www.youtube.com/watch?v=3WOPP2ZaoK8"
-              target="_blank"
-              rel="noreferrer"
-              className={styles.recommendCard}
-              aria-label="Sin Ti · Jay Wheeler · YouTube"
-            >
-              <span className={styles.recommendNumber}>02</span>
-
-              <div className={styles.recommendCardBody}>
-                <span className={styles.recommendBadge}>
-                  VANMOTION RECOMIENDA
-                </span>
-
-                <h3>SIN TI</h3>
-
-                <p className={styles.recommendArtist}>
-                  Jay Wheeler
-                </p>
-
-                <p className={styles.recommendNote}>
-                  {language === "es"
-                    ? "Una canción sobre cerrar una etapa y aprender a seguir sin esa persona."
-                    : "A song about closing a chapter and learning to move forward without that person."}
-                </p>
-              </div>
-
-              <span className={styles.recommendAction}>
-                {language === "es" ? "Ver videoclip en YouTube" : "Watch on YouTube"}
-                <span aria-hidden="true"> ↗</span>
-              </span>
-            </a>
-          </div>
-        </section>
+                    <span className={styles.recommendAction}>
+                      {language === "es"
+                        ? "Ver videoclip en YouTube"
+                        : "Watch on YouTube"}
+                      <span aria-hidden="true"> ↗</span>
+                    </span>
+                  </a>
+                ),
+              )}
+            </div>
+          </section>
+        )}
 
 
           <section

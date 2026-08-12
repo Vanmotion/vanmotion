@@ -687,3 +687,94 @@
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+
+/* VANMOTION · administración de temas recomendados */
+.recommendationIntro {
+  max-width: 720px;
+  margin: 18px 0 0;
+  color: #777777;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.recommendationCount {
+  color: #777777;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.recommendationCreateForm {
+  margin-top: 28px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  border: 1px solid #dddddd;
+  background: #f7f7f7;
+}
+
+.recommendationCreateForm label {
+  display: grid;
+  gap: 8px;
+}
+
+.recommendationCreateForm label > span {
+  color: #777777;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.recommendationCreateForm input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 13px;
+  border: 1px solid #d5d5d5;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+}
+
+.recommendationCreateForm .fullField {
+  grid-column: 1 / -1;
+}
+
+.recommendationCreateForm .saveButton {
+  justify-self: start;
+}
+
+.recommendationDelete {
+  padding: 0 22px 22px;
+}
+
+.recommendationDelete button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #d8d8d8;
+  background: transparent;
+  color: #777777;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.recommendationDelete button:hover {
+  color: #111111;
+  border-color: #111111;
+}
+
+@media (max-width: 760px) {
+  .recommendationCreateForm {
+    grid-template-columns: 1fr;
+  }
+
+  .recommendationCreateForm .fullField {
+    grid-column: auto;
+  }
+}

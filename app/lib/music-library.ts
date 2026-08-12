@@ -132,3 +132,61 @@ export async function getPublicMusicTracks(): Promise<
     return fallbackTracks;
   }
 }
+
+export type PublicMusicRecommendation = {
+  id: string;
+  title: string;
+  artist: string;
+  youtubeVideoId: string;
+};
+
+export const fallbackRecommendations: PublicMusicRecommendation[] = [
+  {
+    id: "fallback-no-te-deseo-el-mal",
+    title: "NO TE DESEO EL MAL",
+    artist: "Eladio Carrión · KAROL G",
+    youtubeVideoId: "ZPJN-aWvj_U",
+  },
+  {
+    id: "fallback-sin-ti",
+    title: "SIN TI",
+    artist: "Jay Wheeler",
+    youtubeVideoId: "3WOPP2ZaoK8",
+  },
+];
+
+export async function getPublicMusicRecommendations(): Promise<
+  PublicMusicRecommendation[]
+> {
+  try {
+    const recommendations =
+      await prisma.musicRecommendation.findMany({
+        where: {
+          active: true,
+        },
+        orderBy: [
+          {
+            sortOrder: "asc",
+          },
+          {
+            createdAt: "asc",
+          },
+        ],
+        select: {
+          id: true,
+          title: true,
+          artist: true,
+          youtubeVideoId: true,
+        },
+      });
+
+    return recommendations;
+  } catch (error) {
+    console.error(
+      "VANMOTION_PUBLIC_MUSIC_RECOMMENDATIONS_ERROR:",
+      error,
+    );
+
+    return fallbackRecommendations;
+  }
+}

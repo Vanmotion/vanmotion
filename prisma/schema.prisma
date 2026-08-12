@@ -107,6 +107,24 @@ model SiteSettings {
   updatedAt DateTime @updatedAt
 }
 
+model MusicRecommendation {
+  id String @id @default(cuid())
+
+  title  String
+  artist String
+
+  youtubeVideoId String @unique
+
+  active    Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active])
+  @@index([sortOrder])
+}
+
 model MusicTrack {
   id String @id @default(cuid())
 
