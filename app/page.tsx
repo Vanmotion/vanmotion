@@ -490,20 +490,16 @@ export default async function Home() {
                 <div className={styles.pathMedia}>
                   {item.imageClass === "vehicleImage" ? (
                     <>
-                      <Image
+<Image
                         src={getMadridVehicleImage()}
                         alt={item.alt}
                         fill
                         sizes="(max-width: 820px) 100vw, 33vw"
                         className={`${styles.pathImage} ${styles.vehicleImage}`}
                       />
-                      <Image
-                        src={getMadridVehicleImage()}
-                        alt=""
+                      <span
+                        className={styles.vehicleIndicatorShade}
                         aria-hidden="true"
-                        fill
-                        sizes="(max-width: 820px) 100vw, 33vw"
-                        className={`${styles.pathImage} ${styles.vehicleImage} ${styles.vehicleIndicatorOn}`}
                       />
                     </>
                   ) : (
