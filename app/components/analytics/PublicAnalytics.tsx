@@ -16,7 +16,9 @@ export default function PublicAnalytics() {
 
         if (
           url.pathname === "/admin" ||
-          url.pathname.startsWith("/admin/")
+          url.pathname.startsWith("/admin/") ||
+          url.pathname === "/login-admin" ||
+          url.pathname.startsWith("/login-admin/")
         ) {
           return null;
         }
