@@ -260,7 +260,7 @@ export async function getVercelAnalytics(): Promise<VercelAnalytics> {
           token,
           {
             by: "requestPath",
-            limit: "10",
+            limit: "30",
           },
         ),
       ]);
