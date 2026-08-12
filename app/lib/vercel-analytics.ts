@@ -296,16 +296,23 @@ export async function getVercelAnalytics(): Promise<VercelAnalytics> {
         };
       }),
       devices: normalizeDevices(deviceRows),
-      pages: pageRows.map((row) => {
-        const path = row.requestPath ?? "/";
+      pages: pageRows
+        .filter(
+          (row) =>
+            (row.requestPath ?? "")
+              .trim()
+              .toLowerCase() !== "others",
+        )
+        .map((row) => {
+          const path = row.requestPath ?? "/";
 
-        return {
-          path,
-          label: pageLabel(path),
-          visitors: row.visitors ?? 0,
-          pageviews: row.pageviews ?? 0,
-        };
-      }),
+          return {
+            path,
+            label: pageLabel(path),
+            visitors: row.visitors ?? 0,
+            pageviews: row.pageviews ?? 0,
+          };
+        }),
     };
   } catch (error) {
     console.error(
