@@ -138,6 +138,7 @@ export type PublicMusicRecommendation = {
   title: string;
   artist: string;
   youtubeVideoId: string;
+  coverUrl: string | null;
 };
 
 export const fallbackRecommendations: PublicMusicRecommendation[] = [
@@ -146,12 +147,14 @@ export const fallbackRecommendations: PublicMusicRecommendation[] = [
     title: "TIME AFTER TIME",
     artist: "Cyndi Lauper",
     youtubeVideoId: "VdQY7BusJNU",
+    coverUrl: null,
   },
   {
     id: "fallback-sin-ti",
     title: "SIN TI",
     artist: "Jay Wheeler",
     youtubeVideoId: "3WOPP2ZaoK8",
+    coverUrl: null,
   },
 ];
 
@@ -177,6 +180,7 @@ export async function getPublicMusicRecommendations(): Promise<
           title: true,
           artist: true,
           youtubeVideoId: true,
+          coverUrl: true,
         },
       });
 

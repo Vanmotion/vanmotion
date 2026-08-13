@@ -724,6 +724,48 @@
 }
 
 
+/* VANMOTION · portada oficial sobre reproducción YouTube */
+.youtubeCoverPlayer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.youtubeCoverPlayer .youtubeEmbed {
+  position: absolute;
+  inset: 0;
+}
+
+.youtubeOfficialCover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  pointer-events: auto;
+}
+
+.youtubePlayingBadge {
+  position: absolute;
+  z-index: 3;
+  left: 12px;
+  bottom: 10px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.76);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+}
+
 /* VANMOTION · una sola recomendación YouTube activa */
 .youtubePreviewButton {
   position: relative;

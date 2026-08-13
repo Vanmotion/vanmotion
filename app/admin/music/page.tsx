@@ -4,6 +4,7 @@ import { prisma } from "@/app/lib/prisma";
 
 import DirectMusicAudioUpload from "./DirectMusicAudioUpload";
 import DirectMusicCoverUpload from "./DirectMusicCoverUpload";
+import DirectMusicRecommendationCoverUpload from "./DirectMusicRecommendationCoverUpload";
 
 import {
   createMusicRecommendation,
@@ -474,7 +475,10 @@ export default async function AdminMusicPage() {
                 <div className={styles.coverThumbnail}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`https://i.ytimg.com/vi/${item.youtubeVideoId}/hqdefault.jpg`}
+                    src={
+                      item.coverUrl ??
+                      `https://i.ytimg.com/vi/${item.youtubeVideoId}/hqdefault.jpg`
+                    }
                     alt=""
                   />
                 </div>
@@ -595,6 +599,21 @@ export default async function AdminMusicPage() {
                   <span>→</span>
                 </button>
               </form>
+
+              <div className={styles.coverStatus}>
+                <span>Portada oficial</span>
+                <strong>
+                  {item.coverUrl
+                    ? "Portada activa"
+                    : "Pendiente de añadir"}
+                </strong>
+              </div>
+
+              <DirectMusicRecommendationCoverUpload
+                recommendationId={item.id}
+                title={item.title}
+                hasCover={Boolean(item.coverUrl)}
+              />
 
               <div className={styles.recommendationDelete}>
                 <form action={deleteMusicRecommendation}>

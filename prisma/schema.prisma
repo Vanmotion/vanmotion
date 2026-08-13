@@ -114,6 +114,7 @@ model MusicRecommendation {
   artist String
 
   youtubeVideoId String @unique
+  coverUrl       String?
 
   active    Boolean @default(true)
   sortOrder Int     @default(0)

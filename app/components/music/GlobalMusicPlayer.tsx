@@ -137,10 +137,11 @@ function YouTubeRecommendationPlayer({
     <iframe
       ref={iframeRef}
       className={styles.youtubeEmbed}
-      src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1&playsinline=1`}
+      src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1&playsinline=1&controls=0&disablekb=1&fs=0`}
       title={title}
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture 'none'; web-share"
-      allowFullScreen
+      allow="autoplay; encrypted-media"
+      tabIndex={-1}
+      style={{ pointerEvents: "none" }}
     />
   );
 }
@@ -508,23 +509,50 @@ export default function GlobalMusicPlayer({
 
                       {activeRecommendation ===
                       recommendation.youtubeVideoId ? (
-                        <YouTubeRecommendationPlayer
-                          videoId={
-                            recommendation.youtubeVideoId
+                        <div
+                          className={
+                            styles.youtubeCoverPlayer
                           }
-                          title={`${recommendation.title} · ${recommendation.artist}`}
-                          onEnded={() => {
-                            if (nextRecommendation) {
-                              setActiveRecommendation(
-                                nextRecommendation.youtubeVideoId,
-                              );
-                              return;
+                        >
+                          <YouTubeRecommendationPlayer
+                            videoId={
+                              recommendation.youtubeVideoId
                             }
+                            title={`${recommendation.title} · ${recommendation.artist}`}
+                            onEnded={() => {
+                              if (nextRecommendation) {
+                                setActiveRecommendation(
+                                  nextRecommendation.youtubeVideoId,
+                                );
+                                return;
+                              }
 
-                            setActiveRecommendation(null);
-                            selectTrack(0, true);
-                          }}
-                        />
+                              setActiveRecommendation(null);
+                              selectTrack(0, true);
+                            }}
+                          />
+
+                          <img
+                            src={
+                              recommendation.coverUrl ??
+                              `https://i.ytimg.com/vi/${recommendation.youtubeVideoId}/hqdefault.jpg`
+                            }
+                            alt={`${recommendation.title} · ${recommendation.artist}`}
+                            className={
+                              styles.youtubeOfficialCover
+                            }
+                          />
+
+                          <span
+                            className={
+                              styles.youtubePlayingBadge
+                            }
+                          >
+                            {language === "es"
+                              ? "SONANDO"
+                              : "PLAYING"}
+                          </span>
+                        </div>
                       ) : (
                         <button
                           type="button"
@@ -543,7 +571,10 @@ export default function GlobalMusicPlayer({
                           aria-label={`Reproducir ${recommendation.title}`}
                         >
                           <img
-                            src={`https://i.ytimg.com/vi/${recommendation.youtubeVideoId}/hqdefault.jpg`}
+                            src={
+                              recommendation.coverUrl ??
+                              `https://i.ytimg.com/vi/${recommendation.youtubeVideoId}/hqdefault.jpg`
+                            }
                             alt=""
                             className={
                               styles.youtubePreviewImage
