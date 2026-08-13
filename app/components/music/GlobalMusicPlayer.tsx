@@ -509,50 +509,23 @@ export default function GlobalMusicPlayer({
 
                       {activeRecommendation ===
                       recommendation.youtubeVideoId ? (
-                        <div
-                          className={
-                            styles.youtubeCoverPlayer
+                        <YouTubeRecommendationPlayer
+                          videoId={
+                            recommendation.youtubeVideoId
                           }
-                        >
-                          <YouTubeRecommendationPlayer
-                            videoId={
-                              recommendation.youtubeVideoId
+                          title={`${recommendation.title} · ${recommendation.artist}`}
+                          onEnded={() => {
+                            if (nextRecommendation) {
+                              setActiveRecommendation(
+                                nextRecommendation.youtubeVideoId,
+                              );
+                              return;
                             }
-                            title={`${recommendation.title} · ${recommendation.artist}`}
-                            onEnded={() => {
-                              if (nextRecommendation) {
-                                setActiveRecommendation(
-                                  nextRecommendation.youtubeVideoId,
-                                );
-                                return;
-                              }
 
-                              setActiveRecommendation(null);
-                              selectTrack(0, true);
-                            }}
-                          />
-
-                          <img
-                            src={
-                              recommendation.coverUrl ??
-                              `https://i.ytimg.com/vi/${recommendation.youtubeVideoId}/hqdefault.jpg`
-                            }
-                            alt={`${recommendation.title} · ${recommendation.artist}`}
-                            className={
-                              styles.youtubeOfficialCover
-                            }
-                          />
-
-                          <span
-                            className={
-                              styles.youtubePlayingBadge
-                            }
-                          >
-                            {language === "es"
-                              ? "SONANDO"
-                              : "PLAYING"}
-                          </span>
-                        </div>
+                            setActiveRecommendation(null);
+                            selectTrack(0, true);
+                          }}
+                        />
                       ) : (
                         <button
                           type="button"
