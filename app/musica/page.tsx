@@ -376,11 +376,33 @@ export default async function MusicPage() {
                         {recommendation.artist}
                       </p>
 
-                      <p className={styles.recommendNote}>
-                        {language === "es"
-                          ? "Una referencia seleccionada por VANMOTION."
-                          : "A reference selected by VANMOTION."}
-                      </p>
+                      {recommendation.title === "TIME AFTER TIME" ? (
+                        <div className={styles.recommendFoundPaper}>
+                          <span>1983</span>
+                          <p>
+                            {language === "es"
+                              ? "Cyndi Lauper + Rob Hyman. Letras manuscritas de Time After Time conservadas hoy como parte de su archivo en el Rock & Roll Hall of Fame."
+                              : "Cyndi Lauper + Rob Hyman. Handwritten lyrics for Time After Time are preserved today as part of her archive at the Rock & Roll Hall of Fame."}
+                          </p>
+                          <small>Rock & Roll Hall of Fame · archive</small>
+                        </div>
+                      ) : recommendation.title === "SIN TI" ? (
+                        <div className={styles.recommendFoundMemo}>
+                          <span>2019 · PLATÓNICO</span>
+                          <p>
+                            {language === "es"
+                              ? "Sin Ti pertenece al primer capítulo de Jay Wheeler: canciones donde la vulnerabilidad y la ausencia empezaron a definir una voz propia dentro del urbano."
+                              : "Sin Ti belongs to Jay Wheeler's first chapter: songs where vulnerability and absence began to define a voice of his own within urban music."}
+                          </p>
+                          <small>Transcripción editorial · VANMOTION</small>
+                        </div>
+                      ) : (
+                        <p className={styles.recommendNote}>
+                          {language === "es"
+                            ? "Una referencia seleccionada por VANMOTION."
+                            : "A reference selected by VANMOTION."}
+                        </p>
+                      )}
                     </div>
 
                     <span className={styles.recommendAction}>
