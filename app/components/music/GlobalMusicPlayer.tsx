@@ -378,7 +378,7 @@ export default function GlobalMusicPlayer({
                       recommendation.youtubeVideoId ? (
                         <iframe
                           className={styles.youtubeEmbed}
-                          src={`https://www.youtube-nocookie.com/embed/${recommendation.youtubeVideoId}?rel=0&autoplay=1`}
+                          src={`https://www.youtube-nocookie.com/embed/${recommendation.youtubeVideoId}?rel=0&autoplay=1&loop=1&playlist=${recommendation.youtubeVideoId}&playsinline=1`}
                           title={`${recommendation.title} · ${recommendation.artist}`}
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; web-share"
                           allowFullScreen
