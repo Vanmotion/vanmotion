@@ -142,10 +142,10 @@ export type PublicMusicRecommendation = {
 
 export const fallbackRecommendations: PublicMusicRecommendation[] = [
   {
-    id: "fallback-no-te-deseo-el-mal",
-    title: "NO TE DESEO EL MAL",
-    artist: "Eladio Carrión · KAROL G",
-    youtubeVideoId: "ZPJN-aWvj_U",
+    id: "fallback-time-after-time",
+    title: "TIME AFTER TIME",
+    artist: "Cyndi Lauper",
+    youtubeVideoId: "VdQY7BusJNU",
   },
   {
     id: "fallback-sin-ti",
