@@ -36,7 +36,7 @@
 }
 
 .expanded {
-  width: min(455px, calc(100vw - 36px));
+  width: min(420px, calc(100vw - 36px));
   max-height: calc(
     100dvh - 36px - env(safe-area-inset-bottom, 0px)
   );
