@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { Language } from "@/app/language";
 import type { PublicMusicRecommendation } from "@/app/lib/music-library";
@@ -14,139 +14,6 @@ type GlobalMusicPlayerProps = {
   language: Language;
   recommendations: PublicMusicRecommendation[];
 };
-
-type YouTubePlayerInstance = {
-  destroy?: () => void;
-};
-
-type YouTubeStateChangeEvent = {
-  data: number;
-};
-
-type YouTubeApi = {
-  Player: new (
-    element: HTMLIFrameElement,
-    options: {
-      events?: {
-        onStateChange?: (
-          event: YouTubeStateChangeEvent,
-        ) => void;
-      };
-    },
-  ) => YouTubePlayerInstance;
-};
-
-type YouTubeWindow = Window &
-  typeof globalThis & {
-    YT?: YouTubeApi;
-    onYouTubeIframeAPIReady?: () => void;
-  };
-
-let youtubeApiPromise: Promise<void> | null = null;
-
-function loadYouTubeIframeApi(): Promise<void> {
-  if (typeof window === "undefined") {
-    return Promise.resolve();
-  }
-
-  const youtubeWindow = window as YouTubeWindow;
-
-  if (youtubeWindow.YT?.Player) {
-    return Promise.resolve();
-  }
-
-  if (youtubeApiPromise) {
-    return youtubeApiPromise;
-  }
-
-  youtubeApiPromise = new Promise((resolve) => {
-    const previousReady =
-      youtubeWindow.onYouTubeIframeAPIReady;
-
-    youtubeWindow.onYouTubeIframeAPIReady = () => {
-      previousReady?.();
-      resolve();
-    };
-
-    const existingScript = document.querySelector(
-      'script[src="https://www.youtube.com/iframe_api"]',
-    );
-
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.src =
-        "https://www.youtube.com/iframe_api";
-      script.async = true;
-      document.head.appendChild(script);
-    }
-  });
-
-  return youtubeApiPromise;
-}
-
-type YouTubeRecommendationPlayerProps = {
-  videoId: string;
-  title: string;
-  onEnded: () => void;
-};
-
-function YouTubeRecommendationPlayer({
-  videoId,
-  title,
-  onEnded,
-}: YouTubeRecommendationPlayerProps) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const onEndedRef = useRef(onEnded);
-
-  useEffect(() => {
-    onEndedRef.current = onEnded;
-  }, [onEnded]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    void loadYouTubeIframeApi().then(() => {
-      if (cancelled || !iframeRef.current) {
-        return;
-      }
-
-      const youtubeWindow =
-        window as YouTubeWindow;
-      const api = youtubeWindow.YT;
-
-      if (!api?.Player) {
-        return;
-      }
-
-      new api.Player(iframeRef.current, {
-        events: {
-          onStateChange: (event) => {
-            // YouTube: 0 = reproducción terminada
-            if (event.data === 0) {
-              onEndedRef.current();
-            }
-          },
-        },
-      });
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [videoId]);
-
-  return (
-    <iframe
-      ref={iframeRef}
-      className={styles.youtubeEmbed}
-      src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1`}
-      title={title}
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; web-share"
-      allowFullScreen
-    />
-  );
-}
-
 
 const translations = {
   es: {
@@ -478,9 +345,6 @@ export default function GlobalMusicPlayer({
 
               {recommendations.map(
                 (recommendation, index) => {
-                  const nextRecommendation =
-                    recommendations[index + 1];
-
                   const displayNumber = String(
                     tracks.length + index + 1,
                   ).padStart(2, "0");
@@ -512,22 +376,12 @@ export default function GlobalMusicPlayer({
 
                       {activeRecommendation ===
                       recommendation.youtubeVideoId ? (
-                        <YouTubeRecommendationPlayer
-                          videoId={
-                            recommendation.youtubeVideoId
-                          }
+                        <iframe
+                          className={styles.youtubeEmbed}
+                          src={`https://www.youtube-nocookie.com/embed/${recommendation.youtubeVideoId}?rel=0&autoplay=1`}
                           title={`${recommendation.title} · ${recommendation.artist}`}
-                          onEnded={() => {
-                            if (nextRecommendation) {
-                              setActiveRecommendation(
-                                nextRecommendation.youtubeVideoId,
-                              );
-                              return;
-                            }
-
-                            setActiveRecommendation(null);
-                            selectTrack(0, true);
-                          }}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; web-share"
+                          allowFullScreen
                         />
                       ) : (
                         <button
