@@ -50,8 +50,6 @@ const translations = {
 } as const;
 
 const coverByTrack: Record<string, string> = {
-  "suenos-prestados":
-    "/uploads/music-covers/suenos-prestados-1784376509559.png",
   "solo-en-mi-mente":
     "/uploads/music-covers/solo-en-mi-mente-1784377787037.png",
   "solo-con-mi-mente":
