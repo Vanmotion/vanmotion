@@ -1717,3 +1717,45 @@
     margin-left: 13px;
   }
 }
+
+
+/* VANMOTION · documento auténtico de archivo */
+.recommendDocument {
+  width: min(355px, 88%);
+  margin: 34px 0 5px 17px;
+  overflow: hidden;
+  background: #d8d0bd;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  transform: rotate(-1.4deg);
+}
+
+.recommendDocument img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: saturate(0.88) contrast(0.96);
+}
+
+.recommendDocument figcaption {
+  padding: 11px 14px 13px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #25211c;
+  font-family: "American Typewriter", "Courier New", monospace;
+}
+
+.recommendDocument figcaption span,
+.recommendDocument figcaption small {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+@media (max-width: 700px) {
+  .recommendDocument {
+    width: 90%;
+    margin-left: 7px;
+  }
+}

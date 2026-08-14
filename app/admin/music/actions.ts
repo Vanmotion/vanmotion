@@ -425,6 +425,33 @@ export async function createMusicRecommendation(
   const youtubeVideoId =
     youtubeVideoIdFromInput(youtubeInput);
 
+  const editorialHeading = optionalString(
+    formData,
+    "editorialHeading",
+  );
+  const editorialTextEs = optionalString(
+    formData,
+    "editorialTextEs",
+  );
+  const editorialTextEn = optionalString(
+    formData,
+    "editorialTextEn",
+  );
+  const editorialCredit = optionalString(
+    formData,
+    "editorialCredit",
+  );
+  const editorialStyle = optionalString(
+    formData,
+    "editorialStyle",
+  );
+  const documentSourceUrl = optionalString(
+    formData,
+    "documentSourceUrl",
+  );
+  const documentAuthentic =
+    formData.get("documentAuthentic") === "on";
+
   if (!title || !artist || !youtubeVideoId) {
     throw new Error(
       "Título, artista y un enlace válido de YouTube son obligatorios.",
@@ -445,6 +472,13 @@ export async function createMusicRecommendation(
       title,
       artist,
       youtubeVideoId,
+      editorialHeading,
+      editorialTextEs,
+      editorialTextEn,
+      editorialCredit,
+      editorialStyle,
+      documentSourceUrl,
+      documentAuthentic,
       active: true,
       sortOrder: (last?.sortOrder ?? -1) + 1,
     },
@@ -467,6 +501,34 @@ export async function saveMusicRecommendation(
   );
   const youtubeVideoId =
     youtubeVideoIdFromInput(youtubeInput);
+
+  const editorialHeading = optionalString(
+    formData,
+    "editorialHeading",
+  );
+  const editorialTextEs = optionalString(
+    formData,
+    "editorialTextEs",
+  );
+  const editorialTextEn = optionalString(
+    formData,
+    "editorialTextEn",
+  );
+  const editorialCredit = optionalString(
+    formData,
+    "editorialCredit",
+  );
+  const editorialStyle = optionalString(
+    formData,
+    "editorialStyle",
+  );
+  const documentSourceUrl = optionalString(
+    formData,
+    "documentSourceUrl",
+  );
+  const documentAuthentic =
+    formData.get("documentAuthentic") === "on";
+
   const active =
     formData.get("active") === "on";
 
@@ -490,6 +552,13 @@ export async function saveMusicRecommendation(
       title,
       artist,
       youtubeVideoId,
+      editorialHeading,
+      editorialTextEs,
+      editorialTextEn,
+      editorialCredit,
+      editorialStyle,
+      documentSourceUrl,
+      documentAuthentic,
       active,
     },
   });

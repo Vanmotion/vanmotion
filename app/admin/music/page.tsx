@@ -5,13 +5,10 @@ import { prisma } from "@/app/lib/prisma";
 import DirectMusicAudioUpload from "./DirectMusicAudioUpload";
 import DirectMusicCoverUpload from "./DirectMusicCoverUpload";
 import DirectMusicRecommendationCoverUpload from "./DirectMusicRecommendationCoverUpload";
+import DirectMusicRecommendationDocumentUpload from "./DirectMusicRecommendationDocumentUpload";
 
 import {
-  createMusicRecommendation,
-  deleteMusicRecommendation,
   initializeMusicLibrary,
-  moveMusicRecommendation,
-  moveMusicTrack,
   saveMusicRecommendation,
   saveMusicTrack,
 } from "./actions";
@@ -139,14 +136,9 @@ export default async function AdminMusicPage() {
               <h2>Temas de VANMOTION</h2>
             </div>
 
-            <form action={initializeMusicLibrary}>
-              <button
-                type="submit"
-                className={styles.syncButton}
-              >
-                Sincronizar temas
-              </button>
-            </form>
+            <span className={styles.recommendationCount}>
+              01–06 · POSICIONES FIJAS
+            </span>
           </div>
 
           <div className={styles.trackList}>
@@ -195,53 +187,6 @@ export default async function AdminMusicPage() {
                     <p>{track.fileUrl}</p>
                   </div>
 
-                  <div className={styles.orderButtons}>
-                    <form action={moveMusicTrack}>
-                      <input
-                        type="hidden"
-                        name="id"
-                        value={track.id}
-                      />
-
-                      <input
-                        type="hidden"
-                        name="direction"
-                        value="up"
-                      />
-
-                      <button
-                        type="submit"
-                        disabled={index === 0}
-                        aria-label="Subir canción"
-                      >
-                        ↑
-                      </button>
-                    </form>
-
-                    <form action={moveMusicTrack}>
-                      <input
-                        type="hidden"
-                        name="id"
-                        value={track.id}
-                      />
-
-                      <input
-                        type="hidden"
-                        name="direction"
-                        value="down"
-                      />
-
-                      <button
-                        type="submit"
-                        disabled={
-                          index === tracks.length - 1
-                        }
-                        aria-label="Bajar canción"
-                      >
-                        ↓
-                      </button>
-                    </form>
-                  </div>
                 </div>
 
                 <div className={styles.coverManager}>
@@ -414,52 +359,10 @@ export default async function AdminMusicPage() {
         </div>
 
         <p className={styles.recommendationIntro}>
-          Estos temas aparecen después de la música oficial de
-          VANMOTION. Puedes pegar directamente un enlace de YouTube.
+          R01 y R02 son posiciones editoriales fijas. Sustituye el
+          contenido de cada ficha para rotar las recomendaciones sin
+          cambiar su numeración.
         </p>
-
-        <form
-          action={createMusicRecommendation}
-          className={styles.recommendationCreateForm}
-        >
-          <label>
-            <span>Título</span>
-            <input
-              type="text"
-              name="title"
-              placeholder="Nombre de la canción"
-              required
-            />
-          </label>
-
-          <label>
-            <span>Artista</span>
-            <input
-              type="text"
-              name="artist"
-              placeholder="Artista"
-              required
-            />
-          </label>
-
-          <label className={styles.fullField}>
-            <span>Enlace de YouTube</span>
-            <input
-              type="url"
-              name="youtube"
-              placeholder="https://www.youtube.com/watch?v=..."
-              required
-            />
-          </label>
-
-          <button
-            type="submit"
-            className={styles.saveButton}
-          >
-            Añadir recomendado
-            <span>＋</span>
-          </button>
-        </form>
 
         <div className={styles.trackList}>
           {recommendations.map((item, index) => (
@@ -494,49 +397,6 @@ export default async function AdminMusicPage() {
                   <p>{item.artist}</p>
                 </div>
 
-                <div className={styles.orderButtons}>
-                  <form action={moveMusicRecommendation}>
-                    <input
-                      type="hidden"
-                      name="id"
-                      value={item.id}
-                    />
-                    <input
-                      type="hidden"
-                      name="direction"
-                      value="up"
-                    />
-                    <button
-                      type="submit"
-                      disabled={index === 0}
-                      aria-label="Subir recomendado"
-                    >
-                      ↑
-                    </button>
-                  </form>
-
-                  <form action={moveMusicRecommendation}>
-                    <input
-                      type="hidden"
-                      name="id"
-                      value={item.id}
-                    />
-                    <input
-                      type="hidden"
-                      name="direction"
-                      value="down"
-                    />
-                    <button
-                      type="submit"
-                      disabled={
-                        index === recommendations.length - 1
-                      }
-                      aria-label="Bajar recomendado"
-                    >
-                      ↓
-                    </button>
-                  </form>
-                </div>
               </div>
 
               <form
@@ -579,6 +439,96 @@ export default async function AdminMusicPage() {
                   />
                 </label>
 
+                <label>
+                  <span>Encabezado editorial</span>
+                  <input
+                    type="text"
+                    name="editorialHeading"
+                    defaultValue={
+                      item.editorialHeading ?? ""
+                    }
+                    placeholder="1983 · ARCHIVO"
+                  />
+                </label>
+
+                <label>
+                  <span>Estilo visual</span>
+                  <select
+                    name="editorialStyle"
+                    defaultValue={
+                      item.editorialStyle ?? "paper"
+                    }
+                  >
+                    <option value="paper">
+                      Papel de archivo
+                    </option>
+                    <option value="memo">
+                      Memo / transcripción
+                    </option>
+                    <option value="document">
+                      Documento auténtico
+                    </option>
+                  </select>
+                </label>
+
+                <label className={styles.fullField}>
+                  <span>Texto editorial · Español</span>
+                  <textarea
+                    name="editorialTextEs"
+                    rows={4}
+                    defaultValue={
+                      item.editorialTextEs ?? ""
+                    }
+                  />
+                </label>
+
+                <label className={styles.fullField}>
+                  <span>Texto editorial · English</span>
+                  <textarea
+                    name="editorialTextEn"
+                    rows={4}
+                    defaultValue={
+                      item.editorialTextEn ?? ""
+                    }
+                  />
+                </label>
+
+                <label className={styles.fullField}>
+                  <span>Crédito / procedencia</span>
+                  <input
+                    type="text"
+                    name="editorialCredit"
+                    defaultValue={
+                      item.editorialCredit ?? ""
+                    }
+                  />
+                </label>
+
+                <label className={styles.fullField}>
+                  <span>URL de la fuente documental</span>
+                  <input
+                    type="url"
+                    name="documentSourceUrl"
+                    defaultValue={
+                      item.documentSourceUrl ?? ""
+                    }
+                    placeholder="https://..."
+                  />
+                </label>
+
+                <label className={styles.checkbox}>
+                  <input
+                    type="checkbox"
+                    name="documentAuthentic"
+                    defaultChecked={
+                      item.documentAuthentic
+                    }
+                  />
+                  <span>
+                    Documento auténtico y procedencia verificada
+                  </span>
+                </label>
+
                 <label className={styles.checkbox}>
                   <input
                     type="checkbox"
@@ -615,18 +565,23 @@ export default async function AdminMusicPage() {
                 hasCover={Boolean(item.coverUrl)}
               />
 
-              <div className={styles.recommendationDelete}>
-                <form action={deleteMusicRecommendation}>
-                  <input
-                    type="hidden"
-                    name="id"
-                    value={item.id}
-                  />
-                  <button type="submit">
-                    Eliminar recomendado
-                  </button>
-                </form>
+              <div className={styles.coverStatus}>
+                <span>Documento original</span>
+                <strong>
+                  {item.documentImageUrl
+                    ? "Documento añadido"
+                    : "Sin documento"}
+                </strong>
               </div>
+
+              <DirectMusicRecommendationDocumentUpload
+                recommendationId={item.id}
+                title={item.title}
+                hasDocument={Boolean(
+                  item.documentImageUrl,
+                )}
+              />
+
             </article>
           ))}
         </div>

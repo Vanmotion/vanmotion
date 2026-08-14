@@ -376,25 +376,75 @@ export default async function MusicPage() {
                         {recommendation.artist}
                       </p>
 
-                      {recommendation.title === "TIME AFTER TIME" ? (
-                        <div className={styles.recommendFoundPaper}>
-                          <span>1983</span>
+                      {recommendation.documentAuthentic &&
+                      recommendation.documentImageUrl ? (
+                        <figure
+                          className={styles.recommendDocument}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={
+                              recommendation.documentImageUrl
+                            }
+                            alt={
+                              language === "es"
+                                ? `Documento original asociado a ${recommendation.title}`
+                                : `Original document associated with ${recommendation.title}`
+                            }
+                          />
+
+                          {(recommendation.editorialHeading ||
+                            recommendation.editorialCredit) && (
+                            <figcaption>
+                              {recommendation.editorialHeading && (
+                                <span>
+                                  {
+                                    recommendation.editorialHeading
+                                  }
+                                </span>
+                              )}
+
+                              {recommendation.editorialCredit && (
+                                <small>
+                                  {
+                                    recommendation.editorialCredit
+                                  }
+                                </small>
+                              )}
+                            </figcaption>
+                          )}
+                        </figure>
+                      ) : recommendation.editorialTextEs ||
+                        recommendation.editorialTextEn ? (
+                        <div
+                          className={
+                            recommendation.editorialStyle ===
+                            "memo"
+                              ? styles.recommendFoundMemo
+                              : styles.recommendFoundPaper
+                          }
+                        >
+                          {recommendation.editorialHeading && (
+                            <span>
+                              {
+                                recommendation.editorialHeading
+                              }
+                            </span>
+                          )}
+
                           <p>
                             {language === "es"
-                              ? "Cyndi Lauper + Rob Hyman. Letras manuscritas de Time After Time conservadas hoy como parte de su archivo en el Rock & Roll Hall of Fame."
-                              : "Cyndi Lauper + Rob Hyman. Handwritten lyrics for Time After Time are preserved today as part of her archive at the Rock & Roll Hall of Fame."}
+                              ? recommendation.editorialTextEs ??
+                                recommendation.editorialTextEn
+                              : recommendation.editorialTextEn ??
+                                recommendation.editorialTextEs}
                           </p>
-                          <small>Rock & Roll Hall of Fame · archive</small>
-                        </div>
-                      ) : recommendation.title === "SIN TI" ? (
-                        <div className={styles.recommendFoundMemo}>
-                          <span>2019 · PLATÓNICO</span>
-                          <p>
-                            {language === "es"
-                              ? "Sin Ti pertenece al primer capítulo de Jay Wheeler: canciones donde la vulnerabilidad y la ausencia empezaron a definir una voz propia dentro del urbano."
-                              : "Sin Ti belongs to Jay Wheeler's first chapter: songs where vulnerability and absence began to define a voice of his own within urban music."}
-                          </p>
-                          <small>Transcripción editorial · VANMOTION</small>
+
+                          {recommendation.editorialCredit && (
+                            <small>
+                              {recommendation.editorialCredit}
+                            </small>
+                          )}
                         </div>
                       ) : (
                         <p className={styles.recommendNote}>

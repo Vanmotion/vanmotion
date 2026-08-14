@@ -113,8 +113,17 @@ model MusicRecommendation {
   title  String
   artist String
 
-  youtubeVideoId String @unique
+  youtubeVideoId String  @unique
   coverUrl       String?
+
+  editorialHeading  String?
+  editorialTextEs   String?
+  editorialTextEn   String?
+  editorialCredit   String?
+  editorialStyle    String?
+  documentImageUrl  String?
+  documentSourceUrl String?
+  documentAuthentic Boolean @default(false)
 
   active    Boolean @default(true)
   sortOrder Int     @default(0)

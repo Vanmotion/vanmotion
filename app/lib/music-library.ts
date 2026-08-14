@@ -139,6 +139,14 @@ export type PublicMusicRecommendation = {
   artist: string;
   youtubeVideoId: string;
   coverUrl: string | null;
+  editorialHeading: string | null;
+  editorialTextEs: string | null;
+  editorialTextEn: string | null;
+  editorialCredit: string | null;
+  editorialStyle: string | null;
+  documentImageUrl: string | null;
+  documentSourceUrl: string | null;
+  documentAuthentic: boolean;
 };
 
 export const fallbackRecommendations: PublicMusicRecommendation[] = [
@@ -148,6 +156,17 @@ export const fallbackRecommendations: PublicMusicRecommendation[] = [
     artist: "Cyndi Lauper",
     youtubeVideoId: "VdQY7BusJNU",
     coverUrl: null,
+    editorialHeading: "1983",
+    editorialTextEs:
+      "Cyndi Lauper + Rob Hyman. Letras manuscritas de Time After Time conservadas hoy como parte de su archivo en el Rock & Roll Hall of Fame.",
+    editorialTextEn:
+      "Cyndi Lauper + Rob Hyman. Handwritten lyrics for Time After Time are preserved today as part of her archive at the Rock & Roll Hall of Fame.",
+    editorialCredit:
+      "Rock & Roll Hall of Fame · archive",
+    editorialStyle: "paper",
+    documentImageUrl: null,
+    documentSourceUrl: null,
+    documentAuthentic: false,
   },
   {
     id: "fallback-sin-ti",
@@ -155,6 +174,17 @@ export const fallbackRecommendations: PublicMusicRecommendation[] = [
     artist: "Jay Wheeler",
     youtubeVideoId: "3WOPP2ZaoK8",
     coverUrl: null,
+    editorialHeading: "2019 · PLATÓNICO",
+    editorialTextEs:
+      "Sin Ti pertenece al primer capítulo de Jay Wheeler: canciones donde la vulnerabilidad y la ausencia empezaron a definir una voz propia dentro del urbano.",
+    editorialTextEn:
+      "Sin Ti belongs to Jay Wheeler's first chapter: songs where vulnerability and absence began to define a voice of his own within urban music.",
+    editorialCredit:
+      "Transcripción editorial · VANMOTION",
+    editorialStyle: "memo",
+    documentImageUrl: null,
+    documentSourceUrl: null,
+    documentAuthentic: false,
   },
 ];
 
@@ -181,6 +211,14 @@ export async function getPublicMusicRecommendations(): Promise<
           artist: true,
           youtubeVideoId: true,
           coverUrl: true,
+          editorialHeading: true,
+          editorialTextEs: true,
+          editorialTextEn: true,
+          editorialCredit: true,
+          editorialStyle: true,
+          documentImageUrl: true,
+          documentSourceUrl: true,
+          documentAuthentic: true,
         },
       });
 

@@ -367,7 +367,8 @@
 }
 
 .editForm input,
-.editForm select {
+.editForm select,
+.editForm textarea {
   width: 100%;
   min-height: 48px;
   padding: 0 13px;
@@ -729,7 +730,9 @@
   text-transform: uppercase;
 }
 
-.recommendationCreateForm input {
+.recommendationCreateForm input,
+.recommendationCreateForm select,
+.recommendationCreateForm textarea {
   width: 100%;
   min-height: 46px;
   padding: 0 13px;
@@ -777,4 +780,29 @@
   .recommendationCreateForm .fullField {
     grid-column: auto;
   }
+}
+
+
+/* VANMOTION · campos editoriales de recomendaciones */
+.editForm textarea,
+.recommendationCreateForm textarea {
+  width: 100%;
+  min-height: 110px;
+  padding: 13px;
+  resize: vertical;
+  border: 1px solid #d5d5d5;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.recommendationCreateForm select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 13px;
+  border: 1px solid #d5d5d5;
+  background: #ffffff;
+  color: #111111;
+  font: inherit;
 }
