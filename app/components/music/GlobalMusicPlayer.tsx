@@ -17,6 +17,8 @@ type GlobalMusicPlayerProps = {
 
 type YouTubePlayerInstance = {
   destroy?: () => void;
+  playVideo?: () => void;
+  pauseVideo?: () => void;
 };
 
 type YouTubeStateChangeEvent = {
@@ -87,20 +89,32 @@ function loadYouTubeIframeApi(): Promise<void> {
 type YouTubeRecommendationPlayerProps = {
   videoId: string;
   title: string;
+  playing: boolean;
+  onPlaying: () => void;
+  onPaused: () => void;
   onEnded: () => void;
 };
 
 function YouTubeRecommendationPlayer({
   videoId,
   title,
+  playing,
+  onPlaying,
+  onPaused,
   onEnded,
 }: YouTubeRecommendationPlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const playerRef =
+    useRef<YouTubePlayerInstance | null>(null);
   const onEndedRef = useRef(onEnded);
+  const onPlayingRef = useRef(onPlaying);
+  const onPausedRef = useRef(onPaused);
 
   useEffect(() => {
     onEndedRef.current = onEnded;
-  }, [onEnded]);
+    onPlayingRef.current = onPlaying;
+    onPausedRef.current = onPaused;
+  }, [onEnded, onPaused, onPlaying]);
 
   useEffect(() => {
     let cancelled = false;
@@ -117,31 +131,59 @@ function YouTubeRecommendationPlayer({
         return;
       }
 
-      new api.Player(iframeRef.current, {
-        events: {
-          onStateChange: (event) => {
-            if (event.data === 0) {
-              onEndedRef.current();
-            }
+      const player = new api.Player(
+        iframeRef.current,
+        {
+          events: {
+            onStateChange: (event) => {
+              if (event.data === 1) {
+                onPlayingRef.current();
+              }
+
+              if (event.data === 2) {
+                onPausedRef.current();
+              }
+
+              if (event.data === 0) {
+                onEndedRef.current();
+              }
+            },
           },
         },
-      });
+      );
+
+      playerRef.current = player;
     });
 
     return () => {
       cancelled = true;
+      playerRef.current?.destroy?.();
+      playerRef.current = null;
     };
   }, [videoId]);
+
+  useEffect(() => {
+    const player = playerRef.current;
+
+    if (!player) {
+      return;
+    }
+
+    if (playing) {
+      player.playVideo?.();
+    } else {
+      player.pauseVideo?.();
+    }
+  }, [playing]);
 
   return (
     <iframe
       ref={iframeRef}
       className={styles.youtubeEmbed}
-      src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1&playsinline=1&controls=0&disablekb=1&fs=0`}
+      src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1&playsinline=1&controls=1&disablekb=0&fs=1`}
       title={title}
-      allow="autoplay; encrypted-media"
-      tabIndex={-1}
-      style={{ pointerEvents: "none" }}
+      allow="autoplay; encrypted-media; picture-in-picture"
+      style={{ pointerEvents: "auto" }}
     />
   );
 }
@@ -218,6 +260,10 @@ export default function GlobalMusicPlayer({
   const [expanded, setExpanded] = useState(false);
   const [activeRecommendation, setActiveRecommendation] =
     useState<string | null>(null);
+  const [
+    recommendationIsPlaying,
+    setRecommendationIsPlaying,
+  ] = useState(false);
 
   const {
     tracks,
@@ -242,10 +288,12 @@ export default function GlobalMusicPlayer({
       const firstRecommendation = recommendations[0];
 
       if (firstRecommendation) {
+        setRecommendationIsPlaying(true);
         setActiveRecommendation(
           firstRecommendation.youtubeVideoId,
         );
       } else {
+        setRecommendationIsPlaying(false);
         selectTrack(0, true);
       }
     });
@@ -274,6 +322,11 @@ export default function GlobalMusicPlayer({
       : playbackError === "missing-audio"
         ? content.missingAudio
         : null;
+
+  const playerIsPlaying =
+    activeRecommendation !== null
+      ? recommendationIsPlaying
+      : isPlaying;
 
   return (
     <aside
@@ -316,6 +369,7 @@ export default function GlobalMusicPlayer({
           <button
             type="button"
             onClick={() => {
+              setRecommendationIsPlaying(false);
               setActiveRecommendation(null);
               playPrevious();
             }}
@@ -328,27 +382,34 @@ export default function GlobalMusicPlayer({
           <button
             type="button"
             onClick={() => {
-              setActiveRecommendation(null);
+              if (activeRecommendation) {
+                setRecommendationIsPlaying(
+                  (current) => !current,
+                );
+                return;
+              }
+
               void togglePlayback();
             }}
             className={styles.playButton}
             aria-label={
-              isPlaying
+              playerIsPlaying
                 ? content.pause
                 : content.play
             }
             title={
-              isPlaying
+              playerIsPlaying
                 ? content.pause
                 : content.play
             }
           >
-            {isPlaying ? "Ⅱ" : "▶"}
+            {playerIsPlaying ? "Ⅱ" : "▶"}
           </button>
 
           <button
             type="button"
             onClick={() => {
+              setRecommendationIsPlaying(false);
               setActiveRecommendation(null);
               playNext();
             }}
@@ -440,6 +501,7 @@ export default function GlobalMusicPlayer({
                       : ""
                   }
                   onClick={() => {
+                    setRecommendationIsPlaying(false);
                     setActiveRecommendation(null);
                     selectTrack(index, true);
                   }}
@@ -514,14 +576,37 @@ export default function GlobalMusicPlayer({
                             recommendation.youtubeVideoId
                           }
                           title={`${recommendation.title} · ${recommendation.artist}`}
+                          playing={
+                            recommendationIsPlaying
+                          }
+                          onPlaying={() => {
+                            setRecommendationIsPlaying(
+                              true,
+                            );
+
+                            if (isPlaying) {
+                              void togglePlayback();
+                            }
+                          }}
+                          onPaused={() => {
+                            setRecommendationIsPlaying(
+                              false,
+                            );
+                          }}
                           onEnded={() => {
                             if (nextRecommendation) {
+                              setRecommendationIsPlaying(
+                                true,
+                              );
                               setActiveRecommendation(
                                 nextRecommendation.youtubeVideoId,
                               );
                               return;
                             }
 
+                            setRecommendationIsPlaying(
+                              false,
+                            );
                             setActiveRecommendation(null);
                             selectTrack(0, true);
                           }}
@@ -537,6 +622,9 @@ export default function GlobalMusicPlayer({
                               void togglePlayback();
                             }
 
+                            setRecommendationIsPlaying(
+                              true,
+                            );
                             setActiveRecommendation(
                               recommendation.youtubeVideoId,
                             );
