@@ -50,8 +50,6 @@ const translations = {
 } as const;
 
 const coverByTrack: Record<string, string> = {
-  "the-cool-ashtray":
-    "/uploads/music-covers/the-cool-ashtray-1784373940751.png",
   "suenos-prestados":
     "/uploads/music-covers/suenos-prestados-1784376509559.png",
   "solo-en-mi-mente":
