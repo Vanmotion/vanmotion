@@ -182,7 +182,7 @@ function YouTubeRecommendationPlayer({
       className={styles.youtubeEmbed}
       src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1&playsinline=1&controls=1&disablekb=0&fs=1`}
       title={title}
-      allow="autoplay; encrypted-media; picture-in-picture"
+      allow="autoplay; encrypted-media; picture-in-picture 'none'"
       style={{ pointerEvents: "auto" }}
     />
   );
