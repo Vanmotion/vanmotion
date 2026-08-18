@@ -117,9 +117,9 @@ export default function MusicPlayer({
   const idKey = normalizeTrackKey(currentTrack.id);
   const titleKey = normalizeTrackKey(currentTrack.title);
   const coverUrl =
+    currentTrack.coverUrl ??
     coverByTrack[idKey] ??
-    coverByTrack[titleKey] ??
-    currentTrack.coverUrl;
+    coverByTrack[titleKey];
   const showCover = Boolean(coverUrl) && !coverError;
   const currentTrackTitle = getLocalizedTrackTitle(
     currentTrack,
