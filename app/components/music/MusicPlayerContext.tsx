@@ -52,6 +52,7 @@ export default function MusicPlayerProvider({
   const restoreTimeRef = useRef<number | null>(null);
   const restorePlayingRef = useRef(false);
   const restoreTrackRef = useRef<number | null>(null);
+  const restoreVolumeRef = useRef<number | null>(null);
   const lastTrackEndedHandlerRef =
     useRef<(() => void) | null>(null);
 
@@ -107,7 +108,6 @@ export default function MusicPlayerProvider({
         index < tracks.length
       ) {
         restoreTrackRef.current = index;
-        setCurrentIndex(index);
       }
     }
 
@@ -119,21 +119,10 @@ export default function MusicPlayerProvider({
         parsedVolume >= 0 &&
         parsedVolume <= 1
       ) {
-        setVolume(parsedVolume);
+          restoreVolumeRef.current = parsedVolume;
       }
     }
   }, [tracks.length]);
-
-  useEffect(() => {
-    if (tracks.length === 0) {
-      setCurrentIndex(0);
-      return;
-    }
-
-    if (currentIndex >= tracks.length) {
-      setCurrentIndex(0);
-    }
-  }, [currentIndex, tracks.length]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -184,7 +173,11 @@ export default function MusicPlayerProvider({
     const audio = audioRef.current;
 
     if (audio) {
-      audio.volume = volume;
+      const restoredVolume = restoreVolumeRef.current;
+      audio.volume =
+        restoredVolume ?? volume;
+
+      restoreVolumeRef.current = null;
     }
 
     window.localStorage.setItem(

@@ -212,39 +212,6 @@ export default function ProductPurchasePanel({
     setTermsAccepted,
   ] = useState(false);
 
-  useEffect(() => {
-    const currentVariant =
-      activeVariants.find(
-        (variant) =>
-          variant.size === selectedSize,
-      );
-
-    if (
-      currentVariant &&
-      currentVariant.stock > 0
-    ) {
-      return;
-    }
-
-    setSelectedSize(
-      firstAvailableVariant?.size ?? "",
-    );
-
-    setQuantity(1);
-  }, [
-    activeVariants,
-    firstAvailableVariant,
-    selectedSize,
-  ]);
-
-  useEffect(() => {
-    setCheckoutError("");
-  }, [
-    selectedSize,
-    quantity,
-    termsAccepted,
-  ]);
-
   const selectedVariant =
     activeVariants.find(
       (variant) =>

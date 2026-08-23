@@ -67,7 +67,7 @@ const translations = {
       name: "Nombre y apellidos *",
       namePlaceholder: "Nombre de la persona que realizó la compra",
       email: "Correo utilizado en la compra *",
-      emailPlaceholder: "correo@ejemplo.com",
+      emailPlaceholder: "contacto@vanmotion.es",
       reason: "Motivo · opcional y privado",
       reasonPlaceholder:
         "Talla, cambio de opinión o información útil para gestionar la devolución.",
@@ -186,7 +186,7 @@ const translations = {
       name: "Full name *",
       namePlaceholder: "Name of the person who made the purchase",
       email: "Email used for the purchase *",
-      emailPlaceholder: "email@example.com",
+      emailPlaceholder: "contacto@vanmotion.es",
       reason: "Reason · optional and private",
       reasonPlaceholder:
         "Size, change of mind or information that may help manage the return.",

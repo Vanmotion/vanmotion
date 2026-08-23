@@ -9,13 +9,13 @@ const OPENING_DATE = new Date(
 );
 
 const PRELAUNCH_PUBLIC_ROUTES = [
-  "/proximamente",
   "/login-admin",
   "/aviso-legal",
   "/privacidad",
   "/cookies",
   "/condiciones-compra",
   "/desistimiento",
+  "/proximamente",
 ] as const;
 
 function hasValidAdminSession(
@@ -160,9 +160,7 @@ export function proxy(
     const comingSoonUrl =
       request.nextUrl.clone();
 
-    comingSoonUrl.pathname =
-      "/proximamente";
-
+      comingSoonUrl.pathname = "/proximamente";
     comingSoonUrl.search = "";
 
     return NextResponse.redirect(

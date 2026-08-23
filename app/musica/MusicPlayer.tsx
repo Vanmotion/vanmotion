@@ -102,10 +102,6 @@ export default function MusicPlayer({
     changeVolume,
   } = useMusicPlayer();
 
-  useEffect(() => {
-    setCoverError(false);
-  }, [currentTrack?.coverUrl, currentTrack?.id]);
-
   if (!currentTrack) {
     return (
       <section className={styles.player}>

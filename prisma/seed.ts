@@ -158,9 +158,9 @@ async function seedSettings() {
     update: {
       businessName: "VANMOTION",
       email:
-        "vanmotion@hotmail.com",
+        "contacto@vanmotion.es",
       city:
-        "Mejorada del Campo · Madrid",
+        "Desde Madrid",
       address:
         "Madrid · España",
       openingHours:
@@ -171,9 +171,9 @@ async function seedSettings() {
       id: "main",
       businessName: "VANMOTION",
       email:
-        "vanmotion@hotmail.com",
+        "contacto@vanmotion.es",
       city:
-        "Mejorada del Campo · Madrid",
+        "Desde Madrid",
       address:
         "Madrid · España",
       openingHours:

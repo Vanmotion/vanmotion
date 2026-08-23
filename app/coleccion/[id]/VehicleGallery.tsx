@@ -60,12 +60,6 @@ export default function VehicleGallery({
   }, [images.length]);
 
   useEffect(() => {
-    if (selectedIndex >= images.length) {
-      setSelectedIndex(0);
-    }
-  }, [images.length, selectedIndex]);
-
-  useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (isInteractiveElement(event.target)) {
         return;

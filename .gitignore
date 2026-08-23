@@ -51,3 +51,18 @@ next-env.d.ts
 *~
 backups/
 .local-archive/
+
+# VANMOTION backups
+.vanmotion-backups/
+*.bak-*
+backup-*/
+public/vehiculos/_backup_*/
+public/vehiculos/horario-off-backup/
+grabaciones/
+grabador.html
+grabar-vanmotion.mjs
+reel-*-backup.html
+
+# Archivos sueltos de trabajo
+reel-vanmotion-abatido.html
+public/ropa/aprobadas/hombre/camiseta-negra/frontal-v12.webp
