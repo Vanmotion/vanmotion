@@ -362,19 +362,47 @@ export default async function ProductPage({
             },
           ]
         : undefined,
-    offers: {
-      "@type": "Offer",
-      url: canonicalUrl,
-      priceCurrency: product.currency,
-      price: Number(product.price),
-      availability: schemaAvailability,
-      itemCondition: "https://schema.org/NewCondition",
-      seller: {
-        "@type": "Organization",
+    offers:
+      Number(product.price) > 0
+        ? {
+            "@type": "Offer",
+            url: canonicalUrl,
+            priceCurrency: product.currency,
+            price: Number(product.price),
+            availability: schemaAvailability,
+            itemCondition: "https://schema.org/NewCondition",
+            seller: {
+              "@type": "Organization",
+              name: "VANMOTION",
+              url: SITE_URL,
+            },
+          }
+        : undefined,
+  };
+
+  const breadcrumbStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
         name: "VANMOTION",
-        url: SITE_URL,
+        item: SITE_URL,
       },
-    },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Ropa",
+        item: `${SITE_URL}/ropa`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: productText.name,
+        item: canonicalUrl,
+      },
+    ],
   };
 
   return (
@@ -383,6 +411,12 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(productStructuredData).replace(/</g, "\\u003c"),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbStructuredData).replace(/</g, "\\u003c"),
         }}
       />
 
