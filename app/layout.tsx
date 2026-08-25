@@ -172,7 +172,9 @@ export default async function RootLayout({
       ],
 
       award: [
-        "WD Nominee 2026 — VANMOTION Automotive Culture",
+        "WD Awards Nominee 2026 — VANMOTION Automotive Culture",
+        "CSS Nectar Site of the Day 2026 — VANMOTION Cars · Music · Clothing",
+        "CSS Winner — VANMOTION Cars · Music · Clothing",
       ],
 
       subjectOf: [
@@ -180,6 +182,16 @@ export default async function RootLayout({
           "@type": "CreativeWork",
           name: "VANMOTION — Automotive Culture",
           url: "https://wdawards.com/web/vanmotion-automotive-culture",
+        },
+        {
+          "@type": "CreativeWork",
+          name: "VANMOTION — Cars · Music · Clothing",
+          url: "https://cssnectar.com",
+        },
+        {
+          "@type": "CreativeWork",
+          name: "VANMOTION — Cars · Music · Clothing",
+          url: "https://www.csswinner.com",
         },
       ],
     },
