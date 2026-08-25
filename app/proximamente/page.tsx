@@ -321,10 +321,10 @@ export default async function ComingSoonPage() {
       </section>
 
       <footer className={styles.footer}>
-        <a href="mailto:vanmotion@hotmail.com">
+        <a href="mailto:contacto@vanmotion.es">
           {content.contact}
           <span> · </span>
-          vanmotion@hotmail.com
+          contacto@vanmotion.es
         </a>
 
         <p>

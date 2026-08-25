@@ -604,12 +604,77 @@ export default async function PublicVehiclePage({
         },
   };
 
+
+
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `${vehicleName} ${vehicle.year}`,
+    image: vehicleImages,
+    description: vehicleDescription,
+    brand: {
+      "@type": "Brand",
+      name: vehicle.brand.name,
+    },
+    offers: {
+      "@type": "Offer",
+      url: canonicalUrl,
+      priceCurrency: "EUR",
+      price: Number(vehicle.price),
+      availability: schemaAvailability,
+      seller: {
+        "@type": "Organization",
+        name: "VANMOTION",
+        url: SITE_URL,
+      },
+    },
+  };
+
+
+  const breadcrumbStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "VANMOTION",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: language === "es" ? "Colección" : "Collection",
+        item: `${SITE_URL}/coleccion`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: vehicleName,
+        item: canonicalUrl,
+      },
+    ],
+  };
   return (
     <div className={styles.page}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productStructuredData),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbStructuredData),
         }}
       />
 

@@ -345,6 +345,25 @@ export default async function CollectionPage() {
     },
   });
 
+  const collectionStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Colección VANMOTION",
+    description:
+      "Vehículos camper premium, furgonetas camper y vehículos exclusivos disponibles en VANMOTION.",
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: vehicles.length,
+      itemListElement: vehicles.map((vehicle, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `https://www.vanmotion.es/coleccion/${vehicle.id}`,
+        name: `${vehicle.brand.name} ${vehicle.model} ${vehicle.year}`,
+      })),
+    },
+  };
+
+
   const orderedVehicles = [...vehicles].sort((first, second) => {
     const priorityDifference =
       getVehicleDisplayPriority(first) -
@@ -363,6 +382,12 @@ export default async function CollectionPage() {
 
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(collectionStructuredData),
+        }}
+      />
       <header className={styles.header}>
         <Link href="/" className={styles.brand} aria-label="Vanmotion">
           <Image

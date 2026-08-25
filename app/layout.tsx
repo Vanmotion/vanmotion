@@ -131,11 +131,72 @@ export default async function RootLayout({
     url: siteUrl,
     inLanguage: content.languageTag,
     description: content.description,
+
     publisher: {
       "@type": "Organization",
       name: "VANMOTION",
       url: siteUrl,
+
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/brand/vanmotion-mark.webp`,
+      },
+
+      sameAs: [
+        "https://www.instagram.com/vanmotion_madrid/",
+        "https://www.tiktok.com/@vanmotion_madrid",
+        "https://www.youtube.com/@Vanmotion-s2d",
+      ],
+
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Madrid",
+        addressCountry: "ES",
+      },
+
+      brand: {
+        "@type": "Brand",
+        name: "VANMOTION",
+      },
+
+      knowsAbout: [
+        "Vehículos seleccionados",
+        "Automoción",
+        "Ropa urbana",
+        "Música independiente",
+        "Cultura del motor",
+      ],
     },
+  };
+
+
+  const localBusinessStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `${siteUrl}/#business`,
+    name: "VANMOTION",
+    image: `${siteUrl}/brand/vanmotion-mark.webp`,
+    url: siteUrl,
+    description:
+      "VANMOTION es una marca de Madrid que une vehículos seleccionados, ropa urbana y música con identidad propia.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Madrid",
+      addressCountry: "ES",
+    },
+    areaServed: {
+      "@type": "City",
+      name: "Madrid",
+    },
+    brand: {
+      "@type": "Brand",
+      name: "VANMOTION",
+    },
+    sameAs: [
+      "https://www.instagram.com/vanmotion_madrid",
+      "https://www.youtube.com/@Vanmotion-s2d",
+      "https://www.tiktok.com/@vanmotion_madrid",
+    ],
   };
 
   return (
@@ -145,6 +206,13 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(websiteStructuredData),
+          }}
+        />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(localBusinessStructuredData),
           }}
         />
 
