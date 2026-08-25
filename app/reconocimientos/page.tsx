@@ -30,7 +30,7 @@ const awards = [
     category: "Site of the Day",
     description:
       "Reconocimiento dentro de una plataforma internacional de inspiración y selección de diseño web.",
-    url: "https://cssnectar.com",
+    url: "https://cssnectar.com/css-gallery-inspiration/vanmotion-cars-%c2%b7-music-%c2%b7-clothing/",
     image: "/reconocimientos/css-nectar.png",
     alt: "CSS Nectar VANMOTION",
   },
@@ -39,7 +39,7 @@ const awards = [
     category: "Website Recognition",
     description:
       "Proyecto seleccionado dentro del ecosistema internacional de diseño y experiencias digitales.",
-    url: "https://www.csswinner.com",
+    url: "https://www.csswinner.com/search/vanmotion",
     image: "/reconocimientos/css-winner.png",
     alt: "CSS Winner VANMOTION",
   },
