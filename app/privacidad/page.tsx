@@ -8,7 +8,7 @@ import styles from "./privacidad.module.css";
 
 export const dynamic = "force-dynamic";
 
-const CANONICAL_URL = "https://vanmotion.es/privacidad";
+const CANONICAL_URL = "https://www.vanmotion.es/privacidad";
 
 const translations = {
   es: {

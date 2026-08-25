@@ -8,7 +8,7 @@ import styles from "./condiciones-compra.module.css";
 
 export const dynamic = "force-dynamic";
 
-const CANONICAL_URL = "https://vanmotion.es/condiciones-compra";
+const CANONICAL_URL = "https://www.vanmotion.es/condiciones-compra";
 
 const translations = {
   es: {

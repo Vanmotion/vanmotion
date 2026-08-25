@@ -8,7 +8,7 @@ import styles from "./aviso-legal.module.css";
 
 export const dynamic = "force-dynamic";
 
-const CANONICAL_URL = "https://vanmotion.es/aviso-legal";
+const CANONICAL_URL = "https://www.vanmotion.es/aviso-legal";
 
 const translations = {
   es: {

@@ -8,7 +8,7 @@ import styles from "./cookies.module.css";
 
 export const dynamic = "force-dynamic";
 
-const CANONICAL_URL = "https://vanmotion.es/cookies";
+const CANONICAL_URL = "https://www.vanmotion.es/cookies";
 
 const translations = {
   es: {
