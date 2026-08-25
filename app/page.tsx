@@ -566,6 +566,7 @@ export default async function Home() {
           aria-label={language === "es" ? "Enlaces legales" : "Legal links"}
         >
           <Link href="/aviso-legal">Legal</Link>
+            <Link href="/reconocimientos">Reconocimientos</Link>
         </nav>
 
         <span className={styles.copyright}>© 2026</span>
