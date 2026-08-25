@@ -245,6 +245,18 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       url: CANONICAL_URL,
       siteName: "VANMOTION",
+      images: [
+        {
+          url: "/vehiculos/portada-inicio-vehiculos.webp",
+          alt: "VANMOTION · Madrid",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: content.metadataTitle,
+      description: content.metadataDescription,
+      images: ["/vehiculos/portada-inicio-vehiculos.webp"],
     },
   };
 }
