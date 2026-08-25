@@ -418,6 +418,7 @@ export default async function Home() {
             alt=""
             width={76}
             height={36}
+            quality={60}
             priority
             className={styles.brandMark}
           />
@@ -454,6 +455,7 @@ export default async function Home() {
             fill
             loading="eager"
             fetchPriority="high"
+            quality={60}
             sizes="100vw"
             className={styles.heroImage}
           />
