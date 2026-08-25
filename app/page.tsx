@@ -305,6 +305,27 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: "/",
     },
+    openGraph: {
+      title: content.metadata.title,
+      description: content.metadata.description,
+      type: "website",
+      url: "/",
+      images: [
+        {
+          url: "/vehiculos/portada-inicio-vehiculos.webp",
+          alt:
+            language === "es"
+              ? "VANMOTION · Vehículos, ropa urbana y música en Madrid"
+              : "VANMOTION · Vehicles, urban clothing and music from Madrid",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: content.metadata.title,
+      description: content.metadata.description,
+      images: ["/vehiculos/portada-inicio-vehiculos.webp"],
+    },
   };
 }
 

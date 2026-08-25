@@ -313,6 +313,21 @@ export async function generateMetadata(): Promise<Metadata> {
       description: content.metadataDescription,
       type: "website",
       url: "/coleccion",
+      images: [
+        {
+          url: "/vehiculos/portada-inicio-vehiculos.webp",
+          alt:
+            language === "es"
+              ? "Vehículos y furgonetas seleccionados por VANMOTION"
+              : "Vehicles and vans selected by VANMOTION",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: content.metadataTitle,
+      description: content.metadataDescription,
+      images: ["/vehiculos/portada-inicio-vehiculos.webp"],
     },
   };
 }

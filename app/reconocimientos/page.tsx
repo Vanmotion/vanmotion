@@ -16,6 +16,26 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.vanmotion.es/reconocimientos",
   },
+  openGraph: {
+    title: "Reconocimientos | VANMOTION Automotive Culture",
+    description:
+      "Reconocimientos digitales de VANMOTION: WD Awards, CSS Nectar y CSS Winner. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
+    type: "website",
+    url: "https://www.vanmotion.es/reconocimientos",
+    images: [
+      {
+        url: "/reconocimientos/wd-awards.png",
+        alt: "WD Awards Nominee 2026 · VANMOTION Automotive Culture",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Reconocimientos | VANMOTION Automotive Culture",
+    description:
+      "WD Awards, CSS Nectar y CSS Winner · Reconocimientos digitales de VANMOTION.",
+    images: ["/reconocimientos/wd-awards.png"],
+  },
 };
 
 const awards = [
