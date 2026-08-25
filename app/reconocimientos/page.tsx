@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { getCurrentLanguage } from "@/app/lib/language";
 
 export const metadata: Metadata = {
   title: "Reconocimientos | VANMOTION Automotive Culture",
@@ -38,37 +39,95 @@ export const metadata: Metadata = {
   },
 };
 
-const awards = [
-  {
-    name: "WD Awards Nominee 2026",
-    category: "Automotive Culture",
+const translations = {
+  es: {
+    label: "Reconocimientos",
     description:
-      "Reconocimiento internacional como proyecto nominado por su experiencia digital, identidad visual y narrativa alrededor de la cultura del automóvil.",
+      "VANMOTION es una experiencia digital nacida en Madrid que une cultura automotriz, música original, streetwear e identidad visual.",
+    official: "Ver reconocimiento oficial →",
+  },
+  en: {
+    label: "Awards",
+    description:
+      "VANMOTION is a digital experience born in Madrid combining automotive culture, original music, streetwear and visual identity.",
+    official: "View official recognition →",
+  },
+};
+
+const awards: {
+  name: {
+    es: string;
+    en: string;
+  };
+  category: {
+    es: string;
+    en: string;
+  };
+  description: {
+    es: string;
+    en: string;
+  };
+  url: string;
+  image: string;
+  alt: string;
+}[] = [
+  {
+    name: {
+      es: "WD Awards Nominee 2026",
+      en: "WD Awards Nominee 2026",
+    },
+    category: {
+      es: "Cultura Automotriz",
+      en: "Automotive Culture",
+    },
+    description: {
+      es: "Reconocimiento internacional como proyecto nominado por su experiencia digital, identidad visual y narrativa alrededor de la cultura del automóvil.",
+      en: "International recognition as a nominated project for its digital experience, visual identity and automotive culture storytelling.",
+    },
     url: "https://wdawards.com/web/vanmotion-automotive-culture",
     image: "/reconocimientos/wd-awards.png",
     alt: "WD Awards Nominee 2026 VANMOTION",
   },
   {
-    name: "CSS Nectar",
-    category: "Site of the Day",
-    description:
-      "Reconocimiento dentro de una plataforma internacional de inspiración y selección de diseño web.",
+    name: {
+      es: "CSS Nectar",
+      en: "CSS Nectar",
+    },
+    category: {
+      es: "Sitio del Día",
+      en: "Site of the Day",
+    },
+    description: {
+      es: "Reconocimiento dentro de una plataforma internacional de inspiración y selección de diseño web.",
+      en: "Recognition within an international platform for web design inspiration and selection.",
+    },
     url: "https://cssnectar.com/css-gallery-inspiration/vanmotion-cars-%c2%b7-music-%c2%b7-clothing/",
     image: "/reconocimientos/css-nectar.png",
     alt: "CSS Nectar VANMOTION",
   },
   {
-    name: "CSS Winner",
-    category: "Website Recognition",
-    description:
-      "Proyecto seleccionado dentro del ecosistema internacional de diseño y experiencias digitales.",
+    name: {
+      es: "CSS Winner",
+      en: "CSS Winner",
+    },
+    category: {
+      es: "Reconocimiento Web",
+      en: "Website Recognition",
+    },
+    description: {
+      es: "Proyecto seleccionado dentro del ecosistema internacional de diseño y experiencias digitales.",
+      en: "Project selected within the international ecosystem of digital design and experiences.",
+    },
     url: "https://www.csswinner.com/search/vanmotion",
     image: "/reconocimientos/css-winner.png",
     alt: "CSS Winner VANMOTION",
   },
 ];
 
-export default function ReconocimientosPage() {
+export default async function ReconocimientosPage() {
+  const language = await getCurrentLanguage();
+  const content = translations[language];
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
@@ -95,7 +154,7 @@ export default function ReconocimientosPage() {
       <main className="min-h-screen bg-black text-white px-8 py-24">
         <section className="max-w-6xl mx-auto">
           <p className="text-xs tracking-[0.3em] uppercase opacity-70">
-            Reconocimientos
+            {content.label}
           </p>
 
           <h1 className="text-5xl font-bold mt-6">
@@ -103,14 +162,13 @@ export default function ReconocimientosPage() {
           </h1>
 
           <p className="mt-6 text-lg opacity-90 leading-relaxed max-w-3xl">
-            VANMOTION es una experiencia digital nacida en Madrid que une
-            cultura automotriz, música original, streetwear e identidad visual.
+            {content.description}
           </p>
 
           <div className="mt-16 grid gap-10 md:grid-cols-3">
             {awards.map((award) => (
               <article
-                key={award.name}
+                key={award.name[language]}
                 className="overflow-hidden rounded-2xl border border-white/15 bg-white/[0.03]"
               >
                 <div className="relative aspect-[4/3] w-full">
@@ -123,14 +181,14 @@ export default function ReconocimientosPage() {
                 </div>
 
                 <div className="p-6">
-                  <h2 className="text-2xl font-semibold">{award.name}</h2>
+                  <h2 className="text-2xl font-semibold">{award.name[language]}</h2>
 
                   <p className="mt-2 uppercase text-xs tracking-widest opacity-60">
-                    {award.category}
+                    {award.category[language]}
                   </p>
 
                   <p className="mt-4 opacity-80 leading-relaxed">
-                    {award.description}
+                    {award.description[language]}
                   </p>
 
                   <a
@@ -139,7 +197,7 @@ export default function ReconocimientosPage() {
                     rel="noopener noreferrer"
                     className="inline-block mt-6 underline"
                   >
-                    Ver reconocimiento oficial →
+                    {content.official}
                   </a>
                 </div>
               </article>
