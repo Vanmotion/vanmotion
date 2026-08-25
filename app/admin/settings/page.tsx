@@ -123,7 +123,7 @@ export default async function SettingsPage({
                 type="text"
                 name="phone"
                 defaultValue={settings?.phone ?? ""}
-                placeholder="+34 648 254 959"
+                placeholder=""
                 className="min-h-14 rounded-xl border border-white/10 bg-[#111111] px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/50"
               />
             </label>
@@ -137,7 +137,7 @@ export default async function SettingsPage({
                 type="text"
                 name="whatsapp"
                 defaultValue={settings?.whatsapp ?? ""}
-                placeholder="+34 648 254 959"
+                placeholder=""
                 className="min-h-14 rounded-xl border border-white/10 bg-[#111111] px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/50"
               />
             </label>

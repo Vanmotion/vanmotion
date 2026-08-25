@@ -77,7 +77,7 @@ const translations = {
       email: "Correo electrónico *",
       emailPlaceholder: "contacto@vanmotion.es",
       phone: "Teléfono",
-      phonePlaceholder: "+34 648 254 959",
+      phonePlaceholder: "",
       message: "Mensaje *",
       messagePlaceholder: "Explica brevemente en qué podemos ayudarte.",
       submit: "Enviar mensaje",
@@ -160,7 +160,7 @@ const translations = {
       email: "Email address *",
       emailPlaceholder: "contacto@vanmotion.es",
       phone: "Telephone",
-      phonePlaceholder: "+34 648 254 959",
+      phonePlaceholder: "",
       message: "Message *",
       messagePlaceholder: "Briefly explain how we can help.",
       submit: "Send message",
@@ -300,16 +300,6 @@ export default async function ContactoPage({
             .join("\n")
       : "";
 
-  const businessName = settings?.businessName ?? "VANMOTION";
-  const whatsappNumber = settings?.whatsapp?.replace(/\D/g, "") ?? "";
-  const whatsappUrl = whatsappNumber
-    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-        language === "es"
-          ? `Hola ${businessName}, me gustaría solicitar información.`
-          : `Hello ${businessName}, I would like to request information.`,
-      )}`
-    : null;
-
   const socialLinks = [
     { label: "Instagram", value: settings?.instagram },
     { label: "YouTube", value: settings?.youtube },
@@ -396,29 +386,6 @@ export default async function ContactoPage({
                 </dd>
               </div>
 
-              <div>
-                <dt>{content.channels.phone}</dt>
-                <dd>
-                  {settings?.phone ? (
-                    <a href={`tel:${settings.phone}`}>{settings.phone}</a>
-                  ) : (
-                    content.channels.pending
-                  )}
-                </dd>
-              </div>
-
-              <div>
-                <dt>{content.channels.whatsapp}</dt>
-                <dd>
-                  {whatsappUrl && settings?.whatsapp ? (
-                    <a href={whatsappUrl} target="_blank" rel="noreferrer">
-                      {settings.whatsapp} ↗
-                    </a>
-                  ) : (
-                    content.channels.pending
-                  )}
-                </dd>
-              </div>
             </dl>
 
             <div className={styles.channelNote}>

@@ -320,12 +320,14 @@ export default async function PurchaseTermsPage() {
               <dt>{content.seller.taxId}</dt>
               <dd>{legal.nif}</dd>
             </div>
-            <div>
-              <dt>{content.seller.phone}</dt>
-              <dd>
-                <a href={`tel:${telephoneHref}`}>{legal.phone}</a>
-              </dd>
-            </div>
+            {legal.phone && legal.phone !== "No disponible" && (
+              <div>
+                <dt>{content.seller.phone}</dt>
+                <dd>
+                  <a href={`tel:${telephoneHref}`}>{legal.phone}</a>
+                </dd>
+              </div>
+            )}
             <div className={styles.fullCell}>
               <dt>{content.seller.email}</dt>
               <dd>
