@@ -186,12 +186,12 @@ export default async function RootLayout({
         {
           "@type": "CreativeWork",
           name: "VANMOTION — Cars · Music · Clothing",
-          url: "https://cssnectar.com",
+          url: "https://cssnectar.com/css-gallery-inspiration/vanmotion-cars-%c2%b7-music-%c2%b7-clothing/",
         },
         {
           "@type": "CreativeWork",
           name: "VANMOTION — Cars · Music · Clothing",
-          url: "https://www.csswinner.com",
+          url: "https://www.csswinner.com/search/vanmotion",
         },
       ],
     },
