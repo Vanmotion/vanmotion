@@ -13,6 +13,9 @@ export const metadata: Metadata = {
     "automotive culture",
     "digital experience",
   ],
+  alternates: {
+    canonical: "https://www.vanmotion.es/reconocimientos",
+  },
 };
 
 const awards = [
