@@ -1,28 +1,24 @@
-# WD Awards - VANMOTION
+# WD Awards — VANMOTION
 
-Sitio oficial:
-https://www.wdawards.com/web/vanmotion-automotive-culture
+Reconocimiento oficial localizado en el sitio oficial de WD Awards.
 
-Proyecto:
-VANMOTION — Automotive Culture
+## Ficha localizada
+- Proyecto: VANMOTION — Automotive Culture
+- Estado: WD Nominee
+- Fecha visible en la ficha: 12 August 2026
+- Créditos: VANMOTION
+- País: Spain
+- URL oficial: https://wdawards.com/web/vanmotion-automotive-culture
 
-Reconocimiento:
-WD NOMINEE
-
-Fecha:
-12 August 2026
-
-Créditos:
-VANMOTION
-
-País:
-Spain
-
-Descripción:
-Reconocimiento oficial WD Awards para VANMOTION como proyecto digital de automoción, cultura, música y streetwear.
-
-Categorías del proyecto:
+## Categorías del proyecto
 - Automotive culture
 - Digital experience
 - Brand identity
 - Visual storytelling
+
+## Evidencias guardadas
+- `capturas/wd-awards-vanmotion-nominee-2026.png`
+
+## Notas
+- Esta carpeta guarda evidencias y referencias públicas del reconocimiento.
+- Usar esta información para reforzar branding, confianza y SEO de entidad.
