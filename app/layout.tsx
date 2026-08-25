@@ -162,9 +162,25 @@ export default async function RootLayout({
       knowsAbout: [
         "Vehículos seleccionados",
         "Automoción",
-        "Ropa urbana",
-        "Música independiente",
         "Cultura del motor",
+        "Automotive culture",
+        "Ropa urbana",
+        "Streetwear",
+        "Música independiente",
+        "Digital experiences",
+        "Visual storytelling",
+      ],
+
+      award: [
+        "WD Nominee 2026 — VANMOTION Automotive Culture",
+      ],
+
+      subjectOf: [
+        {
+          "@type": "CreativeWork",
+          name: "VANMOTION — Automotive Culture",
+          url: "https://wdawards.com/web/vanmotion-automotive-culture",
+        },
       ],
     },
   };
