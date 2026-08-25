@@ -383,12 +383,14 @@ export default async function LegalNoticePage() {
                   <dd>{legal.nif}</dd>
                 </div>
 
-                <div>
-                  <dt>{compact.phone}</dt>
-                  <dd>
-                    <a href={`tel:${telephoneHref}`}>{legal.phone}</a>
-                  </dd>
-                </div>
+                {legal.phone && legal.phone !== "No disponible" && (
+                  <div>
+                    <dt>{compact.phone}</dt>
+                    <dd>
+                      <a href={`tel:${telephoneHref}`}>{legal.phone}</a>
+                    </dd>
+                  </div>
+                )}
 
                 <div>
                   <dt>{compact.email}</dt>
