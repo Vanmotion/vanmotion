@@ -402,9 +402,34 @@ export default function MusicPlayerProvider({
           setIsPlaying(false);
         }}
         onEnded={handleAudioEnded}
-        onError={() => {
+        onError={(event) => {
+          const mediaError = event.currentTarget.error;
+
           setIsPlaying(false);
-          setPlaybackError("missing-audio");
+
+          if (!mediaError) {
+            return;
+          }
+
+          // MEDIA_ERR_ABORTED (1) puede ocurrir al cambiar de idioma,
+          // navegar o sustituir la fuente. No significa que falte el MP3.
+          if (mediaError.code === MediaError.MEDIA_ERR_ABORTED) {
+            return;
+          }
+
+          // Solo MEDIA_ERR_SRC_NOT_SUPPORTED (4) se considera
+          // realmente una fuente inexistente/no compatible.
+          if (
+            mediaError.code ===
+            MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED
+          ) {
+            setPlaybackError("missing-audio");
+            return;
+          }
+
+          // Errores de red o decodificación: el archivo existe,
+          // pero no se ha podido reproducir correctamente.
+          setPlaybackError("activation");
         }}
       />
 

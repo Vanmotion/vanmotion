@@ -1,12 +1,13 @@
 import type { Language } from "@/app/language";
 
 type MusicTrackIdentity = {
-  id: string;
   title: string;
 };
 
 const englishTitles: Record<string, string> = {
   "the-cool-ashtray": "The Cool Ashtray",
+  "built-in-the-dark": "Built in the Dark",
+  "san-miguel": "San Miguel",
   "suenos-prestados": "Borrowed Dreams",
   "solo-en-mi-mente": "Only in My Mind",
   "solo-con-mi-mente": "Only in My Mind",
@@ -33,12 +34,7 @@ export function getLocalizedTrackTitle(
     return track.title;
   }
 
-  const idKey = normalizeTrackKey(track.id);
   const titleKey = normalizeTrackKey(track.title);
 
-  return (
-    englishTitles[idKey] ??
-    englishTitles[titleKey] ??
-    track.title
-  );
+  return englishTitles[titleKey] ?? track.title;
 }
