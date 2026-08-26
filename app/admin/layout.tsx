@@ -2,12 +2,15 @@ import { ReactNode } from "react";
 
 import Header from "@/components/admin/Header";
 import Sidebar from "@/components/admin/Sidebar";
+import { requireAdminSession } from "@/app/lib/admin-session";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  await requireAdminSession();
+
   return (
     <div className="flex min-h-screen flex-col bg-[#050505] text-white md:flex-row">
       <Sidebar />

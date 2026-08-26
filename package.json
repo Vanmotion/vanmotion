@@ -14,14 +14,13 @@
     "db:local:studio": "DATABASE_URL=postgresql://jose@localhost:5432/vanmotion prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.2",
+    "@prisma/client": "^6.19.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.6.1",
     "dotenv": "^17.4.2",
-    "next": "16.2.10",
-    "prisma": "^6.16.2",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
+    "next": "^16.3.3",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "resend": "^6.17.2",
     "stripe": "^22.3.2"
   },
@@ -31,8 +30,9 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "^16.3.2",
     "playwright": "^1.45.3",
+    "prisma": "^6.19.3",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",
     "typescript": "^5"
