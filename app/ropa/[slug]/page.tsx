@@ -407,12 +407,14 @@ export default async function ProductPage({
 
   return (
     <main className={styles.page}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(productStructuredData).replace(/</g, "\\u003c"),
-        }}
-      />
+      {Number(product.price) > 0 ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(productStructuredData).replace(/</g, "\\u003c"),
+          }}
+        />
+      ) : null}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
