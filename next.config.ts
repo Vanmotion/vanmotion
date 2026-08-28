@@ -1,5 +1,21 @@
 import type { NextConfig } from "next";
 
+const contentSecurityPolicyReportOnly = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'self'",
+  "form-action 'self'",
+  "script-src 'self' 'unsafe-inline' https://www.youtube.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://*.blob.vercel-storage.com https://i.ytimg.com",
+  "media-src 'self' blob: https://*.blob.vercel-storage.com",
+  "font-src 'self' data:",
+  "frame-src https://www.youtube-nocookie.com",
+  "connect-src 'self' https://*.blob.vercel-storage.com",
+  "worker-src 'self' blob:",
+].join("; ");
+
 const nextConfig: NextConfig = {
   images: {
     qualities: [60, 75],
@@ -41,6 +57,10 @@ serverActions: {
             key: "Permissions-Policy",
             value:
               "camera=(), microphone=(), geolocation=()",
+          },
+          {
+            key: "Content-Security-Policy-Report-Only",
+            value: contentSecurityPolicyReportOnly,
           },
         ],
       },
