@@ -122,6 +122,23 @@ const awards: {
     image: "/reconocimientos/css-winner.png",
     alt: "CSS Winner VANMOTION",
   },
+  {
+    name: {
+      es: "WebsiteAwards.es — Nominada 2026",
+      en: "WebsiteAwards.es — Nominee 2026",
+    },
+    category: {
+      es: "E-commerce · Circuito Master",
+      en: "E-commerce · Master Circuit",
+    },
+    description: {
+      es: "VANMOTION ha sido seleccionada y publicada como nominada en la convocatoria Mejor Web 2026 de WebsiteAwards.es, dentro de la categoría E-commerce y el circuito Master.",
+      en: "VANMOTION has been selected and published as a nominee in the WebsiteAwards.es Best Website 2026 competition, in the E-commerce category and Master circuit.",
+    },
+    url: "https://www.websiteawards.es/sitios/96e548ac-3e0b-4595-954e-6eb856453a16",
+    image: "/reconocimientos/websiteawards-2026.png",
+    alt: "WebsiteAwards.es Nominada 2026 VANMOTION",
+  },
 ];
 
 export default async function ReconocimientosPage() {
