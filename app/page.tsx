@@ -388,7 +388,7 @@ export default async function Home() {
     },
     {
       label: "TikTok",
-      handle: "@vanmotion_madrid",
+      handle: "@www.vanmotion.es",
       href: settings?.tiktok,
       icon: "tiktok",
     },

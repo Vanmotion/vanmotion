@@ -144,7 +144,7 @@ export default async function RootLayout({
 
       sameAs: [
         "https://www.instagram.com/vanmotion_madrid/",
-        "https://www.tiktok.com/@vanmotion_madrid",
+        "https://www.tiktok.com/@www.vanmotion.es",
         "https://www.youtube.com/@Vanmotion-s2d",
       ],
 
@@ -223,7 +223,7 @@ export default async function RootLayout({
     sameAs: [
       "https://www.instagram.com/vanmotion_madrid",
       "https://www.youtube.com/@Vanmotion-s2d",
-      "https://www.tiktok.com/@vanmotion_madrid",
+      "https://www.tiktok.com/@www.vanmotion.es",
     ],
   };
 
