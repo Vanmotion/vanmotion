@@ -637,6 +637,9 @@ export default function GlobalMusicPlayer({
                               `https://i.ytimg.com/vi/${recommendation.youtubeVideoId}/hqdefault.jpg`
                             }
                             alt=""
+                            loading="lazy"
+                            decoding="async"
+                            fetchPriority="low"
                             className={
                               styles.youtubePreviewImage
                             }
