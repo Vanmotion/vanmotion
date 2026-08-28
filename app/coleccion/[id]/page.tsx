@@ -657,19 +657,23 @@ export default async function PublicVehiclePage({
   };
   return (
     <div className={styles.page}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
-        }}
-      />
+      {!isEmblem ? (
+        <>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
+            }}
+          />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(productStructuredData),
-        }}
-      />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(productStructuredData).replace(/</g, "\\u003c"),
+            }}
+          />
+        </>
+      ) : null}
 
       <script
         type="application/ld+json"
