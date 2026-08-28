@@ -31,6 +31,9 @@ const MANAGED_PRODUCT_SLUGS = [
   "bomber-hombre-azul-ford-e150-drop-01",
   "bomber-mujer-negra-drop-01",
   "bomber-mujer-azul-ford-e150-drop-01",
+  "cargo-utility-hombre-antracita-drop-01",
+  "cargo-utility-mujer-antracita-drop-01",
+  "crewneck-unisex-antracita-drop-01",
 ] as const;
 
 type ProductPageProps = {
@@ -59,6 +62,8 @@ const translations = {
     productTypes: {
       TSHIRT: "Camiseta",
       BOMBER: "Bomber",
+      CARGO: "Pantalón cargo",
+      CREWNECK: "Sudadera",
     },
     footer: "Madrid · España",
   },
@@ -81,6 +86,8 @@ const translations = {
     productTypes: {
       TSHIRT: "T-shirt",
       BOMBER: "Bomber",
+      CARGO: "Cargo trousers",
+      CREWNECK: "Crewneck sweatshirt",
     },
     footer: "Madrid · Spain",
   },
@@ -179,9 +186,17 @@ export async function generateMetadata({
       ? language === "es"
         ? "Bomber"
         : "Bomber jacket"
-      : language === "es"
-        ? "Camiseta"
-        : "T-shirt";
+      : product.productType === "CARGO"
+        ? language === "es"
+          ? "Pantalón cargo"
+          : "Cargo trousers"
+        : product.productType === "CREWNECK"
+          ? language === "es"
+            ? "Sudadera"
+            : "Crewneck sweatshirt"
+          : language === "es"
+            ? "Camiseta"
+            : "T-shirt";
   const price = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: product.currency,
@@ -300,7 +315,11 @@ export default async function ProductPage({
   const productType =
     product.productType === "BOMBER"
       ? content.productTypes.BOMBER
-      : content.productTypes.TSHIRT;
+      : product.productType === "CARGO"
+        ? content.productTypes.CARGO
+        : product.productType === "CREWNECK"
+          ? content.productTypes.CREWNECK
+          : content.productTypes.TSHIRT;
 
   const imagesByView = new Map(
     product.images.map((image) => [
@@ -495,14 +514,14 @@ export default async function ProductPage({
 
               return (
                 <article key={view} className={styles.galleryItem}>
-                  <div className={`${styles.imageWrap} ${view === "LIFESTYLE" ? styles.modelImageWrap : ""} ${product.productType === "BOMBER" && view !== "LIFESTYLE" ? styles.bomberGarmentWrap : ""}`}>
+                  <div className={`${styles.imageWrap} ${view === "LIFESTYLE" ? styles.modelImageWrap : ""} ${(product.productType === "BOMBER" || product.productType === "CARGO" || product.productType === "CREWNECK") && view !== "LIFESTYLE" ? styles.bomberGarmentWrap : ""}`}>
                     {image ? (
                       <Image
                         src={image.url}
                         alt={image.alt}
                         fill
                         sizes="(max-width: 900px) 100vw, 50vw"
-                        className={`${styles.image} ${view === "LIFESTYLE" ? styles.modelImage : ""} ${product.productType === "BOMBER" && view !== "LIFESTYLE" ? styles.bomberGarmentImage : ""}`}
+                        className={`${styles.image} ${view === "LIFESTYLE" ? styles.modelImage : ""} ${(product.productType === "BOMBER" || product.productType === "CARGO" || product.productType === "CREWNECK") && view !== "LIFESTYLE" ? styles.bomberGarmentImage : ""}`}
                         priority={view === "LIFESTYLE"}
                       />
                     ) : (

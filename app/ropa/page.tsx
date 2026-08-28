@@ -48,6 +48,9 @@ const MANAGED_PRODUCT_SLUGS = [
   "bomber-hombre-azul-ford-e150-drop-01",
   "bomber-mujer-negra-drop-01",
   "bomber-mujer-azul-ford-e150-drop-01",
+  "cargo-utility-hombre-antracita-drop-01",
+  "cargo-utility-mujer-antracita-drop-01",
+  "crewneck-unisex-antracita-drop-01",
 ] as const;
 
 const translations = {
@@ -92,7 +95,7 @@ const translations = {
       headingFirst: "LA COLECCIÓN.",
       headingSecond: "HOMBRE Y MUJER.",
       intro:
-        "Ocho productos independientes con stock, talla, precio, estado e imágenes propios.",
+        "Once productos independientes con stock, talla, precio, estado e imágenes propios.",
       noImage: "Imagen pendiente",
       front: "Frontal",
       back: "Espalda",
@@ -108,6 +111,8 @@ const translations = {
       productTypes: {
         TSHIRT: "Camiseta",
         BOMBER: "Bomber",
+        CARGO: "Pantalón cargo",
+        CREWNECK: "Sudadera",
       },
     },
     principles: {
@@ -185,7 +190,7 @@ const translations = {
       headingFirst: "THE COLLECTION.",
       headingSecond: "MEN AND WOMEN.",
       intro:
-        "Eight independent products with their own stock, size, price, status and images.",
+        "Eleven independent products with their own stock, size, price, status and images.",
       noImage: "Image pending",
       front: "Front",
       back: "Back",
@@ -201,6 +206,8 @@ const translations = {
       productTypes: {
         TSHIRT: "T-shirt",
         BOMBER: "Bomber",
+        CARGO: "Cargo trousers",
+        CREWNECK: "Crewneck sweatshirt",
       },
     },
     principles: {
@@ -442,7 +449,11 @@ export default async function RopaPage() {
               const productType =
                 product.productType === "BOMBER"
                   ? content.collection.productTypes.BOMBER
-                  : content.collection.productTypes.TSHIRT;
+                  : product.productType === "CARGO"
+                    ? content.collection.productTypes.CARGO
+                    : product.productType === "CREWNECK"
+                      ? content.collection.productTypes.CREWNECK
+                      : content.collection.productTypes.TSHIRT;
 
               const formattedPrice = new Intl.NumberFormat(
                 language === "es" ? "es-ES" : "en-US",

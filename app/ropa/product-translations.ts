@@ -66,6 +66,28 @@ const ENGLISH_PRODUCT_TEXT: Record<string, ProductText> = {
     color: "Ford E-150 blue",
     material: "Premium mid-season nylon · 135–145 gsm",
   },
+
+  "cargo-utility-hombre-antracita-drop-01": {
+    name: "Utility Cargo · Men · Washed Anthracite",
+    subtitle: "Utility Edition · Drop 01",
+    collection: "VANMOTION Utility · Drop 01",
+    color: "Washed anthracite",
+    material: "Premium washed cotton · heavyweight utility fabric",
+  },
+  "cargo-utility-mujer-antracita-drop-01": {
+    name: "Utility Cargo · Women · Washed Anthracite",
+    subtitle: "Utility Edition · Drop 01",
+    collection: "VANMOTION Utility · Drop 01",
+    color: "Washed anthracite",
+    material: "Premium washed cotton · heavyweight utility fabric",
+  },
+  "crewneck-unisex-antracita-drop-01": {
+    name: "Utility Crewneck · Unisex · Washed Anthracite",
+    subtitle: "Utility Edition · Drop 01",
+    collection: "VANMOTION Utility · Drop 01",
+    color: "Washed anthracite",
+    material: "Premium washed cotton · heavyweight fleece",
+  },
 };
 
 export function getLocalizedProductText(

@@ -52,9 +52,9 @@ const MANUAL_STATUSES = new Set([
 ]);
 
 type ProductImageView = keyof typeof PRODUCT_IMAGE_VIEWS;
-type ClothingGender = "HOMBRE" | "MUJER";
-type ClothingColor = "NEGRO" | "AZUL_FORD_E150";
-type ClothingType = "TSHIRT" | "BOMBER";
+type ClothingGender = "HOMBRE" | "MUJER" | "UNISEX";
+type ClothingColor = "NEGRO" | "AZUL_FORD_E150" | "ANTRACITA_LAVADO";
+type ClothingType = "TSHIRT" | "BOMBER" | "CARGO" | "CREWNECK";
 
 type ClothingProductConfiguration = {
   slug: string;
@@ -230,6 +230,64 @@ const CLOTHING_PRODUCTS = [
     initialPrice: "0.00",
     sortOrder: 7,
   },
+  {
+    slug: "cargo-utility-hombre-antracita-drop-01",
+    skuPrefix: "VM-CG-H-ANT-D01",
+    name: "Cargo Utility · Hombre · Antracita lavado",
+    subtitle: "Utility Edition · Drop 01",
+    collection: "VANMOTION Utility · Drop 01",
+    productType: "CARGO",
+    gender: "HOMBRE",
+    colorCode: "ANTRACITA_LAVADO",
+    color: "Antracita lavado",
+    material: "Algodón premium lavado · tejido utility de alto gramaje",
+    description:
+      "Pantalón cargo de corte wide y relajado en antracita lavado, con una construcción de inspiración militar llevada a un lenguaje urbano contemporáneo. Incorpora bolsillos cargo laterales con volumen controlado, paneles de rodilla, cinta larga con anilla metálica y bajo regulable.",
+    descriptionEn:
+      "Wide relaxed cargo trousers in washed anthracite, combining military-inspired construction with a contemporary urban language. Features controlled-volume side cargo pockets, articulated knee panels, a long strap with metal D-ring and adjustable hems.",
+    sizes: ["44", "46", "48"] as const,
+    initialPrice: "0.00",
+    sortOrder: 8,
+  },
+  {
+    slug: "cargo-utility-mujer-antracita-drop-01",
+    skuPrefix: "VM-CG-W-ANT-D01",
+    name: "Cargo Utility · Mujer · Antracita lavado",
+    subtitle: "Utility Edition · Drop 01",
+    collection: "VANMOTION Utility · Drop 01",
+    productType: "CARGO",
+    gender: "MUJER",
+    colorCode: "ANTRACITA_LAVADO",
+    color: "Antracita lavado",
+    material: "Algodón premium lavado · tejido utility de alto gramaje",
+    description:
+      "Pantalón cargo femenino de pierna amplia y caída fluida en antracita lavado. El diseño combina una cintura limpia con bolsillos cargo de fuelle, detalle asimétrico, cinta con herraje metálico y bajo regulable. Una interpretación más estilizada del lenguaje militar con una presencia urbana contemporánea.",
+    descriptionEn:
+      "Women's wide-leg cargo trousers with a fluid silhouette in washed anthracite. The design combines a clean waist with gusseted cargo pockets, an asymmetric detail, metal-hardware strap and adjustable hems. A more refined interpretation of military utility with a contemporary urban presence.",
+    sizes: ["36", "38", "40"] as const,
+    initialPrice: "0.00",
+    sortOrder: 9,
+  },
+  {
+    slug: "crewneck-unisex-antracita-drop-01",
+    skuPrefix: "VM-CR-U-ANT-D01",
+    name: "Crewneck Utility · Unisex · Antracita lavado",
+    subtitle: "Utility Edition · Drop 01",
+    collection: "VANMOTION Utility · Drop 01",
+    productType: "CREWNECK",
+    gender: "UNISEX",
+    colorCode: "ANTRACITA_LAVADO",
+    color: "Antracita lavado",
+    material: "Algodón premium lavado · felpa de alto gramaje",
+    description:
+      "Crewneck unisex de corte oversize y acabado antracita lavado. Su identidad nace de la construcción: costura curva protagonista en el pecho, continuidad visual en las mangas, hombro caído y canalé contundente en cuello, puños y bajo.",
+    descriptionEn:
+      "Unisex crewneck with an oversized fit and washed anthracite finish. Its identity comes from the construction itself: a distinctive curved chest seam, visual continuation through the sleeves, dropped shoulders and substantial ribbing at the neck, cuffs and hem.",
+    sizes: MEN_SIZES,
+    initialPrice: "0.00",
+    sortOrder: 10,
+  },
+
 ] as const satisfies readonly ClothingProductConfiguration[];
 
 const PRODUCT_CONFIGURATION_BY_SLUG = new Map<
@@ -752,7 +810,12 @@ export async function createVanmotionClothingCollectionAction(): Promise<void> {
         : []),
     ]);
 
-    await installApprovedProductImages(product.id, configuration);
+    if (
+      configuration.productType === "TSHIRT" ||
+      configuration.productType === "BOMBER"
+    ) {
+      await installApprovedProductImages(product.id, configuration);
+    }
   }
 
   refreshClothingPages();

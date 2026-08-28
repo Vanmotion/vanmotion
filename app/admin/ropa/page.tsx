@@ -24,9 +24,12 @@ const MANAGED_PRODUCT_SLUGS = [
   "bomber-hombre-azul-ford-e150-drop-01",
   "bomber-mujer-negra-drop-01",
   "bomber-mujer-azul-ford-e150-drop-01",
+  "cargo-utility-hombre-antracita-drop-01",
+  "cargo-utility-mujer-antracita-drop-01",
+  "crewneck-unisex-antracita-drop-01",
 ] as const;
 
-const SIZE_ORDER = ["XS", "S", "M", "L"] as const;
+const SIZE_ORDER = ["XS", "S", "M", "L", "36", "38", "40", "44", "46", "48"] as const;
 
 const statusLabels: Record<string, string> = {
   DRAFT: "Borrador",
