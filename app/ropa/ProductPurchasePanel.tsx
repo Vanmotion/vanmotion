@@ -406,6 +406,19 @@ export default function ProductPurchasePanel({
     }
   }
 
+  if (isComingSoon) {
+    return (
+      <div className={styles.purchasePanel}>
+        <div
+          className={`${styles.purchaseStatus} ${statusClass}`}
+        >
+          <span aria-hidden="true" />
+          {content.statuses[normalizedStatus]}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.purchasePanel}>
       <div

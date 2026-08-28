@@ -407,7 +407,7 @@ export default async function ProductPage({
 
   return (
     <main className={styles.page}>
-      {Number(product.price) > 0 ? (
+      {productStatus !== "COMING_SOON" && Number(product.price) > 0 ? (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -473,17 +473,19 @@ export default async function ProductPage({
             {productText.subtitle ? <h2>{productText.subtitle}</h2> : null}
           </div>
 
-          <strong>
-            {new Intl.NumberFormat(
-              language === "es" ? "es-ES" : "en-GB",
-              {
-                style: "currency",
-                currency: product.currency,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              },
-            ).format(Number(product.price))}
-          </strong>
+          {productStatus !== "COMING_SOON" && Number(product.price) > 0 ? (
+            <strong>
+              {new Intl.NumberFormat(
+                language === "es" ? "es-ES" : "en-GB",
+                {
+                  style: "currency",
+                  currency: product.currency,
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                },
+              ).format(Number(product.price))}
+            </strong>
+          ) : null}
         </div>
 
         <div className={styles.layout}>
