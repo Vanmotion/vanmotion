@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const contentSecurityPolicyReportOnly = [
+const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
   "object-src 'none'",
@@ -59,8 +59,8 @@ serverActions: {
               "camera=(), microphone=(), geolocation=()",
           },
           {
-            key: "Content-Security-Policy-Report-Only",
-            value: contentSecurityPolicyReportOnly,
+            key: "Content-Security-Policy",
+            value: contentSecurityPolicy,
           },
         ],
       },
