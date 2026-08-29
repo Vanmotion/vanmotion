@@ -284,6 +284,10 @@ export default function GlobalMusicPlayer({
     setRecommendationIsPlaying,
   ] = useState(false);
 
+  useEffect(() => {
+    void loadYouTubeIframeApi();
+  }, []);
+
   const {
     tracks,
     currentTrack,
