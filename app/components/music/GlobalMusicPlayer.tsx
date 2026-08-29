@@ -199,7 +199,7 @@ function YouTubeRecommendationPlayer({
     <iframe
       ref={iframeRef}
       className={styles.youtubeEmbed}
-      src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1&playsinline=1&controls=1&disablekb=0&fs=1`}
+      src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1&playsinline=1&controls=1&disablekb=0&fs=1&origin=https%3A%2F%2Fwww.vanmotion.es`}
       title={title}
       allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
       allowFullScreen
