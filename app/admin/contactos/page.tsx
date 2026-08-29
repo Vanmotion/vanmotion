@@ -19,6 +19,7 @@ function formatDate(date: Date) {
   return new Intl.DateTimeFormat("es-ES", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: "Europe/Madrid",
   }).format(date);
 }
 
