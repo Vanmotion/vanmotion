@@ -228,6 +228,37 @@
   height: 3px;
 }
 
+/* Safari / WebKit: barras de progreso y volumen */
+@supports selector(input::-webkit-slider-thumb) {
+  .progress input,
+  .volume input {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 16px;
+    background: transparent;
+  }
+
+  .progress input::-webkit-slider-runnable-track,
+  .volume input::-webkit-slider-runnable-track {
+    height: 3px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 32%);
+  }
+
+  .progress input::-webkit-slider-thumb,
+  .volume input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    margin-top: -4.5px;
+    border: 0;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+  }
+}
+
 .volume {
   display: grid;
   grid-template-columns: 30px 1fr;
