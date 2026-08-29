@@ -228,36 +228,56 @@
   height: 3px;
 }
 
-/* Safari / WebKit: barras de progreso y volumen */
-@supports selector(input::-webkit-slider-thumb) {
-  .progress input,
-  .volume input {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 16px;
-    background: transparent;
-  }
-
-  .progress input::-webkit-slider-runnable-track,
-  .volume input::-webkit-slider-runnable-track {
-    height: 3px;
-    border-radius: 999px;
-    background: rgb(255 255 255 / 32%);
-  }
-
-  .progress input::-webkit-slider-thumb,
-  .volume input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 12px;
-    height: 12px;
-    margin-top: -4.5px;
-    border: 0;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-  }
+/* Barras de progreso y volumen: Safari / Firefox */
+.progress input,
+.volume input {
+  width: 100%;
+  height: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
 }
+
+/* Safari / WebKit */
+.progress input::-webkit-slider-runnable-track,
+.volume input::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 55%);
+}
+
+.progress input::-webkit-slider-thumb,
+.volume input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 25%);
+}
+
+/* Firefox */
+.progress input::-moz-range-track,
+.volume input::-moz-range-track {
+  height: 4px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 55%);
+}
+
+.progress input::-moz-range-thumb,
+.volume input::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+}
+
 
 .volume {
   display: grid;
