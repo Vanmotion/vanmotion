@@ -198,10 +198,10 @@ export default async function RootLayout({
   };
 
 
-  const localBusinessStructuredData = {
+  const organizationStructuredData = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "@id": `${siteUrl}/#business`,
+    "@type": "Organization",
+    "@id": `${siteUrl}/#organization`,
     name: "VANMOTION",
     image: `${siteUrl}/brand/vanmotion-mark.webp`,
     url: siteUrl,
@@ -240,7 +240,7 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(localBusinessStructuredData),
+            __html: JSON.stringify(organizationStructuredData),
           }}
         />
 
