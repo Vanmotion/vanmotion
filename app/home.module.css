@@ -1270,10 +1270,8 @@
     37.2% 50.5%
   );
 
-  background: rgba(8, 7, 6, 0.34);
-  backdrop-filter: brightness(0.28) saturate(0.28);
-  -webkit-backdrop-filter: brightness(0.28) saturate(0.28);
-  mix-blend-mode: multiply;
+  /* Máscara simple y consistente entre Safari y Firefox */
+  background: rgba(8, 7, 6, 0.24);
 
   opacity: 1;
   animation: vanmotionIndicatorShadeBlink 1.2s steps(1, end) infinite;

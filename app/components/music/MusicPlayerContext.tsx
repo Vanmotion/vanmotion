@@ -48,6 +48,7 @@ export default function MusicPlayerProvider({
 }: MusicPlayerProviderProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const resumeAfterChangeRef = useRef(false);
+  const autoplayPendingRef = useRef(false);
   const initializedRef = useRef(false);
   const restoreTimeRef = useRef<number | null>(null);
   const restorePlayingRef = useRef(false);
@@ -148,25 +149,18 @@ export default function MusicPlayerProvider({
       restoreTrackRef.current === currentIndex;
 
     if (shouldRestore) {
+      autoplayPendingRef.current = false;
       audio.load();
       return;
     }
 
     if (!shouldResume) {
+      autoplayPendingRef.current = false;
       return;
     }
 
+    autoplayPendingRef.current = true;
     audio.load();
-
-    audio
-      .play()
-      .then(() => {
-        setIsPlaying(true);
-      })
-      .catch(() => {
-        setIsPlaying(false);
-        setPlaybackError("activation");
-      });
   }, [currentIndex, currentTrack?.src]);
 
   useEffect(() => {
@@ -378,6 +372,24 @@ export default function MusicPlayerProvider({
                 });
             }
           }
+        }}
+        onCanPlay={(event) => {
+          if (!autoplayPendingRef.current) {
+            return;
+          }
+
+          autoplayPendingRef.current = false;
+
+          void event.currentTarget
+            .play()
+            .then(() => {
+              setIsPlaying(true);
+              setPlaybackError(null);
+            })
+            .catch(() => {
+              setIsPlaying(false);
+              setPlaybackError("activation");
+            });
         }}
         onTimeUpdate={(event) => {
           const time = event.currentTarget.currentTime;
