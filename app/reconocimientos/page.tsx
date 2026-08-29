@@ -88,6 +88,7 @@ const awards: {
       en: "International recognition as a nominated project for its digital experience, visual identity and automotive culture storytelling.",
     },
     url: "https://wdawards.com/web/vanmotion-automotive-culture",
+    certificateUrl: "/reconocimientos/wd-awards-nominee-certificate.pdf",
     image: "/reconocimientos/wd-awards.png",
     alt: "WD Awards Nominee 2026 VANMOTION",
   },
