@@ -277,6 +277,8 @@ export default function GlobalMusicPlayer({
   recommendations,
 }: GlobalMusicPlayerProps) {
   const content = translations[language];
+  const [seekPreview, setSeekPreview] =
+    useState<number | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [activeRecommendation, setActiveRecommendation] =
     useState<string | null>(null);
@@ -476,14 +478,36 @@ export default function GlobalMusicPlayer({
               min="0"
               max={duration || 0}
               step="0.1"
-              value={Math.min(
-                currentTime,
-                duration || 0,
-              )}
+              value={
+                seekPreview ??
+                Math.min(currentTime, duration || 0)
+              }
               onChange={(event) => {
-                changeProgress(
-                  Number(event.target.value),
+                setSeekPreview(
+                  Number(event.currentTarget.value),
                 );
+              }}
+              onPointerUp={(event) => {
+                changeProgress(
+                  Number(event.currentTarget.value),
+                );
+                setSeekPreview(null);
+              }}
+              onKeyUp={(event) => {
+                changeProgress(
+                  Number(event.currentTarget.value),
+                );
+                setSeekPreview(null);
+              }}
+              onBlur={(event) => {
+                if (seekPreview === null) {
+                  return;
+                }
+
+                changeProgress(
+                  Number(event.currentTarget.value),
+                );
+                setSeekPreview(null);
               }}
               aria-label={content.progress}
             />

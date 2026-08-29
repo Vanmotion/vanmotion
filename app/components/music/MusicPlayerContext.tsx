@@ -286,6 +286,25 @@ export default function MusicPlayerProvider({
     [],
   );
 
+  function playPendingTrack(audio: HTMLAudioElement) {
+    if (!autoplayPendingRef.current) {
+      return;
+    }
+
+    autoplayPendingRef.current = false;
+
+    void audio
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+        setPlaybackError(null);
+      })
+      .catch(() => {
+        setIsPlaying(false);
+        setPlaybackError("activation");
+      });
+  }
+
   function handleAudioEnded() {
     const isLastTrack =
       currentIndex === tracks.length - 1;
@@ -328,7 +347,7 @@ export default function MusicPlayerProvider({
       <audio
         ref={audioRef}
         src={currentTrack?.src}
-        preload="none"
+        preload="auto"
         onLoadedMetadata={(event) => {
           const audioDuration = event.currentTarget.duration;
 
@@ -373,23 +392,11 @@ export default function MusicPlayerProvider({
             }
           }
         }}
+        onLoadedData={(event) => {
+          playPendingTrack(event.currentTarget);
+        }}
         onCanPlay={(event) => {
-          if (!autoplayPendingRef.current) {
-            return;
-          }
-
-          autoplayPendingRef.current = false;
-
-          void event.currentTarget
-            .play()
-            .then(() => {
-              setIsPlaying(true);
-              setPlaybackError(null);
-            })
-            .catch(() => {
-              setIsPlaying(false);
-              setPlaybackError("activation");
-            });
+          playPendingTrack(event.currentTarget);
         }}
         onTimeUpdate={(event) => {
           const time = event.currentTarget.currentTime;
