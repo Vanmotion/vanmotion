@@ -45,12 +45,14 @@ const translations = {
     description:
       "VANMOTION es una experiencia digital nacida en Madrid que une cultura automotriz, música original, streetwear e identidad visual.",
     official: "Ver reconocimiento oficial →",
+    certificate: "Ver certificado oficial →",
   },
   en: {
     label: "Awards",
     description:
       "VANMOTION is a digital experience born in Madrid combining automotive culture, original music, streetwear and visual identity.",
     official: "View official recognition →",
+    certificate: "View official certificate →",
   },
 };
 
@@ -68,6 +70,7 @@ const awards: {
     en: string;
   };
   url: string;
+  certificateUrl?: string;
   image: string;
   alt: string;
 }[] = [
@@ -102,6 +105,7 @@ const awards: {
       en: "Recognition within an international platform for web design inspiration and selection.",
     },
     url: "https://cssnectar.com/css-gallery-inspiration/vanmotion-cars-%c2%b7-music-%c2%b7-clothing/",
+    certificateUrl: "/referencias/cssnectar/vanmotion-sotd-cert.pdf",
     image: "/reconocimientos/css-nectar.png",
     alt: "CSS Nectar VANMOTION",
   },
@@ -208,14 +212,27 @@ export default async function ReconocimientosPage() {
                     {award.description[language]}
                   </p>
 
-                  <a
-                    href={award.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-6 underline"
-                  >
-                    {content.official}
-                  </a>
+                  <div className="mt-6 flex flex-col items-start gap-3">
+                    <a
+                      href={award.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      {content.official}
+                    </a>
+
+                    {award.certificateUrl && (
+                      <a
+                        href={award.certificateUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline"
+                      >
+                        {content.certificate}
+                      </a>
+                    )}
+                  </div>
                 </div>
               </article>
             ))}
