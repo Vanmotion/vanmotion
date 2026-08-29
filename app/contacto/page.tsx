@@ -279,38 +279,10 @@ export default async function ContactoPage({
     enviado,
     error,
     motivo,
-    producto,
-    nombreProducto,
-    talla,
-    cantidad,
   } = contactParams;
 
   const defaultTopic = topicFromReason(motivo);
-  const productName =
-    nombreProducto ||
-    producto ||
-    (language === "es" ? "la prenda VANMOTION" : "the VANMOTION garment");
-
-  const defaultMessage =
-    defaultTopic === "CLOTHING"
-      ? language === "es"
-        ? [
-            `Hola VANMOTION, estoy interesado en ${productName}.`,
-            talla ? `Talla: ${talla}.` : "",
-            cantidad ? `Cantidad: ${cantidad}.` : "",
-            "Me gustaría confirmar disponibilidad, precio y condiciones de compra.",
-          ]
-            .filter(Boolean)
-            .join("\n")
-        : [
-            `Hello VANMOTION, I am interested in ${productName}.`,
-            talla ? `Size: ${talla}.` : "",
-            cantidad ? `Quantity: ${cantidad}.` : "",
-            "I would like to confirm availability, price and purchase conditions.",
-          ]
-            .filter(Boolean)
-            .join("\n")
-      : "";
+  const defaultMessage = "";
 
   const socialLinks = [
     { label: "Instagram", value: settings?.instagram },
