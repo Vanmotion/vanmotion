@@ -25,11 +25,18 @@ type YouTubeStateChangeEvent = {
   data: number;
 };
 
+type YouTubeReadyEvent = {
+  target: YouTubePlayerInstance;
+};
+
 type YouTubeApi = {
   Player: new (
     element: HTMLIFrameElement,
     options: {
       events?: {
+        onReady?: (
+          event: YouTubeReadyEvent,
+        ) => void;
         onStateChange?: (
           event: YouTubeStateChangeEvent,
         ) => void;
@@ -106,9 +113,14 @@ function YouTubeRecommendationPlayer({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef =
     useRef<YouTubePlayerInstance | null>(null);
+  const playingRef = useRef(playing);
   const onEndedRef = useRef(onEnded);
   const onPlayingRef = useRef(onPlaying);
   const onPausedRef = useRef(onPaused);
+
+  useEffect(() => {
+    playingRef.current = playing;
+  }, [playing]);
 
   useEffect(() => {
     onEndedRef.current = onEnded;
@@ -135,6 +147,13 @@ function YouTubeRecommendationPlayer({
         iframeRef.current,
         {
           events: {
+            onReady: (event) => {
+              playerRef.current = event.target;
+
+              if (playingRef.current) {
+                event.target.playVideo?.();
+              }
+            },
             onStateChange: (event) => {
               if (event.data === 1) {
                 onPlayingRef.current();
@@ -182,7 +201,7 @@ function YouTubeRecommendationPlayer({
       className={styles.youtubeEmbed}
       src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1&playsinline=1&controls=1&disablekb=0&fs=1`}
       title={title}
-      allow="autoplay; encrypted-media; picture-in-picture 'none'"
+      allow="autoplay; encrypted-media; picture-in-picture"
       style={{ pointerEvents: "auto" }}
     />
   );
