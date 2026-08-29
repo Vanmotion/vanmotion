@@ -75,6 +75,26 @@
   color: #ffffff;
 }
 
+/* Bandera activa a color; idioma inactivo en gris */
+.switcher button > span {
+  display: inline-block;
+  transition:
+    opacity 160ms ease,
+    filter 160ms ease;
+}
+
+.switcher button:not(.active) > span {
+  opacity: 0.38;
+  filter: grayscale(1) saturate(0);
+  -webkit-filter: grayscale(1) saturate(0);
+}
+
+.switcher button.active > span {
+  opacity: 1;
+  filter: none;
+  -webkit-filter: none;
+}
+
 .switcher button:focus-visible {
   outline: 1px solid #ffffff;
   outline-offset: 2px;
