@@ -84,9 +84,9 @@
 }
 
 .switcher button:not(.active) > span {
-  opacity: 0.38;
-  filter: grayscale(1) saturate(0);
-  -webkit-filter: grayscale(1) saturate(0);
+  opacity: 0.68;
+  filter: grayscale(0.35) saturate(0.65);
+  -webkit-filter: grayscale(0.35) saturate(0.65);
 }
 
 .switcher button.active > span {
