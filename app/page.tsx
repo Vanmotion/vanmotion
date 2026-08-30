@@ -394,7 +394,7 @@ export default async function Home() {
     },
     {
       label: "YouTube",
-      handle: "@Vanmotion-s2d",
+      handle: "@vanmotionoficial",
       href: settings?.youtube,
       icon: "youtube",
     },
