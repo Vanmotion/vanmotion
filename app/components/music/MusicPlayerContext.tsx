@@ -347,7 +347,7 @@ export default function MusicPlayerProvider({
       <audio
         ref={audioRef}
         src={currentTrack?.src}
-        preload="auto"
+        preload="metadata"
         onLoadedMetadata={(event) => {
           const audioDuration = event.currentTarget.duration;
 
