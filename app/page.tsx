@@ -453,8 +453,7 @@ export default async function Home() {
             src={getMadridHeroImage()}
             alt={content.hero.vehicle}
             fill
-            loading="eager"
-            fetchPriority="high"
+            preload
             quality={60}
             sizes="100vw"
             className={styles.heroImage}
