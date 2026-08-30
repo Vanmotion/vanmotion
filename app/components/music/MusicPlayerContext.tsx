@@ -150,7 +150,6 @@ export default function MusicPlayerProvider({
 
     if (shouldRestore) {
       autoplayPendingRef.current = false;
-      audio.load();
       return;
     }
 
@@ -347,7 +346,7 @@ export default function MusicPlayerProvider({
       <audio
         ref={audioRef}
         src={currentTrack?.src}
-        preload="metadata"
+        preload="none"
         onLoadedMetadata={(event) => {
           const audioDuration = event.currentTarget.duration;
 
