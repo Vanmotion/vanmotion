@@ -1,12 +1,14 @@
 import type { NextConfig } from "next";
 
+const isDevelopment = process.env.NODE_ENV === "development";
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
   "object-src 'none'",
   "frame-ancestors 'self'",
   "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.youtube.com",
+  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.youtube.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.blob.vercel-storage.com https://i.ytimg.com",
   "media-src 'self' blob: https://*.blob.vercel-storage.com",
