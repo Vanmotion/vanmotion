@@ -94,21 +94,21 @@ const awards: {
   },
   {
     name: {
-      es: "CSS Nectar",
-      en: "CSS Nectar",
+      es: "CSS Nectar — Website of the Day Winner 2026",
+      en: "CSS Nectar — Website of the Day Winner 2026",
     },
     category: {
-      es: "Sitio del Día",
-      en: "Site of the Day",
+      es: "Website of the Day · Ganadora",
+      en: "Website of the Day · Winner",
     },
     description: {
-      es: "Reconocimiento dentro de una plataforma internacional de inspiración y selección de diseño web.",
-      en: "Recognition within an international platform for web design inspiration and selection.",
+      es: "VANMOTION fue reconocida oficialmente por CSS Nectar como ganadora de Website of the Day el 23 de agosto de 2026.",
+      en: "VANMOTION was officially recognized by CSS Nectar as a Website of the Day winner on August 23, 2026.",
     },
     url: "https://cssnectar.com/css-gallery-inspiration/vanmotion-cars-%c2%b7-music-%c2%b7-clothing/",
     certificateUrl: "/referencias/cssnectar/vanmotion-sotd-cert.pdf",
     image: "/reconocimientos/css-nectar.png",
-    alt: "CSS Nectar VANMOTION",
+    alt: "CSS Nectar Website of the Day Winner 2026 VANMOTION",
   },
   {
     name: {
