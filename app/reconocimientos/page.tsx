@@ -112,20 +112,21 @@ const awards: {
   },
   {
     name: {
-      es: "CSS Winner",
-      en: "CSS Winner",
+      es: "CSS Winner — Site of the Day Nominee 2026",
+      en: "CSS Winner — Site of the Day Nominee 2026",
     },
     category: {
-      es: "Reconocimiento Web",
-      en: "Website Recognition",
+      es: "Site of the Day · Nominada",
+      en: "Site of the Day · Nominee",
     },
     description: {
-      es: "Proyecto seleccionado dentro del ecosistema internacional de diseño y experiencias digitales.",
-      en: "Project selected within the international ecosystem of digital design and experiences.",
+      es: "VANMOTION fue nominada oficialmente por CSS Winner al Site of the Day Award el 10 de agosto de 2026. Certificado oficial #CSSW19355.",
+      en: "VANMOTION was officially nominated by CSS Winner for the Site of the Day Award on August 10, 2026. Official certificate #CSSW19355.",
     },
     url: "https://www.csswinner.com/search/vanmotion",
+    certificateUrl: "/reconocimientos/css-winner-site-of-the-day-nominee-2026.pdf",
     image: "/reconocimientos/css-winner.png",
-    alt: "CSS Winner VANMOTION",
+    alt: "CSS Winner Site of the Day Nominee 2026 VANMOTION",
   },
   {
     name: {
