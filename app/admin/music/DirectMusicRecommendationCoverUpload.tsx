@@ -1,6 +1,5 @@
 "use client";
 
-import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
 import {
   type FormEvent,
@@ -42,18 +41,6 @@ function extensionOf(fileName: string): string {
   return dotIndex >= 0
     ? fileName.slice(dotIndex).toLowerCase()
     : "";
-}
-
-function safeFileName(fileName: string): string {
-  const normalized = fileName
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9._-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-
-  return normalized || "portada.webp";
 }
 
 function formatMegabytes(bytes: number): string {
@@ -117,48 +104,6 @@ export default function DirectMusicRecommendationCoverUpload({
     return null;
   }
 
-  async function registerCover({
-    url,
-    pathname,
-    selectedFile,
-  }: {
-    url: string;
-    pathname: string;
-    selectedFile: File;
-  }): Promise<void> {
-    const response = await fetch(
-      "/api/music-recommendation-cover/upload",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-        body: JSON.stringify({
-          action: "register",
-          recommendationId,
-          url,
-          pathname,
-          fileName:
-            selectedFile.name,
-          contentType:
-            selectedFile.type,
-          size: selectedFile.size,
-        }),
-      },
-    );
-
-    const result =
-      await readResponse(response);
-
-    if (!response.ok) {
-      throw new Error(
-        result.error ??
-          "La portada se subió, pero no pudo asociarse al tema.",
-      );
-    }
-  }
-
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>,
   ): Promise<void> {
@@ -192,38 +137,37 @@ export default function DirectMusicRecommendationCoverUpload({
     );
 
     try {
-      const pathname =
-        `music-recommendation-covers/${recommendationId}/` +
-        `${Date.now()}-${safeFileName(file.name)}`;
+      const uploadData =
+        new FormData();
 
-      const blob = await upload(
-        pathname,
+      uploadData.append(
+        "recommendationId",
+        recommendationId,
+      );
+      uploadData.append(
+        "file",
         file,
+      );
+
+      setProgress(20);
+
+      const response = await fetch(
+        "/api/music-recommendation-cover/upload",
         {
-          access: "public",
-          handleUploadUrl:
-            "/api/music-recommendation-cover/upload",
-          clientPayload:
-            JSON.stringify({
-              recommendationId,
-            }),
-          contentType:
-            file.type || undefined,
-          onUploadProgress: ({
-            percentage,
-          }) => {
-            setProgress(
-              Math.round(percentage),
-            );
-          },
+          method: "POST",
+          body: uploadData,
         },
       );
 
-      await registerCover({
-        url: blob.url,
-        pathname: blob.pathname,
-        selectedFile: file,
-      });
+      const result =
+        await readResponse(response);
+
+      if (!response.ok) {
+        throw new Error(
+          result.error ??
+            "No se pudo subir la portada.",
+        );
+      }
 
       setProgress(100);
       setMessage(

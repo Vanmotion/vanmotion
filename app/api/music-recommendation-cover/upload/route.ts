@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { del } from "@vercel/blob";
+import { del, put } from "@vercel/blob";
 import {
   handleUpload,
   type HandleUploadBody,
@@ -325,6 +325,121 @@ export async function POST(
   request: NextRequest,
 ): Promise<NextResponse> {
   try {
+    const contentType =
+      request.headers.get("content-type") ?? "";
+
+    if (
+      contentType
+        .toLowerCase()
+        .includes("multipart/form-data")
+    ) {
+      requireAdminSession(request);
+
+      const formData =
+        await request.formData();
+
+      const recommendationId =
+        requiredText(
+          formData.get("recommendationId"),
+          "La recomendación indicada no es válida.",
+        );
+
+      const uploadedFile =
+        formData.get("file");
+
+      if (!(uploadedFile instanceof File)) {
+        throw new Error(
+          "No se ha recibido ninguna portada.",
+        );
+      }
+
+      if (
+        uploadedFile.size <= 0 ||
+        uploadedFile.size > MAX_COVER_SIZE
+      ) {
+        throw new Error(
+          "El tamaño de la portada no es válido.",
+        );
+      }
+
+      if (
+        uploadedFile.type &&
+        !ALLOWED_CONTENT_TYPES.includes(
+          uploadedFile.type,
+        )
+      ) {
+        throw new Error(
+          "El tipo de imagen no está permitido.",
+        );
+      }
+
+      const extension =
+        path
+          .extname(uploadedFile.name)
+          .toLowerCase();
+
+      if (
+        !ALLOWED_EXTENSIONS.has(extension)
+      ) {
+        throw new Error(
+          "El formato de la portada no es válido.",
+        );
+      }
+
+      const recommendation =
+        await prisma.musicRecommendation
+          .findUnique({
+            where: {
+              id: recommendationId,
+            },
+            select: {
+              id: true,
+            },
+          });
+
+      if (!recommendation) {
+        throw new Error(
+          "No se ha encontrado la recomendación.",
+        );
+      }
+
+      const safeName =
+        uploadedFile.name
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9._-]+/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "") ||
+        `portada${extension}`;
+
+      const pathname =
+        `music-recommendation-covers/${recommendationId}/` +
+        `${Date.now()}-${safeName}`;
+
+      const blob =
+        await put(
+          pathname,
+          uploadedFile,
+          {
+            access: "public",
+            addRandomSuffix: true,
+          },
+        );
+
+      await registerCover({
+        recommendationId,
+        url: blob.url,
+        pathname: blob.pathname,
+      });
+
+      return NextResponse.json({
+        success: true,
+        url: blob.url,
+        pathname: blob.pathname,
+      });
+    }
+
     const body: unknown =
       await request.json();
 
