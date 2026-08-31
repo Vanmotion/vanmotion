@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Reconocimientos | VANMOTION Automotive Culture",
     description:
-      "WD Awards, CSS Nectar y CSS Winner · Reconocimientos digitales de VANMOTION.",
+      "CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es · Reconocimientos digitales de VANMOTION.",
     images: ["/reconocimientos/wd-awards.png"],
   },
 };
@@ -126,6 +126,23 @@ const awards: {
     url: "https://www.csswinner.com/search/vanmotion",
     image: "/reconocimientos/css-winner.png",
     alt: "CSS Winner VANMOTION",
+  },
+  {
+    name: {
+      es: "CSS Design Awards — Website of the Day Nominee 2026",
+      en: "CSS Design Awards — Website of the Day Nominee 2026",
+    },
+    category: {
+      es: "UI Design · UX Design · Innovation",
+      en: "UI Design · UX Design · Innovation",
+    },
+    description: {
+      es: "VANMOTION fue nominada oficialmente por CSS Design Awards el 30 de agosto de 2026 para Website of the Day y participa también en los Public Vote Awards de UI Design, UX Design e Innovation.",
+      en: "VANMOTION was officially nominated by CSS Design Awards on August 30, 2026 for Website of the Day and is also competing in the UI Design, UX Design and Innovation Public Vote Awards.",
+    },
+    url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
+    image: "/reconocimientos/css-design-awards-2026.png",
+    alt: "CSS Design Awards Website of the Day Nominee 2026 VANMOTION",
   },
   {
     name: {
