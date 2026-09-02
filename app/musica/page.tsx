@@ -9,31 +9,23 @@ import { getPublicMusicRecommendations } from "@/app/lib/music-library";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
 import styles from "./musica.module.css";
+import { getMadridLightPhase } from "@/app/lib/madrid-light";
 
 
 export const dynamic = "force-dynamic";
 
 function getMadridHeroImage() {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Madrid",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(new Date());
+  const phase = getMadridLightPhase();
 
-  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
-  const minute = Number(parts.find((part) => part.type === "minute")?.value ?? 0);
-  const totalMinutes = hour * 60 + minute;
-
-  if (totalMinutes >= 330 && totalMinutes < 660) {
+  if (phase === "morning") {
     return "/musica/horario/vanmotion-musica-manana.webp";
   }
 
-  if (totalMinutes >= 660 && totalMinutes < 1080) {
+  if (phase === "day") {
     return "/musica/horario/vanmotion-musica-dia.webp";
   }
 
-  if (totalMinutes >= 1080 && totalMinutes < 1290) {
+  if (phase === "sunset") {
     return "/musica/horario/vanmotion-musica-atardecer.webp";
   }
 

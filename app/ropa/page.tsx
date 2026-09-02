@@ -9,30 +9,22 @@ import { resolveProductImageUrl } from "@/app/lib/product-image-overrides";
 
 import { getLocalizedProductText } from "./product-translations";
 import styles from "./ropa.module.css";
+import { getMadridLightPhase } from "@/app/lib/madrid-light";
 
 export const dynamic = "force-dynamic";
 
 function getMadridClothingHeroImage() {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Madrid",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(new Date());
+  const phase = getMadridLightPhase();
 
-  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
-  const minute = Number(parts.find((part) => part.type === "minute")?.value ?? 0);
-  const totalMinutes = hour * 60 + minute;
-
-  if (totalMinutes >= 330 && totalMinutes < 660) {
+  if (phase === "morning") {
     return "/ropa/horario/vanmotion-ropa-manana.webp";
   }
 
-  if (totalMinutes >= 660 && totalMinutes < 1080) {
+  if (phase === "day") {
     return "/ropa/horario/vanmotion-ropa-dia.webp";
   }
 
-  if (totalMinutes >= 1080 && totalMinutes < 1290) {
+  if (phase === "sunset") {
     return "/ropa/horario/vanmotion-ropa-atardecer.webp";
   }
 
