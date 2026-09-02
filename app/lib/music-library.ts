@@ -72,6 +72,54 @@ export const fallbackTracks: PublicMusicTrack[] = [
   },
 ];
 
+
+function getMadridDateKey() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Madrid",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+function createSeededRandom(seed: number) {
+  let value = seed;
+
+  return () => {
+    value += 0x6d2b79f5;
+
+    let t = value;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffleTracksDaily<T>(items: T[]): T[] {
+  const dateKey = getMadridDateKey();
+
+  let seed = 0;
+
+  for (let i = 0; i < dateKey.length; i++) {
+    seed = (Math.imul(seed, 31) + dateKey.charCodeAt(i)) >>> 0;
+  }
+
+  const random = createSeededRandom(seed);
+  const shuffled = [...items];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+
+    [shuffled[i], shuffled[j]] = [
+      shuffled[j],
+      shuffled[i],
+    ];
+  }
+
+  return shuffled;
+}
+
 export async function getPublicMusicTracks(): Promise<
   PublicMusicTrack[]
 > {
@@ -80,7 +128,7 @@ export async function getPublicMusicTracks(): Promise<
       await prisma.musicTrack.count();
 
     if (totalTracks === 0) {
-      return fallbackTracks;
+      return shuffleTracksDaily(fallbackTracks);
     }
 
     const tracks =
@@ -108,7 +156,7 @@ export async function getPublicMusicTracks(): Promise<
         },
       });
 
-    return tracks.map((track) => ({
+    const publicTracks = tracks.map((track) => ({
       id: track.slug || track.id,
       title: track.title,
       subtitle:
@@ -123,13 +171,15 @@ export async function getPublicMusicTracks(): Promise<
       format: track.format,
       externalUrl: track.externalUrl,
     }));
+
+    return shuffleTracksDaily(publicTracks);
   } catch (error) {
     console.error(
       "VANMOTION_PUBLIC_MUSIC_ERROR:",
       error,
     );
 
-    return fallbackTracks;
+    return shuffleTracksDaily(fallbackTracks);
   }
 }
 
