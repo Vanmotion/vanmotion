@@ -221,18 +221,18 @@ export async function generateMetadata({
 
   const availabilityText =
     language === "es"
-      ? productStatus === "AVAILABLE"
+      ? productStatus === "AVAILABLE" && Number(product.price) > 0
         ? `Disponible online desde Madrid por ${price}.`
         : productStatus === "SOLD_OUT"
           ? "Actualmente agotada."
-          : productStatus === "COMING_SOON"
+          : productStatus === "COMING_SOON" || Number(product.price) <= 0
             ? "Próximo lanzamiento."
             : "Producto de la colección VANMOTION."
-      : productStatus === "AVAILABLE"
+      : productStatus === "AVAILABLE" && Number(product.price) > 0
         ? `Available online from Madrid for ${price}.`
         : productStatus === "SOLD_OUT"
           ? "Currently sold out."
-          : productStatus === "COMING_SOON"
+          : productStatus === "COMING_SOON" || Number(product.price) <= 0
             ? "Coming soon."
             : "Part of the VANMOTION collection.";
 

@@ -509,7 +509,13 @@ export default async function RopaPage() {
                       <span>
                         {productType} · {productText.color ?? "VANMOTION"}
                       </span>
-                      <strong>{formattedPrice}</strong>
+                      <strong>
+                        {Number(product.price) > 0
+                          ? formattedPrice
+                          : language === "es"
+                            ? "Próximamente"
+                            : "Coming soon"}
+                      </strong>
                     </div>
 
                     <Link
