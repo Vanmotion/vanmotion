@@ -83,6 +83,7 @@ export default function MusicPlayer({
   language = "es",
 }: MusicPlayerProps) {
   const [coverError, setCoverError] = useState(false);
+  const [seekPreview, setSeekPreview] = useState<number | null>(null);
   const content = translations[language];
 
   const {
@@ -219,9 +220,28 @@ export default function MusicPlayer({
           min="0"
           max={duration || 0}
           step="0.1"
-          value={Math.min(currentTime, duration || 0)}
+          value={
+            seekPreview ??
+            Math.min(currentTime, duration || 0)
+          }
           onChange={(event) => {
-            changeProgress(Number(event.target.value));
+            setSeekPreview(Number(event.currentTarget.value));
+          }}
+          onPointerUp={(event) => {
+            changeProgress(Number(event.currentTarget.value));
+            setSeekPreview(null);
+          }}
+          onKeyUp={(event) => {
+            changeProgress(Number(event.currentTarget.value));
+            setSeekPreview(null);
+          }}
+          onBlur={(event) => {
+            if (seekPreview === null) {
+              return;
+            }
+
+            changeProgress(Number(event.currentTarget.value));
+            setSeekPreview(null);
           }}
           aria-label={content.progress}
           title={content.progress}
