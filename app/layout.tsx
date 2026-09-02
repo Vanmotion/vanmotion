@@ -20,9 +20,9 @@ const siteUrl = "https://www.vanmotion.es";
 
 const metadataTranslations = {
   es: {
-    title: "VANMOTION | Vehículos, ropa y música en Madrid",
+    title: "VANMOTION Madrid | Vehículos, música y ropa urbana",
     description:
-      "VANMOTION une vehículos seleccionados, ropa urbana y música con identidad propia desde Madrid. Trabajo real, humildad y movimiento.",
+      "VANMOTION es un proyecto independiente de Automotive Culture nacido en Madrid: vehículos seleccionados, música original y ropa urbana bajo una misma identidad.",
     openGraphDescription:
       "Vehículos seleccionados, ropa urbana y música con identidad propia desde Madrid.",
     locale: "es_ES",
@@ -31,9 +31,9 @@ const metadataTranslations = {
   },
 
   en: {
-    title: "VANMOTION | Vehicles, clothing and music from Madrid",
+    title: "VANMOTION Madrid | Vehicles, music and streetwear",
     description:
-      "VANMOTION brings together selected vehicles, urban clothing and original music from Madrid. Real work, humility and movement.",
+      "VANMOTION is an independent Automotive Culture project from Madrid bringing together selected vehicles, original music and streetwear under one identity.",
     openGraphDescription:
       "Selected vehicles, urban clothing and original music with identity from Madrid.",
     locale: "en_US",
@@ -126,15 +126,24 @@ export default async function RootLayout({
   const websiteStructuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${siteUrl}/#website`,
     name: "VANMOTION",
-    alternateName: "Vanmotion",
+    alternateName: [
+      "VANMOTION Madrid",
+      "VANMOTION Automotive Culture",
+    ],
     url: siteUrl,
     inLanguage: content.languageTag,
     description: content.description,
 
     publisher: {
       "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
       name: "VANMOTION",
+      alternateName: [
+        "VANMOTION Madrid",
+        "VANMOTION Automotive Culture",
+      ],
       url: siteUrl,
 
       logo: {
@@ -175,6 +184,8 @@ export default async function RootLayout({
         "WD Awards Nominee 2026 — VANMOTION Automotive Culture",
         "CSS Nectar Site of the Day 2026 — VANMOTION Cars · Music · Clothing",
         "CSS Winner — VANMOTION Cars · Music · Clothing",
+        "CSS Design Awards Nominee 2026 — VANMOTION",
+        "WebsiteAwards.es Nominee 2026 — VANMOTION · E-commerce",
       ],
 
       subjectOf: [
@@ -191,7 +202,12 @@ export default async function RootLayout({
         {
           "@type": "CreativeWork",
           name: "VANMOTION — Cars · Music · Clothing",
-          url: "https://www.csswinner.com/search/vanmotion",
+          url: "https://www.csswinner.com/details/vanmotion-cars-music-clothing/19355",
+        },
+        {
+          "@type": "CreativeWork",
+          name: "VANMOTION — CSS Design Awards Nominee 2026",
+          url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
         },
       ],
     },
@@ -203,10 +219,16 @@ export default async function RootLayout({
     "@type": "Organization",
     "@id": `${siteUrl}/#organization`,
     name: "VANMOTION",
+    alternateName: [
+      "VANMOTION Madrid",
+      "VANMOTION Automotive Culture",
+    ],
     image: `${siteUrl}/brand/vanmotion-mark.webp`,
     url: siteUrl,
     description:
-      "VANMOTION es una marca de Madrid que une vehículos seleccionados, ropa urbana y música con identidad propia.",
+      language === "es"
+        ? "VANMOTION es un proyecto independiente de Automotive Culture nacido en Madrid que une vehículos seleccionados, música original y ropa urbana."
+        : "VANMOTION is an independent Automotive Culture project from Madrid combining selected vehicles, original music and streetwear.",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Madrid",

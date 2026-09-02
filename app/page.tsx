@@ -131,9 +131,9 @@ function getMadridClothingImage() {
 const translations = {
   es: {
     metadata: {
-      title: "VANMOTION | Vehículos, ropa urbana y música en Madrid",
+      title: "VANMOTION Madrid | Vehículos, música y ropa urbana",
       description:
-        "VANMOTION reúne en Madrid vehículos seleccionados, ropa urbana y música con identidad propia. Descubre nuestra cultura de motor, diseño, estilo y sonido.",
+        "VANMOTION es un proyecto independiente de Automotive Culture nacido en Madrid: vehículos seleccionados, música original y ropa urbana bajo una misma identidad.",
     },
     navigation: {
       vehicles: "Vehículos",
@@ -201,9 +201,9 @@ const translations = {
   },
   en: {
     metadata: {
-      title: "Vehicles, clothing and music from Madrid",
+      title: "VANMOTION Madrid | Vehicles, music and streetwear",
       description:
-        "VANMOTION brings together selected vehicles, urban clothing and original music from Madrid.",
+        "VANMOTION is an independent Automotive Culture project from Madrid bringing together selected vehicles, original music and streetwear under one identity.",
     },
     navigation: {
       vehicles: "Vehicles",
