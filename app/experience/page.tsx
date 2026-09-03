@@ -8,25 +8,42 @@ type Period = "manana" | "dia" | "atardecer" | "noche";
 type Atmosphere = "clear" | "autumn" | "rain" | "snow";
 
 const vehicleImages: Record<Period, string> = {
-  manana: "/brand/horario-home/vanmotion-home-manana.webp",
-  dia: "/brand/horario-home/vanmotion-home-dia.webp",
-  atardecer: "/brand/horario-home/vanmotion-home-atardecer.webp",
-  noche: "/brand/horario-home/vanmotion-home-noche.webp",
+  manana: "/experience/vehicles/manana.webp",
+  dia: "/experience/vehicles/dia.webp",
+  atardecer: "/experience/vehicles/atardecer.webp",
+  noche: "/experience/vehicles/noche.webp",
 };
 
 const musicImages: Record<Period, string> = {
-  manana: "/musica/horario/vanmotion-musica-manana.webp",
-  dia: "/musica/horario/vanmotion-musica-dia.webp",
-  atardecer: "/musica/horario/vanmotion-musica-atardecer.webp",
-  noche: "/musica/horario/vanmotion-musica-noche.webp",
+  manana: "/experience/music/manana.webp",
+  dia: "/experience/music/dia.webp",
+  atardecer: "/experience/music/atardecer.webp",
+  noche: "/experience/music/noche.webp",
 };
 
 const streetImages: Record<Period, string> = {
-  manana: "/ropa/horario/vanmotion-ropa-manana.webp",
-  dia: "/ropa/horario/vanmotion-ropa-dia.webp",
-  atardecer: "/ropa/horario/vanmotion-ropa-atardecer.webp",
-  noche: "/ropa/horario/vanmotion-ropa-noche.webp",
+  manana: "/experience/streetwear/manana.webp",
+  dia: "/experience/streetwear/dia.webp",
+  atardecer: "/experience/streetwear/atardecer.webp",
+  noche: "/experience/streetwear/noche.webp",
 };
+
+function sceneImage(
+  section: "vehicles" | "music" | "streetwear",
+  period: Period,
+  atmosphere: Atmosphere
+) {
+  const base =
+    section === "vehicles"
+      ? vehicleImages[period]
+      : section === "music"
+        ? musicImages[period]
+        : streetImages[period];
+
+  if (atmosphere === "clear") return base;
+
+  return `/experience/${section}/${atmosphere}/${period}.webp`;
+}
 
 function getMadridHour() {
   const value = new Intl.DateTimeFormat("en-GB", {
@@ -97,7 +114,7 @@ export default function ExperiencePage() {
       kicker: "THE MACHINE",
       title: "Vehicles",
       text: "Machines with history. Selected for what they make us feel.",
-      image: vehicleImages[period],
+      image: sceneImage("vehicles", period, atmosphere),
       href: "/coleccion",
       link: "Explore collection",
     },
@@ -106,7 +123,7 @@ export default function ExperiencePage() {
       kicker: "THE SOUND",
       title: "Music",
       text: "Sound, atmosphere and the road. Part of the same culture.",
-      image: musicImages[period],
+      image: sceneImage("music", period, atmosphere),
       href: "/musica",
       link: "Enter sound",
     },
@@ -115,7 +132,7 @@ export default function ExperiencePage() {
       kicker: "THE STREET",
       title: "Streetwear",
       text: "Simple pieces, real people and the streets around us.",
-      image: streetImages[period],
+      image: sceneImage("streetwear", period, atmosphere),
       href: "/ropa",
       link: "View clothing",
     },
@@ -177,7 +194,7 @@ export default function ExperiencePage() {
               href="/coleccion"
               className={`${styles.heroCard} ${styles.heroVehicle}`}
               style={{
-                backgroundImage: `url("${vehicleImages[period]}")`,
+                backgroundImage: `url("${sceneImage("vehicles", period, atmosphere)}")`,
               }}
             >
               <span>01 · VEHICLES</span>
@@ -187,7 +204,7 @@ export default function ExperiencePage() {
               href="/musica"
               className={`${styles.heroCard} ${styles.heroMusic}`}
               style={{
-                backgroundImage: `url("${musicImages[period]}")`,
+                backgroundImage: `url("${sceneImage("music", period, atmosphere)}")`,
               }}
             >
               <span>02 · MUSIC</span>
@@ -197,7 +214,7 @@ export default function ExperiencePage() {
               href="/ropa"
               className={`${styles.heroCard} ${styles.heroStreet}`}
               style={{
-                backgroundImage: `url("${streetImages[period]}")`,
+                backgroundImage: `url("${sceneImage("streetwear", period, atmosphere)}")`,
               }}
             >
               <span>03 · STREETWEAR</span>
