@@ -173,6 +173,175 @@ function normalizeTitle(value: string): string {
     .trim();
 }
 
+const STRICT_TOPIC_TERMS: Record<
+  Language,
+  Record<Topic, string[]>
+> = {
+  es: {
+    vehicles: [
+      "coche",
+      "coches",
+      "automovil",
+      "automoviles",
+      "vehiculo",
+      "vehiculos",
+      "automocion",
+      "automotive",
+      "furgoneta",
+      "furgonetas",
+      "restomod",
+      "porsche",
+      "bmw",
+      "mercedes",
+      "audi",
+      "ford",
+      "ferrari",
+      "lamborghini",
+      "volkswagen",
+      "toyota",
+      "honda",
+      "nissan",
+      "mazda",
+      "volvo",
+      "land rover",
+    ],
+    music: [
+      "musica",
+      "musical",
+      "album",
+      "single",
+      "cancion",
+      "artista",
+      "rap",
+      "trap",
+      "hip hop",
+      "productor musical",
+      "produccion musical",
+      "beatmaker",
+      "rapper",
+      "cantante",
+    ],
+    clothing: [
+      "streetwear",
+      "sneaker",
+      "sneakers",
+      "moda",
+      "ropa",
+      "textil",
+      "bomber",
+      "outerwear",
+      "coleccion capsula",
+      "fashion",
+      "clothing",
+      "apparel",
+    ],
+  },
+  en: {
+    vehicles: [
+      "car",
+      "cars",
+      "vehicle",
+      "vehicles",
+      "automotive",
+      "automobile",
+      "van",
+      "vans",
+      "restomod",
+      "porsche",
+      "bmw",
+      "mercedes",
+      "audi",
+      "ford",
+      "ferrari",
+      "lamborghini",
+      "volkswagen",
+      "toyota",
+      "honda",
+      "nissan",
+      "mazda",
+      "volvo",
+      "land rover",
+    ],
+    music: [
+      "music",
+      "album",
+      "single",
+      "song",
+      "artist",
+      "rap",
+      "trap",
+      "hip hop",
+      "music producer",
+      "music production",
+      "beatmaker",
+      "rapper",
+      "singer",
+    ],
+    clothing: [
+      "streetwear",
+      "sneaker",
+      "sneakers",
+      "fashion",
+      "clothing",
+      "apparel",
+      "textile",
+      "bomber",
+      "outerwear",
+      "capsule collection",
+    ],
+  },
+};
+
+const HARD_BLOCK_TERMS = [
+  "detenido",
+  "detenida",
+  "detencion",
+  "arrestado",
+  "arrestada",
+  "carcel",
+  "prision",
+  "acusado",
+  "acusada",
+  "asesinato",
+  "homicidio",
+  "muerte",
+  "criminal",
+  "juicio",
+  "arrested",
+  "detained",
+  "prison",
+  "jail",
+  "accused",
+  "murder",
+  "killed",
+  "death",
+  "criminal",
+  "trial",
+];
+
+function isStrictlyRelevant(
+  candidate: NewsCandidate,
+  topic: Topic,
+  language: Language,
+): boolean {
+  const title = normalizeTitle(candidate.title);
+
+  const hasTopicIdentity =
+    STRICT_TOPIC_TERMS[language][topic].some(
+      (term) => title.includes(normalizeTitle(term)),
+    );
+
+  if (!hasTopicIdentity) {
+    return false;
+  }
+
+  const blocked = HARD_BLOCK_TERMS.some(
+    (term) => title.includes(normalizeTitle(term)),
+  );
+
+  return !blocked;
+}
+
 const POSITIVE_TERMS: Record<
   Language,
   Record<Topic, string[]>
@@ -661,12 +830,21 @@ function filterEditorialCandidates(
   language: Language,
 ): NewsCandidate[] {
   return candidates
+    .filter((candidate) =>
+      isStrictlyRelevant(candidate, topic, language),
+    )
     .map((candidate) => ({
       candidate,
       score: editorialScore(candidate, topic, language),
     }))
     .filter(({ score }) =>
-      score >= (topic === "music" ? 6 : 7),
+      score >= (
+        topic === "music"
+          ? 6
+          : topic === "clothing"
+            ? 5
+            : 7
+      ),
     )
     .sort(
       (first, second) =>
@@ -921,7 +1099,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-google-news-v8-vanmotion-culture-hourly"],
+  ["vanmotion-google-news-v10-streetwear-editorial-hourly"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
