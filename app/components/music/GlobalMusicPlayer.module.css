@@ -815,3 +815,436 @@
 .youtubePreviewButton:hover .youtubePreviewPlay {
   transform: translate(-50%, -50%) scale(1.08);
 }
+
+/* ===== VANMOTION AWARDS V2 · RADIO ===== */
+
+.player {
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 12px;
+
+  background: rgb(7 7 7 / 91%);
+  box-shadow:
+    0 22px 70px rgb(0 0 0 / 48%);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.player:hover {
+  border-color: rgb(255 255 255 / 23%);
+  box-shadow:
+    0 26px 80px rgb(0 0 0 / 56%);
+}
+
+.player.expanded {
+  width: min(460px, calc(100vw - 44px));
+  border-radius: 14px;
+}
+
+.mainRow {
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    34px;
+
+  gap: 12px;
+
+  min-height: 64px;
+  padding: 9px 10px 9px 14px;
+}
+
+.trackButton {
+  padding: 0;
+}
+
+.trackText small {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin: 0;
+
+  color: rgb(255 255 255 / 43%);
+
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+}
+
+.trackText small::before {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+
+  background: rgb(255 255 255 / 88%);
+  content: "";
+}
+
+.trackText strong {
+  margin-top: 5px;
+
+  color: rgb(255 255 255 / 96%);
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+}
+
+.trackMeta {
+  display: block;
+
+  margin-top: 4px;
+  overflow: hidden;
+
+  color: rgb(255 255 255 / 34%);
+
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.centerLogo {
+  display: none;
+}
+
+.controls {
+  gap: 1px;
+}
+
+.controls button,
+.expandButton {
+  width: 30px;
+  height: 30px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: transparent;
+  color: rgb(255 255 255 / 56%);
+}
+
+.controls button:hover,
+.expandButton:hover {
+  border: 0;
+
+  background: rgb(255 255 255 / 7%);
+  color: white;
+
+  transform: none;
+}
+
+.controls .playButton {
+  width: 36px;
+  height: 36px;
+
+  border: 0;
+
+  background: white;
+  color: black;
+
+  font-size: 11px;
+}
+
+.controls .playButton:hover {
+  background: rgb(255 255 255 / 90%);
+  color: black;
+}
+
+.expandButton {
+  width: 32px;
+  height: 32px;
+
+  border-radius: 8px;
+
+  color: rgb(255 255 255 / 45%);
+
+  font-size: 17px;
+}
+
+.miniProgress {
+  width: 100%;
+  height: 1px;
+  overflow: hidden;
+
+  background: rgb(255 255 255 / 9%);
+}
+
+.miniProgress > span {
+  display: block;
+
+  width: 0;
+  height: 100%;
+
+  background: rgb(255 255 255 / 82%);
+
+  transition: width 240ms linear;
+}
+
+.expandedContent {
+  border-top: 0;
+
+  padding: 14px 14px 16px;
+}
+
+.progress {
+  padding: 1px 0 5px;
+}
+
+.progress input::-webkit-slider-runnable-track,
+.volume input::-webkit-slider-runnable-track {
+  height: 2px;
+
+  background: rgb(255 255 255 / 27%);
+}
+
+.progress input::-webkit-slider-thumb,
+.volume input::-webkit-slider-thumb {
+  width: 8px;
+  height: 8px;
+
+  margin-top: -3px;
+
+  box-shadow: none;
+}
+
+.progress input::-moz-range-track,
+.volume input::-moz-range-track {
+  height: 2px;
+
+  background: rgb(255 255 255 / 27%);
+}
+
+.progress input::-moz-range-thumb,
+.volume input::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+}
+
+.volume {
+  grid-template-columns: 34px 1fr;
+
+  margin-top: 7px;
+}
+
+.volume span {
+  font-size: 7px;
+  letter-spacing: 0.22em;
+}
+
+.trackList {
+  gap: 0;
+
+  max-height: 270px;
+  margin-top: 15px;
+
+  border-top: 1px solid rgb(255 255 255 / 9%);
+}
+
+.trackList button {
+  min-height: 48px;
+  padding: 9px 4px;
+
+  border: 0;
+  border-bottom: 1px solid rgb(255 255 255 / 7%);
+  border-radius: 0;
+
+  color: rgb(255 255 255 / 48%);
+}
+
+.trackList button:hover {
+  background: transparent;
+  color: white;
+}
+
+.trackList .activeTrack {
+  border-color: rgb(255 255 255 / 13%);
+
+  background: transparent;
+  color: white;
+}
+
+.trackList .activeTrack > span:first-child {
+  color: white;
+}
+
+.recommendedInPlayer {
+  margin-top: 18px;
+  padding-top: 17px;
+
+  border-top: 1px solid rgb(255 255 255 / 10%);
+}
+
+.recommendedTitle {
+  font-size: 8px;
+  letter-spacing: 0.22em;
+
+  opacity: 0.46;
+}
+
+.youtubePreviewButton,
+.youtubeEmbed {
+  border-radius: 8px;
+}
+
+
+/* Escritorio:
+   el modo compacto pasa a ser una barra editorial real. */
+@media (min-width: 641px) {
+  :global([data-music-player-mode="compact"])
+    .player:not(.expanded) {
+    right: 22px !important;
+    bottom: calc(
+      22px + env(safe-area-inset-bottom, 0px)
+    ) !important;
+
+    width: min(
+      430px,
+      calc(100vw - 44px)
+    ) !important;
+
+    border-radius: 12px !important;
+  }
+
+  :global([data-music-player-mode="compact"])
+    .player:not(.expanded)
+    .mainRow {
+    display: grid !important;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto
+      34px !important;
+
+    gap: 12px !important;
+
+    min-height: 64px !important;
+    padding: 9px 10px 9px 14px !important;
+  }
+
+  :global([data-music-player-mode="compact"])
+    .player:not(.expanded)
+    .trackButton {
+    display: block !important;
+  }
+
+  :global([data-music-player-mode="compact"])
+    .player:not(.expanded)
+    .centerLogo {
+    display: none !important;
+  }
+
+  :global([data-music-player-mode="compact"])
+    .player:not(.expanded)
+    .controls
+    button:first-child,
+  :global([data-music-player-mode="compact"])
+    .player:not(.expanded)
+    .controls
+    button:last-child {
+    display: inline-flex !important;
+  }
+}
+
+
+/* En móvil continúa siendo realmente compacto. */
+@media (max-width: 640px) {
+  .trackMeta {
+    font-size: 7px;
+  }
+
+  .player.expanded .mainRow {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto
+      30px;
+  }
+
+  .player.expanded .centerLogo {
+    display: none;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .miniProgress > span {
+    transition: none;
+  }
+}
+
+/* ===== FIN VANMOTION AWARDS V2 · RADIO ===== */
+
+/* ===== VANMOTION RADIO · AJUSTE PANEL ABIERTO ===== */
+
+@media (min-width: 641px) {
+  .player.expanded {
+    right: 22px;
+    bottom: 22px;
+
+    width: min(390px, calc(100vw - 44px));
+    max-height: min(680px, calc(100dvh - 44px));
+
+    border-radius: 12px;
+  }
+
+  .expandedContent {
+    padding: 12px 14px 14px;
+  }
+
+  .trackList {
+    max-height: 180px;
+  }
+
+  .recommendedInPlayer {
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+  }
+
+  .spotifyRecommendedTrack {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 118px;
+    align-items: center;
+    gap: 10px;
+
+    padding-bottom: 8px;
+
+    border-bottom: 1px solid rgb(255 255 255 / 7%);
+  }
+
+  .recommendedTrackLabel {
+    min-width: 0;
+  }
+
+  .youtubePreviewButton {
+    width: 118px;
+    aspect-ratio: 16 / 9;
+
+    border-radius: 6px;
+  }
+
+  .youtubePreviewPlay {
+    width: 34px;
+    height: 25px;
+
+    border-radius: 6px;
+
+    font-size: 12px;
+  }
+
+  .youtubeEmbed {
+    grid-column: 1 / -1;
+
+    min-height: 190px;
+
+    border-radius: 8px;
+  }
+}
+
+/* ===== FIN AJUSTE PANEL ABIERTO ===== */

@@ -210,7 +210,7 @@ function YouTubeRecommendationPlayer({
 
 const translations = {
   es: {
-    playerName: "MÚSICA",
+    playerName: "VANMOTION RADIO",
     openPlayer: "Abrir reproductor",
     closePlayer: "Cerrar reproductor",
     expandPlayer: "Mostrar canciones y volumen",
@@ -231,7 +231,7 @@ const translations = {
   },
 
   en: {
-    playerName: "MUSIC",
+    playerName: "VANMOTION RADIO",
     openPlayer: "Open player",
     closePlayer: "Close player",
     expandPlayer: "Show tracks and volume",
@@ -271,6 +271,16 @@ const translations = {
     home: string;
   }
 >;
+
+function formatPlayerTime(value: number) {
+  const safeValue =
+    Number.isFinite(value) && value > 0 ? value : 0;
+
+  const minutes = Math.floor(safeValue / 60);
+  const seconds = Math.floor(safeValue % 60);
+
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
 
 export default function GlobalMusicPlayer({
   language,
@@ -375,7 +385,19 @@ export default function GlobalMusicPlayer({
         >
           <span className={styles.trackText}>
             <small>{content.playerName}</small>
-            <strong>{currentTrackTitle}</strong>
+
+            <strong>
+              {String(currentIndex + 1).padStart(2, "0")} ·{" "}
+              {currentTrackTitle}
+            </strong>
+
+            <span className={styles.trackMeta}>
+              {currentTrack.subtitle
+                ? `${currentTrack.subtitle} · `
+                : ""}
+              {formatPlayerTime(currentTime)} /{" "}
+              {formatPlayerTime(duration)}
+            </span>
           </span>
         </button>
 
@@ -465,6 +487,24 @@ export default function GlobalMusicPlayer({
         >
           {expanded ? "×" : "≡"}
         </button>
+      </div>
+
+      <div
+        className={styles.miniProgress}
+        aria-hidden="true"
+      >
+        <span
+          style={{
+            width: `${
+              duration > 0
+                ? Math.min(
+                    100,
+                    (currentTime / duration) * 100,
+                  )
+                : 0
+            }%`,
+          }}
+        />
       </div>
 
       <div
