@@ -474,3 +474,164 @@
     transition: none;
   }
 }
+
+
+/* ==========================================================
+   VANMOTION ATMOSPHERE SYSTEM
+   La imagen permanece real. Estas capas son solo pruebas.
+   ========================================================== */
+
+.atmosphereOverlay,
+.precipitation {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.atmosphereOverlay {
+  z-index: 12;
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+
+.precipitation {
+  z-index: 13;
+  opacity: 0;
+}
+
+
+/* OTOÑO — corrección cromática muy discreta */
+
+.experience[data-atmosphere="autumn"] .atmosphereOverlay {
+  opacity: 0.11;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(150, 78, 25, 0.28),
+      rgba(191, 124, 54, 0.08) 50%,
+      rgba(80, 39, 18, 0.12)
+    );
+  mix-blend-mode: soft-light;
+}
+
+.experience[data-atmosphere="autumn"] .chapterImage,
+.experience[data-atmosphere="autumn"] .heroCard::after {
+  filter:
+    saturate(0.94)
+    sepia(0.07)
+    contrast(1.025);
+}
+
+
+/* LLUVIA — fría, oscura y muy ligera */
+
+.experience[data-atmosphere="rain"] .atmosphereOverlay {
+  opacity: 0.16;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(42, 57, 66, 0.28),
+      rgba(11, 18, 24, 0.14)
+    );
+  mix-blend-mode: multiply;
+}
+
+.experience[data-atmosphere="rain"] .chapterImage,
+.experience[data-atmosphere="rain"] .heroCard::after {
+  filter:
+    saturate(0.78)
+    brightness(0.88)
+    contrast(1.06);
+}
+
+.experience[data-atmosphere="rain"] .precipitation {
+  opacity: 0.075;
+  background-image:
+    repeating-linear-gradient(
+      105deg,
+      transparent 0,
+      transparent 22px,
+      rgba(255,255,255,0.75) 23px,
+      transparent 24px,
+      transparent 48px
+    );
+  background-size: 170px 170px;
+  animation: vanmotionRain 0.55s linear infinite;
+}
+
+
+/* NIEVE — solo preview. Después usaremos fotografía específica */
+
+.experience[data-atmosphere="snow"] .atmosphereOverlay {
+  opacity: 0.12;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(215, 226, 232, 0.34),
+      rgba(105, 122, 135, 0.12)
+    );
+  mix-blend-mode: screen;
+}
+
+.experience[data-atmosphere="snow"] .chapterImage,
+.experience[data-atmosphere="snow"] .heroCard::after {
+  filter:
+    saturate(0.68)
+    brightness(0.94)
+    contrast(1.02);
+}
+
+.experience[data-atmosphere="snow"] .precipitation {
+  opacity: 0.22;
+
+  background-image:
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(255,255,255,.9) 0 1px,
+      transparent 1.6px
+    ),
+    radial-gradient(
+      circle at 70% 65%,
+      rgba(255,255,255,.72) 0 1.3px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 45% 85%,
+      rgba(255,255,255,.6) 0 1px,
+      transparent 1.7px
+    );
+
+  background-size:
+    90px 110px,
+    130px 150px,
+    170px 190px;
+
+  animation: vanmotionSnow 10s linear infinite;
+}
+
+
+@keyframes vanmotionRain {
+  from {
+    transform: translate3d(-20px, -30px, 0);
+  }
+
+  to {
+    transform: translate3d(20px, 80px, 0);
+  }
+}
+
+@keyframes vanmotionSnow {
+  from {
+    transform: translate3d(0, -60px, 0);
+  }
+
+  to {
+    transform: translate3d(-25px, 160px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .precipitation {
+    animation: none !important;
+  }
+}
