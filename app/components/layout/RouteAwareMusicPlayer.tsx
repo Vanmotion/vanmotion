@@ -10,6 +10,7 @@ type RouteAwareMusicPlayerProps = {
 const HIDDEN_PATHS = [
   "/admin",
   "/login-admin",
+  "/experience",
   "/aviso-legal",
   "/privacidad",
   "/cookies",
