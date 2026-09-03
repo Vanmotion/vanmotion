@@ -1248,3 +1248,149 @@
 }
 
 /* ===== FIN AJUSTE PANEL ABIERTO ===== */
+
+
+/* ===== VANMOTION EXPERIENCE · RADIO ===== */
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded) {
+  right: 22px !important;
+  bottom: 22px !important;
+
+  width: 156px !important;
+
+  border-color: rgb(255 255 255 / 11%);
+  border-radius: 9px !important;
+
+  background: rgb(5 5 5 / 72%);
+  box-shadow: none;
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.mainRow {
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    34px !important;
+
+  min-height: 48px !important;
+  gap: 5px !important;
+
+  padding: 6px 7px 6px 10px !important;
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.centerLogo,
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.expandButton {
+  display: none !important;
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.trackButton {
+  display: block !important;
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.trackText small {
+  font-size: 6px;
+  letter-spacing: 0.2em;
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.trackText strong {
+  margin-top: 4px;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.trackMeta {
+  display: none;
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.controls {
+  justify-content: flex-end;
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.controls button:first-child,
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.controls button:last-child {
+  display: none !important;
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.controls .playButton {
+  display: inline-flex !important;
+
+  width: 31px;
+  height: 31px;
+
+  font-size: 9px;
+}
+
+:global([data-music-player-mode="experience"])
+.player:not(.expanded)
+.miniProgress {
+  height: 1px;
+
+  background: rgb(255 255 255 / 7%);
+}
+
+
+/* En móvil: aún más discreto */
+@media (max-width: 640px) {
+  :global([data-music-player-mode="experience"])
+  .player:not(.expanded) {
+    right: 12px !important;
+    bottom: 12px !important;
+
+    width: 48px !important;
+
+    border-radius: 999px !important;
+  }
+
+  :global([data-music-player-mode="experience"])
+  .player:not(.expanded)
+  .mainRow {
+    display: flex !important;
+
+    min-height: 44px !important;
+    padding: 6px !important;
+
+    justify-content: center;
+  }
+
+  :global([data-music-player-mode="experience"])
+  .player:not(.expanded)
+  .trackButton {
+    display: none !important;
+  }
+
+  :global([data-music-player-mode="experience"])
+  .player:not(.expanded)
+  .controls .playButton {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ===== FIN VANMOTION EXPERIENCE · RADIO ===== */

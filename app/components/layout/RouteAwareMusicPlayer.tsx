@@ -10,7 +10,6 @@ type RouteAwareMusicPlayerProps = {
 const HIDDEN_PATHS = [
   "/admin",
   "/login-admin",
-  "/experience",
   "/aviso-legal",
   "/privacidad",
   "/cookies",
@@ -41,8 +40,17 @@ export default function RouteAwareMusicPlayer({
     return null;
   }
 
+  const isExperience = matchesPath(
+    pathname,
+    "/experience",
+  );
+
   return (
-    <div data-music-player-mode="compact">
+    <div
+      data-music-player-mode={
+        isExperience ? "experience" : "compact"
+      }
+    >
       {children}
     </div>
   );
