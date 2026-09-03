@@ -635,3 +635,9 @@
     animation: none !important;
   }
 }
+
+/* Clima únicamente dentro de las fotografías */
+.atmosphereOverlay,
+.precipitation {
+  display: none !important;
+}

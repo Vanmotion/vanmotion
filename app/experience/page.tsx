@@ -62,20 +62,86 @@ function getPeriod(hour: number): Period {
   return "noche";
 }
 
-function getAtmosphereFromUrl(): Atmosphere {
-  if (typeof window === "undefined") return "clear";
+function getAtmosphereOverride(): Atmosphere | null {
+  if (typeof window === "undefined") return null;
 
   const value = new URLSearchParams(window.location.search).get("weather");
 
   if (
     value === "autumn" ||
     value === "rain" ||
-    value === "snow"
+    value === "snow" ||
+    value === "clear"
   ) {
     return value;
   }
 
-  return "clear";
+  return null;
+}
+
+function getMadridMonth() {
+  return Number(
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/Madrid",
+      month: "2-digit",
+    }).format(new Date())
+  );
+}
+
+async function getMadridAtmosphere(): Promise<Atmosphere> {
+  const override = getAtmosphereOverride();
+  if (override) return override;
+
+  try {
+    const response = await fetch(
+      "https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&current=weather_code,precipitation,rain,snowfall&timezone=Europe%2FMadrid",
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) throw new Error("Weather request failed");
+
+    const data = await response.json();
+    const current = data.current ?? {};
+
+    const code = Number(current.weather_code ?? 0);
+    const rain = Number(current.rain ?? 0);
+    const snowfall = Number(current.snowfall ?? 0);
+    const precipitation = Number(current.precipitation ?? 0);
+
+    const snowCodes = new Set([71, 73, 75, 77, 85, 86]);
+    const rainCodes = new Set([
+      51, 53, 55, 56, 57,
+      61, 63, 65, 66, 67,
+      80, 81, 82,
+      95, 96, 99,
+    ]);
+
+    if (snowfall > 0 || snowCodes.has(code)) return "snow";
+
+    if (
+      rain > 0 ||
+      precipitation > 0 ||
+      rainCodes.has(code)
+    ) {
+      return "rain";
+    }
+
+    const month = getMadridMonth();
+
+    if (month >= 9 && month <= 11) {
+      return "autumn";
+    }
+
+    return "clear";
+  } catch {
+    const month = getMadridMonth();
+
+    if (month >= 9 && month <= 11) {
+      return "autumn";
+    }
+
+    return "clear";
+  }
 }
 
 export default function ExperiencePage() {
@@ -100,10 +166,14 @@ export default function ExperiencePage() {
       setPeriod(getPeriod(getMadridHour()));
     };
 
-    setAtmosphere(getAtmosphereFromUrl());
-    update();
+    const updateEnvironment = async () => {
+      update();
+      setAtmosphere(await getMadridAtmosphere());
+    };
 
-    const interval = window.setInterval(update, 30000);
+    updateEnvironment();
+
+    const interval = window.setInterval(updateEnvironment, 300000);
 
     return () => window.clearInterval(interval);
   }, []);
@@ -144,8 +214,6 @@ export default function ExperiencePage() {
       data-period={period}
       data-atmosphere={atmosphere}
     >
-      <div className={styles.atmosphereOverlay} aria-hidden="true" />
-      <div className={styles.precipitation} aria-hidden="true" />
 
       <header className={styles.header}>
         <Link href="/" className={styles.brand}>
