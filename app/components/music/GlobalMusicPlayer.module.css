@@ -1435,3 +1435,34 @@
 }
 
 /* ===== FIN EXPERIENCE RADIO MOBILE POLISH ===== */
+
+/* ===== VANMOTION RADIO · X SIEMPRE VISIBLE ===== */
+
+.player.expanded {
+  z-index: 2147483647 !important;
+}
+
+.player.expanded .mainRow {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgb(7 7 7 / 96%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.player.expanded .expandButton {
+  position: relative;
+  z-index: 30;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px !important;
+  height: 32px !important;
+
+  color: #fff !important;
+  background: rgb(255 255 255 / 8%) !important;
+}
+
+/* ===== FIN X SIEMPRE VISIBLE ===== */
