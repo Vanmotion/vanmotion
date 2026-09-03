@@ -35,19 +35,19 @@ const QUERIES: Record<
 > = {
   es: {
     vehicles:
-      '"coches de segunda mano" OR "mercado del automóvil" OR "vehículos clásicos" OR furgonetas OR importación OR homologación OR mantenimiento automóvil',
+      '"coches clásicos" OR "vehículos clásicos" OR restomod OR "coches de colección" OR "diseño automovilístico" OR "edición especial" OR "concept car" OR "cultura del automóvil" OR "automotive culture"',
     music:
-      '"producción musical" OR "música independiente" OR "estudio de grabación" OR "mezcla musical" OR masterización OR beatmaking OR "plugins de audio" OR "software musical" OR "distribución musical" OR trap OR "música urbana" OR productores musicales',
+      '"hip hop" OR rap OR trap OR "música urbana" OR "nuevo álbum" OR "nuevo single" OR "producción musical" OR "productor musical" OR "artista independiente" OR beatmaker',
     clothing:
-      'streetwear OR "moda urbana" OR "diseño independiente" OR fabricación textil OR materiales textiles OR "marcas independientes"',
+      'streetwear OR sneakers OR "moda urbana" OR "ropa urbana" OR "colección cápsula" OR colaboración OR "marca independiente" OR bomber OR outerwear',
   },
   en: {
     vehicles:
-      '"used cars" OR "car market" OR "classic cars" OR vans OR vehicle import OR homologation OR car maintenance',
+      '"classic cars" OR restomod OR "collector cars" OR "automotive design" OR "special edition" OR "concept car" OR "car culture" OR "automotive culture"',
     music:
-      '"music production" OR "independent music" OR "recording studio" OR mixing OR mastering OR beatmaking OR "audio plugins" OR "music software" OR "music distribution" OR trap OR "urban music" OR music producers',
+      '"hip hop" OR rap OR trap OR "urban music" OR "new album" OR "new single" OR "music production" OR "music producer" OR "independent artist" OR beatmaker',
     clothing:
-      'streetwear OR "urban fashion" OR "independent fashion" OR textile manufacturing OR clothing materials OR "independent brands"',
+      'streetwear OR sneakers OR "urban fashion" OR "capsule collection" OR collaboration OR "independent brand" OR bomber OR outerwear',
   },
 };
 
@@ -56,14 +56,14 @@ const FALLBACK_TITLES: Record<
   Record<Topic, string>
 > = {
   es: {
-    vehicles: "Últimas noticias de vehículos",
-    music: "Últimas noticias de música",
-    clothing: "Últimas noticias de moda y ropa",
+    vehicles: "Actualidad de cultura del automóvil",
+    music: "Actualidad de música y cultura urbana",
+    clothing: "Actualidad de streetwear y diseño urbano",
   },
   en: {
-    vehicles: "Latest vehicle news",
-    music: "Latest music news",
-    clothing: "Latest fashion and clothing news",
+    vehicles: "Latest automotive culture news",
+    music: "Latest music and urban culture news",
+    clothing: "Latest streetwear and urban design news",
   },
 };
 
@@ -490,6 +490,114 @@ function editorialScore(
     }
   }
 
+  const vanmotionIdentityTerms: Record<
+    Language,
+    Record<Topic, string[]>
+  > = {
+    es: {
+      vehicles: [
+        "clasico",
+        "clasicos",
+        "restomod",
+        "coleccion",
+        "coleccionista",
+        "diseno automovilistico",
+        "edicion especial",
+        "concept car",
+        "cultura del automovil",
+        "automotive culture",
+      ],
+      music: [
+        "hip hop",
+        "rap",
+        "trap",
+        "musica urbana",
+        "nuevo album",
+        "nuevo single",
+        "productor",
+        "produccion musical",
+        "artista independiente",
+        "beatmaker",
+      ],
+      clothing: [
+        "streetwear",
+        "sneakers",
+        "moda urbana",
+        "ropa urbana",
+        "coleccion capsula",
+        "colaboracion",
+        "marca independiente",
+        "bomber",
+        "outerwear",
+      ],
+    },
+    en: {
+      vehicles: [
+        "classic",
+        "restomod",
+        "collector",
+        "automotive design",
+        "special edition",
+        "concept car",
+        "car culture",
+        "automotive culture",
+      ],
+      music: [
+        "hip hop",
+        "rap",
+        "trap",
+        "urban music",
+        "new album",
+        "new single",
+        "producer",
+        "music production",
+        "independent artist",
+        "beatmaker",
+      ],
+      clothing: [
+        "streetwear",
+        "sneakers",
+        "urban fashion",
+        "capsule collection",
+        "collaboration",
+        "independent brand",
+        "bomber",
+        "outerwear",
+      ],
+    },
+  };
+
+  for (const term of vanmotionIdentityTerms[language][topic]) {
+    if (title.includes(normalizeTitle(term))) {
+      score += 8;
+    }
+  }
+
+  const commercialNoise = [
+    "oferta",
+    "ofertas",
+    "descuento",
+    "descuentos",
+    "rebajas",
+    "amazon",
+    "temu",
+    "shein",
+    "cupon",
+    "cupón",
+    "black friday",
+    "prime day",
+    "deal",
+    "deals",
+    "discount",
+    "sale",
+  ];
+
+  for (const term of commercialNoise) {
+    if (title.includes(normalizeTitle(term))) {
+      score -= 16;
+    }
+  }
+
   for (const term of localTerms) {
     if (title.includes(normalizeTitle(term))) {
       score += 4;
@@ -558,7 +666,7 @@ function filterEditorialCandidates(
       score: editorialScore(candidate, topic, language),
     }))
     .filter(({ score }) =>
-      score >= (topic === "music" ? 3 : 5),
+      score >= (topic === "music" ? 6 : 7),
     )
     .sort(
       (first, second) =>
@@ -813,7 +921,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-google-news-v7-music-editorial-hourly"],
+  ["vanmotion-google-news-v8-vanmotion-culture-hourly"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
