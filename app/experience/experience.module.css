@@ -987,3 +987,61 @@
 }
 
 /* ===== FIN ENDING LINKS ===== */
+
+/* ===== AWARDS V2 · MOBILE ENDING FULL CONTENT ===== */
+
+@media (max-width: 700px) {
+  .ending {
+    min-height: 100svh;
+    height: auto;
+    justify-content: flex-start;
+    padding: 76px 16px 110px;
+    overflow: visible;
+  }
+
+  .ending h2 {
+    margin: 120px 0 0;
+  }
+
+  .endingLinks {
+    margin-top: 90px;
+    flex-shrink: 0;
+  }
+
+  .endingSocials,
+  .endingNav,
+  .endingBottom {
+    flex-shrink: 0;
+  }
+
+  .endingBottom {
+    margin-top: 58px;
+  }
+}
+
+/* ===== FIN MOBILE ENDING FULL CONTENT ===== */
+
+/* ===== AWARDS V2 · MOBILE ENDING COMPACT ===== */
+@media (max-width: 700px) {
+  .ending h2 {
+    margin-top: 80px;
+  }
+
+  .endingLinks {
+    margin-top: 55px;
+    gap: 28px;
+  }
+
+  .endingSocials {
+    gap: 14px;
+  }
+
+  .endingNav {
+    gap: 12px;
+  }
+
+  .endingBottom {
+    margin-top: 36px;
+  }
+}
+/* ===== FIN MOBILE ENDING COMPACT ===== */
