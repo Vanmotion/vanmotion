@@ -1045,3 +1045,99 @@
   }
 }
 /* ===== FIN MOBILE ENDING COMPACT ===== */
+
+/* ==========================================================
+   VANMOTION AWARDS V2 · FINAL MOTION POLISH
+   ========================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* Microinteracciones */
+  .chapterContent .link,
+  .endingSocials a,
+  .endingNav a {
+    transition:
+      opacity 280ms ease,
+      transform 420ms cubic-bezier(.2,.7,.2,1);
+  }
+
+  .chapterContent .link:hover,
+  .endingSocials a:hover,
+  .endingNav a:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* Entrada editorial del cierre */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+
+    .endingLinks {
+      animation: vmEndingLinksReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 32%;
+    }
+
+    .endingSocials a:nth-child(1) {
+      animation: vmEndingItemReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 25%;
+    }
+
+    .endingSocials a:nth-child(2) {
+      animation: vmEndingItemReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 29%;
+    }
+
+    .endingSocials a:nth-child(3) {
+      animation: vmEndingItemReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 12% cover 33%;
+    }
+
+    .endingNav {
+      animation: vmEndingNavReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 34%;
+    }
+  }
+}
+
+@keyframes vmEndingLinksReveal {
+  from {
+    opacity: .25;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vmEndingItemReveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vmEndingNavReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== FIN FINAL MOTION POLISH ===== */
