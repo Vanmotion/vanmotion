@@ -1394,3 +1394,44 @@
 }
 
 /* ===== FIN VANMOTION EXPERIENCE · RADIO ===== */
+
+/* ===== EXPERIENCE RADIO · MOBILE POLISH ===== */
+
+@media (max-width: 640px) {
+  :global([data-music-player-mode="experience"])
+  .player:not(.expanded) {
+    right: 14px !important;
+    bottom: calc(
+      14px + env(safe-area-inset-bottom, 0px)
+    ) !important;
+
+    width: 44px !important;
+    height: 44px !important;
+
+    border-radius: 50% !important;
+
+    background: rgb(5 5 5 / 82%);
+  }
+
+  :global([data-music-player-mode="experience"])
+  .player:not(.expanded)
+  .mainRow {
+    min-height: 42px !important;
+    padding: 5px !important;
+  }
+
+  :global([data-music-player-mode="experience"])
+  .player:not(.expanded)
+  .controls .playButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  :global([data-music-player-mode="experience"])
+  .player:not(.expanded)
+  .miniProgress {
+    display: none;
+  }
+}
+
+/* ===== FIN EXPERIENCE RADIO MOBILE POLISH ===== */

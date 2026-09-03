@@ -9,27 +9,9 @@ import { resolveProductImageUrl } from "@/app/lib/product-image-overrides";
 
 import { getLocalizedProductText } from "./product-translations";
 import styles from "./ropa.module.css";
-import { getMadridLightPhase } from "@/app/lib/madrid-light";
+import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
 export const dynamic = "force-dynamic";
-
-function getMadridClothingHeroImage() {
-  const phase = getMadridLightPhase();
-
-  if (phase === "morning") {
-    return "/ropa/horario/vanmotion-ropa-manana.webp";
-  }
-
-  if (phase === "day") {
-    return "/ropa/horario/vanmotion-ropa-dia.webp";
-  }
-
-  if (phase === "sunset") {
-    return "/ropa/horario/vanmotion-ropa-atardecer.webp";
-  }
-
-  return "/ropa/horario/vanmotion-ropa-noche.webp";
-}
 
 const MANAGED_PRODUCT_SLUGS = [
   "carpe-diem-black-edition-drop-01",
@@ -293,6 +275,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RopaPage() {
+  const heroImage = await getMadridSectionHeroImage("streetwear");
   const language = await getCurrentLanguage();
   const content = translations[language];
   const [, , clothingNews] = await getDailyNews(language);
@@ -364,7 +347,7 @@ export default async function RopaPage() {
 
       <section className={styles.hero} aria-labelledby="clothing-title">
         <Image
-          src={getMadridClothingHeroImage()}
+          src={heroImage}
           alt="Colección negra VANMOTION en Madrid"
           fill
           priority

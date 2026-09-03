@@ -8,29 +8,10 @@ import { getDailyNews } from "@/app/lib/daily-news";
 import { prisma } from "@/app/lib/prisma";
 
 import styles from "./coleccion.module.css";
-import { getMadridLightPhase } from "@/app/lib/madrid-light";
+import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
 
 export const dynamic = "force-dynamic";
-
-function getMadridHeroImage() {
-  const phase = getMadridLightPhase();
-
-  if (phase === "morning") {
-    return "/brand/horario-home/vanmotion-home-manana.webp";
-  }
-
-  if (phase === "day") {
-    return "/brand/horario-home/vanmotion-home-dia.webp";
-  }
-
-  if (phase === "sunset") {
-    return "/brand/horario-home/vanmotion-home-atardecer.webp";
-  }
-
-  return "/brand/horario-home/vanmotion-home-noche.webp";
-}
-
 
 const fuelLabels: Record<Language, Record<string, string>> = {
   es: {
@@ -325,6 +306,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CollectionPage() {
+  const heroImage = await getMadridSectionHeroImage("vehicles");
   const language = await getCurrentLanguage();
   const content = translations[language];
   const [vehicleNews] = await getDailyNews(language);
@@ -429,7 +411,7 @@ export default async function CollectionPage() {
       <main>
         <section className={styles.hero} aria-labelledby="collection-hero-title">
           <Image
-            src={getMadridHeroImage()}
+            src={heroImage}
             alt="Ford E-150 VANMOTION con Madrid al fondo"
             fill
             priority

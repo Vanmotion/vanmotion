@@ -641,3 +641,98 @@
 .precipitation {
   display: none !important;
 }
+
+/* ===== VANMOTION AWARDS V2 · MOBILE POLISH ===== */
+
+@media (max-width: 700px) {
+  .header {
+    padding: 16px 16px;
+  }
+
+  .hero {
+    padding: 72px 16px 14px;
+  }
+
+  .heroCopy {
+    min-height: auto;
+    padding-bottom: 2px;
+  }
+
+  .heroCopy h1 {
+    margin: 0;
+
+    font-size: clamp(52px, 15.2vw, 72px);
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+  }
+
+  .heroCopy p {
+    margin-top: 26px;
+
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .heroGrid {
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  .heroCard {
+    border-radius: 12px;
+  }
+
+  .heroVehicle {
+    min-height: 250px;
+  }
+
+  .heroMusic,
+  .heroStreet {
+    min-height: 165px;
+  }
+
+  .chapterNumber {
+    top: 68px;
+    left: 16px;
+  }
+
+  .chapterContent {
+    padding: 0 16px 20px;
+  }
+
+  .chapterContent h2 {
+    font-size: clamp(60px, 19vw, 88px);
+    line-height: 0.92;
+    letter-spacing: -0.055em;
+  }
+
+  .chapterFooter {
+    gap: 26px;
+  }
+
+  .ending {
+    padding: 76px 16px 20px;
+  }
+
+  .ending h2 {
+    font-size: clamp(58px, 19vw, 88px);
+    line-height: 0.92;
+  }
+}
+
+@media (max-width: 390px) {
+  .heroCopy h1 {
+    font-size: 56px;
+  }
+
+  .heroVehicle {
+    min-height: 238px;
+  }
+
+  .heroMusic,
+  .heroStreet {
+    min-height: 155px;
+  }
+}
+
+/* ===== FIN MOBILE POLISH ===== */

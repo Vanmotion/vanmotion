@@ -9,29 +9,10 @@ import { getPublicMusicRecommendations } from "@/app/lib/music-library";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
 import styles from "./musica.module.css";
-import { getMadridLightPhase } from "@/app/lib/madrid-light";
+import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
 
 export const dynamic = "force-dynamic";
-
-function getMadridHeroImage() {
-  const phase = getMadridLightPhase();
-
-  if (phase === "morning") {
-    return "/musica/horario/vanmotion-musica-manana.webp";
-  }
-
-  if (phase === "day") {
-    return "/musica/horario/vanmotion-musica-dia.webp";
-  }
-
-  if (phase === "sunset") {
-    return "/musica/horario/vanmotion-musica-atardecer.webp";
-  }
-
-  return "/musica/horario/vanmotion-musica-noche.webp";
-}
-
 
 const translations = {
   es: {
@@ -197,6 +178,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MusicPage() {
+  const heroImage = await getMadridSectionHeroImage("music");
   const language = await getCurrentLanguage();
   const content = translations[language];
   const [, musicNews] = await getDailyNews(language);
@@ -249,7 +231,7 @@ export default async function MusicPage() {
         >
           <div className={styles.heroMedia} aria-hidden="true">
             <Image
-              src={getMadridHeroImage()}
+              src={heroImage}
               alt=""
               fill
               priority
