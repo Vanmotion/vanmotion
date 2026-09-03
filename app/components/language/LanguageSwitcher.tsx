@@ -25,10 +25,13 @@ export default function LanguageSwitcher({
 
   const hidden =
     pathname.startsWith("/admin") ||
-    pathname.startsWith("/login-admin") ||
-    pathname.startsWith("/experience");
+    pathname.startsWith("/login-admin");
   const isClothingPage =
     pathname.startsWith("/ropa");
+
+  const isAwardsHome =
+    pathname === "/" ||
+    pathname.startsWith("/experience");
 
   if (hidden) {
     return null;
@@ -60,6 +63,10 @@ export default function LanguageSwitcher({
       className={`${styles.switcher} ${
         isClothingPage
           ? styles.clothingPage
+          : ""
+      } ${
+        isAwardsHome
+          ? styles.awardsHome
           : ""
       }`}
       aria-label={selectorLabel}

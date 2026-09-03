@@ -196,3 +196,52 @@
     font-size: 8px;
   }
 }
+
+/* ===== VANMOTION AWARDS V2 · LANGUAGE IN HEADER ===== */
+
+.switcher.awardsHome {
+  position: fixed !important;
+  top: 23px !important;
+  right: 142px !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 20px !important;
+  height: 20px !important;
+  padding: 0 !important;
+  gap: 6px !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  transform: none !important;
+}
+
+.switcher.awardsHome button {
+  min-width: 18px !important;
+  width: 18px !important;
+  height: 20px !important;
+  font-size: 10px !important;
+}
+
+.switcher.awardsHome > span {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 720px) {
+  .switcher.awardsHome {
+    top: 17px !important;
+    right: 112px !important;
+    bottom: auto !important;
+    left: auto !important;
+  }
+}
+
+/* ===== FIN LANGUAGE IN HEADER ===== */

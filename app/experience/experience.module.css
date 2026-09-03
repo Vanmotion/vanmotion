@@ -736,3 +736,254 @@
 }
 
 /* ===== FIN MOBILE POLISH ===== */
+
+/* ==========================================================
+   VANMOTION AWARDS V2 · EDITORIAL MOTION
+   ========================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* Entrada inicial */
+  .header {
+    animation: vmHeaderIn 900ms cubic-bezier(.2,.7,.2,1) both;
+  }
+
+  .heroCopy > * {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: vmTextIn 900ms cubic-bezier(.2,.7,.2,1) forwards;
+  }
+
+  .heroCopy > *:nth-child(1) {
+    animation-delay: 80ms;
+  }
+
+  .heroCopy > *:nth-child(2) {
+    animation-delay: 160ms;
+  }
+
+  .heroCopy > *:nth-child(3) {
+    animation-delay: 240ms;
+  }
+
+  .heroCopy > *:nth-child(4) {
+    animation-delay: 320ms;
+  }
+
+  .heroCopy > *:nth-child(5) {
+    animation-delay: 400ms;
+  }
+
+  /* Tarjetas portada */
+  .heroCard {
+    opacity: 0;
+    transform: translateY(20px) scale(.992);
+    animation: vmCardIn 1050ms cubic-bezier(.2,.7,.2,1) forwards;
+  }
+
+  .heroVehicle {
+    animation-delay: 220ms;
+  }
+
+  .heroMusic {
+    animation-delay: 320ms;
+  }
+
+  .heroStreet {
+    animation-delay: 420ms;
+  }
+
+  /* Hovers más refinados */
+  .heroCard::after {
+    transition:
+      transform 1.4s cubic-bezier(.2,.7,.2,1),
+      filter 700ms ease;
+  }
+
+  .heroCard:hover::after {
+    transform: scale(1.035);
+  }
+
+  .chapterImage {
+    transition:
+      transform 1.6s cubic-bezier(.2,.7,.2,1),
+      filter 900ms ease;
+  }
+
+  .chapter:hover .chapterImage {
+    transform: scale(1.025);
+  }
+}
+
+/* Scroll reveal únicamente donde el navegador lo soporte */
+@supports (animation-timeline: view()) {
+
+  @media (prefers-reduced-motion: no-preference) {
+
+    .chapterContent {
+      animation: vmChapterReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 38%;
+    }
+
+    .chapterNumber {
+      animation: vmChapterNumber linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 30%;
+    }
+
+    .endingSmall,
+    .ending h2,
+    .endingBottom {
+      animation: vmEndingReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 35%;
+    }
+  }
+}
+
+@keyframes vmHeaderIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vmTextIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vmCardIn {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes vmChapterReveal {
+  from {
+    opacity: .25;
+    transform: translateY(34px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vmChapterNumber {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vmEndingReveal {
+  from {
+    opacity: .15;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== FIN VANMOTION AWARDS V2 · EDITORIAL MOTION ===== */
+
+/* ===== VANMOTION AWARDS V2 · ENDING LINKS ===== */
+
+.endingLinks {
+  width: 100%;
+  margin-top: clamp(56px, 9vh, 110px);
+  padding-top: 24px;
+  border-top: 1px solid rgb(255 255 255 / 14%);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 48px;
+  align-items: start;
+}
+
+.endingSocials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.endingSocials a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 250ms ease;
+}
+
+.endingSocials a:hover {
+  opacity: .55;
+}
+
+.endingSocials span,
+.endingNav a {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.endingSocials small {
+  font-size: 10px;
+  opacity: .45;
+  letter-spacing: .04em;
+}
+
+.endingNav {
+  display: flex;
+  gap: 26px;
+}
+
+.endingNav a {
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 250ms ease;
+}
+
+.endingNav a:hover {
+  opacity: .55;
+}
+
+@media (max-width: 700px) {
+  .endingLinks {
+    grid-template-columns: 1fr;
+    gap: 34px;
+    margin-top: 54px;
+  }
+
+  .endingSocials {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .endingNav {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+/* ===== FIN ENDING LINKS ===== */
