@@ -5,7 +5,7 @@ import { getCurrentLanguage } from "@/app/lib/language";
 export const metadata: Metadata = {
   title: "Reconocimientos | VANMOTION Automotive Culture",
   description:
-    "Reconocimientos digitales de VANMOTION: WD Awards, CSS Nectar y CSS Winner. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
+    "Reconocimientos digitales de VANMOTION: CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
   keywords: [
     "VANMOTION awards",
     "WD Awards",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Reconocimientos | VANMOTION Automotive Culture",
     description:
-      "Reconocimientos digitales de VANMOTION: WD Awards, CSS Nectar y CSS Winner. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
+      "Reconocimientos digitales de VANMOTION: CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
     type: "website",
     url: "https://www.vanmotion.es/reconocimientos",
     images: [
@@ -130,20 +130,75 @@ const awards: {
   },
   {
     name: {
-      es: "CSS Design Awards — Website of the Day Nominee 2026",
-      en: "CSS Design Awards — Website of the Day Nominee 2026",
+      es: "CSS Design Awards — Special Kudos 2026",
+      en: "CSS Design Awards — Special Kudos 2026",
     },
     category: {
-      es: "UI Design · UX Design · Innovation",
-      en: "UI Design · UX Design · Innovation",
+      es: "Special Kudos",
+      en: "Special Kudos",
     },
     description: {
-      es: "VANMOTION fue nominada oficialmente por CSS Design Awards el 30 de agosto de 2026 para Website of the Day y participa también en los Public Vote Awards de UI Design, UX Design e Innovation.",
-      en: "VANMOTION was officially nominated by CSS Design Awards on August 30, 2026 for Website of the Day and is also competing in the UI Design, UX Design and Innovation Public Vote Awards.",
+      es: "VANMOTION recibió el 3 de septiembre de 2026 el reconocimiento Special Kudos de CSS Design Awards.",
+      en: "VANMOTION received the CSS Design Awards Special Kudos on September 3, 2026.",
     },
     url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
+    certificateUrl: "/reconocimientos/CSSDA-Special-Kudos-VANMOTION-2026.pdf",
     image: "/reconocimientos/css-design-awards-2026.png",
-    alt: "CSS Design Awards Website of the Day Nominee 2026 VANMOTION",
+    alt: "CSS Design Awards Special Kudos 2026 VANMOTION",
+  },
+  {
+    name: {
+      es: "CSS Design Awards — Best UI Design 2026",
+      en: "CSS Design Awards — Best UI Design 2026",
+    },
+    category: {
+      es: "Best UI Design · Ganadora",
+      en: "Best UI Design · Winner",
+    },
+    description: {
+      es: "VANMOTION recibió el premio Best UI Design de CSS Design Awards el 3 de septiembre de 2026.",
+      en: "VANMOTION received the CSS Design Awards Best UI Design award on September 3, 2026.",
+    },
+    url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
+    certificateUrl: "/reconocimientos/cssda-ui-VANMOTION.pdf",
+    image: "/reconocimientos/cssda-best-ui-purple.svg",
+    alt: "CSS Design Awards Best UI Design 2026 VANMOTION",
+  },
+  {
+    name: {
+      es: "CSS Design Awards — Best UX Design 2026",
+      en: "CSS Design Awards — Best UX Design 2026",
+    },
+    category: {
+      es: "Best UX Design · Ganadora",
+      en: "Best UX Design · Winner",
+    },
+    description: {
+      es: "VANMOTION recibió el premio Best UX Design de CSS Design Awards el 3 de septiembre de 2026.",
+      en: "VANMOTION received the CSS Design Awards Best UX Design award on September 3, 2026.",
+    },
+    url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
+    certificateUrl: "/reconocimientos/cssda-ux-VANMOTION.pdf",
+    image: "/reconocimientos/cssda-best-ux-orange.svg",
+    alt: "CSS Design Awards Best UX Design 2026 VANMOTION",
+  },
+  {
+    name: {
+      es: "CSS Design Awards — Best Innovation 2026",
+      en: "CSS Design Awards — Best Innovation 2026",
+    },
+    category: {
+      es: "Best Innovation · Ganadora",
+      en: "Best Innovation · Winner",
+    },
+    description: {
+      es: "VANMOTION recibió el premio Best Innovation de CSS Design Awards el 3 de septiembre de 2026.",
+      en: "VANMOTION received the CSS Design Awards Best Innovation award on September 3, 2026.",
+    },
+    url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
+    certificateUrl: "/reconocimientos/cssda-inn-VANMOTION.pdf",
+    image: "/reconocimientos/cssda-best-inn-green.svg",
+    alt: "CSS Design Awards Best Innovation 2026 VANMOTION",
   },
   {
     name: {
@@ -211,12 +266,22 @@ export default async function ReconocimientosPage() {
                 key={award.name[language]}
                 className="overflow-hidden rounded-2xl border border-white/15 bg-white/[0.03]"
               >
-                <div className="relative aspect-[4/3] w-full">
+                <div
+                  className={
+                    award.image.endsWith(".svg")
+                      ? "relative aspect-[4/3] w-full bg-black p-8"
+                      : "relative aspect-[4/3] w-full"
+                  }
+                >
                   <Image
                     src={award.image}
                     alt={award.alt}
                     fill
-                    className="object-cover"
+                    className={
+                      award.image.endsWith(".svg")
+                        ? "object-contain p-6"
+                        : "object-cover"
+                    }
                   />
                 </div>
 
