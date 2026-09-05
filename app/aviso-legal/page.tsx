@@ -394,12 +394,7 @@ export default async function LegalNoticePage() {
               <dl>
                 <div>
                   <dt>{compact.owner}</dt>
-                  <dd>{legal.ownerName} · VANMOTION</dd>
-                </div>
-
-                <div>
-                  <dt>{compact.taxId}</dt>
-                  <dd>{legal.nif}</dd>
+                  <dd>VANMOTION</dd>
                 </div>
 
                 {legal.phone && legal.phone !== "No disponible" && (

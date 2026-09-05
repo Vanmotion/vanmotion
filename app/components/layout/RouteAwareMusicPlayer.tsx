@@ -15,6 +15,7 @@ const HIDDEN_PATHS = [
   "/cookies",
   "/condiciones-compra",
   "/desistimiento",
+  "/reconocimientos",
 ];
 
 function matchesPath(

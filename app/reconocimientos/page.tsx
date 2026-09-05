@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getCurrentLanguage } from "@/app/lib/language";
+import styles from "./reconocimientos.module.css";
 
 export const metadata: Metadata = {
   title: "Reconocimientos | VANMOTION Automotive Culture",
@@ -223,6 +224,20 @@ export default async function ReconocimientosPage() {
   const language = await getCurrentLanguage();
   const content = translations[language];
 
+  const certificates = [
+    awards[3], // CSSDA Special Kudos
+    awards[4], // CSSDA Best UI
+    awards[5], // CSSDA Best UX
+    awards[6], // CSSDA Best Innovation
+    awards[1], // CSS Nectar Winner
+    awards[0], // WD Awards Nominee
+    awards[2], // CSS Winner Nominee
+  ].filter(
+    (award): award is (typeof awards)[number] & {
+      certificateUrl: string;
+    } => Boolean(award.certificateUrl),
+  );
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
@@ -246,82 +261,64 @@ export default async function ReconocimientosPage() {
         }}
       />
 
-      <main className="min-h-screen bg-black text-white px-8 py-24">
-        <section className="max-w-6xl mx-auto">
-          <p className="text-xs tracking-[0.3em] uppercase opacity-70">
-            {content.label}
-          </p>
+      <main className={styles.page}>
+        <header className={styles.header}>
+          <div>
+            <p className={styles.eyebrow}>{content.label}</p>
 
-          <h1 className="text-5xl font-bold mt-6">
-            VANMOTION — Automotive Culture
-          </h1>
-
-          <p className="mt-6 text-lg opacity-90 leading-relaxed max-w-3xl">
-            {content.description}
-          </p>
-
-          <div className="mt-16 grid gap-10 md:grid-cols-3">
-            {awards.map((award) => (
-              <article
-                key={award.name[language]}
-                className="overflow-hidden rounded-2xl border border-white/15 bg-white/[0.03]"
-              >
-                <div
-                  className={
-                    award.image.endsWith(".svg")
-                      ? "relative aspect-[4/3] w-full bg-black p-8"
-                      : "relative aspect-[4/3] w-full"
-                  }
-                >
-                  <Image
-                    src={award.image}
-                    alt={award.alt}
-                    fill
-                    className={
-                      award.image.endsWith(".svg")
-                        ? "object-contain p-6"
-                        : "object-cover"
-                    }
-                  />
-                </div>
-
-                <div className="p-6">
-                  <h2 className="text-2xl font-semibold">{award.name[language]}</h2>
-
-                  <p className="mt-2 uppercase text-xs tracking-widest opacity-60">
-                    {award.category[language]}
-                  </p>
-
-                  <p className="mt-4 opacity-80 leading-relaxed">
-                    {award.description[language]}
-                  </p>
-
-                  <div className="mt-6 flex flex-col items-start gap-3">
-                    <a
-                      href={award.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline"
-                    >
-                      {content.official}
-                    </a>
-
-                    {award.certificateUrl && (
-                      <a
-                        href={award.certificateUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline"
-                      >
-                        {content.certificate}
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </article>
-            ))}
+            <h1>
+              VANMOTION
+              <span>Recognition Archive</span>
+            </h1>
           </div>
+
+          <p className={styles.counter}>
+            2026 · {String(certificates.length).padStart(2, "0")}
+          </p>
+        </header>
+
+        <section
+          className={styles.wall}
+          aria-label={content.label}
+        >
+          {certificates.map((award, index) => (
+            <article
+              key={award.name[language]}
+              className={`${styles.certificate} ${
+                index === 0 ? styles.featured : ""
+              }`}
+            >
+              <div className={styles.document}>
+                <Image
+                  src={award.certificateUrl.replace(/\.pdf$/i, ".png")}
+                  alt={award.alt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 33vw"
+                  priority={index < 4}
+                  className={styles.certificatePreview}
+                />
+              </div>
+
+              <footer className={styles.certificateMeta}>
+                <span>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <div>
+                  <strong>{award.name[language]}</strong>
+                  <small>{award.category[language]}</small>
+                </div>
+
+
+              </footer>
+            </article>
+          ))}
         </section>
+
+        <footer className={styles.footer}>
+          <span>VANMOTION</span>
+          <span>MADRID · 2026</span>
+        </footer>
       </main>
     </>
   );
