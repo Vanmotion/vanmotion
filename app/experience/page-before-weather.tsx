@@ -27,7 +27,7 @@ const chapters = [
     number: "03",
     kicker: "THE STREET",
     title: "Streetwear",
-    text: "Simple pieces, real people and the streets around us.",
+    text: "Simple clothing, made for the street.",
     image: "/ropa/aprobadas/hombre/camiseta-negra/lifestyle.webp",
     href: "/ropa",
     link: "View clothing",

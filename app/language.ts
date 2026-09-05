@@ -7,7 +7,7 @@ export type Language =
   (typeof SUPPORTED_LANGUAGES)[number];
 
 export const DEFAULT_LANGUAGE: Language =
-  "es";
+  "en";
 
 export const LANGUAGE_COOKIE =
   "vanmotion-language";

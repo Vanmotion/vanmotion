@@ -1,0 +1,738 @@
+.experience {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #090909;
+  color: #f4f4f1;
+  font-family: Arial, Helvetica, sans-serif;
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+}
+
+.header {
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 26px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  mix-blend-mode: difference;
+  color: white;
+  pointer-events: none;
+}
+
+.brand,
+.place {
+  pointer-events: auto;
+}
+
+.brand {
+  color: inherit;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.place {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  opacity: 0.86;
+}
+
+.hero {
+  min-height: 100svh;
+  background: #0b0b0b;
+  padding: 92px 30px 30px;
+  display: flex;
+  align-items: center;
+}
+
+.heroInner {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(320px, 0.95fr) minmax(420px, 1.05fr);
+  gap: 34px;
+  align-items: stretch;
+}
+
+.heroCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 72svh;
+  padding: 18px 0;
+}
+
+.heroEyebrow {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  opacity: 0.72;
+}
+
+.heroCopy h1 {
+  margin: 0;
+  font-size: clamp(72px, 9vw, 148px);
+  line-height: 0.88;
+  letter-spacing: -0.075em;
+  font-weight: 400;
+}
+
+.heroCopy p {
+  max-width: 420px;
+  margin: 28px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.82;
+}
+
+.heroMeta {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  opacity: 0.76;
+}
+
+.heroScroll {
+  margin-top: auto;
+  padding-top: 50px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  opacity: 0.78;
+}
+
+.heroGrid {
+  min-height: 72svh;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 16px;
+}
+
+.heroCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  min-height: 240px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  text-decoration: none;
+  color: white;
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+.heroCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.72) 0%,
+      rgba(0, 0, 0, 0.18) 45%,
+      rgba(0, 0, 0, 0.12) 100%
+    );
+  z-index: 1;
+}
+
+.heroCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  background-position: inherit;
+  background-size: inherit;
+  background-repeat: inherit;
+  transform: scale(1.03);
+  transition: transform 1s ease;
+  z-index: 0;
+}
+
+.heroCard:hover::after {
+  transform: scale(1.08);
+}
+
+.heroCard span {
+  position: absolute;
+  left: 18px;
+  bottom: 16px;
+  z-index: 2;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+}
+
+.heroVehicle {
+  grid-row: 1 / span 2;
+}
+
+.heroMusic {
+  background-position: center;
+}
+
+.heroStreet {
+  background-position: center 18%;
+}
+
+.chapter {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chapterImage {
+  position: absolute;
+  inset: -2%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  will-change: transform;
+  transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transform: scale(1.025);
+}
+
+.chapter:hover .chapterImage {
+  transform: scale(1.045);
+}
+
+.chapterShade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.62) 0%,
+      rgba(0, 0, 0, 0.16) 53%,
+      rgba(0, 0, 0, 0.14) 100%
+    ),
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.7) 0%,
+      transparent 55%
+    );
+}
+
+.chapterNumber {
+  position: absolute;
+  z-index: 3;
+  top: 100px;
+  left: 30px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+}
+
+.chapterContent {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  padding: 0 30px 34px;
+}
+
+.kicker {
+  display: block;
+  margin-bottom: 18px;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  opacity: 0.78;
+}
+
+.chapterContent h2 {
+  margin: 0;
+  font-size: clamp(82px, 13vw, 190px);
+  font-weight: 400;
+  line-height: 0.82;
+  letter-spacing: -0.075em;
+}
+
+.chapterFooter {
+  margin-top: 34px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.chapterFooter p {
+  max-width: 380px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.chapter:nth-of-type(4) {
+  background: #0b0b0b;
+}
+
+.chapter:nth-of-type(4) .chapterImage {
+  inset: 0 0 0 48%;
+  background-size: cover;
+  background-position: center 18%;
+  transform: none;
+}
+
+.chapter:nth-of-type(4):hover .chapterImage {
+  transform: none;
+}
+
+.chapter:nth-of-type(4) .chapterShade {
+  background:
+    linear-gradient(
+      90deg,
+      #0b0b0b 0%,
+      #0b0b0b 38%,
+      rgba(11,11,11,.92) 47%,
+      rgba(11,11,11,.15) 68%,
+      rgba(11,11,11,.05) 100%
+    );
+}
+
+.chapter:nth-of-type(4) .chapterContent {
+  width: 52%;
+  padding-right: 3vw;
+}
+
+.chapter:nth-of-type(4) .chapterContent h2 {
+  font-size: clamp(68px, 8vw, 118px);
+}
+
+.chapter:nth-of-type(4) .chapterFooter {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+.ending {
+  min-height: 100svh;
+  padding: 105px 30px 32px;
+  background: #eeeae2;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.endingSmall {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+}
+
+.ending h2 {
+  margin: auto 0;
+  font-size: clamp(68px, 10.5vw, 150px);
+  font-weight: 400;
+  line-height: 0.82;
+  letter-spacing: -0.075em;
+}
+
+.endingBottom {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+
+@media (max-width: 980px) {
+  .heroInner {
+    grid-template-columns: 1fr;
+  }
+
+  .heroCopy {
+    min-height: auto;
+    padding-bottom: 10px;
+  }
+
+  .heroGrid {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .heroVehicle {
+    grid-row: auto;
+    min-height: 320px;
+  }
+
+  .heroMusic,
+  .heroStreet {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 700px) {
+  .header {
+    padding: 20px 18px;
+  }
+
+  .hero {
+    padding: 84px 18px 18px;
+  }
+
+  .heroCopy h1 {
+    font-size: clamp(58px, 17vw, 92px);
+  }
+
+  .heroCopy p {
+    font-size: 14px;
+  }
+
+  .heroGrid {
+    gap: 12px;
+  }
+
+  .heroCard {
+    border-radius: 14px;
+  }
+
+  .heroVehicle {
+    min-height: 280px;
+  }
+
+  .heroMusic,
+  .heroStreet {
+    min-height: 180px;
+  }
+
+  .chapterNumber {
+    top: 80px;
+    left: 18px;
+  }
+
+  .chapterContent {
+    padding: 0 18px 24px;
+  }
+
+  .chapterContent h2 {
+    font-size: clamp(70px, 23vw, 110px);
+  }
+
+  .chapterFooter {
+    gap: 40px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .chapterFooter p {
+    font-size: 12px;
+  }
+
+  .chapter:nth-of-type(4) .chapterImage {
+    inset: 0;
+    background-position: center 16%;
+  }
+
+  .chapter:nth-of-type(4) .chapterShade {
+    background:
+      linear-gradient(
+        to top,
+        rgba(0,0,0,.9) 0%,
+        rgba(0,0,0,.32) 60%,
+        rgba(0,0,0,.12) 100%
+      );
+  }
+
+  .chapter:nth-of-type(4) .chapterContent {
+    width: 100%;
+    padding-right: 18px;
+  }
+
+  .ending {
+    padding: 90px 18px 22px;
+  }
+
+  .ending h2 {
+    font-size: clamp(68px, 22vw, 108px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience {
+    scroll-behavior: auto;
+  }
+
+  .chapterImage,
+  .heroCard::after {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   VANMOTION ATMOSPHERE SYSTEM
+   La imagen permanece real. Estas capas son solo pruebas.
+   ========================================================== */
+
+.atmosphereOverlay,
+.precipitation {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.atmosphereOverlay {
+  z-index: 12;
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+
+.precipitation {
+  z-index: 13;
+  opacity: 0;
+}
+
+
+/* OTOÑO — corrección cromática muy discreta */
+
+.experience[data-atmosphere="autumn"] .atmosphereOverlay {
+  opacity: 0.11;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(150, 78, 25, 0.28),
+      rgba(191, 124, 54, 0.08) 50%,
+      rgba(80, 39, 18, 0.12)
+    );
+  mix-blend-mode: soft-light;
+}
+
+.experience[data-atmosphere="autumn"] .chapterImage,
+.experience[data-atmosphere="autumn"] .heroCard::after {
+  filter:
+    saturate(0.94)
+    sepia(0.07)
+    contrast(1.025);
+}
+
+
+/* LLUVIA — fría, oscura y muy ligera */
+
+.experience[data-atmosphere="rain"] .atmosphereOverlay {
+  opacity: 0.16;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(42, 57, 66, 0.28),
+      rgba(11, 18, 24, 0.14)
+    );
+  mix-blend-mode: multiply;
+}
+
+.experience[data-atmosphere="rain"] .chapterImage,
+.experience[data-atmosphere="rain"] .heroCard::after {
+  filter:
+    saturate(0.78)
+    brightness(0.88)
+    contrast(1.06);
+}
+
+.experience[data-atmosphere="rain"] .precipitation {
+  opacity: 0.075;
+  background-image:
+    repeating-linear-gradient(
+      105deg,
+      transparent 0,
+      transparent 22px,
+      rgba(255,255,255,0.75) 23px,
+      transparent 24px,
+      transparent 48px
+    );
+  background-size: 170px 170px;
+  animation: vanmotionRain 0.55s linear infinite;
+}
+
+
+/* NIEVE — solo preview. Después usaremos fotografía específica */
+
+.experience[data-atmosphere="snow"] .atmosphereOverlay {
+  opacity: 0.12;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(215, 226, 232, 0.34),
+      rgba(105, 122, 135, 0.12)
+    );
+  mix-blend-mode: screen;
+}
+
+.experience[data-atmosphere="snow"] .chapterImage,
+.experience[data-atmosphere="snow"] .heroCard::after {
+  filter:
+    saturate(0.68)
+    brightness(0.94)
+    contrast(1.02);
+}
+
+.experience[data-atmosphere="snow"] .precipitation {
+  opacity: 0.22;
+
+  background-image:
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(255,255,255,.9) 0 1px,
+      transparent 1.6px
+    ),
+    radial-gradient(
+      circle at 70% 65%,
+      rgba(255,255,255,.72) 0 1.3px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 45% 85%,
+      rgba(255,255,255,.6) 0 1px,
+      transparent 1.7px
+    );
+
+  background-size:
+    90px 110px,
+    130px 150px,
+    170px 190px;
+
+  animation: vanmotionSnow 10s linear infinite;
+}
+
+
+@keyframes vanmotionRain {
+  from {
+    transform: translate3d(-20px, -30px, 0);
+  }
+
+  to {
+    transform: translate3d(20px, 80px, 0);
+  }
+}
+
+@keyframes vanmotionSnow {
+  from {
+    transform: translate3d(0, -60px, 0);
+  }
+
+  to {
+    transform: translate3d(-25px, 160px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .precipitation {
+    animation: none !important;
+  }
+}
+
+/* Clima únicamente dentro de las fotografías */
+.atmosphereOverlay,
+.precipitation {
+  display: none !important;
+}
+
+/* ===== VANMOTION AWARDS V2 · MOBILE POLISH ===== */
+
+@media (max-width: 700px) {
+  .header {
+    padding: 16px 16px;
+  }
+
+  .hero {
+    padding: 72px 16px 14px;
+  }
+
+  .heroCopy {
+    min-height: auto;
+    padding-bottom: 2px;
+  }
+
+  .heroCopy h1 {
+    margin: 0;
+
+    font-size: clamp(52px, 15.2vw, 72px);
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+  }
+
+  .heroCopy p {
+    margin-top: 26px;
+
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .heroGrid {
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  .heroCard {
+    border-radius: 12px;
+  }
+
+  .heroVehicle {
+    min-height: 250px;
+  }
+
+  .heroMusic,
+  .heroStreet {
+    min-height: 165px;
+  }
+
+  .chapterNumber {
+    top: 68px;
+    left: 16px;
+  }
+
+  .chapterContent {
+    padding: 0 16px 20px;
+  }
+
+  .chapterContent h2 {
+    font-size: clamp(60px, 19vw, 88px);
+    line-height: 0.92;
+    letter-spacing: -0.055em;
+  }
+
+  .chapterFooter {
+    gap: 26px;
+  }
+
+  .ending {
+    padding: 76px 16px 20px;
+  }
+
+  .ending h2 {
+    font-size: clamp(58px, 19vw, 88px);
+    line-height: 0.92;
+  }
+}
+
+@media (max-width: 390px) {
+  .heroCopy h1 {
+    font-size: 56px;
+  }
+
+  .heroVehicle {
+    min-height: 238px;
+  }
+
+  .heroMusic,
+  .heroStreet {
+    min-height: 155px;
+  }
+}
+
+/* ===== FIN MOBILE POLISH ===== */

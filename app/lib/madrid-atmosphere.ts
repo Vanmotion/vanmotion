@@ -1,7 +1,6 @@
-import { getMadridLightPhase } from "@/app/lib/madrid-light";
-
 export type MadridAtmosphere =
   | "clear"
+  | "cloudy"
   | "autumn"
   | "rain"
   | "snow";
@@ -28,6 +27,10 @@ const RAIN_CODES = new Set([
   95, 96, 99,
 ]);
 
+const CLOUDY_CODES = new Set([
+  2, 3,
+]);
+
 function getMadridMonth() {
   return Number(
     new Intl.DateTimeFormat("en-US", {
@@ -46,11 +49,17 @@ function getFallbackAtmosphere(): MadridAtmosphere {
 }
 
 function getPeriod(): Period {
-  const phase = getMadridLightPhase();
+  const hour = Number(
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/Madrid",
+      hour: "2-digit",
+      hour12: false,
+    }).format(new Date()),
+  );
 
-  if (phase === "morning") return "manana";
-  if (phase === "day") return "dia";
-  if (phase === "sunset") return "atardecer";
+  if (hour >= 6 && hour < 12) return "manana";
+  if (hour >= 12 && hour < 18) return "dia";
+  if (hour >= 18 && hour < 21) return "atardecer";
 
   return "noche";
 }
@@ -104,6 +113,10 @@ export async function getMadridAtmosphere():
       RAIN_CODES.has(code)
     ) {
       return "rain";
+    }
+
+    if (CLOUDY_CODES.has(code)) {
+      return "cloudy";
     }
 
     return getFallbackAtmosphere();

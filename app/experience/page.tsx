@@ -1,17 +1,21 @@
 import { getCurrentLanguage } from "@/app/lib/language";
+import { getExperienceEnvironment } from "@/app/lib/experience-section-image";
 import { prisma } from "@/app/lib/prisma";
 import ExperienceClient from "./ExperienceClient";
 
 export default async function ExperiencePage() {
   const language = await getCurrentLanguage();
 
-  const settings = await prisma.siteSettings.findFirst({
-    select: {
-      instagram: true,
-      tiktok: true,
-      youtube: true,
-    },
-  });
+  const [settings, environment] = await Promise.all([
+    prisma.siteSettings.findFirst({
+      select: {
+        instagram: true,
+        tiktok: true,
+        youtube: true,
+      },
+    }),
+    getExperienceEnvironment(),
+  ]);
 
   const socials = [
     {
@@ -41,6 +45,8 @@ export default async function ExperiencePage() {
     <ExperienceClient
       language={language}
       socials={socials}
+      initialPeriod={environment.period}
+      initialAtmosphere={environment.atmosphere}
     />
   );
 }

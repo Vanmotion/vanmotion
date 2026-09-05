@@ -20,9 +20,9 @@ const siteUrl = "https://www.vanmotion.es";
 
 const metadataTranslations = {
   es: {
-    title: "VANMOTION Madrid | Vehículos, música y ropa urbana",
+    title: "VANMOTION | Automotive Culture · Madrid",
     description:
-      "VANMOTION es un proyecto independiente de Automotive Culture nacido en Madrid: vehículos seleccionados, música original y ropa urbana bajo una misma identidad.",
+      "VANMOTION es un proyecto independiente de cultura automotriz nacido en Madrid: vehículos, música, diseño y ropa urbana bajo una misma identidad.",
     openGraphDescription:
       "Vehículos seleccionados, ropa urbana y música con identidad propia desde Madrid.",
     locale: "es_ES",
@@ -31,11 +31,11 @@ const metadataTranslations = {
   },
 
   en: {
-    title: "VANMOTION Madrid | Vehicles, music and streetwear",
+    title: "VANMOTION | Automotive Culture · Cars, Music & Streetwear",
     description:
-      "VANMOTION is an independent Automotive Culture project from Madrid bringing together selected vehicles, original music and streetwear under one identity.",
+      "VANMOTION is an independent automotive culture project from Madrid, bringing together cars, original music, design and streetwear under one identity.",
     openGraphDescription:
-      "Selected vehicles, urban clothing and original music with identity from Madrid.",
+      "Cars, music, design and street culture from Madrid. Built under one independent identity.",
     locale: "en_US",
     alternateLocale: ["es_ES"],
     languageTag: "en-US",

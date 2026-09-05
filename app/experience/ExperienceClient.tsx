@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import styles from "./experience.module.css";
 
 type Period = "manana" | "dia" | "atardecer" | "noche";
-type Atmosphere = "clear" | "autumn" | "rain" | "snow";
+type Atmosphere = "clear" | "cloudy" | "autumn" | "rain" | "snow";
 
 const vehicleImages: Record<Period, string> = {
   manana: "/experience/vehicles/manana.webp",
@@ -70,6 +70,7 @@ function getAtmosphereOverride(): Atmosphere | null {
   const value = new URLSearchParams(window.location.search).get("weather");
 
   if (
+    value === "cloudy" ||
     value === "autumn" ||
     value === "rain" ||
     value === "snow" ||
@@ -118,6 +119,8 @@ async function getMadridAtmosphere(): Promise<Atmosphere> {
       95, 96, 99,
     ]);
 
+    const cloudyCodes = new Set([2, 3]);
+
     if (snowfall > 0 || snowCodes.has(code)) return "snow";
 
     if (
@@ -126,6 +129,10 @@ async function getMadridAtmosphere(): Promise<Atmosphere> {
       rainCodes.has(code)
     ) {
       return "rain";
+    }
+
+    if (cloudyCodes.has(code)) {
+      return "cloudy";
     }
 
     const month = getMadridMonth();
@@ -155,14 +162,19 @@ type SocialLink = {
 export default function ExperienceClient({
   language,
   socials,
+  initialPeriod,
+  initialAtmosphere,
 }: {
   language: Language;
   socials: SocialLink[];
+  initialPeriod: Period;
+  initialAtmosphere: Atmosphere;
 }) {
   const [time, setTime] = useState("--:--");
-  const [period, setPeriod] = useState<Period>("dia");
+  const [period, setPeriod] =
+    useState<Period>(initialPeriod);
   const [atmosphere, setAtmosphere] =
-    useState<Atmosphere>("clear");
+    useState<Atmosphere>(initialAtmosphere);
 
   useEffect(() => {
     const update = () => {
@@ -215,7 +227,7 @@ export default function ExperienceClient({
       number: "03",
       kicker: language === "es" ? "LA CALLE" : "THE STREET",
       title: language === "es" ? "Ropa urbana" : "Streetwear",
-      text: language === "es" ? "Prendas sencillas, personas reales y las calles que nos rodean." : "Simple pieces, real people and the streets around us.",
+      text: language === "es" ? "Ropa sencilla, hecha para la calle." : "Simple clothing, made for the street.",
       image: sceneImage("streetwear", period, atmosphere),
       href: "/ropa",
       link: language === "es" ? "Ver ropa" : "View clothing",
