@@ -1863,3 +1863,124 @@
 .recommendationMinimized .recommendationStage .youtubeEmbed {
   border-radius: 3px !important;
 }
+
+
+/* RECOMENDADO · CONTROLES FINALES Y ANCLA FIJA */
+
+.player.recommendationActive,
+.player.recommendationActive.recommendationMinimized {
+  right: 6px !important;
+  bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+.player.recommendationActive.recommendationMinimized {
+  width: min(340px, calc(100vw - 12px)) !important;
+}
+
+.player.recommendationActive:not(.recommendationMinimized) {
+  width: min(520px, calc(100vw - 12px)) !important;
+  max-height: none !important;
+}
+
+.player.recommendationActive:not(.recommendationMinimized)
+  .recommendationStage {
+  padding: 3px !important;
+}
+
+.player.recommendationActive:not(.recommendationMinimized)
+  .recommendationStageHeader {
+  min-height: 23px !important;
+  padding: 0 2px 3px !important;
+}
+
+.player.recommendationActive:not(.recommendationMinimized)
+  .recommendationStageControls button {
+  width: 21px !important;
+  height: 21px !important;
+  min-width: 21px !important;
+  min-height: 21px !important;
+  font-size: 12px !important;
+}
+
+@media (max-width: 640px) {
+  .player.recommendationActive,
+  .player.recommendationActive.recommendationMinimized,
+  .player.recommendationActive:not(.recommendationMinimized) {
+    right: 4px !important;
+    bottom: calc(4px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 4px !important;
+    width: auto !important;
+  }
+}
+
+/* FIN RECOMENDADO · CONTROLES FINALES Y ANCLA FIJA */
+
+
+/* RECOMENDADO · CONTROLES SIEMPRE VISIBLES */
+
+.recommendationStage {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.recommendationStageHeader {
+  position: relative !important;
+  z-index: 20 !important;
+  display: flex !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  overflow: visible !important;
+}
+
+.recommendationStageLabel {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.recommendationStageControls {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  display: flex !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 0 0 auto !important;
+  padding: 0 !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 2px !important;
+  overflow: visible !important;
+}
+
+.recommendationStageControls button {
+  position: static !important;
+  display: inline-flex !important;
+  flex: 0 0 21px !important;
+  width: 21px !important;
+  height: 21px !important;
+  min-width: 21px !important;
+  min-height: 21px !important;
+  max-width: 21px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+.player.recommendationActive {
+  overflow: hidden !important;
+}
+
+/* FIN RECOMENDADO · CONTROLES SIEMPRE VISIBLES */

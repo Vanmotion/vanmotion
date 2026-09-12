@@ -405,6 +405,31 @@ export default function GlobalMusicPlayer({
               <button
                 type="button"
                 onClick={() => {
+                  setRecommendationError(null);
+                  if (!recommendationIsPlaying) {
+                    pausePlayback();
+                  }
+                  setRecommendationIsPlaying(
+                    (current) => !current,
+                  );
+                }}
+                aria-label={
+                  recommendationIsPlaying
+                    ? content.pause
+                    : content.play
+                }
+                title={
+                  recommendationIsPlaying
+                    ? content.pause
+                    : content.play
+                }
+              >
+                {recommendationIsPlaying ? "Ⅱ" : "▶"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
                   const activeIndex = recommendations.findIndex(
                     (recommendation) =>
                       recommendation.youtubeVideoId ===
@@ -438,7 +463,29 @@ export default function GlobalMusicPlayer({
 
               <button
                 type="button"
-                onClick={() => setExpanded((current) => !current)}
+                onClick={() => {
+                  closeRecommendation();
+                  setExpanded(true);
+                }}
+                aria-label={
+                  language === "es"
+                    ? "Abrir menú de música"
+                    : "Open music menu"
+                }
+                title={
+                  language === "es"
+                    ? "Abrir menú de música"
+                    : "Open music menu"
+                }
+              >
+                ≡
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setExpanded((current) => !current)
+                }
                 aria-label={
                   expanded
                     ? content.minimizeRecommendation
