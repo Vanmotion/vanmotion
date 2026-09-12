@@ -1,27 +1,23 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 import type { Language } from "@/app/language";
 import type { PublicMusicRecommendation } from "@/app/lib/music-library";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
 
 import { useMusicPlayer } from "./MusicPlayerContext";
+import YouTubeRecommendationPlayer, {
+  type YouTubePlayerHandle,
+} from "./YouTubeRecommendationPlayer";
 import styles from "./GlobalMusicPlayer.module.css";
 
 type GlobalMusicPlayerProps = {
   language: Language;
   recommendations: PublicMusicRecommendation[];
 };
-
-const YouTubeRecommendationPlayer = dynamic(
-  () => import("./YouTubeRecommendationPlayer"),
-  {
-    loading: () => null,
-  },
-);
 
 const translations = {
   es: {
@@ -30,6 +26,12 @@ const translations = {
     closePlayer: "Cerrar reproductor",
     expandPlayer: "Mostrar canciones y volumen",
     reducePlayer: "Ocultar canciones y volumen",
+    recommendations: "Volver a recomendaciones",
+    minimizeRecommendation: "Minimizar vídeo",
+    expandRecommendation: "Ampliar vídeo",
+    videoUnavailable: "No se puede reproducir este vídeo.",
+    openOnYouTube: "Abrir en YouTube",
+    closeRecommendation: "Cerrar vídeo",
     previousTrack: "Canción anterior",
     nextTrack: "Canción siguiente",
     play: "Reproducir",
@@ -51,6 +53,12 @@ const translations = {
     closePlayer: "Close player",
     expandPlayer: "Show tracks and volume",
     reducePlayer: "Hide tracks and volume",
+    recommendations: "Back to recommendations",
+    minimizeRecommendation: "Minimize video",
+    expandRecommendation: "Expand video",
+    videoUnavailable: "This video cannot be played.",
+    openOnYouTube: "Open on YouTube",
+    closeRecommendation: "Close video",
     previousTrack: "Previous track",
     nextTrack: "Next track",
     play: "Play",
@@ -73,6 +81,12 @@ const translations = {
     closePlayer: string;
     expandPlayer: string;
     reducePlayer: string;
+    recommendations: string;
+    minimizeRecommendation: string;
+    expandRecommendation: string;
+    videoUnavailable: string;
+    openOnYouTube: string;
+    closeRecommendation: string;
     previousTrack: string;
     nextTrack: string;
     play: string;
@@ -102,6 +116,8 @@ export default function GlobalMusicPlayer({
   recommendations,
 }: GlobalMusicPlayerProps) {
   const content = translations[language];
+  const pathname = usePathname();
+  const previousPathnameRef = useRef(pathname);
   const [seekPreview, setSeekPreview] =
     useState<number | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -111,6 +127,10 @@ export default function GlobalMusicPlayer({
     recommendationIsPlaying,
     setRecommendationIsPlaying,
   ] = useState(false);
+  const recommendationPlayerRef =
+    useRef<YouTubePlayerHandle | null>(null);
+  const [recommendationError, setRecommendationError] = useState<string | null>(null);
+  const [recommendationRetry, setRecommendationRetry] = useState(0);
 
   const {
     tracks,
@@ -122,6 +142,9 @@ export default function GlobalMusicPlayer({
     volume,
     playbackError,
     togglePlayback,
+    pausePlayback,
+    setAudioStartHandler,
+    setVideoSessionActive,
     selectTrack,
     playPrevious,
     playNext,
@@ -130,15 +153,59 @@ export default function GlobalMusicPlayer({
     setLastTrackEndedHandler,
   } = useMusicPlayer();
 
+  const activeRecommendationData = recommendations.find(
+    (recommendation) =>
+      recommendation.youtubeVideoId === activeRecommendation,
+  );
+
+  useEffect(() => {
+    setVideoSessionActive(Boolean(activeRecommendationData));
+    return () => setVideoSessionActive(false);
+  }, [activeRecommendationData, setVideoSessionActive]);
+
+  useEffect(() => {
+    setAudioStartHandler(() => {
+      recommendationPlayerRef.current?.pauseVideo?.();
+      setRecommendationIsPlaying(false);
+    });
+    return () => setAudioStartHandler(null);
+  }, [setAudioStartHandler]);
+
+  useEffect(() => {
+    if (previousPathnameRef.current !== pathname) {
+      previousPathnameRef.current = pathname;
+      setExpanded(false);
+    }
+  }, [pathname]);
+
+  function closeRecommendation() {
+    recommendationPlayerRef.current?.stopVideo?.();
+    setRecommendationIsPlaying(false);
+    setActiveRecommendation(null);
+    setVideoSessionActive(false);
+    setRecommendationError(null);
+  }
+
+  function selectRecommendation(videoId: string) {
+    pausePlayback();
+    setRecommendationError(null);
+    setRecommendationIsPlaying(true);
+    setVideoSessionActive(true);
+    setActiveRecommendation(videoId);
+    setExpanded(true);
+  }
+
+  const selectRecommendationRef = useRef(selectRecommendation);
+  useEffect(() => {
+    selectRecommendationRef.current = selectRecommendation;
+  });
+
   useEffect(() => {
     setLastTrackEndedHandler(() => {
       const firstRecommendation = recommendations[0];
 
       if (firstRecommendation) {
-        setRecommendationIsPlaying(true);
-        setActiveRecommendation(
-          firstRecommendation.youtubeVideoId,
-        );
+        selectRecommendationRef.current(firstRecommendation.youtubeVideoId);
       } else {
         setRecommendationIsPlaying(false);
         selectTrack(0, true);
@@ -154,14 +221,13 @@ export default function GlobalMusicPlayer({
     setLastTrackEndedHandler,
   ]);
 
-  if (tracks.length === 0 || !currentTrack) {
+  if (tracks.length === 0 && recommendations.length === 0) {
     return null;
   }
 
-  const currentTrackTitle = getLocalizedTrackTitle(
-    currentTrack,
-    language,
-  );
+  const currentTrackTitle = currentTrack
+    ? getLocalizedTrackTitle(currentTrack, language)
+    : content.playerName;
 
   const error =
     playbackError === "activation"
@@ -179,9 +245,17 @@ export default function GlobalMusicPlayer({
     <aside
       className={`${styles.player} ${
         expanded ? styles.expanded : ""
+      } ${
+        activeRecommendationData
+          ? styles.recommendationActive
+          : ""
+      } ${
+        activeRecommendationData && !expanded
+          ? styles.recommendationMinimized
+          : ""
       }`}
     >
-      <div className={styles.mainRow}>
+      <div className={styles.mainRow} hidden={Boolean(activeRecommendationData)}>
         <button
           type="button"
           className={styles.trackButton}
@@ -203,7 +277,7 @@ export default function GlobalMusicPlayer({
             </strong>
 
             <span className={styles.trackMeta}>
-              {currentTrack.subtitle
+              {currentTrack?.subtitle
                 ? `${currentTrack.subtitle} · `
                 : ""}
               {formatPlayerTime(currentTime)} /{" "}
@@ -228,10 +302,10 @@ export default function GlobalMusicPlayer({
           <button
             type="button"
             onClick={() => {
-              setRecommendationIsPlaying(false);
-              setActiveRecommendation(null);
+              closeRecommendation();
               playPrevious();
             }}
+            disabled={!currentTrack}
             aria-label={content.previousTrack}
             title={content.previousTrack}
           >
@@ -251,6 +325,7 @@ export default function GlobalMusicPlayer({
               void togglePlayback();
             }}
             className={styles.playButton}
+            disabled={!currentTrack && !activeRecommendation}
             aria-label={
               playerIsPlaying
                 ? content.pause
@@ -268,10 +343,10 @@ export default function GlobalMusicPlayer({
           <button
             type="button"
             onClick={() => {
-              setRecommendationIsPlaying(false);
-              setActiveRecommendation(null);
+              closeRecommendation();
               playNext();
             }}
+            disabled={!currentTrack}
             aria-label={content.nextTrack}
             title={content.nextTrack}
           >
@@ -302,6 +377,7 @@ export default function GlobalMusicPlayer({
 
       <div
         className={styles.miniProgress}
+        hidden={Boolean(activeRecommendationData)}
         aria-hidden="true"
       >
         <span
@@ -318,9 +394,116 @@ export default function GlobalMusicPlayer({
         />
       </div>
 
+      {activeRecommendationData && (
+        <div className={styles.recommendationStage}>
+          <div className={styles.recommendationStageHeader}>
+            <div className={styles.recommendationStageTitle}>
+              <span>{content.playerName}</span>
+              <strong>{activeRecommendationData.title}</strong>
+              <small>{activeRecommendationData.artist}</small>
+            </div>
+            <div className={styles.recommendationStageControls}>
+              <button
+                type="button"
+                onClick={() => {
+                  setRecommendationError(null);
+                  if (!recommendationIsPlaying) pausePlayback();
+                  setRecommendationIsPlaying((current) => !current);
+                }}
+                aria-label={recommendationIsPlaying ? content.pause : content.play}
+                title={recommendationIsPlaying ? content.pause : content.play}
+              >
+                {recommendationIsPlaying ? "Ⅱ" : "▶"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setExpanded((current) => !current)}
+                aria-label={expanded ? content.minimizeRecommendation : content.expandRecommendation}
+                title={expanded ? content.minimizeRecommendation : content.expandRecommendation}
+              >
+                {expanded ? "−" : "□"}
+              </button>
+              <button
+                type="button"
+                onClick={closeRecommendation}
+                aria-label={content.closeRecommendation}
+                title={content.closeRecommendation}
+              >
+                ×
+              </button>
+            </div>
+          </div>
+
+          <YouTubeRecommendationPlayer
+            key={`${activeRecommendationData.youtubeVideoId}:${recommendationRetry}`}
+            videoId={activeRecommendationData.youtubeVideoId}
+            title={`${activeRecommendationData.title} · ${activeRecommendationData.artist}`}
+            playing={recommendationIsPlaying}
+            playerRef={recommendationPlayerRef}
+            onPlaying={() => {
+              pausePlayback();
+              setRecommendationIsPlaying(true);
+              setRecommendationError(null);
+            }}
+            onPaused={() => setRecommendationIsPlaying(false)}
+            onError={(message) => {
+              setRecommendationIsPlaying(false);
+              setRecommendationError(message);
+            }}
+            onEnded={() => {
+              const activeIndex = recommendations.findIndex(
+                (recommendation) =>
+                  recommendation.youtubeVideoId === activeRecommendationData.youtubeVideoId,
+              );
+              const nextRecommendation = recommendations[activeIndex + 1];
+              if (nextRecommendation) {
+                selectRecommendation(nextRecommendation.youtubeVideoId);
+                return;
+              }
+              closeRecommendation();
+              selectTrack(0, true);
+            }}
+          />
+
+          {recommendationError && (
+            <div className={styles.recommendationError} role="alert">
+              <p>{recommendationError}</p>
+              <button type="button" onClick={() => {
+                setRecommendationError(null);
+                setRecommendationRetry((current) => current + 1);
+                setRecommendationIsPlaying(true);
+              }}>
+                {content.play}
+              </button>
+              <a
+                href={`https://www.youtube.com/watch?v=${activeRecommendationData.youtubeVideoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {content.openOnYouTube} ↗
+              </a>
+            </div>
+          )}
+
+          {expanded && (
+            <button
+              type="button"
+              className={styles.recommendationBackButton}
+              onClick={closeRecommendation}
+            >
+              {content.recommendations}
+            </button>
+          )}
+        </div>
+      )}
+
       <div
+        hidden={!expanded || Boolean(activeRecommendation)}
+        inert={!expanded || Boolean(activeRecommendation)}
         className={`${styles.expandedContent} ${
-          expanded ? "" : styles.expandedContentHidden
+          expanded && !activeRecommendation
+            ? ""
+            : styles.expandedContentHidden
         }`}
       >
           <div className={styles.progress}>
@@ -400,8 +583,7 @@ export default function GlobalMusicPlayer({
                       : ""
                   }
                   onClick={() => {
-                    setRecommendationIsPlaying(false);
-                    setActiveRecommendation(null);
+                    closeRecommendation();
                     selectTrack(index, true);
                   }}
                 >
@@ -440,9 +622,6 @@ export default function GlobalMusicPlayer({
                   const displayNumber = String(
                     tracks.length + index + 1,
                   ).padStart(2, "0");
-                  const nextRecommendation =
-                    recommendations[index + 1];
-
                   return (
                     <div
                       className={
@@ -468,68 +647,19 @@ export default function GlobalMusicPlayer({
                         </div>
                       </div>
 
-                      {activeRecommendation ===
-                      recommendation.youtubeVideoId ? (
-                        <YouTubeRecommendationPlayer
-                          videoId={
-                            recommendation.youtubeVideoId
-                          }
-                          title={`${recommendation.title} · ${recommendation.artist}`}
-                          playing={
-                            recommendationIsPlaying
-                          }
-                          onPlaying={() => {
-                            setRecommendationIsPlaying(
-                              true,
-                            );
-
-                            if (isPlaying) {
-                              void togglePlayback();
-                            }
-                          }}
-                          onPaused={() => {
-                            setRecommendationIsPlaying(
-                              false,
-                            );
-                          }}
-                          onEnded={() => {
-                            if (nextRecommendation) {
-                              setRecommendationIsPlaying(
-                                true,
-                              );
-                              setActiveRecommendation(
-                                nextRecommendation.youtubeVideoId,
-                              );
-                              return;
-                            }
-
-                            setRecommendationIsPlaying(
-                              false,
-                            );
-                            setActiveRecommendation(null);
-                            selectTrack(0, true);
-                          }}
-                        />
-                      ) : (
-                        <button
+                      <button
                           type="button"
                           className={
                             styles.youtubePreviewButton
                           }
                           onClick={() => {
-                            if (isPlaying) {
-                              void togglePlayback();
-                            }
-
-                            setRecommendationIsPlaying(
-                              true,
-                            );
-                            setActiveRecommendation(
+                            selectRecommendation(
                               recommendation.youtubeVideoId,
                             );
                           }}
                           aria-label={`Reproducir ${recommendation.title}`}
                         >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={
                               recommendation.coverUrl ??
@@ -551,8 +681,7 @@ export default function GlobalMusicPlayer({
                           >
                             ▶
                           </span>
-                        </button>
-                      )}
+                      </button>
                     </div>
                   );
                 },

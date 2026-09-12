@@ -24,6 +24,10 @@ type MusicPlayerContextValue = {
   volume: number;
   playbackError: PlaybackError;
   togglePlayback: () => Promise<void>;
+  pausePlayback: () => void;
+  setAudioStartHandler: (handler: (() => void) | null) => void;
+  videoSessionActive: boolean;
+  setVideoSessionActive: (active: boolean) => void;
   selectTrack: (index: number, autoplay?: boolean) => void;
   playPrevious: () => void;
   playNext: () => void;
@@ -57,6 +61,12 @@ export default function MusicPlayerProvider({
   const lastTrackEndedHandlerRef =
     useRef<(() => void) | null>(null);
 
+  const audioStartHandlerRef = useRef<(() => void) | null>(null);
+  const [videoSessionActive, setVideoSessionActive] = useState(false);
+  const setAudioStartHandler = useCallback((handler: (() => void) | null) => {
+    audioStartHandlerRef.current = handler;
+  }, []);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -66,6 +76,7 @@ export default function MusicPlayerProvider({
     useState<PlaybackError>(null);
 
   const currentTrack = tracks[currentIndex] ?? tracks[0];
+  const currentTrackSrc = currentTrack?.src;
 
   useEffect(() => {
     if (initializedRef.current) {
@@ -128,7 +139,7 @@ export default function MusicPlayerProvider({
   useEffect(() => {
     const audio = audioRef.current;
 
-    if (!audio || !currentTrack) {
+    if (!audio || !currentTrackSrc) {
       return;
     }
 
@@ -160,7 +171,7 @@ export default function MusicPlayerProvider({
 
     autoplayPendingRef.current = true;
     audio.load();
-  }, [currentIndex, currentTrack?.src]);
+  }, [currentIndex, currentTrackSrc]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -178,6 +189,16 @@ export default function MusicPlayerProvider({
       String(volume),
     );
   }, [volume]);
+
+  const pausePlayback = useCallback(() => {
+    // Cancel deferred and restored autoplay as well as the current audio.
+    autoplayPendingRef.current = false;
+    resumeAfterChangeRef.current = false;
+    restorePlayingRef.current = false;
+    window.sessionStorage.setItem("vanmotion-global-playing", "0");
+    audioRef.current?.pause();
+    setIsPlaying(false);
+  }, []);
 
   async function togglePlayback() {
     const audio = audioRef.current;
@@ -330,6 +351,10 @@ export default function MusicPlayerProvider({
     volume,
     playbackError,
     togglePlayback,
+    pausePlayback,
+    setAudioStartHandler,
+    videoSessionActive,
+    setVideoSessionActive,
     selectTrack,
     playPrevious,
     playNext,
@@ -408,6 +433,7 @@ export default function MusicPlayerProvider({
           );
         }}
         onPlay={() => {
+          audioStartHandlerRef.current?.();
           window.sessionStorage.setItem(
             "vanmotion-global-playing",
             "1",

@@ -1178,6 +1178,124 @@
   }
 }
 
+/* VANMOTION · escenario persistente para recomendaciones YouTube */
+.recommendationActive {
+  width: min(760px, calc(100vw - 36px));
+}
+
+.recommendationStage {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.recommendationStageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.recommendationStageHeader > div:first-child {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.recommendationStageHeader span,
+.recommendationStageHeader small {
+  color: rgb(255 255 255 / 52%);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.recommendationStageHeader strong {
+  overflow: hidden;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recommendationStageControls {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 5px;
+}
+
+.recommendationStageControls button {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 50%;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.recommendationStageControls button:hover {
+  background: rgb(255 255 255 / 10%);
+}
+
+.recommendationStage .youtubeEmbed {
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+}
+
+.recommendationBackButton {
+  justify-self: start;
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 8px;
+  background: transparent;
+  color: rgb(255 255 255 / 72%);
+  cursor: pointer;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.recommendationBackButton:hover {
+  background: rgb(255 255 255 / 8%);
+  color: white;
+}
+
+:global([data-music-player-mode="compact"])
+  .player.recommendationActive {
+  width: min(430px, calc(100vw - 44px)) !important;
+}
+
+@media (max-width: 640px) {
+  .recommendationActive,
+  :global([data-music-player-mode="compact"])
+    .player.recommendationActive {
+    right: 8px !important;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 8px !important;
+    width: auto !important;
+    border-radius: 14px !important;
+  }
+
+  .recommendationStage {
+    padding: 10px;
+  }
+
+  .recommendationStageHeader strong {
+    font-size: 13px;
+  }
+}
+
 /* ===== FIN VANMOTION AWARDS V2 · RADIO ===== */
 
 /* ===== VANMOTION RADIO · AJUSTE PANEL ABIERTO ===== */
@@ -1466,3 +1584,108 @@
 }
 
 /* ===== FIN X SIEMPRE VISIBLE ===== */
+
+
+/* VANMOTION · vídeo persistente: los cambios de tamaño no desmontan el player. */
+.player.recommendationActive {
+  width: min(760px, calc(100vw - 36px)) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 36px - env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  z-index: 1000 !important;
+}
+.player.recommendationActive .mainRow,
+.player.recommendationActive .miniProgress,
+.expandedContent[hidden] {
+  display: none !important;
+}
+.player.recommendationActive.recommendationMinimized {
+  width: min(360px, calc(100vw - 32px)) !important;
+  max-height: calc(100dvh - 32px - env(safe-area-inset-bottom, 0px));
+  right: 16px !important;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  left: auto !important;
+  border-radius: 12px !important;
+}
+.recommendationStageTitle {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.recommendationStageControls button {
+  flex-shrink: 0;
+  min-width: 36px;
+  min-height: 36px;
+}
+.recommendationStage .youtubeEmbed {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+}
+.recommendationStage .youtubeEmbed iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.recommendationMinimized .recommendationStage {
+  gap: 6px;
+  padding: 8px;
+}
+.recommendationMinimized .recommendationStageHeader {
+  align-items: center;
+  gap: 6px;
+}
+.recommendationMinimized .recommendationStageTitle {
+  display: none;
+}
+.recommendationMinimized .recommendationStageControls {
+  width: 100%;
+  justify-content: flex-end;
+}
+.recommendationError {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: white;
+  font-size: 12px;
+}
+.recommendationError p { flex-basis: 100%; margin: 0; }
+.recommendationError button,
+.recommendationError a {
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 6px;
+  padding: 8px;
+  color: white;
+  background: transparent;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+@media (max-width: 640px) {
+  .player.recommendationActive {
+    right: 8px !important;
+    left: 8px !important;
+    width: auto !important;
+    max-height: calc(100dvh - 16px - env(safe-area-inset-bottom, 0px));
+  }
+  .player.recommendationActive.recommendationMinimized {
+    right: 8px !important;
+    left: auto !important;
+    width: min(220px, calc(100vw - 24px)) !important;
+    max-height: calc(100dvh - 16px - env(safe-area-inset-bottom, 0px));
+  }
+  .recommendationStageControls button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+  .recommendationMinimized .recommendationStageControls button {
+    min-width: 36px;
+    min-height: 36px;
+  }
+}

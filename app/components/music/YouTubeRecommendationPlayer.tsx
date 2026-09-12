@@ -1,84 +1,90 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
 import styles from "./GlobalMusicPlayer.module.css";
 
-type YouTubePlayerInstance = {
+export type YouTubePlayerHandle = {
   destroy?: () => void;
   playVideo?: () => void;
   pauseVideo?: () => void;
+  stopVideo?: () => void;
+  getIframe?: () => HTMLIFrameElement;
 };
 
-type YouTubeStateChangeEvent = {
-  data: number;
-};
-
-type YouTubeReadyEvent = {
-  target: YouTubePlayerInstance;
-};
-
+type YouTubePlayerInstance = YouTubePlayerHandle;
+type YouTubeStateChangeEvent = { data: number };
+type YouTubeReadyEvent = { target: YouTubePlayerInstance };
+type YouTubeErrorEvent = { data: number };
 type YouTubeApi = {
   Player: new (
-    element: HTMLIFrameElement,
+    element: HTMLElement,
     options: {
-      events?: {
-        onReady?: (
-          event: YouTubeReadyEvent,
-        ) => void;
-        onStateChange?: (
-          event: YouTubeStateChangeEvent,
-        ) => void;
+      videoId: string;
+      host?: string;
+      playerVars: Record<string, number | string>;
+      events: {
+        onReady: (event: YouTubeReadyEvent) => void;
+        onStateChange: (event: YouTubeStateChangeEvent) => void;
+        onError: (event: YouTubeErrorEvent) => void;
+        onAutoplayBlocked: () => void;
       };
     },
   ) => YouTubePlayerInstance;
 };
+type YouTubeWindow = Window & typeof globalThis & {
+  YT?: YouTubeApi;
+  onYouTubeIframeAPIReady?: () => void;
+};
 
-type YouTubeWindow = Window &
-  typeof globalThis & {
-    YT?: YouTubeApi;
-    onYouTubeIframeAPIReady?: () => void;
-  };
+let youtubeApiPromise: Promise<YouTubeApi> | null = null;
 
-let youtubeApiPromise: Promise<void> | null = null;
-
-function loadYouTubeIframeApi(): Promise<void> {
+function loadYouTubeIframeApi(): Promise<YouTubeApi> {
   if (typeof window === "undefined") {
-    return Promise.resolve();
+    return Promise.reject(new Error("YouTube requires a browser."));
   }
-
   const youtubeWindow = window as YouTubeWindow;
+  if (youtubeWindow.YT?.Player) return Promise.resolve(youtubeWindow.YT);
+  if (youtubeApiPromise) return youtubeApiPromise;
 
-  if (youtubeWindow.YT?.Player) {
-    return Promise.resolve();
-  }
-
-  if (youtubeApiPromise) {
-    return youtubeApiPromise;
-  }
-
-  youtubeApiPromise = new Promise((resolve) => {
-    const previousReady =
-      youtubeWindow.onYouTubeIframeAPIReady;
-
-    youtubeWindow.onYouTubeIframeAPIReady = () => {
-      previousReady?.();
-      resolve();
-    };
-
-    const existingScript = document.querySelector(
+  youtubeApiPromise = new Promise<YouTubeApi>((resolve, reject) => {
+    const previousReady = youtubeWindow.onYouTubeIframeAPIReady;
+    let settled = false;
+    let created = false;
+    let script = document.querySelector<HTMLScriptElement>(
       'script[src="https://www.youtube.com/iframe_api"]',
     );
-
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.src =
-        "https://www.youtube.com/iframe_api";
+    const finish = (api?: YouTubeApi, error?: Error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      script?.removeEventListener("error", fail);
+      if (youtubeWindow.onYouTubeIframeAPIReady === ready) {
+        youtubeWindow.onYouTubeIframeAPIReady = previousReady;
+      }
+      if (api) resolve(api);
+      else {
+        if (created) script?.remove();
+        reject(error ?? new Error("YouTube API unavailable."));
+      }
+    };
+    const fail = () => finish(undefined, new Error("YouTube API could not load."));
+    const ready = () => {
+      try { previousReady?.(); } finally { finish(youtubeWindow.YT); }
+    };
+    youtubeWindow.onYouTubeIframeAPIReady = ready;
+    const timer = setTimeout(fail, 15000);
+    if (!script) {
+      created = true;
+      script = document.createElement("script");
+      script.src = "https://www.youtube.com/iframe_api";
       script.async = true;
       document.head.appendChild(script);
     }
+    script.addEventListener("error", fail, { once: true });
+  }).catch((error: unknown) => {
+    youtubeApiPromise = null;
+    throw error;
   });
-
   return youtubeApiPromise;
 }
 
@@ -89,110 +95,106 @@ type YouTubeRecommendationPlayerProps = {
   onPlaying: () => void;
   onPaused: () => void;
   onEnded: () => void;
+  onError: (message: string) => void;
+  playerRef?: { current: YouTubePlayerHandle | null };
 };
 
 export default function YouTubeRecommendationPlayer({
-  videoId,
-  title,
-  playing,
-  onPlaying,
-  onPaused,
-  onEnded,
+  videoId, title, playing, onPlaying, onPaused, onEnded,
+  onError, playerRef: externalPlayerRef,
 }: YouTubeRecommendationPlayerProps) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const playerRef =
-    useRef<YouTubePlayerInstance | null>(null);
+  const hostRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<YouTubePlayerInstance | null>(null);
   const playingRef = useRef(playing);
-  const onEndedRef = useRef(onEnded);
-  const onPlayingRef = useRef(onPlaying);
-  const onPausedRef = useRef(onPaused);
-
+  const callbacksRef = useRef({ onPlaying, onPaused, onEnded, onError });
   useEffect(() => {
     playingRef.current = playing;
-  }, [playing]);
-
-  useEffect(() => {
-    onEndedRef.current = onEnded;
-    onPlayingRef.current = onPlaying;
-    onPausedRef.current = onPaused;
-  }, [onEnded, onPaused, onPlaying]);
+    callbacksRef.current = { onPlaying, onPaused, onEnded, onError };
+  });
 
   useEffect(() => {
     let cancelled = false;
+    let instance: YouTubePlayerInstance | null = null;
+    const host = hostRef.current;
+    if (!host) return;
 
-    void loadYouTubeIframeApi().then(() => {
-      if (cancelled || !iframeRef.current) {
-        return;
-      }
+    if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) {
+      callbacksRef.current.onError("Invalid YouTube video ID.");
+      return;
+    }
 
-      const youtubeWindow = window as YouTubeWindow;
-      const api = youtubeWindow.YT;
-
-      if (!api?.Player) {
-        return;
-      }
-
-      const player = new api.Player(
-        iframeRef.current,
-        {
-          events: {
-            onReady: (event) => {
-              playerRef.current = event.target;
-
-              if (playingRef.current) {
-                event.target.playVideo?.();
-              }
-            },
-            onStateChange: (event) => {
-              if (event.data === 1) {
-                onPlayingRef.current();
-              }
-
-              if (event.data === 2) {
-                onPausedRef.current();
-              }
-
-              if (event.data === 0) {
-                onEndedRef.current();
-              }
-            },
+    void loadYouTubeIframeApi().then((api) => {
+      if (cancelled || !host.isConnected) return;
+      const mount = document.createElement("div");
+      host.appendChild(mount);
+      instance = new api.Player(mount, {
+        videoId,
+        host: "https://www.youtube-nocookie.com",
+        playerVars: {
+          autoplay: 0, controls: 1, playsinline: 1, rel: 0,
+          origin: window.location.origin,
+        },
+        events: {
+          onReady: (event) => {
+            if (cancelled) return;
+            playerRef.current = event.target;
+            if (externalPlayerRef) externalPlayerRef.current = event.target;
+            if (playingRef.current) event.target.playVideo?.();
+          },
+          onStateChange: (event) => {
+            if (cancelled) return;
+            if (event.data === 1) callbacksRef.current.onPlaying();
+            else if (event.data === 2) callbacksRef.current.onPaused();
+            else if (event.data === 0) callbacksRef.current.onEnded();
+          },
+          onError: (event) => {
+            if (cancelled) return;
+            const unavailable = [100, 101, 150].includes(event.data);
+            callbacksRef.current.onError(unavailable
+              ? "This video is unavailable or cannot be embedded."
+              : "YouTube could not play this video.");
+          },
+          onAutoplayBlocked: () => {
+            if (!cancelled) callbacksRef.current.onError(
+              "Press play to allow video playback.",
+            );
           },
         },
+      });
+      playerRef.current = instance;
+      if (externalPlayerRef) externalPlayerRef.current = instance;
+    }).catch(() => {
+      if (!cancelled) callbacksRef.current.onError(
+        "YouTube could not load. Check your connection and try again.",
       );
-
-      playerRef.current = player;
     });
 
     return () => {
       cancelled = true;
-      playerRef.current?.destroy?.();
-      playerRef.current = null;
+      if (externalPlayerRef && externalPlayerRef.current === instance) {
+        externalPlayerRef.current = null;
+      }
+      if (playerRef.current === instance) playerRef.current = null;
+      instance?.destroy?.();
+      // React owns the host; YouTube owns its children.
+      host.replaceChildren();
     };
-  }, [videoId]);
+  }, [videoId, externalPlayerRef]);
 
   useEffect(() => {
     const player = playerRef.current;
-
-    if (!player) {
-      return;
-    }
-
-    if (playing) {
-      player.playVideo?.();
-    } else {
-      player.pauseVideo?.();
-    }
+    if (!player) return;
+    if (playing) player.playVideo?.();
+    else player.pauseVideo?.();
   }, [playing]);
 
   return (
-    <iframe
-      ref={iframeRef}
+    <div
+      ref={hostRef}
       className={styles.youtubeEmbed}
-      src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&enablejsapi=1&playsinline=1&controls=1&disablekb=0&fs=1&origin=https%3A%2F%2Fwww.vanmotion.es`}
-      title={title}
-      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-      allowFullScreen
-      style={{ pointerEvents: "auto" }}
+      role="group"
+      aria-label={title}
+      data-youtube-video-id={videoId}
     />
   );
 }
