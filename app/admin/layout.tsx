@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import { ReactNode } from "react";
 
 import Header from "@/components/admin/Header";
 import Sidebar from "@/components/admin/Sidebar";
 import { requireAdminSession } from "@/app/lib/admin-session";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function AdminLayout({
   children,
