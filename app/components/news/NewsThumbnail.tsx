@@ -4,17 +4,19 @@ import { useState } from "react";
 
 type NewsThumbnailProps = {
   imageUrl: string | null;
+  className: string;
 };
 
 export default function NewsThumbnail({
   imageUrl,
+  className,
 }: NewsThumbnailProps) {
   const [failed, setFailed] = useState(false);
   const showImage = Boolean(imageUrl) && !failed;
 
   return (
     <span
-      className="heroNewsThumb"
+      className={className}
       aria-hidden="true"
     >
       {showImage ? (

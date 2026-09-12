@@ -451,7 +451,7 @@ export default async function CollectionPage() {
                 </small>
               </span>
 
-              <NewsThumbnail imageUrl={vehicleNews.imageUrl} />
+              <NewsThumbnail imageUrl={vehicleNews.imageUrl} className={styles.heroNewsThumb} />
             </a>
 
           <div className={styles.heroFoot}>

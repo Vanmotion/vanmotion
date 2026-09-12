@@ -387,7 +387,7 @@ export default async function RopaPage() {
             </small>
           </span>
 
-          <NewsThumbnail imageUrl={clothingNews.imageUrl} />
+          <NewsThumbnail imageUrl={clothingNews.imageUrl} className={styles.heroNewsThumb} />
         </a>
 
         <div className={styles.heroFoot}>

@@ -273,7 +273,7 @@ export default async function MusicPage() {
                 </small>
               </span>
 
-              <NewsThumbnail imageUrl={musicNews.imageUrl} />
+              <NewsThumbnail imageUrl={musicNews.imageUrl} className={styles.heroNewsThumb} />
             </a>
           ) : null}
 
