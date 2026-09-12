@@ -22,6 +22,17 @@ const TOPICS = [
 
 type Topic = (typeof TOPICS)[number];
 
+const STORED_CATEGORY_BY_TOPIC: Record<Topic, string> = {
+  vehicles: "vehicles",
+  music: "music",
+  clothing: "street",
+};
+
+const REGION_BY_LANGUAGE: Record<Language, string> = {
+  es: "ES",
+  en: "NY",
+};
+
 type DailyNewsResult = [
   DailyNewsItem,
   DailyNewsItem,
@@ -995,13 +1006,66 @@ function selectHourlyArticle(
   };
 }
 
+async function fetchStoredTopicCandidates(
+  topic: Topic,
+  language: Language,
+): Promise<NewsCandidate[]> {
+  try {
+    const articles = await prisma.newsArticle.findMany({
+      where: {
+        isActive: true,
+        locale: language,
+        region: REGION_BY_LANGUAGE[language],
+        category: STORED_CATEGORY_BY_TOPIC[topic],
+        editorialScore: { gte: 70 },
+        imageUrl: { not: null },
+      },
+      orderBy: [
+        { editorialScore: "desc" },
+        { publishedAt: "desc" },
+      ],
+      take: MAX_ROTATION_ITEMS * 2,
+      select: {
+        title: true,
+        source: true,
+        sourceUrl: true,
+        imageUrl: true,
+        publishedAt: true,
+      },
+    });
+
+    return articles.map((article) => ({
+      title: article.title,
+      source: article.source,
+      url: article.sourceUrl,
+      imageUrl: article.imageUrl,
+      publishedAt: article.publishedAt.getTime(),
+    }));
+  } catch (error) {
+    console.error(
+      "VANMOTION_STORED_NEWS_ERROR",
+      error instanceof Error
+        ? error.message
+        : String(error),
+    );
+
+    return [];
+  }
+}
+
 async function attachStoredImage(
   item: DailyNewsItem,
+  topic: Topic,
+  language: Language,
 ): Promise<DailyNewsItem> {
   try {
     const storedArticle = await prisma.newsArticle.findFirst({
       where: {
         isActive: true,
+        locale: language,
+        region: REGION_BY_LANGUAGE[language],
+        category: STORED_CATEGORY_BY_TOPIC[topic],
+        imageUrl: { not: null },
         OR: [
           { sourceUrl: item.url },
           { title: item.title },
@@ -1012,13 +1076,17 @@ async function attachStoredImage(
 
     return {
       ...item,
-      imageUrl: storedArticle?.imageUrl ?? item.imageUrl,
+      imageUrl:
+        storedArticle?.imageUrl ?? item.imageUrl,
     };
   } catch (error) {
     console.error(
       "VANMOTION_DAILY_NEWS_IMAGE_ERROR",
-      error instanceof Error ? error.message : String(error),
+      error instanceof Error
+        ? error.message
+        : String(error),
     );
+
     return item;
   }
 }
@@ -1068,6 +1136,27 @@ async function fetchTopic(
   topic: Topic,
   language: Language,
 ): Promise<DailyNewsItem> {
+  const storedCandidates =
+    filterEditorialCandidates(
+      await fetchStoredTopicCandidates(
+        topic,
+        language,
+      ),
+      topic,
+      language,
+    );
+
+  const storedSelection =
+    selectHourlyArticle(
+      storedCandidates,
+      topic,
+      language,
+    );
+
+  if (storedSelection) {
+    return storedSelection;
+  }
+
   const today = await fetchTopicCandidates(
     topic,
     language,
@@ -1128,14 +1217,20 @@ async function fetchDailyNewsOnce(
   );
 
   return (await Promise.all(
-    results.map(attachStoredImage),
+    results.map((item, index) =>
+      attachStoredImage(
+        item,
+        TOPICS[index],
+        language,
+      ),
+    ),
   )) as DailyNewsResult;
 }
 
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-google-news-v10-streetwear-editorial-hourly"],
+  ["vanmotion-news-v11-strict-category-images"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
