@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
 import {
   fetchMadridWeather,
   getMadridPeriod,
@@ -5,6 +8,11 @@ import {
   type ClimateSection,
   type WeatherState,
 } from "@/app/lib/madrid-weather";
+
+import {
+  getMadridSeason,
+  seasonalSceneImage,
+} from "@/app/lib/madrid-seasons";
 
 export type { ClimateSection } from "@/app/lib/madrid-weather";
 export type MadridAtmosphere = WeatherState["atmosphere"];
@@ -17,8 +25,24 @@ export async function getMadridAtmosphere(): Promise<MadridAtmosphere> {
   return (await getMadridWeather()).atmosphere;
 }
 
-export async function getMadridSectionHeroImage(section: ClimateSection): Promise<string> {
+function publicAssetExists(assetPath: string): boolean {
+  return existsSync(
+    join(process.cwd(), "public", assetPath.replace(/^\//, ""))
+  );
+}
+
+export async function getMadridSectionHeroImage(
+  section: ClimateSection
+): Promise<string> {
   const period = getMadridPeriod();
   const atmosphere = await getMadridAtmosphere();
-  return sceneImage(section, period, atmosphere);
+  const season = getMadridSeason();
+
+  return seasonalSceneImage({
+    section,
+    period,
+    atmosphere,
+    season,
+    hasAsset: publicAssetExists,
+  });
 }
