@@ -830,6 +830,30 @@ export async function createCarpeDiemProductAction(): Promise<void> {
   await createVanmotionClothingCollectionAction();
 }
 
+export async function syncProductTextAction(formData: FormData): Promise<void> {
+  await requireAdminSession();
+
+  const productId = requiredString(formData, "productId");
+  const managedProduct = await requireManagedProduct(productId);
+  const { configuration } = managedProduct;
+
+  await prisma.product.update({
+    where: { id: managedProduct.id },
+    data: {
+      name: configuration.name,
+      subtitle: configuration.subtitle,
+      collection: configuration.collection,
+      description: configuration.description,
+      descriptionEn: configuration.descriptionEn,
+      material: configuration.material,
+      color: configuration.color,
+    },
+  });
+
+  refreshClothingPages();
+  revalidatePath(`/ropa/${managedProduct.slug}`);
+}
+
 export async function updateProductAction(formData: FormData): Promise<void> {
   await requireAdminSession();
 

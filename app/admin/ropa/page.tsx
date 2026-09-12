@@ -6,6 +6,7 @@ import { resolveProductImageUrl } from "@/app/lib/product-image-overrides";
 import {
   createCarpeDiemProductAction,
   removeProductImageAction,
+  syncProductTextAction,
   updateProductAction,
 } from "./actions";
 
@@ -290,6 +291,19 @@ export default async function ClothingAdminPage() {
                     <strong>{formatPrice(product.price)}</strong>
                   </div>
                 </div>
+
+                <form action={syncProductTextAction}>
+                  <input
+                    type="hidden"
+                    name="productId"
+                    value={product.id}
+                  />
+                  <SubmitButton
+                    idleText="Sincronizar textos"
+                    pendingText="Sincronizando..."
+                    className={styles.primaryButton}
+                  />
+                </form>
 
                 <div className={styles.productEditorLayout}>
                   <section className={styles.editorGallery}>
