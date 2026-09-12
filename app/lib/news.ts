@@ -205,6 +205,76 @@ function scoreCandidate(candidate: Omit<Candidate, "sourceAuthority" | "category
   return { sourceAuthority, categoryAffinity, vanmotionAffinity, regionAffinity, freshness, culturalImportance, editorialScore };
 }
 
+function imageFromHtml(value: string): string | null {
+  if (!value) return null;
+
+  const cleaned = value
+    .replace(/^<!\[CDATA\[/, "")
+    .replace(/\]\]>$/, "")
+    .replace(/&amp;/g, "&");
+
+  const srcMatch =
+    cleaned.match(
+      /<img\b[^>]*\b(?:src|data-src)=["']([^"']+)["'][^>]*>/i,
+    );
+
+  if (srcMatch?.[1]) {
+    const url = validUrl(srcMatch[1]);
+    if (url) return url;
+  }
+
+  const srcsetMatch =
+    cleaned.match(
+      /<img\b[^>]*\bsrcset=["']([^"']+)["'][^>]*>/i,
+    );
+
+  if (srcsetMatch?.[1]) {
+    const firstCandidate =
+      srcsetMatch[1].split(",")[0]?.trim().split(/\s+/)[0] ?? "";
+
+    const url = validUrl(firstCandidate);
+    if (url) return url;
+  }
+
+  return null;
+}
+
+function rawTag(block: string, name: string): string {
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = block.match(
+    new RegExp(
+      `<${escaped}\\b[^>]*>([\\s\\S]*?)<\\/${escaped}>`,
+      "i",
+    ),
+  );
+
+  return match?.[1] ?? "";
+}
+
+function imageUrlFor(block: string): string | null {
+  const direct = validUrl(
+    attribute(
+      block.match(
+        /<(?:media:content|enclosure)\b[^>]*>/i,
+      )?.[0] ?? "",
+      "url",
+    ) ||
+      attribute(
+        block.match(/<media:thumbnail\b[^>]*>/i)?.[0] ?? "",
+        "url",
+      ),
+  );
+
+  if (direct) return direct;
+
+  return (
+    imageFromHtml(rawTag(block, "content:encoded")) ||
+    imageFromHtml(rawTag(block, "description")) ||
+    imageFromHtml(rawTag(block, "summary")) ||
+    null
+  );
+}
+
 function parseFeed(xml: string, feed: Feed): Evaluation[] {
   const blocks = xml.match(/<(item|entry)\b[\s\S]*?<\/(item|entry)>/gi) ?? [];
   return blocks.flatMap((block) => {
@@ -214,7 +284,7 @@ function parseFeed(xml: string, feed: Feed): Evaluation[] {
     const publishedAt = new Date(published);
     const description = tag(block, "description") || tag(block, "summary");
     const tags = categories(block);
-    const imageUrl = validUrl(attribute(block.match(/<(?:media:content|enclosure)\b[^>]*>/i)?.[0] ?? "", "url") || attribute(block.match(/<media:thumbnail\b[^>]*>/i)?.[0] ?? "", "url"));
+    const imageUrl = imageUrlFor(block);
 
     if (!title || !sourceUrl || Number.isNaN(publishedAt.getTime())) return [];
     const candidate = {
@@ -328,6 +398,76 @@ export async function dryRunNews() {
   };
 }
 
+function metaImageUrl(html: string): string | null {
+  const patterns = [
+    /<meta\b[^>]*property=["']og:image(?::secure_url)?["'][^>]*content=["']([^"']+)["'][^>]*>/i,
+    /<meta\b[^>]*content=["']([^"']+)["'][^>]*property=["']og:image(?::secure_url)?["'][^>]*>/i,
+    /<meta\b[^>]*name=["']twitter:image(?::src)?["'][^>]*content=["']([^"']+)["'][^>]*>/i,
+    /<meta\b[^>]*content=["']([^"']+)["'][^>]*name=["']twitter:image(?::src)?["'][^>]*>/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+
+    if (match?.[1]) {
+      const imageUrl = validUrl(
+        match[1].replace(/&amp;/g, "&"),
+      );
+
+      if (imageUrl) return imageUrl;
+    }
+  }
+
+  return null;
+}
+
+async function enrichCandidateImage(
+  candidate: Candidate,
+): Promise<Candidate> {
+  if (candidate.imageUrl) {
+    return candidate;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    3500,
+  );
+
+  try {
+    const response = await fetch(candidate.sourceUrl, {
+      redirect: "follow",
+      cache: "no-store",
+      headers: {
+        "User-Agent": "Mozilla/5.0 VANMOTION/1.0",
+        Accept: "text/html,application/xhtml+xml",
+      },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      return candidate;
+    }
+
+    const imageUrl = metaImageUrl(
+      await response.text(),
+    );
+
+    if (!imageUrl) {
+      return candidate;
+    }
+
+    return {
+      ...candidate,
+      imageUrl,
+    };
+  } catch {
+    return candidate;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export async function ingestNews(): Promise<{ fetched: number; saved: number; active: number }> {
   const fetched = (await Promise.all(feeds.map(fetchFeed))).flatMap((result) => result.evaluations);
   const selected: Candidate[] = [];
@@ -336,8 +476,12 @@ export async function ingestNews(): Promise<{ fetched: number; saved: number; ac
     if (!evaluation.rejectionReason && candidate.editorialScore >= 70 && !duplicateOf(candidate, selected)) selected.push(candidate);
   }
 
+  const selectedWithImages = await Promise.all(
+    selected.map(enrichCandidateImage),
+  );
+
   let saved = 0;
-  for (const candidate of selected) {
+  for (const candidate of selectedWithImages) {
     await prisma.newsArticle.upsert({
       where: { sourceUrl: candidate.sourceUrl },
       create: {
