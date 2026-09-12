@@ -419,7 +419,9 @@ export default async function RopaPage() {
 
       <section className={styles.collectionSection} id="coleccion">
           <h2 className={styles.srOnly}>
-            {content.navigation.clothing}
+            {language === "es"
+              ? "Colección de ropa urbana: camisetas, bomber, pantalones cargo y sudaderas"
+              : "Urban clothing collection: T-shirts, bomber jackets, cargo trousers and sweatshirts"}
           </h2>
 
         {products.length === 0 ? (
