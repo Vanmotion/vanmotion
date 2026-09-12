@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
 import { prisma } from "@/app/lib/prisma";
+import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 import { resolveProductImageUrl } from "@/app/lib/product-image-overrides";
 
 import { getLocalizedProductText } from "./product-translations";
@@ -371,18 +372,22 @@ export default async function RopaPage() {
           rel="noreferrer"
           className={styles.heroNews}
         >
-          <span className={styles.heroNewsLabel}>
-            {language === "es"
-              ? "Actualidad · Moda y textil"
-              : "Latest · Fashion and clothing"}
+          <span className={styles.heroNewsContent}>
+            <span className={styles.heroNewsLabel}>
+              {language === "es"
+                ? "Actualidad · Moda y textil"
+                : "Latest · Fashion and clothing"}
+            </span>
+
+            <strong>{clothingNews.title}</strong>
+
+            <small>
+              {clothingNews.source}
+              <span aria-hidden="true"> ↗</span>
+            </small>
           </span>
 
-          <strong>{clothingNews.title}</strong>
-
-          <small>
-            {clothingNews.source}
-            <span aria-hidden="true"> ↗</span>
-          </small>
+          <NewsThumbnail imageUrl={clothingNews.imageUrl} />
         </a>
 
         <div className={styles.heroFoot}>

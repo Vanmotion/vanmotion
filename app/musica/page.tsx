@@ -6,6 +6,7 @@ import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
 import { getPublicMusicRecommendations } from "@/app/lib/music-library";
+import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
 import styles from "./musica.module.css";
@@ -257,18 +258,22 @@ export default async function MusicPage() {
               rel="noreferrer"
               className={styles.heroNews}
             >
-              <span className={styles.heroNewsLabel}>
-                {language === "es"
-                  ? "Actualidad · Música"
-                  : "Latest · Music"}
+              <span className={styles.heroNewsContent}>
+                <span className={styles.heroNewsLabel}>
+                  {language === "es"
+                    ? "Actualidad · Música"
+                    : "Latest · Music"}
+                </span>
+
+                <strong>{musicNews.title}</strong>
+
+                <small>
+                  {musicNews.source}
+                  <span aria-hidden="true"> ↗</span>
+                </small>
               </span>
 
-              <strong>{musicNews.title}</strong>
-
-              <small>
-                {musicNews.source}
-                <span aria-hidden="true"> ↗</span>
-              </small>
+              <NewsThumbnail imageUrl={musicNews.imageUrl} />
             </a>
           ) : null}
 

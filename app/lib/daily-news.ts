@@ -1,9 +1,12 @@
 import { unstable_cache } from "next/cache";
 
+import { prisma } from "@/app/lib/prisma";
+
 export type DailyNewsItem = {
   title: string;
   source: string;
   url: string;
+  imageUrl: string | null;
 };
 
 type Language = "es" | "en";
@@ -161,6 +164,7 @@ function fallbackNews(
     title: FALLBACK_TITLES[language][topic],
     source: "Google News",
     url: buildSearchUrl(topic, language),
+    imageUrl: null,
   };
 }
 
@@ -911,7 +915,8 @@ function parseArticles(
       title,
       source: source || "Google News",
       url,
-      publishedAt: Number.isNaN(parsedDate)
+      imageUrl: null,
+        publishedAt: Number.isNaN(parsedDate)
         ? 0
         : parsedDate,
     });
@@ -986,7 +991,36 @@ function selectHourlyArticle(
     title: selected.title,
     source: selected.source,
     url: selected.url,
+    imageUrl: selected.imageUrl,
   };
+}
+
+async function attachStoredImage(
+  item: DailyNewsItem,
+): Promise<DailyNewsItem> {
+  try {
+    const storedArticle = await prisma.newsArticle.findFirst({
+      where: {
+        isActive: true,
+        OR: [
+          { sourceUrl: item.url },
+          { title: item.title },
+        ],
+      },
+      select: { imageUrl: true },
+    });
+
+    return {
+      ...item,
+      imageUrl: storedArticle?.imageUrl ?? item.imageUrl,
+    };
+  } catch (error) {
+    console.error(
+      "VANMOTION_DAILY_NEWS_IMAGE_ERROR",
+      error instanceof Error ? error.message : String(error),
+    );
+    return item;
+  }
 }
 
 async function fetchTopicCandidates(
@@ -1093,7 +1127,9 @@ async function fetchDailyNewsOnce(
     ),
   );
 
-  return results as DailyNewsResult;
+  return (await Promise.all(
+    results.map(attachStoredImage),
+  )) as DailyNewsResult;
 }
 
 const getCachedDailyNews = unstable_cache(

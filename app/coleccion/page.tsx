@@ -6,6 +6,7 @@ import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
 import { prisma } from "@/app/lib/prisma";
+import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 
 import styles from "./coleccion.module.css";
 import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
@@ -435,18 +436,22 @@ export default async function CollectionPage() {
               rel="noreferrer"
               className={styles.heroNews}
             >
-              <span className={styles.heroNewsLabel}>
-                {language === "es"
-                  ? "Actualidad · Automoción"
-                  : "Latest · Automotive"}
+              <span className={styles.heroNewsContent}>
+                <span className={styles.heroNewsLabel}>
+                  {language === "es"
+                    ? "Actualidad · Automoción"
+                    : "Latest · Automotive"}
+                </span>
+
+                <strong>{vehicleNews.title}</strong>
+
+                <small>
+                  {vehicleNews.source}
+                  <span aria-hidden="true"> ↗</span>
+                </small>
               </span>
 
-              <strong>{vehicleNews.title}</strong>
-
-              <small>
-                {vehicleNews.source}
-                <span aria-hidden="true"> ↗</span>
-              </small>
+              <NewsThumbnail imageUrl={vehicleNews.imageUrl} />
             </a>
 
           <div className={styles.heroFoot}>
