@@ -1006,6 +1006,82 @@ function selectHourlyArticle(
   };
 }
 
+function metaImageFromHtml(
+  html: string,
+): string | null {
+  const patterns = [
+    /<meta\b[^>]*property=["']og:image(?::secure_url)?["'][^>]*content=["']([^"']+)["'][^>]*>/i,
+    /<meta\b[^>]*content=["']([^"']+)["'][^>]*property=["']og:image(?::secure_url)?["'][^>]*>/i,
+    /<meta\b[^>]*name=["']twitter:image(?::src)?["'][^>]*content=["']([^"']+)["'][^>]*>/i,
+    /<meta\b[^>]*content=["']([^"']+)["'][^>]*name=["']twitter:image(?::src)?["'][^>]*>/i,
+  ];
+
+  for (const pattern of patterns) {
+    const value = html.match(pattern)?.[1]
+      ?.replace(/&amp;/g, "&")
+      .trim();
+
+    if (!value) continue;
+
+    try {
+      const parsed = new URL(value);
+
+      if (
+        parsed.protocol === "https:" ||
+        parsed.protocol === "http:"
+      ) {
+        return parsed.toString();
+      }
+    } catch {
+      // Ignorar URLs inválidas.
+    }
+  }
+
+  return null;
+}
+
+async function attachSourcePageImage(
+  item: DailyNewsItem,
+): Promise<DailyNewsItem> {
+  if (item.imageUrl) {
+    return item;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    3500,
+  );
+
+  try {
+    const response = await fetch(item.url, {
+      redirect: "follow",
+      cache: "no-store",
+      headers: {
+        "User-Agent": "Mozilla/5.0 VANMOTION/1.0",
+        Accept: "text/html,application/xhtml+xml",
+      },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      return item;
+    }
+
+    const imageUrl = metaImageFromHtml(
+      await response.text(),
+    );
+
+    return imageUrl
+      ? { ...item, imageUrl }
+      : item;
+  } catch {
+    return item;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function fetchStoredTopicCandidates(
   topic: Topic,
   language: Language,
@@ -1018,7 +1094,6 @@ async function fetchStoredTopicCandidates(
         region: REGION_BY_LANGUAGE[language],
         category: STORED_CATEGORY_BY_TOPIC[topic],
         editorialScore: { gte: 70 },
-        imageUrl: { not: null },
       },
       orderBy: [
         { editorialScore: "desc" },
@@ -1154,7 +1229,9 @@ async function fetchTopic(
     );
 
   if (storedSelection) {
-    return storedSelection;
+    return attachSourcePageImage(
+      storedSelection,
+    );
   }
 
   const today = await fetchTopicCandidates(
@@ -1230,7 +1307,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-news-v11-strict-category-images"],
+  ["vanmotion-news-v12-editorial-cover-fallback"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
