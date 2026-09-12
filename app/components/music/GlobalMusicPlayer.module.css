@@ -1984,3 +1984,52 @@
 }
 
 /* FIN RECOMENDADO · CONTROLES SIEMPRE VISIBLES */
+
+/* RECOMENDADO · MOBILE FINAL */
+@media (max-width: 640px) {
+  .player.recommendationActive.recommendationMinimized {
+    right: 6px !important;
+    bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    left: auto !important;
+    width: min(260px, calc(100vw - 12px)) !important;
+  }
+
+  .player.recommendationActive:not(.recommendationMinimized) {
+    right: 6px !important;
+    bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    left: auto !important;
+    width: min(360px, calc(100vw - 12px)) !important;
+  }
+
+  .recommendationMinimized .recommendationStage {
+    padding: 2px !important;
+  }
+
+  .recommendationMinimized .recommendationStageHeader {
+    min-height: 20px !important;
+    padding: 0 1px 2px !important;
+  }
+
+  .recommendationMinimized .recommendationStageLabel {
+    font-size: 6.5px !important;
+  }
+
+  .recommendationMinimized .recommendationStageControls {
+    gap: 1px !important;
+  }
+
+  .recommendationMinimized .recommendationStageControls button {
+    flex-basis: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    max-width: 18px !important;
+    font-size: 10px !important;
+  }
+
+  .recommendationMinimized .recommendationStage .youtubeEmbed {
+    border-radius: 3px !important;
+  }
+}
+/* FIN RECOMENDADO · MOBILE FINAL */
