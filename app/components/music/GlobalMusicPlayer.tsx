@@ -192,7 +192,7 @@ export default function GlobalMusicPlayer({
     setRecommendationIsPlaying(true);
     setVideoSessionActive(true);
     setActiveRecommendation(videoId);
-    setExpanded(true);
+    setExpanded(false);
   }
 
   const selectRecommendationRef = useRef(selectRecommendation);
@@ -397,39 +397,60 @@ export default function GlobalMusicPlayer({
       {activeRecommendationData && (
         <div className={styles.recommendationStage}>
           <div className={styles.recommendationStageHeader}>
-            <div className={styles.recommendationStageTitle}>
-              <span>{content.playerName}</span>
-              <strong>{activeRecommendationData.title}</strong>
-              <small>{activeRecommendationData.artist}</small>
-            </div>
+            <span className={styles.recommendationStageLabel}>
+              {language === "es" ? "RECOMENDADO" : "RECOMMENDED"}
+            </span>
+
             <div className={styles.recommendationStageControls}>
               <button
                 type="button"
                 onClick={() => {
-                  setRecommendationError(null);
-                  if (!recommendationIsPlaying) pausePlayback();
-                  setRecommendationIsPlaying((current) => !current);
+                  const activeIndex = recommendations.findIndex(
+                    (recommendation) =>
+                      recommendation.youtubeVideoId ===
+                      activeRecommendationData.youtubeVideoId,
+                  );
+
+                  const nextRecommendation =
+                    recommendations[
+                      (activeIndex + 1) % recommendations.length
+                    ];
+
+                  if (nextRecommendation) {
+                    selectRecommendation(
+                      nextRecommendation.youtubeVideoId,
+                    );
+                  }
                 }}
-                aria-label={recommendationIsPlaying ? content.pause : content.play}
-                title={recommendationIsPlaying ? content.pause : content.play}
+                aria-label={
+                  language === "es"
+                    ? "Siguiente recomendado"
+                    : "Next recommendation"
+                }
+                title={
+                  language === "es"
+                    ? "Siguiente recomendado"
+                    : "Next recommendation"
+                }
               >
-                {recommendationIsPlaying ? "Ⅱ" : "▶"}
+                →
               </button>
+
               <button
                 type="button"
                 onClick={() => setExpanded((current) => !current)}
-                aria-label={expanded ? content.minimizeRecommendation : content.expandRecommendation}
-                title={expanded ? content.minimizeRecommendation : content.expandRecommendation}
+                aria-label={
+                  expanded
+                    ? content.minimizeRecommendation
+                    : content.expandRecommendation
+                }
+                title={
+                  expanded
+                    ? content.minimizeRecommendation
+                    : content.expandRecommendation
+                }
               >
-                {expanded ? "−" : "□"}
-              </button>
-              <button
-                type="button"
-                onClick={closeRecommendation}
-                aria-label={content.closeRecommendation}
-                title={content.closeRecommendation}
-              >
-                ×
+                {expanded ? "↙" : "⛶"}
               </button>
             </div>
           </div>
