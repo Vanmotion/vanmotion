@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getCurrentLanguage } from "@/app/lib/language";
 
 export const metadata: Metadata = {
-  title: "Reconocimientos | VANMOTION Automotive Culture",
+  title: { absolute: "Reconocimientos | VANMOTION Automotive Culture" },
   description:
     "Reconocimientos digitales de VANMOTION: WD Awards, CSS Nectar y CSS Winner. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
   keywords: [
