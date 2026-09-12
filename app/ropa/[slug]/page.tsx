@@ -214,10 +214,7 @@ export async function generateMetadata({
       )
     : undefined;
 
-  const title =
-    language === "es"
-      ? `${productText.name} · ${productType} urbana`
-      : `${productText.name} · ${productType}`;
+  const title = productText.name;
 
   const availabilityText =
     language === "es"
