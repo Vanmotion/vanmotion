@@ -3,42 +3,61 @@ import Image from "next/image";
 import { getCurrentLanguage } from "@/app/lib/language";
 import styles from "./reconocimientos.module.css";
 
-export const metadata: Metadata = {
-  title: "Reconocimientos | VANMOTION Automotive Culture",
-  description:
-    "Reconocimientos digitales de VANMOTION: CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
-  keywords: [
-    "VANMOTION awards",
-    "WD Awards",
-    "CSS Nectar",
-    "CSS Winner",
-    "automotive culture",
-    "digital experience",
-  ],
-  alternates: {
-    canonical: "https://www.vanmotion.es/reconocimientos",
-  },
-  openGraph: {
-    title: "Reconocimientos | VANMOTION Automotive Culture",
-    description:
-      "Reconocimientos digitales de VANMOTION: CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
-    type: "website",
-    url: "https://www.vanmotion.es/reconocimientos",
-    images: [
-      {
-        url: "/reconocimientos/wd-awards.png",
-        alt: "WD Awards Nominee 2026 · VANMOTION Automotive Culture",
-      },
+export async function generateMetadata(): Promise<Metadata> {
+  const language = await getCurrentLanguage();
+
+  const title =
+    language === "es"
+      ? "Reconocimientos | VANMOTION Automotive Culture"
+      : "Awards | VANMOTION Automotive Culture";
+
+  const description =
+    language === "es"
+      ? "Reconocimientos digitales de VANMOTION: CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es. Proyecto de cultura automotriz, música y streetwear nacido en Madrid."
+      : "Digital recognition for VANMOTION from CSS Design Awards, WD Awards, CSS Nectar, CSS Winner and WebsiteAwards.es. An automotive culture, music and streetwear project born in Madrid.";
+
+  return {
+    title: { absolute: title },
+    description,
+    keywords: [
+      "VANMOTION awards",
+      "CSS Design Awards",
+      "Special Kudos",
+      "Best UI Design",
+      "Best UX Design",
+      "Best Innovation",
+      "WD Awards",
+      "CSS Nectar",
+      "CSS Winner",
+      "automotive culture",
+      "digital experience",
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Reconocimientos | VANMOTION Automotive Culture",
-    description:
-      "CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es · Reconocimientos digitales de VANMOTION.",
-    images: ["/reconocimientos/wd-awards.png"],
-  },
-};
+    alternates: {
+      canonical: "https://www.vanmotion.es/reconocimientos",
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: "https://www.vanmotion.es/reconocimientos",
+      images: [
+        {
+          url: "/reconocimientos/css-design-awards-2026.png",
+          alt:
+            language === "es"
+              ? "Reconocimientos CSS Design Awards 2026 de VANMOTION"
+              : "VANMOTION CSS Design Awards 2026 recognition",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/reconocimientos/css-design-awards-2026.png"],
+    },
+  };
+}
 
 const translations = {
   es: {
@@ -242,14 +261,19 @@ export default async function ReconocimientosPage() {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     name: "VANMOTION — Automotive Culture",
+    url: "https://www.vanmotion.es/reconocimientos",
+    inLanguage: language === "es" ? "es-ES" : "en-GB",
     about: [
       "Automotive culture",
       "Digital experience",
       "Brand identity",
       "Visual storytelling",
     ],
-    award: awards.map((award) => award.name),
-    image: awards.map((award) => award.image),
+    award: awards.map((award) => award.name[language]),
+    image: awards.map(
+      (award) => `https://www.vanmotion.es${award.image}`,
+    ),
+    sameAs: awards.map((award) => award.url),
   };
 
   return (
