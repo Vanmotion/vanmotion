@@ -152,8 +152,6 @@ export default async function RootLayout({
       },
 
       sameAs: [
-        "https://www.instagram.com/vanmotion_madrid/",
-        "https://www.tiktok.com/@www.vanmotion.es",
         "https://www.youtube.com/@vanmotionoficial",
       ],
 
@@ -224,6 +222,10 @@ export default async function RootLayout({
       "VANMOTION Automotive Culture",
     ],
     image: `${siteUrl}/brand/vanmotion-mark.webp`,
+    logo: {
+      "@type": "ImageObject",
+      url: `${siteUrl}/brand/vanmotion-mark.webp`,
+    },
     url: siteUrl,
     description:
       language === "es"
@@ -243,9 +245,7 @@ export default async function RootLayout({
       name: "VANMOTION",
     },
     sameAs: [
-      "https://www.instagram.com/vanmotion_madrid",
       "https://www.youtube.com/@vanmotionoficial",
-      "https://www.tiktok.com/@www.vanmotion.es",
     ],
   };
 
