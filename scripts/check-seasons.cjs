@@ -29,15 +29,18 @@ test("Las 60 imágenes originales permanecen disponibles", () => {
   assert.equal(count, 60);
 });
 
-test("Las cuatro estaciones y la zona horaria de Madrid", () => {
+test("Las cuatro estaciones siguen equinoccios y solsticios reales", () => {
   const cases = [
-    ["2026-01-15T12:00:00Z", "winter"],
-    ["2026-04-15T12:00:00Z", "spring"],
-    ["2026-07-15T12:00:00Z", "summer"],
-    ["2026-10-15T12:00:00Z", "autumn"],
-    ["2026-02-28T22:59:00Z", "winter"],
-    ["2026-02-28T23:00:00Z", "spring"],
+    ["2026-03-20T14:00:00Z", "winter"],
+    ["2026-03-20T15:30:00Z", "spring"],
+    ["2026-06-21T07:30:00Z", "spring"],
+    ["2026-06-21T09:30:00Z", "summer"],
+    ["2026-09-22T23:30:00Z", "summer"],
+    ["2026-09-23T01:00:00Z", "autumn"],
+    ["2026-12-21T20:00:00Z", "autumn"],
+    ["2026-12-21T21:30:00Z", "winter"],
   ];
+
   for (const [date, expected] of cases)
     assert.equal(getMadridSeason(new Date(date)), expected);
 });

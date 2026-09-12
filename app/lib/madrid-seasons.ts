@@ -1,3 +1,4 @@
+import { Seasons } from "astronomy-engine";
 import { sceneImage } from "./madrid-weather";
 import type {
   Atmosphere,
@@ -12,16 +13,21 @@ const SEASONS = new Set<Season>([
 ]);
 
 export function getMadridSeason(date = new Date()): Season {
-  const month = Number(
+  const year = Number(
     new Intl.DateTimeFormat("en-GB", {
       timeZone: "Europe/Madrid",
-      month: "2-digit",
+      year: "numeric",
     }).format(date)
   );
 
-  if (month >= 3 && month <= 5) return "spring";
-  if (month >= 6 && month <= 8) return "summer";
-  if (month >= 9 && month <= 11) return "autumn";
+  const events = Seasons(year);
+  const now = date.getTime();
+
+  if (now >= events.dec_solstice.date.getTime()) return "winter";
+  if (now >= events.sep_equinox.date.getTime()) return "autumn";
+  if (now >= events.jun_solstice.date.getTime()) return "summer";
+  if (now >= events.mar_equinox.date.getTime()) return "spring";
+
   return "winter";
 }
 
