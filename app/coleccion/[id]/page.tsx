@@ -622,6 +622,7 @@ export default async function PublicVehiclePage({
       priceCurrency: "EUR",
       price: Number(vehicle.price),
       availability: schemaAvailability,
+      itemCondition: "https://schema.org/UsedCondition",
       seller: {
         "@type": "Organization",
         name: "VANMOTION",
@@ -657,22 +658,20 @@ export default async function PublicVehiclePage({
   };
   return (
     <div className={styles.page}>
-      {!isEmblem ? (
-        <>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
-            }}
-          />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
+        }}
+      />
 
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(productStructuredData).replace(/</g, "\\u003c"),
-            }}
-          />
-        </>
+      {!isEmblem ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(productStructuredData).replace(/</g, "\\u003c"),
+          }}
+        />
       ) : null}
 
       <script
