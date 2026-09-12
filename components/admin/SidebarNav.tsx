@@ -113,6 +113,17 @@ const navigationItems: NavigationItem[] = [
     ),
   },
   {
+    label: "Noticias",
+    description: "Selección editorial",
+    href: "/admin/news",
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 5h16v14H4z" />
+        <path d="M8 9h8M8 12h8M8 15h5" />
+      </svg>
+    ),
+  },
+  {
     label: "Ropa",
     description: "Productos, precios y stock",
     href: "/admin/ropa",

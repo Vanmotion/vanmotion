@@ -10,7 +10,7 @@ const contentSecurityPolicy = [
   "form-action 'self'",
   `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.youtube.com`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.blob.vercel-storage.com https://i.ytimg.com",
+  "img-src 'self' data: blob: https: https://*.blob.vercel-storage.com https://i.ytimg.com",
   "media-src 'self' blob: https://*.blob.vercel-storage.com",
   "font-src 'self' data:",
   "frame-src https://www.youtube-nocookie.com",

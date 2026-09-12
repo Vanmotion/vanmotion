@@ -411,3 +411,28 @@ model WithdrawalRequest {
   @@index([customerEmail])
   @@index([requestedAt])
 }
+
+model NewsArticle {
+  id             String   @id @default(cuid())
+  locale         String
+  region         String
+  category       String
+  title          String
+  summary        String
+  source         String
+  sourceUrl      String   @unique
+  imageUrl       String?
+  publishedAt    DateTime
+  fetchedAt      DateTime @default(now())
+  editorialScore Int
+  slug           String   @unique
+  isActive       Boolean  @default(true)
+
+  @@index([locale])
+  @@index([region])
+  @@index([category])
+  @@index([publishedAt])
+  @@index([editorialScore])
+  @@index([isActive])
+  @@index([locale, region, category, isActive, editorialScore])
+}
