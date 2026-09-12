@@ -1212,11 +1212,7 @@ async function fetchTopic(
   language: Language,
 ): Promise<DailyNewsItem> {
   const storedCandidates =
-    filterEditorialCandidates(
-      await fetchStoredTopicCandidates(
-        topic,
-        language,
-      ),
+    await fetchStoredTopicCandidates(
       topic,
       language,
     );
@@ -1307,7 +1303,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-news-v12-editorial-cover-fallback"],
+  ["vanmotion-news-v13-db-category-primary"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
