@@ -46,7 +46,7 @@ export default async function ExperiencePage() {
       language={language}
       socials={socials}
       initialPeriod={environment.period}
-      initialAtmosphere={environment.atmosphere}
+      initialWeather={environment.weather}
     />
   );
 }

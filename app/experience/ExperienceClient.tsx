@@ -5,153 +5,22 @@ import type { Language } from "@/app/language";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styles from "./experience.module.css";
+import {
+  getMadridSeason,
+  getSeasonOverride,
+  type Season,
+} from "@/app/lib/madrid-seasons";
+import { autumnExperienceImage } from "@/app/lib/autumn-experience";
 
-type Period = "manana" | "dia" | "atardecer" | "noche";
-type Atmosphere = "clear" | "cloudy" | "autumn" | "rain" | "snow";
-
-const vehicleImages: Record<Period, string> = {
-  manana: "/experience/vehicles/manana.webp",
-  dia: "/experience/vehicles/dia.webp",
-  atardecer: "/experience/vehicles/atardecer.webp",
-  noche: "/experience/vehicles/noche.webp",
-};
-
-const musicImages: Record<Period, string> = {
-  manana: "/experience/music/manana.webp",
-  dia: "/experience/music/dia.webp",
-  atardecer: "/experience/music/atardecer.webp",
-  noche: "/experience/music/noche.webp",
-};
-
-const streetImages: Record<Period, string> = {
-  manana: "/experience/streetwear/manana.webp",
-  dia: "/experience/streetwear/dia.webp",
-  atardecer: "/experience/streetwear/atardecer.webp",
-  noche: "/experience/streetwear/noche.webp",
-};
-
-function sceneImage(
-  section: "vehicles" | "music" | "streetwear",
-  period: Period,
-  atmosphere: Atmosphere
-) {
-  const base =
-    section === "vehicles"
-      ? vehicleImages[period]
-      : section === "music"
-        ? musicImages[period]
-        : streetImages[period];
-
-  if (atmosphere === "clear") return base;
-
-  return `/experience/${section}/${atmosphere}/${period}.webp`;
-}
-
-function getMadridHour() {
-  const value = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Madrid",
-    hour: "2-digit",
-    hour12: false,
-  }).format(new Date());
-
-  return Number(value);
-}
-
-function getPeriod(hour: number): Period {
-  if (hour >= 6 && hour < 12) return "manana";
-  if (hour >= 12 && hour < 18) return "dia";
-  if (hour >= 18 && hour < 21) return "atardecer";
-  return "noche";
-}
-
-function getAtmosphereOverride(): Atmosphere | null {
-  if (typeof window === "undefined") return null;
-
-  const value = new URLSearchParams(window.location.search).get("weather");
-
-  if (
-    value === "cloudy" ||
-    value === "autumn" ||
-    value === "rain" ||
-    value === "snow" ||
-    value === "clear"
-  ) {
-    return value;
-  }
-
-  return null;
-}
-
-function getMadridMonth() {
-  return Number(
-    new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Europe/Madrid",
-      month: "2-digit",
-    }).format(new Date())
-  );
-}
-
-async function getMadridAtmosphere(): Promise<Atmosphere> {
-  const override = getAtmosphereOverride();
-  if (override) return override;
-
-  try {
-    const response = await fetch(
-      "https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&current=weather_code,precipitation,rain,snowfall&timezone=Europe%2FMadrid",
-      { cache: "no-store" }
-    );
-
-    if (!response.ok) throw new Error("Weather request failed");
-
-    const data = await response.json();
-    const current = data.current ?? {};
-
-    const code = Number(current.weather_code ?? 0);
-    const rain = Number(current.rain ?? 0);
-    const snowfall = Number(current.snowfall ?? 0);
-    const precipitation = Number(current.precipitation ?? 0);
-
-    const snowCodes = new Set([71, 73, 75, 77, 85, 86]);
-    const rainCodes = new Set([
-      51, 53, 55, 56, 57,
-      61, 63, 65, 66, 67,
-      80, 81, 82,
-      95, 96, 99,
-    ]);
-
-    const cloudyCodes = new Set([2, 3]);
-
-    if (snowfall > 0 || snowCodes.has(code)) return "snow";
-
-    if (
-      rain > 0 ||
-      precipitation > 0 ||
-      rainCodes.has(code)
-    ) {
-      return "rain";
-    }
-
-    if (cloudyCodes.has(code)) {
-      return "cloudy";
-    }
-
-    const month = getMadridMonth();
-
-    if (month >= 9 && month <= 11) {
-      return "autumn";
-    }
-
-    return "clear";
-  } catch {
-    const month = getMadridMonth();
-
-    if (month >= 9 && month <= 11) {
-      return "autumn";
-    }
-
-    return "clear";
-  }
-}
+import {
+  fetchMadridWeather,
+  getMadridPeriod,
+  getWeatherOverride,
+  fallbackWeather,
+  type ClimateSection,
+  type WeatherState,
+  type Period,
+} from "@/app/lib/madrid-weather";
 
 type SocialLink = {
   label: string;
@@ -163,20 +32,29 @@ export default function ExperienceClient({
   language,
   socials,
   initialPeriod,
-  initialAtmosphere,
+  initialWeather,
 }: {
   language: Language;
   socials: SocialLink[];
   initialPeriod: Period;
-  initialAtmosphere: Atmosphere;
+  initialWeather: WeatherState;
 }) {
   const [time, setTime] = useState("--:--");
   const [period, setPeriod] =
     useState<Period>(initialPeriod);
-  const [atmosphere, setAtmosphere] =
-    useState<Atmosphere>(initialAtmosphere);
+  const [weather, setWeather] = useState<WeatherState>(initialWeather);
+  const atmosphere = weather.atmosphere;
+  const [season, setSeason] = useState<Season>(getMadridSeason());
+
+  const enableSeasons = true;
+
+  const imageFor = (section: ClimateSection) =>
+    autumnExperienceImage(
+      section, period, atmosphere, season, enableSeasons
+    );
 
   useEffect(() => {
+    let active = true;
     const update = () => {
       const now = new Date();
 
@@ -189,19 +67,33 @@ export default function ExperienceClient({
         }).format(now)
       );
 
-      setPeriod(getPeriod(getMadridHour()));
+      setPeriod(getMadridPeriod(now));
+      setSeason(
+        getSeasonOverride(window.location.search) ?? getMadridSeason(now)
+      );
     };
 
     const updateEnvironment = async () => {
       update();
-      setAtmosphere(await getMadridAtmosphere());
+      const override = getWeatherOverride(window.location.search);
+      if (override) {
+        setWeather({ ...fallbackWeather(), atmosphere: override, source: "override" });
+        return;
+      }
+      const weather = await fetchMadridWeather({ cache: "no-store" });
+      if (active) setWeather(weather);
     };
 
     updateEnvironment();
 
-    const interval = window.setInterval(updateEnvironment, 300000);
+    const clockInterval = window.setInterval(update, 30000);
+    const weatherInterval = window.setInterval(updateEnvironment, 300000);
 
-    return () => window.clearInterval(interval);
+    return () => {
+      active = false;
+      window.clearInterval(clockInterval);
+      window.clearInterval(weatherInterval);
+    };
   }, []);
 
   const chapters = [
@@ -210,7 +102,7 @@ export default function ExperienceClient({
       kicker: language === "es" ? "LA MÁQUINA" : "THE MACHINE",
       title: language === "es" ? "Vehículos" : "Vehicles",
       text: language === "es" ? "Máquinas con historia. Elegidas por lo que nos hacen sentir." : "Machines with history. Selected for what they make us feel.",
-      image: sceneImage("vehicles", period, atmosphere),
+      image: imageFor("vehicles"),
       href: "/coleccion",
       link: language === "es" ? "Explorar colección" : "Explore collection",
     },
@@ -219,7 +111,7 @@ export default function ExperienceClient({
       kicker: language === "es" ? "EL SONIDO" : "THE SOUND",
       title: language === "es" ? "Música" : "Music",
       text: language === "es" ? "Sonido, atmósfera y carretera. Parte de una misma cultura." : "Sound, atmosphere and the road. Part of the same culture.",
-      image: sceneImage("music", period, atmosphere),
+      image: imageFor("music"),
       href: "/musica",
       link: language === "es" ? "Entrar en el sonido" : "Enter sound",
     },
@@ -228,7 +120,7 @@ export default function ExperienceClient({
       kicker: language === "es" ? "LA CALLE" : "THE STREET",
       title: language === "es" ? "Ropa urbana" : "Streetwear",
       text: language === "es" ? "Ropa sencilla, hecha para la calle." : "Simple clothing, made for the street.",
-      image: sceneImage("streetwear", period, atmosphere),
+      image: imageFor("streetwear"),
       href: "/ropa",
       link: language === "es" ? "Ver ropa" : "View clothing",
     },
@@ -238,7 +130,11 @@ export default function ExperienceClient({
     <main
       className={styles.experience}
       data-period={period}
+      data-season={season}
       data-atmosphere={atmosphere}
+      data-weather-source={weather.source}
+      data-weather-code={weather.weatherCode ?? ""}
+      data-cloud-cover={weather.cloudCover ?? ""}
     >
 
       <header className={styles.header}>
@@ -296,7 +192,7 @@ export default function ExperienceClient({
               href="/coleccion"
               className={`${styles.heroCard} ${styles.heroVehicle}`}
               style={{
-                backgroundImage: `url("${sceneImage("vehicles", period, atmosphere)}")`,
+                backgroundImage: `url("${imageFor("vehicles")}")`,
               }}
             >
               <span>{language === "es" ? "01 · VEHÍCULOS" : "01 · VEHICLES"}</span>
@@ -306,7 +202,7 @@ export default function ExperienceClient({
               href="/musica"
               className={`${styles.heroCard} ${styles.heroMusic}`}
               style={{
-                backgroundImage: `url("${sceneImage("music", period, atmosphere)}")`,
+                backgroundImage: `url("${imageFor("music")}")`,
               }}
             >
               <span>{language === "es" ? "02 · MÚSICA" : "02 · MUSIC"}</span>
@@ -316,7 +212,7 @@ export default function ExperienceClient({
               href="/ropa"
               className={`${styles.heroCard} ${styles.heroStreet}`}
               style={{
-                backgroundImage: `url("${sceneImage("streetwear", period, atmosphere)}")`,
+                backgroundImage: `url("${imageFor("streetwear")}")`,
               }}
             >
               <span>{language === "es" ? "03 · ROPA" : "03 · STREETWEAR"}</span>
