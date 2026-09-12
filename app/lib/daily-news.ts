@@ -1,6 +1,10 @@
 import { unstable_cache } from "next/cache";
 
 import { prisma } from "@/app/lib/prisma";
+import {
+  hasStrictNewsCategoryIdentity,
+  type NewsCategory,
+} from "@/app/lib/news";
 
 export type DailyNewsItem = {
   title: string;
@@ -22,7 +26,7 @@ const TOPICS = [
 
 type Topic = (typeof TOPICS)[number];
 
-const STORED_CATEGORY_BY_TOPIC: Record<Topic, string> = {
+const STORED_CATEGORY_BY_TOPIC: Record<Topic, NewsCategory> = {
   vehicles: "vehicles",
   music: "music",
   clothing: "street",
@@ -1109,13 +1113,20 @@ async function fetchStoredTopicCandidates(
       },
     });
 
-    return articles.map((article) => ({
-      title: article.title,
-      source: article.source,
-      url: article.sourceUrl,
-      imageUrl: article.imageUrl,
-      publishedAt: article.publishedAt.getTime(),
-    }));
+    return articles
+      .filter((article) =>
+        hasStrictNewsCategoryIdentity(
+          STORED_CATEGORY_BY_TOPIC[topic],
+          article.title,
+        ),
+      )
+      .map((article) => ({
+        title: article.title,
+        source: article.source,
+        url: article.sourceUrl,
+        imageUrl: article.imageUrl,
+        publishedAt: article.publishedAt.getTime(),
+      }));
   } catch (error) {
     console.error(
       "VANMOTION_STORED_NEWS_ERROR",
@@ -1303,7 +1314,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-news-v13-db-category-primary"],
+  ["vanmotion-news-v14-strict-category-identity"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],

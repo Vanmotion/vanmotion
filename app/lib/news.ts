@@ -89,6 +89,44 @@ const categoryAffinityTerms: Record<NewsCategory, string[]> = {
   street: ["streetwear", "sneaker", "zapatilla", "fashion", "moda", "designer", "disenador", "collection", "coleccion", "collaboration", "colaboracion", "capsule", "capsula", "fashion week", "semana de la moda", "urban", "urbana", "nyfw", "photography", "fotografia", "design", "diseno", "clothing", "ropa"],
 };
 
+const strictCategoryIdentityTerms: Record<NewsCategory, string[]> = {
+  vehicles: [
+    "car", "cars", "coche", "coches",
+    "vehicle", "vehicles", "vehiculo", "vehiculos",
+    "automotive", "automocion", "automobile", "automovil",
+    "motor", "restomod", "concept car", "concepto de coche",
+    "van", "vans", "furgoneta", "furgonetas",
+    "porsche", "bmw", "mercedes", "audi", "ford",
+    "ferrari", "lamborghini", "volkswagen",
+    "toyota", "honda", "nissan", "mazda",
+    "volvo", "land rover",
+  ],
+
+  music: [
+    "music", "musica", "musical",
+    "album", "single", "song", "cancion",
+    "artist", "artista", "concert", "concierto",
+    "hip hop", "hip-hop", "rap", "rapper", "trap",
+    "r&b", "producer", "productor",
+    "production", "produccion",
+    "studio", "estudio", "label", "sello",
+    "singer", "cantante",
+  ],
+
+  street: [
+    "streetwear", "sneaker", "sneakers",
+    "zapatilla", "zapatillas",
+    "fashion", "moda", "clothing", "ropa",
+    "textile", "textil", "apparel",
+    "designer", "disenador",
+    "collection", "coleccion",
+    "collaboration", "colaboracion",
+    "capsule", "capsula",
+    "fashion week", "semana de la moda", "nyfw",
+    "bomber", "outerwear",
+  ],
+};
+
 const vanmotionAffinityTerms: Record<NewsCategory, string[]> = {
   vehicles: ["car culture", "cultura del automovil", "automotive design", "diseno automovilistico", "car", "coche", "automovil", "classic", "clasico", "restomod", "custom", "preparacion", "special edition", "edicion especial", "special vehicle", "vehiculo especial", "iconic", "iconico", "van", "furgoneta", "engineering", "ingenieria", "urban mobility", "movilidad urbana", "pedestrian", "transit", "transportation", "motorsport", "concept car", "lanzamiento"],
   music: ["hip hop", "hip-hop", "rap", "r&b", "electronic", "electronica", "alternative", "alternativa", "producer", "productor", "production", "produccion", "studio", "estudio", "label", "sello", "underground", "escena musical", "music scene", "album", "single", "artista", "artist", "singer", "cantante", "new york", "nyc", "brooklyn", "manhattan"],
@@ -116,6 +154,17 @@ const categoryBlockedTerms: Record<NewsCategory, string[]> = {
 function matchesTerm(text: string, term: string): boolean {
   const normalizedTerm = normalize(term);
   return text === normalizedTerm || text.startsWith(`${normalizedTerm} `) || text.endsWith(` ${normalizedTerm}`) || text.includes(` ${normalizedTerm} `);
+}
+
+export function hasStrictNewsCategoryIdentity(
+  category: NewsCategory,
+  value: string,
+): boolean {
+  const text = normalize(value);
+
+  return strictCategoryIdentityTerms[category].some(
+    (term) => matchesTerm(text, term),
+  );
 }
 
 function cleanText(value: string): string {
@@ -302,11 +351,35 @@ function parseFeed(xml: string, feed: Feed): Evaluation[] {
     } satisfies Omit<Candidate, "sourceAuthority" | "categoryAffinity" | "vanmotionAffinity" | "regionAffinity" | "freshness" | "culturalImportance" | "editorialScore">;
     const searchable = normalize(`${candidate.title} ${description} ${tags.join(" ")}`);
     const scored = scoreCandidate(candidate, feed);
+    const hasCategoryIdentity =
+      hasStrictNewsCategoryIdentity(
+        candidate.category,
+        searchable,
+      );
+
     let rejectionReason: RejectionReason | undefined;
-    if (candidate.publishedAt.getTime() < Date.now() - 14 * 86_400_000) rejectionReason = "age";
-    else if (blockedTerms.some((term) => matchesTerm(searchable, term)) || categoryBlockedTerms[feed.category].some((term) => matchesTerm(searchable, term))) rejectionReason = "hard-rejection";
-    else if (scored.regionAffinity < 55) rejectionReason = "region-affinity";
-    else if (scored.categoryAffinity < 55) rejectionReason = "category-affinity";
+
+    if (
+      candidate.publishedAt.getTime() <
+      Date.now() - 14 * 86_400_000
+    ) {
+      rejectionReason = "age";
+    } else if (
+      blockedTerms.some((term) =>
+        matchesTerm(searchable, term),
+      ) ||
+      categoryBlockedTerms[feed.category].some(
+        (term) => matchesTerm(searchable, term),
+      )
+    ) {
+      rejectionReason = "hard-rejection";
+    } else if (!hasCategoryIdentity) {
+      rejectionReason = "category-affinity";
+    } else if (scored.regionAffinity < 55) {
+      rejectionReason = "region-affinity";
+    } else if (scored.categoryAffinity < 55) {
+      rejectionReason = "category-affinity";
+    }
     else if (scored.vanmotionAffinity < 45) rejectionReason = "vanmotion-affinity";
     else if (scored.editorialScore < 70) rejectionReason = "editorial-score";
     return [{ candidate: { ...candidate, ...scored }, rejectionReason }];
