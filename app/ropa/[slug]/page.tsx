@@ -302,6 +302,9 @@ export default async function ProductPage({
     totalProductStock,
   );
 
+  const shouldExposeProductStructuredData =
+    productStatus !== "DRAFT" && productStatus !== "HIDDEN";
+
   const productText = getLocalizedProductText(product, language);
 
   const productDescription =
@@ -423,7 +426,7 @@ export default async function ProductPage({
 
   return (
     <main className={styles.page}>
-      {productStatus !== "COMING_SOON" && Number(product.price) > 0 ? (
+      {shouldExposeProductStructuredData ? (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
