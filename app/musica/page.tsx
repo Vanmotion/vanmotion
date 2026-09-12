@@ -5,7 +5,11 @@ import Link from "next/link";
 import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
-import { getPublicMusicRecommendations } from "@/app/lib/music-library";
+import {
+  getPublicMusicRecommendations,
+  getPublicMusicTracks,
+} from "@/app/lib/music-library";
+import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
 import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
@@ -14,6 +18,16 @@ import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
 
 export const dynamic = "force-dynamic";
+
+const SITE_URL = "https://www.vanmotion.es";
+
+function absoluteUrl(value: string): string {
+  try {
+    return new URL(value, SITE_URL).toString();
+  } catch {
+    return SITE_URL;
+  }
+}
 
 const translations = {
   es: {
@@ -185,9 +199,47 @@ export default async function MusicPage() {
   const [, musicNews] = await getDailyNews(language);
   const recommendations =
     await getPublicMusicRecommendations();
+  const tracks = await getPublicMusicTracks();
+
+  const musicStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name:
+      language === "es"
+        ? "Música original de VANMOTION"
+        : "Original music by VANMOTION",
+    numberOfItems: tracks.length,
+    itemListElement: tracks.map((track, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "MusicRecording",
+        name: getLocalizedTrackTitle(track, language),
+        description: track.subtitle,
+        image: track.coverUrl
+          ? absoluteUrl(track.coverUrl)
+          : undefined,
+        audio: {
+          "@type": "AudioObject",
+          contentUrl: absoluteUrl(track.src),
+          encodingFormat: track.format,
+        },
+        sameAs: track.externalUrl ?? undefined,
+      },
+    })),
+  };
 
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(musicStructuredData).replace(
+            /</g,
+            "\\u003c",
+          ),
+        }}
+      />
       <header className={styles.header}>
         <Link href="/" className={styles.brand} aria-label="Vanmotion">
           <Image
