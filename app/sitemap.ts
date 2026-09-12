@@ -10,67 +10,61 @@ export const runtime = "nodejs";
 const staticPages: MetadataRoute.Sitemap = [
   {
     url: siteUrl,
-    lastModified: new Date(),
     changeFrequency: "weekly",
     priority: 1,
   },
   {
     url: `${siteUrl}/coleccion`,
-    lastModified: new Date(),
     changeFrequency: "daily",
     priority: 0.9,
   },
   {
     url: `${siteUrl}/ropa`,
-    lastModified: new Date(),
     changeFrequency: "daily",
     priority: 0.9,
   },
   {
     url: `${siteUrl}/musica`,
-    lastModified: new Date(),
     changeFrequency: "weekly",
     priority: 0.8,
   },
   {
+    url: `${siteUrl}/noticias`,
+    changeFrequency: "daily",
+    priority: 0.8,
+  },
+  {
     url: `${siteUrl}/reconocimientos`,
-    lastModified: new Date(),
     changeFrequency: "monthly",
     priority: 0.7,
   },
   {
     url: `${siteUrl}/contacto`,
-    lastModified: new Date(),
     changeFrequency: "monthly",
     priority: 0.7,
   },
   {
     url: `${siteUrl}/condiciones-compra`,
-    lastModified: new Date(),
     changeFrequency: "yearly",
     priority: 0.3,
   },
   {
     url: `${siteUrl}/desistimiento`,
-    lastModified: new Date(),
     changeFrequency: "yearly",
     priority: 0.3,
   },
   {
     url: `${siteUrl}/privacidad`,
-    lastModified: new Date(),
     changeFrequency: "yearly",
     priority: 0.2,
   },
   {
     url: `${siteUrl}/aviso-legal`,
-    lastModified: new Date(),
     changeFrequency: "yearly",
     priority: 0.2,
   },
   {
     url: `${siteUrl}/cookies`,
-    lastModified: new Date(),
     changeFrequency: "yearly",
     priority: 0.2,
   },
