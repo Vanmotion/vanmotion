@@ -2033,3 +2033,61 @@
   }
 }
 /* FIN RECOMENDADO · MOBILE FINAL */
+
+/* RECOMENDADO · MOBILE EXPANDED VIDEO VISIBLE */
+@media (max-width: 640px) {
+  .player.recommendationActive:not(.recommendationMinimized),
+  :global([data-music-player-mode="compact"])
+    .player.recommendationActive:not(.recommendationMinimized) {
+    position: fixed !important;
+    right: 6px !important;
+    bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    left: auto !important;
+    top: auto !important;
+    width: min(360px, calc(100vw - 12px)) !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+  }
+
+  .player.recommendationActive:not(.recommendationMinimized)
+    .recommendationStage,
+  :global([data-music-player-mode="compact"])
+    .player.recommendationActive:not(.recommendationMinimized)
+    .recommendationStage {
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .player.recommendationActive:not(.recommendationMinimized)
+    .youtubeEmbed,
+  :global([data-music-player-mode="compact"])
+    .player.recommendationActive:not(.recommendationMinimized)
+    .youtubeEmbed {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 16 / 9 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: hidden !important;
+  }
+
+  .player.recommendationActive:not(.recommendationMinimized)
+    .youtubeEmbed iframe,
+  :global([data-music-player-mode="compact"])
+    .player.recommendationActive:not(.recommendationMinimized)
+    .youtubeEmbed iframe {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+/* FIN RECOMENDADO · MOBILE EXPANDED VIDEO VISIBLE */
