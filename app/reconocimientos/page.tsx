@@ -2,42 +2,61 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getCurrentLanguage } from "@/app/lib/language";
 
-export const metadata: Metadata = {
-  title: { absolute: "Reconocimientos | VANMOTION Automotive Culture" },
-  description:
-    "Reconocimientos digitales de VANMOTION: WD Awards, CSS Nectar y CSS Winner. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
-  keywords: [
-    "VANMOTION awards",
-    "WD Awards",
-    "CSS Nectar",
-    "CSS Winner",
-    "automotive culture",
-    "digital experience",
-  ],
-  alternates: {
-    canonical: "https://www.vanmotion.es/reconocimientos",
-  },
-  openGraph: {
-    title: "Reconocimientos | VANMOTION Automotive Culture",
-    description:
-      "Reconocimientos digitales de VANMOTION: WD Awards, CSS Nectar y CSS Winner. Proyecto de cultura automotriz, música y streetwear nacido en Madrid.",
-    type: "website",
-    url: "https://www.vanmotion.es/reconocimientos",
-    images: [
-      {
-        url: "/reconocimientos/wd-awards.png",
-        alt: "WD Awards Nominee 2026 · VANMOTION Automotive Culture",
-      },
+export async function generateMetadata(): Promise<Metadata> {
+  const language = await getCurrentLanguage();
+
+  const title =
+    language === "es"
+      ? "Reconocimientos | VANMOTION Automotive Culture"
+      : "Awards | VANMOTION Automotive Culture";
+
+  const description =
+    language === "es"
+      ? "Reconocimientos digitales de VANMOTION: CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es. Proyecto de cultura automotriz, música y streetwear nacido en Madrid."
+      : "Digital recognition for VANMOTION from CSS Design Awards, WD Awards, CSS Nectar, CSS Winner and WebsiteAwards.es. An automotive culture, music and streetwear project born in Madrid.";
+
+  return {
+    title: { absolute: title },
+    description,
+    keywords: [
+      "VANMOTION awards",
+      "CSS Design Awards",
+      "Special Kudos",
+      "Best UI Design",
+      "Best UX Design",
+      "Best Innovation",
+      "WD Awards",
+      "CSS Nectar",
+      "CSS Winner",
+      "automotive culture",
+      "digital experience",
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Reconocimientos | VANMOTION Automotive Culture",
-    description:
-      "CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es · Reconocimientos digitales de VANMOTION.",
-    images: ["/reconocimientos/wd-awards.png"],
-  },
-};
+    alternates: {
+      canonical: "https://www.vanmotion.es/reconocimientos",
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: "https://www.vanmotion.es/reconocimientos",
+      images: [
+        {
+          url: "/reconocimientos/css-design-awards-2026.png",
+          alt:
+            language === "es"
+              ? "Reconocimientos CSS Design Awards 2026 de VANMOTION"
+              : "VANMOTION CSS Design Awards 2026 recognition",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/reconocimientos/css-design-awards-2026.png"],
+    },
+  };
+}
 
 const translations = {
   es: {
@@ -130,20 +149,20 @@ const awards: {
   },
   {
     name: {
-      es: "CSS Design Awards — Website of the Day Nominee 2026",
-      en: "CSS Design Awards — Website of the Day Nominee 2026",
+      es: "CSS Design Awards — Special Kudos 2026",
+      en: "CSS Design Awards — Special Kudos 2026",
     },
     category: {
-      es: "UI Design · UX Design · Innovation",
-      en: "UI Design · UX Design · Innovation",
+      es: "Special Kudos · Best UI Design · Best UX Design · Best Innovation",
+      en: "Special Kudos · Best UI Design · Best UX Design · Best Innovation",
     },
     description: {
-      es: "VANMOTION fue nominada oficialmente por CSS Design Awards el 30 de agosto de 2026 para Website of the Day y participa también en los Public Vote Awards de UI Design, UX Design e Innovation.",
-      en: "VANMOTION was officially nominated by CSS Design Awards on August 30, 2026 for Website of the Day and is also competing in the UI Design, UX Design and Innovation Public Vote Awards.",
+      es: "VANMOTION recibió Special Kudos de CSS Design Awards el 3 de septiembre de 2026, junto con los Public Awards de Best UI Design, Best UX Design y Best Innovation.",
+      en: "VANMOTION received Special Kudos from CSS Design Awards on September 3, 2026, together with the Best UI Design, Best UX Design and Best Innovation Public Awards.",
     },
     url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
     image: "/reconocimientos/css-design-awards-2026.png",
-    alt: "CSS Design Awards Website of the Day Nominee 2026 VANMOTION",
+    alt: "CSS Design Awards Special Kudos 2026 VANMOTION",
   },
   {
     name: {
@@ -172,14 +191,19 @@ export default async function ReconocimientosPage() {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     name: "VANMOTION — Automotive Culture",
+    url: "https://www.vanmotion.es/reconocimientos",
+    inLanguage: language === "es" ? "es-ES" : "en-GB",
     about: [
       "Automotive culture",
       "Digital experience",
       "Brand identity",
       "Visual storytelling",
     ],
-    award: awards.map((award) => award.name),
-    image: awards.map((award) => award.image),
+    award: awards.map((award) => award.name[language]),
+    image: awards.map(
+      (award) => `https://www.vanmotion.es${award.image}`,
+    ),
+    sameAs: awards.map((award) => award.url),
   };
 
   return (
