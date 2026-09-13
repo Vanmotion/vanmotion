@@ -460,10 +460,8 @@ export default async function CollectionPage() {
               </span>
 
               <NewsThumbnail
-                imageUrl={
-                  vehicleNews.imageUrl ??
-                  "/vehiculos/portada-inicio-vehiculos.webp"
-                }
+                imageUrl={vehicleNews.imageUrl}
+                fallbackImageUrl="/vehiculos/portada-inicio-vehiculos.webp"
                 className={styles.heroNewsThumb}
               />
             </a>

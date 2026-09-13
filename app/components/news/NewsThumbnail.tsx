@@ -4,24 +4,30 @@ import { useState } from "react";
 
 type NewsThumbnailProps = {
   imageUrl: string | null;
+  fallbackImageUrl?: string;
   className: string;
 };
 
 export default function NewsThumbnail({
   imageUrl,
+  fallbackImageUrl,
   className,
 }: NewsThumbnailProps) {
   const [failed, setFailed] = useState(false);
-  const showImage = Boolean(imageUrl) && !failed;
+
+  const resolvedImageUrl =
+    failed || !imageUrl
+      ? fallbackImageUrl
+      : imageUrl;
 
   return (
     <span
       className={className}
       aria-hidden="true"
     >
-      {showImage ? (
+      {resolvedImageUrl ? (
         <img
-          src={imageUrl ?? undefined}
+          src={resolvedImageUrl}
           alt=""
           loading="lazy"
           decoding="async"
