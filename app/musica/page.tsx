@@ -329,19 +329,6 @@ export default async function MusicPage() {
             </a>
           ) : null}
 
-          <div className={styles.heroFoot}>
-            <div className={styles.heroLinks}>
-              <Link href="#reproductor">
-                {content.navigation.music}
-              </Link>
-              <Link href="/ropa">
-                {content.navigation.clothing}
-              </Link>
-              <Link href="/contacto">
-                {content.navigation.contact}
-              </Link>
-            </div>
-          </div>
         </section>
 
 

@@ -459,15 +459,15 @@ export default async function CollectionPage() {
                 </small>
               </span>
 
-              <NewsThumbnail imageUrl={vehicleNews.imageUrl} className={styles.heroNewsThumb} />
+              <NewsThumbnail
+                imageUrl={
+                  vehicleNews.imageUrl ??
+                  "/vehiculos/portada-inicio-vehiculos.webp"
+                }
+                className={styles.heroNewsThumb}
+              />
             </a>
 
-          <div className={styles.heroFoot}>
-            <div className={styles.inventoryCount}>
-              <strong>{String(vehicles.length).padStart(2, "0")}</strong>
-              <span>{content.hero.count(vehicles.length)}</span>
-            </div>
-          </div>
         </section>
 
 

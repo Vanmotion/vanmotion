@@ -390,14 +390,6 @@ export default async function RopaPage() {
           <NewsThumbnail imageUrl={clothingNews.imageUrl} className={styles.heroNewsThumb} />
         </a>
 
-        <div className={styles.heroFoot}>
-          <div>
-            <Link href="#coleccion">{content.hero.productAction}</Link>
-            <Link href="/contacto?motivo=ropa#formulario">
-              {content.hero.contactAction}
-            </Link>
-          </div>
-        </div>
       </section>
 
 
