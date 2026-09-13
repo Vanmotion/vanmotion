@@ -327,7 +327,6 @@ export default async function MusicPage() {
 
               <NewsThumbnail
                 imageUrl={musicNews.imageUrl}
-                fallbackImageUrl="/musica/editorial/vanmotion-portada-musica.png"
                 className={styles.heroNewsThumb}
               />
             </a>

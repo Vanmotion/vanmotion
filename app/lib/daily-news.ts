@@ -1095,7 +1095,7 @@ async function attachSourcePageImage(
   const controller = new AbortController();
   const timeout = setTimeout(
     () => controller.abort(),
-    3500,
+    7000,
   );
 
   try {
@@ -1374,7 +1374,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-news-v18-clean-news-thumbnails"],
+  ["vanmotion-news-v19-real-article-images"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],

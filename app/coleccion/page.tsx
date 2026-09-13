@@ -461,7 +461,6 @@ export default async function CollectionPage() {
 
               <NewsThumbnail
                 imageUrl={vehicleNews.imageUrl}
-                fallbackImageUrl="/vehiculos/portada-inicio-vehiculos.webp"
                 className={styles.heroNewsThumb}
               />
             </a>
