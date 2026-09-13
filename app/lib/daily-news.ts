@@ -1084,10 +1084,6 @@ function isGoogleNewsPage(
 async function attachSourcePageImage(
   item: DailyNewsItem,
 ): Promise<DailyNewsItem> {
-  if (item.imageUrl) {
-    return item;
-  }
-
   if (isGoogleNewsPage(item.url)) {
     return item;
   }
@@ -1209,7 +1205,7 @@ async function attachStoredImage(
     return {
       ...item,
       imageUrl:
-        storedArticle?.imageUrl ?? item.imageUrl,
+        item.imageUrl ?? storedArticle?.imageUrl ?? null,
     };
   } catch (error) {
     console.error(
@@ -1374,7 +1370,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-news-v19-real-article-images"],
+  ["vanmotion-news-v20-source-og-images"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
