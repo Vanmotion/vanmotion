@@ -243,7 +243,18 @@ function scoreCandidate(candidate: Omit<Candidate, "sourceAuthority" | "category
   const categoryAffinity = Math.min(100, categoryContext + Math.min(38, categoryMatches * 8));
   const sourceRegionContext = candidate.region === "ES" && spanishFeeds.has(feed.name) || candidate.region === "NY" && nycFeeds.has(feed.name);
   const explicitRegion = NYC_TERMS.some((term) => matchesTerm(text, term));
-  const regionAffinity = candidate.region === "ES" ? (sourceRegionContext ? 88 : explicitRegion ? 75 : 0) : (sourceRegionContext ? 88 : explicitRegion ? 100 : 0);
+  const regionAffinity =
+    candidate.region === "ES"
+      ? sourceRegionContext
+        ? 88
+        : explicitRegion
+          ? 75
+          : 0
+      : sourceRegionContext
+        ? 88
+        : explicitRegion
+          ? 100
+          : 70;
   const vanmotionAffinity = Math.min(100, 48 + Math.min(52, vanmotionMatches * 10));
   const ageDays = Math.max(0, (Date.now() - candidate.publishedAt.getTime()) / 86_400_000);
   const freshness = Math.max(0, Math.round(100 - Math.min(100, (ageDays / 14) * 100)));
@@ -361,7 +372,7 @@ function parseFeed(xml: string, feed: Feed): Evaluation[] {
 
     if (
       candidate.publishedAt.getTime() <
-      Date.now() - 14 * 86_400_000
+      Date.now() - 7 * 86_400_000
     ) {
       rejectionReason = "age";
     } else if (
@@ -575,13 +586,40 @@ export async function ingestNews(): Promise<{ fetched: number; saved: number; ac
     saved += 1;
   }
 
+  const freshSince = new Date(
+    Date.now() - 7 * 86_400_000,
+  );
+
   let active = 0;
   for (const locale of NEWS_LOCALES) for (const region of NEWS_REGIONS) for (const category of NEWS_CATEGORIES) {
-    const ranked = await prisma.newsArticle.findMany({ where: { locale, region, category, editorialScore: { gte: 70 } }, orderBy: [{ editorialScore: "desc" }, { publishedAt: "desc" }], take: 3, select: { id: true } });
+    const ranked = await prisma.newsArticle.findMany({
+      where: {
+        locale,
+        region,
+        category,
+        editorialScore: { gte: 70 },
+        publishedAt: { gte: freshSince },
+      },
+      orderBy: [
+        { publishedAt: "desc" },
+        { editorialScore: "desc" },
+      ],
+      take: 3,
+      select: { id: true },
+    });
+
     const ids = ranked.map((item) => item.id);
+
+    await prisma.newsArticle.updateMany({
+      where: { locale, region, category },
+      data: { isActive: false },
+    });
+
     if (ids.length) {
-      await prisma.newsArticle.updateMany({ where: { locale, region, category }, data: { isActive: false } });
-      await prisma.newsArticle.updateMany({ where: { id: { in: ids } }, data: { isActive: true } });
+      await prisma.newsArticle.updateMany({
+        where: { id: { in: ids } },
+        data: { isActive: true },
+      });
       active += ids.length;
     }
   }

@@ -2,7 +2,6 @@ import { unstable_cache } from "next/cache";
 
 import { prisma } from "@/app/lib/prisma";
 import {
-  hasStrictNewsCategoryIdentity,
   type NewsCategory,
 } from "@/app/lib/news";
 
@@ -1098,10 +1097,13 @@ async function fetchStoredTopicCandidates(
         region: REGION_BY_LANGUAGE[language],
         category: STORED_CATEGORY_BY_TOPIC[topic],
         editorialScore: { gte: 70 },
+        publishedAt: {
+          gte: new Date(Date.now() - 7 * 86_400_000),
+        },
       },
       orderBy: [
-        { editorialScore: "desc" },
         { publishedAt: "desc" },
+        { editorialScore: "desc" },
       ],
       take: MAX_ROTATION_ITEMS * 2,
       select: {
@@ -1113,14 +1115,7 @@ async function fetchStoredTopicCandidates(
       },
     });
 
-    return articles
-      .filter((article) =>
-        hasStrictNewsCategoryIdentity(
-          STORED_CATEGORY_BY_TOPIC[topic],
-          article.title,
-        ),
-      )
-      .map((article) => ({
+    return articles.map((article) => ({
         title: article.title,
         source: article.source,
         url: article.sourceUrl,
@@ -1228,19 +1223,6 @@ async function fetchTopic(
       language,
     );
 
-  const storedSelection =
-    selectHourlyArticle(
-      storedCandidates,
-      topic,
-      language,
-    );
-
-  if (storedSelection) {
-    return attachSourcePageImage(
-      storedSelection,
-    );
-  }
-
   const today = await fetchTopicCandidates(
     topic,
     language,
@@ -1254,14 +1236,21 @@ async function fetchTopic(
       language,
     );
 
-  if (editorialToday.length >= 2) {
-    return (
-      selectHourlyArticle(
-        editorialToday,
-        topic,
-        language,
-      ) ?? fallbackNews(topic, language)
+  const freshCandidates = mergeCandidates(
+    storedCandidates,
+    editorialToday,
+  );
+
+  if (freshCandidates.length >= 2) {
+    const selection = selectHourlyArticle(
+      freshCandidates,
+      topic,
+      language,
     );
+
+    if (selection) {
+      return attachSourcePageImage(selection);
+    }
   }
 
   const week = await fetchTopicCandidates(
@@ -1282,13 +1271,20 @@ async function fetchTopic(
       language,
     );
 
-  return (
-    selectHourlyArticle(
-      editorialCandidates,
-      topic,
-      language,
-    ) ?? fallbackNews(topic, language)
+  const combinedCandidates = mergeCandidates(
+    storedCandidates,
+    editorialCandidates,
   );
+
+  const selection = selectHourlyArticle(
+    combinedCandidates,
+    topic,
+    language,
+  );
+
+  return selection
+    ? attachSourcePageImage(selection)
+    : fallbackNews(topic, language);
 }
 
 async function fetchDailyNewsOnce(
@@ -1314,7 +1310,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-news-v14-strict-category-identity"],
+  ["vanmotion-news-v15-fresh-editorial"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
