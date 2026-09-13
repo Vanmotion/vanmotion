@@ -1066,10 +1066,29 @@ function metaImageFromHtml(
   return null;
 }
 
+function isGoogleNewsPage(
+  value: string,
+): boolean {
+  try {
+    const hostname = new URL(value).hostname.toLowerCase();
+
+    return (
+      hostname === "news.google.com" ||
+      hostname.endsWith(".news.google.com")
+    );
+  } catch {
+    return false;
+  }
+}
+
 async function attachSourcePageImage(
   item: DailyNewsItem,
 ): Promise<DailyNewsItem> {
   if (item.imageUrl) {
+    return item;
+  }
+
+  if (isGoogleNewsPage(item.url)) {
     return item;
   }
 
@@ -1355,7 +1374,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-news-v17-no-streetsblog-vehicles"],
+  ["vanmotion-news-v18-clean-news-thumbnails"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
