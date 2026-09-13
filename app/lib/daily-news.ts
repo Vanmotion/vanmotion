@@ -865,8 +865,14 @@ function filterEditorialCandidates(
   language: Language,
 ): NewsCandidate[] {
   return candidates
-    .filter((candidate) =>
-      isStrictlyRelevant(candidate, topic, language),
+    .filter(
+      (candidate) =>
+        !(
+          language === "en" &&
+          topic === "vehicles" &&
+          candidate.source === "NYC Streetsblog"
+        ) &&
+        isStrictlyRelevant(candidate, topic, language),
     )
     .map((candidate) => ({
       candidate,
@@ -1349,7 +1355,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-news-v16-direct-feeds-first"],
+  ["vanmotion-news-v17-no-streetsblog-vehicles"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
