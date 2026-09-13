@@ -666,6 +666,15 @@ function editorialScore(
       "wedding",
       "reality",
       "gossip",
+      "wore",
+      "wearing",
+      "lookalike",
+      "lookalikes",
+      "shop the look",
+      "shop lookalikes",
+      "get the look",
+      "dupe",
+      "dupes",
     ],
   };
 
@@ -777,6 +786,14 @@ function editorialScore(
     "deals",
     "discount",
     "sale",
+    "shop lookalikes",
+    "shop the look",
+    "get the look",
+    "lookalike",
+    "lookalikes",
+    "dupe",
+    "dupes",
+    "shop now",
   ];
 
   for (const term of commercialNoise) {
@@ -1223,6 +1240,19 @@ async function fetchTopic(
       language,
     );
 
+  const storedSelection =
+    selectHourlyArticle(
+      storedCandidates,
+      topic,
+      language,
+    );
+
+  if (storedSelection) {
+    return attachSourcePageImage(
+      storedSelection,
+    );
+  }
+
   const today = await fetchTopicCandidates(
     topic,
     language,
@@ -1310,7 +1340,7 @@ async function fetchDailyNewsOnce(
 const getCachedDailyNews = unstable_cache(
   async (language: Language) =>
     fetchDailyNewsOnce(language),
-  ["vanmotion-news-v15-fresh-editorial"],
+  ["vanmotion-news-v16-direct-feeds-first"],
   {
     revalidate: NEWS_REFRESH_SECONDS,
     tags: ["vanmotion-daily-news"],
