@@ -1132,7 +1132,16 @@ async function fetchStoredTopicCandidates(
       },
     });
 
-    return articles.map((article) => ({
+    return articles
+      .filter(
+        (article) =>
+          !(
+            language === "en" &&
+            topic === "vehicles" &&
+            article.source === "NYC Streetsblog"
+          ),
+      )
+      .map((article) => ({
         title: article.title,
         source: article.source,
         url: article.sourceUrl,
