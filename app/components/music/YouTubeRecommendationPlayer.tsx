@@ -8,6 +8,7 @@ export type YouTubePlayerHandle = {
   playVideo?: () => void;
   pauseVideo?: () => void;
   stopVideo?: () => void;
+  mute?: () => void;
   getIframe?: () => HTMLIFrameElement;
 };
 
@@ -96,20 +97,46 @@ type YouTubeRecommendationPlayerProps = {
   onPaused: () => void;
   onEnded: () => void;
   onError: (message: string) => void;
+  onReady?: () => void;
   playerRef?: { current: YouTubePlayerHandle | null };
+  muted?: boolean;
+  controls?: boolean;
+  className?: string;
 };
 
 export default function YouTubeRecommendationPlayer({
-  videoId, title, playing, onPlaying, onPaused, onEnded,
-  onError, playerRef: externalPlayerRef,
+  videoId,
+  title,
+  playing,
+  onPlaying,
+  onPaused,
+  onEnded,
+  onError,
+  onReady,
+  playerRef: externalPlayerRef,
+  muted = false,
+  controls = true,
+  className,
 }: YouTubeRecommendationPlayerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayerInstance | null>(null);
   const playingRef = useRef(playing);
-  const callbacksRef = useRef({ onPlaying, onPaused, onEnded, onError });
+  const callbacksRef = useRef({
+    onPlaying,
+    onPaused,
+    onEnded,
+    onError,
+    onReady,
+  });
   useEffect(() => {
     playingRef.current = playing;
-    callbacksRef.current = { onPlaying, onPaused, onEnded, onError };
+    callbacksRef.current = {
+      onPlaying,
+      onPaused,
+      onEnded,
+      onError,
+      onReady,
+    };
   });
 
   useEffect(() => {
@@ -131,7 +158,10 @@ export default function YouTubeRecommendationPlayer({
         videoId,
         host: "https://www.youtube-nocookie.com",
         playerVars: {
-          autoplay: 0, controls: 1, playsinline: 1, rel: 0,
+          autoplay: 0,
+          controls: controls ? 1 : 0,
+          playsinline: 1,
+          rel: 0,
           origin: window.location.origin,
         },
         events: {
@@ -139,6 +169,8 @@ export default function YouTubeRecommendationPlayer({
             if (cancelled) return;
             playerRef.current = event.target;
             if (externalPlayerRef) externalPlayerRef.current = event.target;
+            if (muted) event.target.mute?.();
+            callbacksRef.current.onReady?.();
             if (playingRef.current) event.target.playVideo?.();
           },
           onStateChange: (event) => {
@@ -179,7 +211,7 @@ export default function YouTubeRecommendationPlayer({
       // React owns the host; YouTube owns its children.
       host.replaceChildren();
     };
-  }, [videoId, externalPlayerRef]);
+  }, [videoId, externalPlayerRef, muted, controls]);
 
   useEffect(() => {
     const player = playerRef.current;
@@ -191,7 +223,7 @@ export default function YouTubeRecommendationPlayer({
   return (
     <div
       ref={hostRef}
-      className={styles.youtubeEmbed}
+      className={`${styles.youtubeEmbed}${className ? ` ${className}` : ""}`}
       role="group"
       aria-label={title}
       data-youtube-video-id={videoId}

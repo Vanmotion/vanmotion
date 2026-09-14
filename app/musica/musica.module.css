@@ -155,6 +155,29 @@
   background: #050505;
 }
 
+.heroMonitorVideo {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: 16 / 9 !important;
+  transform: translateY(-50%);
+  border-radius: 0 !important;
+  overflow: hidden;
+  background: #000;
+  pointer-events: none;
+}
+
+.heroMonitorVideo iframe {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  pointer-events: none;
+}
+
 .heroTopline,
 .heroFoot {
   position: absolute;

@@ -28,6 +28,12 @@ type MusicPlayerContextValue = {
   setAudioStartHandler: (handler: (() => void) | null) => void;
   videoSessionActive: boolean;
   setVideoSessionActive: (active: boolean) => void;
+  recommendationVideoId: string | null;
+  recommendationVideoPlaying: boolean;
+  setRecommendationVideoState: (
+    videoId: string | null,
+    playing: boolean,
+  ) => void;
   selectTrack: (index: number, autoplay?: boolean) => void;
   playPrevious: () => void;
   playNext: () => void;
@@ -63,6 +69,19 @@ export default function MusicPlayerProvider({
 
   const audioStartHandlerRef = useRef<(() => void) | null>(null);
   const [videoSessionActive, setVideoSessionActive] = useState(false);
+  const [recommendationVideoId, setRecommendationVideoId] =
+    useState<string | null>(null);
+  const [recommendationVideoPlaying, setRecommendationVideoPlaying] =
+    useState(false);
+
+  const setRecommendationVideoState = useCallback(
+    (videoId: string | null, playing: boolean) => {
+      setRecommendationVideoId(videoId);
+      setRecommendationVideoPlaying(Boolean(videoId) && playing);
+    },
+    [],
+  );
+
   const setAudioStartHandler = useCallback((handler: (() => void) | null) => {
     audioStartHandlerRef.current = handler;
   }, []);
@@ -355,6 +374,9 @@ export default function MusicPlayerProvider({
     setAudioStartHandler,
     videoSessionActive,
     setVideoSessionActive,
+    recommendationVideoId,
+    recommendationVideoPlaying,
+    setRecommendationVideoState,
     selectTrack,
     playPrevious,
     playNext,

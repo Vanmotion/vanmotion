@@ -145,6 +145,7 @@ export default function GlobalMusicPlayer({
     pausePlayback,
     setAudioStartHandler,
     setVideoSessionActive,
+    setRecommendationVideoState,
     selectTrack,
     playPrevious,
     playNext,
@@ -162,6 +163,21 @@ export default function GlobalMusicPlayer({
     setVideoSessionActive(Boolean(activeRecommendationData));
     return () => setVideoSessionActive(false);
   }, [activeRecommendationData, setVideoSessionActive]);
+
+  useEffect(() => {
+    setRecommendationVideoState(
+      activeRecommendationData?.youtubeVideoId ?? null,
+      Boolean(activeRecommendationData && recommendationIsPlaying),
+    );
+  }, [
+    activeRecommendationData,
+    recommendationIsPlaying,
+    setRecommendationVideoState,
+  ]);
+
+  useEffect(() => {
+    return () => setRecommendationVideoState(null, false);
+  }, [setRecommendationVideoState]);
 
   useEffect(() => {
     setAudioStartHandler(() => {
