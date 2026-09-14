@@ -57,8 +57,6 @@ const translations = {
       noteTitle: "Atención personal",
       note:
         "Las visitas y reuniones se coordinan previamente para poder atenderte bien.",
-      social: "Redes",
-      comingSoon: "Próximamente",
     },
     form: {
       eyebrow: "Envíanos tu mensaje",
@@ -140,8 +138,6 @@ const translations = {
       noteTitle: "Personal attention",
       note:
         "Visits and meetings are arranged in advance so we can give you proper attention.",
-      social: "Social media",
-      comingSoon: "Coming soon",
     },
     form: {
       eyebrow: "Send us a message",
@@ -192,14 +188,6 @@ const translations = {
     },
   },
 } as const;
-
-function externalUrl(value: string): string {
-  if (/^https?:\/\//i.test(value)) {
-    return value;
-  }
-
-  return `https://${value}`;
-}
 
 function topicFromReason(reason?: string): string {
   switch (reason?.toLowerCase()) {
@@ -283,12 +271,6 @@ export default async function ContactoPage({
 
   const defaultTopic = topicFromReason(motivo);
   const defaultMessage = "";
-
-  const socialLinks = [
-    { label: "Instagram", value: settings?.instagram },
-    { label: "YouTube", value: settings?.youtube },
-    { label: "TikTok", value: settings?.tiktok },
-  ];
 
   return (
     <div className={styles.page}>
@@ -377,27 +359,6 @@ export default async function ContactoPage({
               <p>{content.channels.note}</p>
             </div>
 
-            <div className={styles.socialBlock}>
-              <strong>{content.channels.social}</strong>
-              <div>
-                {socialLinks.map((social) =>
-                  social.value ? (
-                    <a
-                      key={social.label}
-                      href={externalUrl(social.value)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {social.label} ↗
-                    </a>
-                  ) : (
-                    <span key={social.label}>
-                      {social.label} · {content.channels.comingSoon}
-                    </span>
-                  ),
-                )}
-              </div>
-            </div>
           </aside>
 
           <section className={styles.formPanel}>
