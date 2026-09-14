@@ -124,6 +124,37 @@
     linear-gradient(180deg, rgba(5, 5, 4, 0.28) 0%, rgba(5, 5, 4, 0.04) 40%, rgba(5, 5, 4, 0.56) 100%);
 }
 
+
+
+
+
+
+.heroMonitorScreen {
+  position: absolute;
+  left: 27.668125%;
+  top: 50.85857142857143%;
+  width: 9.7%;
+  height: 14.66%;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: #050505;
+  clip-path: polygon(
+    0% 0%,
+    98.14740001438% 0%,
+    100% 90.39595955915635%,
+    0% 94.05078212065146%
+  );
+}
+
+.heroMonitorArtwork {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  background: #050505;
+}
+
 .heroTopline,
 .heroFoot {
   position: absolute;

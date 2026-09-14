@@ -13,6 +13,7 @@ import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
 import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
+import HeroMusicMonitor from "./HeroMusicMonitor";
 import styles from "./musica.module.css";
 import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
@@ -293,6 +294,8 @@ export default async function MusicPage() {
             />
             <div className={styles.heroShade} />
           </div>
+
+          <HeroMusicMonitor />
 
           <div className={styles.heroTopline}>
             <span>{content.hero.location}</span>

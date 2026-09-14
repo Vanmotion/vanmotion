@@ -26,7 +26,7 @@ export const fallbackTracks: PublicMusicTrack[] = [
     title: "Sueños Prestados",
     subtitle: "VANMOTION · Single original",
     src: "/music/suenos-prestados.mp3",
-    coverUrl: null,
+    coverUrl: "/uploads/music-covers/suenos-prestados-1784376509559.png",
     format: "MP3",
     externalUrl:
       "https://hearnow.com/preview/dLLRtS%2FKI3PyS2Bo6Y5wcw%3D%3D?cid=100",
@@ -36,7 +36,7 @@ export const fallbackTracks: PublicMusicTrack[] = [
     title: "Solo En Mi Mente",
     subtitle: "VANMOTION · Trap y violín",
     src: "/music/solo-en-mi-mente.mp3",
-    coverUrl: null,
+    coverUrl: "/uploads/music-covers/solo-en-mi-mente-1784377787037.png",
     format: "MP3",
     externalUrl: null,
   },
@@ -45,7 +45,7 @@ export const fallbackTracks: PublicMusicTrack[] = [
     title: "Vanmotion",
     subtitle: "VANMOTION · Identidad y trabajo",
     src: "/music/vanmotion.mp3",
-    coverUrl: null,
+    coverUrl: "/uploads/music-covers/vanmotion-1784378515490.png",
     format: "MP3",
     externalUrl:
       "https://hearnow.com/preview/ad5WF67x6Ga8IGKviMDcAg%3D%3D?cid=100",
@@ -167,7 +167,13 @@ export async function getPublicMusicTracks(): Promise<
         track.coverUrl ??
         (track.slug === "the-cool-ashtray"
           ? "/uploads/music-covers/the-cool-ashtray-1784373940751.png"
-          : null),
+          : track.slug === "suenos-prestados"
+            ? "/uploads/music-covers/suenos-prestados-1784376509559.png"
+            : track.slug === "solo-en-mi-mente"
+              ? "/uploads/music-covers/solo-en-mi-mente-1784377787037.png"
+              : track.slug === "vanmotion"
+                ? "/uploads/music-covers/vanmotion-1784378515490.png"
+                : null),
       format: track.format,
       externalUrl: track.externalUrl,
     }));
