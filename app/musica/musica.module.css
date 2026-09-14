@@ -1939,3 +1939,16 @@
     border: 0 !important;
   }
 }
+
+/* Ajuste fino móvil · mover el contenido del monitor un poco a la derecha */
+@media (max-width: 640px) {
+  .heroMonitorArtwork {
+    position: relative;
+    left: 4%;
+  }
+
+  .heroMonitorVideo {
+    left: 4%;
+    width: 108% !important;
+  }
+}
