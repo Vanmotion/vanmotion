@@ -1940,15 +1940,19 @@
   }
 }
 
-/* Ajuste fino móvil · mover el contenido del monitor un poco a la derecha */
+/* Ajuste fino móvil · portada y vídeo calibrados por separado */
 @media (max-width: 640px) {
   .heroMonitorArtwork {
     position: relative;
-    left: 4%;
+    left: 8%;
   }
 
   .heroMonitorVideo {
-    left: 4%;
-    width: 108% !important;
+    left: 0;
+    width: 100% !important;
+  }
+
+  .heroMonitorVideo iframe {
+    left: 58%;
   }
 }
