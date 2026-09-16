@@ -1925,10 +1925,11 @@
 
   .heroMonitorVideo {
     position: absolute;
-    inset: 0;
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 100% !important;
+    left: -1.4%;
+    top: -10.5%;
+    width: 106% !important;
+    height: 118% !important;
+    min-height: 118% !important;
     aspect-ratio: auto !important;
     transform: none;
     overflow: hidden;
@@ -1944,7 +1945,6 @@
     min-height: 100% !important;
     transform: none;
     border: 0 !important;
-
   }
 }
 
@@ -1999,4 +1999,53 @@
     border: 0 !important;
 
   }
+}
+
+/* VANMOTION · monitor universal ligado a la fotografía */
+
+.heroMonitorScreen {
+  transform-origin: 50% 50%;
+  overflow: hidden;
+}
+
+.heroMonitorArtwork {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transform: none;
+}
+
+.heroMonitorVideo {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  aspect-ratio: auto !important;
+  transform: none;
+  border-radius: 0 !important;
+  overflow: hidden;
+  background: #000;
+  pointer-events: none;
+}
+
+.heroMonitorVideo iframe {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  display: block;
+
+  width: 152% !important;
+  height: 152% !important;
+  min-width: 152% !important;
+  min-height: 152% !important;
+
+  transform: translate(-50%, -50%);
+  transform-origin: 50% 50%;
+
+  border: 0 !important;
+  pointer-events: none;
 }
