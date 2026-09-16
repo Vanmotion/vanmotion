@@ -94,16 +94,28 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: content.title,
       description: content.openGraphDescription,
+      url: siteUrl,
       type: "website",
       locale: content.locale,
       alternateLocale: [...content.alternateLocale],
       siteName: "VANMOTION",
+      images: [
+        {
+          url: `${siteUrl}/images/vanmotion-portada-principal.webp`,
+          width: 1672,
+          height: 941,
+          alt: "VANMOTION Automotive Culture",
+        },
+      ],
     },
 
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: content.title,
       description: content.openGraphDescription,
+      images: [
+        `${siteUrl}/images/vanmotion-portada-principal.webp`,
+      ],
     },
   };
 }

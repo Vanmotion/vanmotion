@@ -11,11 +11,41 @@ const siteUrl = "https://www.vanmotion.es";
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
   const english = language === "en";
+  const title = english
+    ? "News · Vehicles, music and street culture"
+    : "Noticias · Vehículos, música y cultura urbana";
+  const description = english
+    ? "An editorial selection of vehicles, music and street culture from Spain and New York."
+    : "Una selección editorial de vehículos, música y cultura urbana desde España y Nueva York.";
+  const socialImage =
+    `${siteUrl}/images/vanmotion-portada-principal.webp`;
+
   return {
-    title: english ? "News · Vehicles, music and street culture" : "Noticias · Vehículos, música y cultura urbana",
-    description: english ? "An editorial selection of vehicles, music and street culture from Spain and New York." : "Una selección editorial de vehículos, música y cultura urbana desde España y Nueva York.",
-    alternates: { canonical: `${siteUrl}/noticias` },
-    openGraph: { title: english ? "News · Vehicles, music and street culture" : "Noticias · Vehículos, música y cultura urbana", url: `${siteUrl}/noticias`, type: "website" },
+    title,
+    description,
+    alternates: {
+      canonical: `${siteUrl}/noticias`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/noticias`,
+      type: "website",
+      images: [
+        {
+          url: socialImage,
+          width: 1672,
+          height: 941,
+          alt: "VANMOTION Automotive Culture",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [socialImage],
+    },
   };
 }
 
