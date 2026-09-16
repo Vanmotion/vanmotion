@@ -4,5 +4,8 @@
       "path": "/api/cron/news",
       "schedule": "0 * * * *"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": false
+  }
 }
