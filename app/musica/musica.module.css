@@ -2049,3 +2049,9 @@
   border: 0 !important;
   pointer-events: none;
 }
+
+
+/* VANMOTION · continuidad visual entre hero y reproductor */
+.playerSection {
+  background: #050505;
+}
