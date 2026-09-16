@@ -377,7 +377,6 @@ export default async function CollectionPage() {
     },
   };
 
-
   return (
     <div className={styles.page}>
       <script
@@ -421,7 +420,11 @@ export default async function CollectionPage() {
         <section className={styles.hero} aria-labelledby="collection-hero-title">
           <Image
             src={heroImage}
-            alt="Ford E-150 VANMOTION con Madrid al fondo"
+            alt={
+              language === "es"
+                ? "Ford E-150 VANMOTION con Madrid al fondo"
+                : "VANMOTION Ford E-150 with Madrid in the background"
+            }
             fill
             priority
             sizes="100vw"

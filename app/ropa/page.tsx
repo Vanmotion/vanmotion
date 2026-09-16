@@ -349,7 +349,11 @@ export default async function RopaPage() {
       <section className={styles.hero} aria-labelledby="clothing-title">
         <Image
           src={heroImage}
-          alt="Colección negra VANMOTION en Madrid"
+          alt={
+            language === "es"
+              ? "Colección negra VANMOTION en Madrid"
+              : "VANMOTION black clothing collection in Madrid"
+          }
           fill
           priority
           sizes="100vw"

@@ -154,12 +154,12 @@ const awards: {
       en: "CSS Design Awards — Special Kudos 2026",
     },
     category: {
-      es: "Special Kudos",
-      en: "Special Kudos",
+      es: "Special Kudos · Best UI Design · Best UX Design · Best Innovation",
+      en: "Special Kudos · Best UI Design · Best UX Design · Best Innovation",
     },
     description: {
-      es: "VANMOTION recibió el 3 de septiembre de 2026 el reconocimiento Special Kudos de CSS Design Awards.",
-      en: "VANMOTION received the CSS Design Awards Special Kudos on September 3, 2026.",
+      es: "VANMOTION recibió Special Kudos de CSS Design Awards el 3 de septiembre de 2026, junto con los Public Awards de Best UI Design, Best UX Design y Best Innovation.",
+      en: "VANMOTION received Special Kudos from CSS Design Awards on September 3, 2026, together with the Best UI Design, Best UX Design and Best Innovation Public Awards.",
     },
     url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
     certificateUrl: "/reconocimientos/CSSDA-Special-Kudos-VANMOTION-2026.pdf",
