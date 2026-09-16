@@ -34,11 +34,6 @@ const staticPages: MetadataRoute.Sitemap = [
     priority: 0.8,
   },
   {
-    url: `${siteUrl}/experience`,
-    changeFrequency: "weekly",
-    priority: 0.8,
-  },
-  {
     url: `${siteUrl}/reconocimientos`,
     changeFrequency: "monthly",
     priority: 0.7,

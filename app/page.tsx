@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ExperiencePage from "./experience/page";
+import ExperiencePage from "./experience/ExperiencePageContent";
 
 
 
