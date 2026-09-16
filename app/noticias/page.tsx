@@ -12,10 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
   const english = language === "en";
   return {
-    title: english ? "News · Vehicles, music and street culture | VANMOTION" : "Noticias · Vehículos, música y street culture | VANMOTION",
-    description: english ? "A considered editorial selection of vehicles, music and street culture from New York." : "Una selección editorial de vehículos, música y cultura urbana desde España.",
+    title: english ? "News · Vehicles, music and street culture" : "Noticias · Vehículos, música y cultura urbana",
+    description: english ? "An editorial selection of vehicles, music and street culture from Spain and New York." : "Una selección editorial de vehículos, música y cultura urbana desde España y Nueva York.",
     alternates: { canonical: `${siteUrl}/noticias` },
-    openGraph: { title: english ? "News · Vehicles, music and street culture | VANMOTION" : "Noticias · Vehículos, música y street culture | VANMOTION", url: `${siteUrl}/noticias`, type: "website" },
+    openGraph: { title: english ? "News · Vehicles, music and street culture" : "Noticias · Vehículos, música y cultura urbana", url: `${siteUrl}/noticias`, type: "website" },
   };
 }
 
