@@ -21,6 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords: [
       "VANMOTION awards",
+      "Awwwards",
+      "Awwwards Nominee 2026",
       "CSS Design Awards",
       "Special Kudos",
       "Best UI Design",
@@ -269,11 +271,11 @@ export default async function ReconocimientosPage() {
       "Brand identity",
       "Visual storytelling",
     ],
-    award: awards.map((award) => award.name[language]),
+    award: [...awards.map((award) => award.name[language]), "Awwwards Nominee 2026"],
     image: awards.map(
       (award) => `https://www.vanmotion.es${award.image}`,
     ),
-    sameAs: awards.map((award) => award.url),
+    sameAs: [...awards.map((award) => award.url), "https://www.awwwards.com/sites/vanmotion"],
   };
 
   return (
@@ -292,7 +294,7 @@ export default async function ReconocimientosPage() {
 
             <h1>
               VANMOTION
-              <span>Recognition Archive</span>
+              <span>Recognition Archive · Awwwards Nominee 2026</span>
             </h1>
           </div>
 
