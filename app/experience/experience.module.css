@@ -175,6 +175,25 @@
   grid-row: 1 / span 2;
 }
 
+.heroVehicle::after {
+  display: none;
+}
+
+.heroCardImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  transform: scale(1.03);
+  transition: transform 1.4s cubic-bezier(.2,.7,.2,1), filter 700ms ease;
+}
+
+.heroVehicle:hover .heroCardImage {
+  transform: scale(1.035);
+}
+
 .heroMusic {
   background-position: center;
 }
@@ -515,7 +534,8 @@
 }
 
 .experience[data-atmosphere="autumn"] .chapterImage,
-.experience[data-atmosphere="autumn"] .heroCard::after {
+.experience[data-atmosphere="autumn"] .heroCard::after,
+.experience[data-atmosphere="autumn"] .heroCardImage {
   filter:
     saturate(0.94)
     sepia(0.07)
@@ -537,7 +557,8 @@
 }
 
 .experience[data-atmosphere="rain"] .chapterImage,
-.experience[data-atmosphere="rain"] .heroCard::after {
+.experience[data-atmosphere="rain"] .heroCard::after,
+.experience[data-atmosphere="rain"] .heroCardImage {
   filter:
     saturate(0.78)
     brightness(0.88)
@@ -574,7 +595,8 @@
 }
 
 .experience[data-atmosphere="snow"] .chapterImage,
-.experience[data-atmosphere="snow"] .heroCard::after {
+.experience[data-atmosphere="snow"] .heroCard::after,
+.experience[data-atmosphere="snow"] .heroCardImage {
   filter:
     saturate(0.68)
     brightness(0.94)
