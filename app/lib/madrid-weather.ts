@@ -79,7 +79,7 @@ export function parseMadridWeather(raw: unknown, now = new Date()): WeatherState
   // A single cloudy artwork represents both partial and heavy cloud cover.
   // When present, actual model cloud cover refines the WMO code's broad category.
   else if (code === 45 || code === 48) atmosphere = "cloudy";
-  else if (cover !== null) atmosphere = cover >= 60 ? "cloudy" : "clear";
+  else if (cover !== null) atmosphere = cover >= 80 ? "cloudy" : "clear";
   else atmosphere = CLOUDY.has(code) ? "cloudy" : "clear";
   return { atmosphere, source: "model", weatherCode: code, cloudCover: cover, observedAt: new Date(timestamp * 1000).toISOString() };
 }
