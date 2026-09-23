@@ -22,20 +22,13 @@ import {
   type Period,
 } from "@/app/lib/madrid-weather";
 
-type SocialLink = {
-  label: string;
-  handle: string;
-  href: string;
-};
 
 export default function ExperienceClient({
   language,
-  socials,
   initialPeriod,
   initialWeather,
 }: {
   language: Language;
-  socials: SocialLink[];
   initialPeriod: Period;
   initialWeather: WeatherState;
 }) {
@@ -266,27 +259,6 @@ export default function ExperienceClient({
         </h2>
 
         <div className={styles.endingLinks}>
-          <div
-            className={styles.endingSocials}
-            aria-label={
-              language === "es"
-                ? "Redes sociales de VANMOTION"
-                : "VANMOTION social media"
-            }
-          >
-            {socials.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span>{social.label}</span>
-                <small>{social.handle}</small>
-              </a>
-            ))}
-          </div>
-
           <nav
             className={styles.endingNav}
             aria-label={
