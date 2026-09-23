@@ -3,7 +3,6 @@
 import type { Language } from "@/app/language";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import styles from "./experience.module.css";
 import {
@@ -185,16 +184,10 @@ export default function ExperienceClient({
             <Link
               href="/coleccion"
               className={`${styles.heroCard} ${styles.heroVehicle}`}
+              style={{
+                backgroundImage: `url("${imageFor("vehicles")}")`,
+              }}
             >
-              <Image
-                src={imageFor("vehicles")}
-                alt=""
-                fill
-                sizes="(max-width: 768px) 100vw, 58vw"
-                loading="eager"
-                fetchPriority="high"
-                className={styles.heroCardImage}
-              />
               <span>{language === "es" ? "01 · VEHÍCULOS" : "01 · VEHICLES"}</span>
             </Link>
 
