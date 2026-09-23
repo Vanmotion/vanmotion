@@ -62,9 +62,9 @@ const transmissionLabels: Record<Language, Record<string, string>> = {
 
 const translations = {
   es: {
-    metadataTitle: "Vehículos y furgonetas de ocasión en Madrid",
+    metadataTitle: "Vehículos de ocasión y furgonetas en Madrid",
     metadataDescription:
-      "Vehículos y furgonetas de ocasión seleccionados por VANMOTION en Madrid. Datos claros, fotografías reales y atención directa.",
+      "Vehículos de ocasión y furgonetas seleccionados por VANMOTION en Madrid. Fotografías reales, información clara y atención directa.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",

@@ -32,9 +32,9 @@ function absoluteUrl(value: string): string {
 
 const translations = {
   es: {
-    metadataTitle: "Música original y producción musical en Madrid",
+    metadataTitle: "Música de VANMOTION: temas y producción en Madrid",
     metadataDescription:
-      "Música original y producción musical de VANMOTION en Madrid. Escucha temas oficiales, sesiones de estudio y nuevos lanzamientos.",
+      "Escucha la música original de VANMOTION: temas oficiales, sesiones de estudio y nuevos lanzamientos producidos en Madrid.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",

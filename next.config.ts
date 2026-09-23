@@ -8,13 +8,13 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "frame-ancestors 'self'",
   "form-action 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.youtube.com`,
+  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.youtube.com https://www.googletagmanager.com`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https: https://*.blob.vercel-storage.com https://i.ytimg.com",
+  "img-src 'self' data: blob: https: https://*.blob.vercel-storage.com https://i.ytimg.com https://www.googletagmanager.com https://*.google-analytics.com",
   "media-src 'self' blob: https://*.blob.vercel-storage.com",
   "font-src 'self' data:",
   "frame-src https://www.youtube-nocookie.com",
-  "connect-src 'self' https://*.blob.vercel-storage.com https://api.open-meteo.com",
+  "connect-src 'self' https://*.blob.vercel-storage.com https://api.open-meteo.com https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com",
   "worker-src 'self' blob:",
 ].join("; ");
 

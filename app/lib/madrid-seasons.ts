@@ -51,7 +51,22 @@ export function seasonalSceneImage({
 }): string {
   const original = sceneImage(section, period, atmosphere);
 
-  // La meteorología observada tiene prioridad sobre la estación.
+  // En otoño, prioriza una imagen que combine estación + meteorología.
+  if (season === "autumn") {
+    const seasonalAtmosphere =
+      `/experience/${section}/${season}/${atmosphere}/${period}.webp`;
+
+    if (hasAsset(seasonalAtmosphere)) return seasonalAtmosphere;
+
+    const seasonal =
+      `/experience/${section}/${season}/${period}.webp`;
+
+    if (hasAsset(seasonal)) return seasonal;
+
+    return original;
+  }
+
+  // La meteorología observada tiene prioridad fuera del otoño.
   if (atmosphere !== "clear") return original;
 
   // Invierno reutiliza las fotos originales de nieve; no crea una
@@ -59,10 +74,5 @@ export function seasonalSceneImage({
   if (season === "winter") return sceneImage(section, period, "snow");
 
   // Primavera permanece en su selección original y verano usa las bases.
-  if (season !== "autumn") return original;
-
-  const seasonal = `/experience/${section}/${season}/${period}.webp`;
-
-  // No se permite seleccionar una imagen que no esté disponible.
-  return hasAsset(seasonal) ? seasonal : original;
+  return original;
 }

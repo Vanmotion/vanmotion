@@ -31,9 +31,9 @@ const MANAGED_PRODUCT_SLUGS = [
 const translations = {
   es: {
     metadata: {
-      title: "Ropa urbana, camisetas y bomber en Madrid",
+      title: "Ropa urbana en Madrid para hombre y mujer",
       description:
-        "Ropa urbana VANMOTION diseñada en Madrid: camisetas CARPE DIEM y bomber para hombre y mujer en negro y azul Ford E-150.",
+        "Ropa urbana VANMOTION diseñada en Madrid. Camisetas CARPE DIEM, bomber y prendas para hombre y mujer en negro y azul Ford E-150.",
     },
     navigation: {
       vehicles: "Vehículos",

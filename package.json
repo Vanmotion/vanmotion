@@ -14,6 +14,7 @@
     "db:local:studio": "DATABASE_URL=postgresql://jose@localhost:5432/vanmotion prisma studio"
   },
   "dependencies": {
+    "@next/third-parties": "^16.3.5",
     "@prisma/client": "^6.19.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.6.1",

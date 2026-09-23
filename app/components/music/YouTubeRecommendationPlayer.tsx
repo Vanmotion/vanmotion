@@ -121,6 +121,27 @@ export default function YouTubeRecommendationPlayer({
   const hostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayerInstance | null>(null);
   const playingRef = useRef(playing);
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+
+  const requestWakeLock = async () => {
+    try {
+      if ("wakeLock" in navigator && document.visibilityState === "visible") {
+        wakeLockRef.current = await navigator.wakeLock.request("screen");
+      }
+    } catch {
+      // Some browsers/devices may deny wake lock.
+    }
+  };
+
+  const releaseWakeLock = async () => {
+    try {
+      await wakeLockRef.current?.release();
+    } catch {
+      // Ignore release errors.
+    } finally {
+      wakeLockRef.current = null;
+    }
+  };
   const callbacksRef = useRef({
     onPlaying,
     onPaused,
@@ -175,9 +196,16 @@ export default function YouTubeRecommendationPlayer({
           },
           onStateChange: (event) => {
             if (cancelled) return;
-            if (event.data === 1) callbacksRef.current.onPlaying();
-            else if (event.data === 2) callbacksRef.current.onPaused();
-            else if (event.data === 0) callbacksRef.current.onEnded();
+            if (event.data === 1) {
+              void requestWakeLock();
+              callbacksRef.current.onPlaying();
+            } else if (event.data === 2) {
+              void releaseWakeLock();
+              callbacksRef.current.onPaused();
+            } else if (event.data === 0) {
+              void releaseWakeLock();
+              callbacksRef.current.onEnded();
+            }
           },
           onError: (event) => {
             if (cancelled) return;
@@ -207,6 +235,7 @@ export default function YouTubeRecommendationPlayer({
         externalPlayerRef.current = null;
       }
       if (playerRef.current === instance) playerRef.current = null;
+      void releaseWakeLock();
       instance?.destroy?.();
       // React owns the host; YouTube owns its children.
       host.replaceChildren();
@@ -219,6 +248,20 @@ export default function YouTubeRecommendationPlayer({
     if (playing) player.playVideo?.();
     else player.pauseVideo?.();
   }, [playing]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && playingRef.current) {
+        void requestWakeLock();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   return (
     <div

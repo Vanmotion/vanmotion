@@ -169,7 +169,7 @@ export default function HeroMusicMonitor() {
       style={geometryStyle}
       aria-hidden="true"
     >
-      {recommendationVideoId ? (
+      {recommendationVideoId && recommendationVideoPlaying ? (
         <YouTubeRecommendationPlayer
           key={recommendationVideoId}
           videoId={recommendationVideoId}

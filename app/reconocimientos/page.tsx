@@ -8,12 +8,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const title =
     language === "es"
-      ? "Reconocimientos | VANMOTION Automotive Culture"
+      ? "Premios y reconocimientos de VANMOTION | Automotive Culture"
       : "Awards | VANMOTION Automotive Culture";
 
   const description =
     language === "es"
-      ? "Reconocimientos digitales de VANMOTION: CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es. Proyecto de cultura automotriz, música y streetwear nacido en Madrid."
+      ? "Premios y reconocimientos de VANMOTION en diseño web y experiencia digital: CSS Design Awards, CSS Nectar, CSS Winner y WD Awards."
       : "Digital recognition for VANMOTION from CSS Design Awards, WD Awards, CSS Nectar, CSS Winner and WebsiteAwards.es. An automotive culture, music and streetwear project born in Madrid.";
 
   return {
