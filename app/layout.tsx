@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import AwwwardsRibbon from "@/app/components/awwwards/AwwwardsRibbon";
 import PublicAnalytics from "@/app/components/analytics/PublicAnalytics";
 import LanguageSwitcher from "@/app/components/language/LanguageSwitcher";
 import RouteAwareMusicPlayer from "@/app/components/layout/RouteAwareMusicPlayer";
@@ -291,6 +292,8 @@ export default async function RootLayout({
               recommendations={recommendations}
             />
           </RouteAwareMusicPlayer>
+
+          <AwwwardsRibbon />
 
           <PublicAnalytics />
         </MusicPlayerProvider>
