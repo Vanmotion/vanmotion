@@ -8,9 +8,9 @@ import styles from "./experience.module.css";
 import {
   getMadridSeason,
   getSeasonOverride,
+  seasonalSceneImage,
   type Season,
 } from "@/app/lib/madrid-seasons";
-import { autumnExperienceImage } from "@/app/lib/autumn-experience";
 
 import {
   fetchMadridWeather,
@@ -42,9 +42,13 @@ export default function ExperienceClient({
   const enableSeasons = true;
 
   const imageFor = (section: ClimateSection) =>
-    autumnExperienceImage(
-      section, period, atmosphere, season, enableSeasons
-    );
+    seasonalSceneImage({
+      section,
+      period,
+      atmosphere,
+      season,
+      enabled: enableSeasons,
+    });
 
   useEffect(() => {
     let active = true;

@@ -1168,6 +1168,7 @@
 .heroVehicle {
   opacity: 1;
   animation: none;
+  transform: translateZ(0);
 }
 
 /* ===== AJUSTE FINO PORTADA VANMOTION ===== */
