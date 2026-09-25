@@ -1,3 +1,5 @@
+import * as SunCalc from "suncalc";
+
 /** Shared, browser-safe weather selection for VANMOTION. */
 export type Period = "manana" | "dia" | "atardecer" | "noche";
 export type Atmosphere = "clear" | "cloudy" | "autumn" | "rain" | "snow";
@@ -17,10 +19,38 @@ const CLOUDY = new Set([2, 3, 45, 48]);
 const ATMOSPHERES = new Set<Atmosphere>(["clear", "cloudy", "autumn", "rain", "snow"]);
 const URL = "https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&current=weather_code,cloud_cover,precipitation,rain,snowfall&timezone=Europe%2FMadrid&timeformat=unixtime";
 
+const MADRID_LAT = 40.4168;
+const MADRID_LON = -3.7038;
+
 export function getMadridPeriod(date = new Date()): Period {
+  const times = SunCalc.getTimes(date, MADRID_LAT, MADRID_LON);
+
+  const now = date.getTime();
+  const dawn = times.dawn?.getTime() ?? Number.NaN;
+  const solarNoon = times.solarNoon.getTime();
+  const goldenHour = times.goldenHour?.getTime() ?? Number.NaN;
+  const dusk = times.dusk?.getTime() ?? Number.NaN;
+
+  if ([dawn, solarNoon, goldenHour, dusk].every(Number.isFinite)) {
+    // Mañana empieza con la primera luz.
+    // Día empieza dos horas antes del mediodía solar.
+    // Atardecer empieza con la golden hour real.
+    // Noche empieza al terminar el crepúsculo civil.
+    const dayStart = solarNoon - 2 * 60 * 60 * 1000;
+
+    if (now < dawn || now >= dusk) return "noche";
+    if (now < dayStart) return "manana";
+    if (now < goldenHour) return "dia";
+    return "atardecer";
+  }
+
+  // Respaldo por si el cálculo solar no estuviera disponible.
   const hour = Number(new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Madrid", hour: "2-digit", hour12: false,
+    timeZone: "Europe/Madrid",
+    hour: "2-digit",
+    hour12: false,
   }).format(date));
+
   if (hour >= 6 && hour < 12) return "manana";
   if (hour >= 12 && hour < 18) return "dia";
   if (hour >= 18 && hour < 21) return "atardecer";
