@@ -303,7 +303,9 @@ export default async function ProductPage({
   );
 
   const shouldExposeProductStructuredData =
-    productStatus !== "DRAFT" && productStatus !== "HIDDEN";
+    productStatus !== "DRAFT" &&
+    productStatus !== "HIDDEN" &&
+    Number(product.price) > 0;
 
   const productText = getLocalizedProductText(product, language);
 
