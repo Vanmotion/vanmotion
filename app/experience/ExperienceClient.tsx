@@ -188,30 +188,36 @@ export default function ExperienceClient({
             <Link
               href="/coleccion"
               className={`${styles.heroCard} ${styles.heroVehicle}`}
-              style={{
-                backgroundImage: `url("${imageFor("vehicles")}")`,
-              }}
             >
+              <div
+                className={styles.heroCardMedia}
+                style={{ backgroundImage: `url("${imageFor("vehicles")}")` }}
+                aria-hidden="true"
+              />
               <span>{language === "es" ? "01 · VEHÍCULOS" : "01 · VEHICLES"}</span>
             </Link>
 
             <Link
               href="/musica"
               className={`${styles.heroCard} ${styles.heroMusic}`}
-              style={{
-                backgroundImage: `url("${imageFor("music")}")`,
-              }}
             >
+              <div
+                className={styles.heroCardMedia}
+                style={{ backgroundImage: `url("${imageFor("music")}")` }}
+                aria-hidden="true"
+              />
               <span>{language === "es" ? "02 · MÚSICA" : "02 · MUSIC"}</span>
             </Link>
 
             <Link
               href="/ropa"
               className={`${styles.heroCard} ${styles.heroStreet}`}
-              style={{
-                backgroundImage: `url("${imageFor("streetwear")}")`,
-              }}
             >
+              <div
+                className={styles.heroCardMedia}
+                style={{ backgroundImage: `url("${imageFor("streetwear")}")` }}
+                aria-hidden="true"
+              />
               <span>{language === "es" ? "03 · ROPA" : "03 · STREETWEAR"}</span>
             </Link>
           </div>
