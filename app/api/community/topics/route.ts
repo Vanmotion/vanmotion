@@ -44,3 +44,71 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+
+    const {
+      category,
+      title,
+      message,
+      attachments = [],
+    } = body;
+
+    const topic =
+      await prisma.communityTopic.create({
+        data: {
+          category,
+          title,
+          body: message,
+          status: "OPEN",
+
+          author: {
+            connectOrCreate: {
+              where: {
+                email: "community@vanmotion.es",
+              },
+              create: {
+                email: "community@vanmotion.es",
+                username: "VANMOTION",
+                displayName: "VANMOTION",
+              },
+            },
+          },
+
+          attachments: {
+            create: attachments.map(
+              (url: string) => ({
+                url,
+                type: "IMAGE",
+              }),
+            ),
+          },
+        },
+
+        include: {
+          attachments: true,
+        },
+      });
+
+    return NextResponse.json({
+      topic,
+    });
+
+  } catch (error) {
+    console.error(
+      "COMMUNITY_POST_TOPIC_ERROR:",
+      error,
+    );
+
+    return NextResponse.json(
+      {
+        error: "Could not create topic",
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+}
