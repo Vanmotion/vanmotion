@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/app/lib/prisma";
+import { createHash } from "crypto";
 
 const SESSION_COOKIE_NAME = "vanmotion_community_session";
+
+function hashValue(value: string): string {
+  return createHash("sha256")
+    .update(value)
+    .digest("hex");
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     const session = await prisma.communitySession.findUnique({
       where: {
-        tokenHash: token,
+        tokenHash: hashValue(token),
       },
       include: {
         user: true,

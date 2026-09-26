@@ -769,9 +769,56 @@ export default function CommunityForum() {
 
                       <button
                         type="button"
-                        disabled
+                        onClick={async () => {
+                          setError("");
+                          setLoading(true);
+
+                          try {
+                            const response = await fetch(
+                              "/api/community/topics",
+                              {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type":
+                                    "application/json",
+                                },
+                                body: JSON.stringify({
+                                  category: activeForum,
+                                  title,
+                                  message,
+                                }),
+                              },
+                            );
+
+                            const data =
+                              await response.json();
+
+                            if (!response.ok) {
+                              throw new Error(
+                                data.error ||
+                                  "Could not publish topic",
+                              );
+                            }
+
+                            setError(
+                              "TOPIC PUBLISHED",
+                            );
+
+                          } catch (error) {
+                            setError(
+                              error instanceof Error
+                                ? error.message
+                                : "Could not publish topic",
+                            );
+                          } finally {
+                            setLoading(false);
+                          }
+                        }}
+                        disabled={loading}
                       >
-                        PUBLISH NEXT
+                        {loading
+                          ? "PUBLISHING..."
+                          : "PUBLISH NEXT"}
                         <span>↗</span>
                       </button>
                     </div>
