@@ -10,6 +10,7 @@ const HIDDEN_PATHS = [
   "/admin", "/login-admin", "/aviso-legal", "/privacidad",
   "/cookies", "/condiciones-compra", "/desistimiento",
   "/reconocimientos",
+  "/community",
 ];
 
 function matchesPath(pathname: string, path: string) {

@@ -436,3 +436,120 @@ model NewsArticle {
   @@index([isActive])
   @@index([locale, region, category, isActive, editorialScore])
 }
+
+enum CommunityCategory {
+  MUSIC
+  FASHION
+  AUTOMOTIVE
+}
+
+enum CommunityUserRole {
+  MEMBER
+  MODERATOR
+  ADMIN
+}
+
+enum CommunityUserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum CommunityTopicStatus {
+  OPEN
+  LOCKED
+  HIDDEN
+}
+
+model CommunityUser {
+  id String @id @default(cuid())
+
+  email       String  @unique
+  username    String  @unique
+  displayName String?
+
+  passwordHash String?
+
+  role   CommunityUserRole   @default(MEMBER)
+  status CommunityUserStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  topics   CommunityTopic[]
+  replies  CommunityReply[]
+  sessions CommunitySession[]
+
+  @@index([createdAt])
+  @@index([status])
+}
+
+model CommunityTopic {
+  id String @id @default(cuid())
+
+  category CommunityCategory
+
+  title String
+  body  String
+
+  status CommunityTopicStatus @default(OPEN)
+
+  authorId String
+  author   CommunityUser @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  replies CommunityReply[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category, createdAt])
+  @@index([authorId])
+  @@index([status])
+}
+
+model CommunityReply {
+  id String @id @default(cuid())
+
+  body String
+
+  topicId String
+  topic   CommunityTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   CommunityUser @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([topicId, createdAt])
+  @@index([authorId])
+}
+
+model CommunityLoginCode {
+  id String @id @default(cuid())
+
+  email    String
+  codeHash String
+
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+  @@index([expiresAt])
+}
+
+model CommunitySession {
+  id String @id @default(cuid())
+
+  tokenHash String @unique
+
+  userId String
+  user   CommunityUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}

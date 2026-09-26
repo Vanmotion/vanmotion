@@ -1,0 +1,1048 @@
+.page {
+  height: 100svh;
+  min-height: 720px;
+  overflow: hidden;
+  padding: 22px 38px 17px;
+  background: #080808;
+  color: #f3f0ea;
+
+  display: grid;
+  grid-template-rows:
+    minmax(0, 1.18fr)
+    minmax(0, .62fr)
+    auto;
+
+  gap: 14px;
+}
+
+.top,
+.forums,
+.footer {
+  width: min(100%, 1500px);
+  margin: 0 auto;
+}
+
+/* HERO */
+
+.top {
+  position: relative;
+  min-height: 0;
+
+  display: grid;
+  grid-template-columns: .55fr 1.45fr;
+  gap: 30px;
+
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.identity {
+  position: relative;
+  z-index: 20;
+  align-self: center;
+}
+
+.identity > p {
+  margin: 0 0 23px;
+
+  color: rgba(255,255,255,.3);
+
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .25em;
+}
+
+.identity h1 {
+  margin: 0;
+
+  font-size: clamp(50px, 6.6vw, 102px);
+  line-height: .82;
+  font-weight: 580;
+  letter-spacing: -.07em;
+}
+
+.identity > span {
+  display: block;
+
+  margin-top: 25px;
+
+  color: rgba(255,255,255,.42);
+
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* COLLAGE */
+
+.collage {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 0;
+}
+
+.photo {
+  position: absolute;
+
+  overflow: hidden;
+
+  background: #111;
+
+  box-shadow:
+    0 16px 42px rgba(0,0,0,.36);
+
+  transition:
+    transform .45s cubic-bezier(.2,.75,.25,1),
+    z-index 0s;
+}
+
+.photo:hover {
+  z-index: 30;
+}
+
+.photo .image {
+  object-fit: cover;
+
+  transition:
+    transform .55s cubic-bezier(.2,.75,.25,1);
+}
+
+.photo:hover .image {
+  transform: scale(1.035);
+}
+
+/* Furgo atardecer — pieza base */
+
+.p1 {
+  width: 43%;
+  height: 68%;
+
+  left: 2%;
+  top: 11%;
+
+  z-index: 4;
+
+  transform: rotate(-2deg);
+}
+
+.p1:hover {
+  transform: rotate(-.5deg) scale(1.025);
+}
+
+/* Editorial ropa */
+
+.p2 {
+  width: 27%;
+  height: 55%;
+
+  left: 36%;
+  top: 0;
+
+  z-index: 8;
+
+  transform: rotate(2.4deg);
+}
+
+.p2:hover {
+  transform: rotate(.5deg) scale(1.03);
+}
+
+/* Música */
+
+.p3 {
+  width: 31%;
+  height: 50%;
+
+  right: 3%;
+  top: 8%;
+
+  z-index: 6;
+
+  transform: rotate(-1.2deg);
+}
+
+.p3:hover {
+  transform: rotate(.2deg) scale(1.03);
+}
+
+/* Pareja / moda */
+
+.p4 {
+  width: 25%;
+  height: 43%;
+
+  left: 14%;
+  bottom: 0;
+
+  z-index: 9;
+
+  transform: rotate(2.5deg);
+}
+
+.p4:hover {
+  transform: rotate(.5deg) scale(1.035);
+}
+
+/* Streetwear */
+
+.p5 {
+  width: 36%;
+  height: 53%;
+
+  left: 41%;
+  bottom: 0;
+
+  z-index: 10;
+
+  transform: rotate(-1.4deg);
+}
+
+.p5:hover {
+  transform: rotate(-.2deg) scale(1.03);
+}
+
+/* Detalle VANMOTION */
+
+.p6 {
+  display: none;
+
+  z-index: 11;
+
+  transform: rotate(3deg);
+}
+
+.p6:hover {
+  transform: rotate(.8deg) scale(1.04);
+}
+
+/* FOROS */
+
+.forums {
+  min-height: 0;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 18px;
+
+  padding: 1px 20px 0;
+}
+
+.card {
+  position: relative;
+
+  min-width: 0;
+  min-height: 0;
+
+  display: grid;
+  grid-template-columns: 36% 64%;
+
+  overflow: hidden;
+
+  background: #0a0a0a;
+
+  border-top: 1px solid rgba(255,255,255,.11);
+  border-bottom: 1px solid rgba(255,255,255,.11);
+
+  transition:
+    border-color .4s ease,
+    background .4s ease;
+}
+
+.card:hover {
+  border-color: rgba(201,168,106,.35);
+  background: #0d0d0d;
+}
+
+/*
+  EFECTO:
+  la fotografía está parcialmente cubierta por una
+  máscara diagonal oscura. Al entrar el cursor,
+  la máscara se desplaza fuera de la imagen.
+*/
+
+.cardImage {
+  position: relative;
+
+  min-height: 0;
+  overflow: hidden;
+
+  margin: 10px 0;
+
+  background: #111;
+}
+
+.forumImage {
+  object-fit: cover;
+
+  transform: scale(1.04);
+
+  filter:
+    saturate(.72)
+    contrast(.94)
+    brightness(.88);
+
+  transition:
+    transform .75s cubic-bezier(.16,1,.3,1),
+    filter .7s ease;
+}
+
+.card:hover .forumImage {
+  transform: scale(1);
+
+  filter:
+    saturate(1)
+    contrast(1)
+    brightness(1);
+}
+
+.reveal {
+  position: absolute;
+  inset: -1px;
+
+  z-index: 2;
+
+  background:
+    linear-gradient(
+      125deg,
+      rgba(8,8,8,.72) 0%,
+      rgba(8,8,8,.58) 47%,
+      rgba(8,8,8,.1) 48%,
+      rgba(8,8,8,0) 100%
+    );
+
+  transform: translateX(0);
+
+  transition:
+    transform .75s cubic-bezier(.16,1,.3,1);
+}
+
+.card:hover .reveal {
+  transform: translateX(105%);
+}
+
+/* pequeña línea durante la apertura */
+
+.cardImage::after {
+  content: "";
+
+  position: absolute;
+
+  top: -20%;
+  bottom: -20%;
+  left: -20%;
+
+  width: 1px;
+
+  z-index: 5;
+
+  background: rgba(224,195,132,.8);
+
+  transform:
+    rotate(20deg)
+    translateX(-60px);
+
+  opacity: 0;
+
+  transition:
+    transform .75s cubic-bezier(.16,1,.3,1),
+    opacity .2s ease;
+}
+
+.card:hover .cardImage::after {
+  transform:
+    rotate(20deg)
+    translateX(330px);
+
+  opacity: .7;
+}
+
+.cardInfo {
+  position: relative;
+  z-index: 4;
+
+  min-width: 0;
+
+  padding: 15px 14px 14px 18px;
+
+  display: grid;
+  grid-template-columns: 22px 1fr 22px;
+  gap: 9px;
+
+  align-items: center;
+}
+
+.number {
+  align-self: start;
+
+  padding-top: 5px;
+
+  color: rgba(255,255,255,.27);
+
+  font-size: 7px;
+  letter-spacing: .17em;
+}
+
+.cardText {
+  min-width: 0;
+
+  transition:
+    transform .5s cubic-bezier(.16,1,.3,1);
+}
+
+.card:hover .cardText {
+  transform: translateX(5px);
+}
+
+.card h2 {
+  margin: 0;
+
+  font-size: clamp(19px, 1.8vw, 29px);
+  line-height: .94;
+
+  font-weight: 560;
+
+  letter-spacing: -.04em;
+}
+
+.card p {
+  margin: 7px 0 0;
+
+  color: rgba(255,255,255,.34);
+
+  font-size: 7.5px;
+  line-height: 1.45;
+
+  white-space: nowrap;
+}
+
+.card button {
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #c9a86a;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+  transition:
+    transform .5s cubic-bezier(.16,1,.3,1);
+}
+
+.card:hover button {
+  transform:
+    translate(3px,-3px)
+    rotate(8deg);
+}
+
+/* FOOTER */
+
+.footer {
+  padding-top: 7px;
+
+  display: flex;
+  justify-content: space-between;
+
+  border-top: 1px solid rgba(255,255,255,.08);
+
+  color: rgba(255,255,255,.18);
+
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .22em;
+}
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+  .page {
+    height: auto;
+    min-height: 100svh;
+
+    overflow: visible;
+
+    padding: 22px 18px 30px;
+
+    display: block;
+  }
+
+  .top {
+    min-height: 780px;
+
+    grid-template-columns: 1fr;
+
+    gap: 30px;
+  }
+
+  .collage {
+    min-height: 470px;
+  }
+
+  .identity h1 {
+    font-size: clamp(58px,18vw,94px);
+  }
+
+  .forums {
+    margin-top: 30px;
+
+    padding: 0;
+
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+  }
+
+  .card {
+    min-height: 145px;
+  }
+
+  .footer {
+    margin-top: 24px;
+  }
+}
+
+/* INTERACTIVE COMMUNITY PANEL */
+
+.forumTriggers {
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  display: none;
+}
+
+.forumPanel {
+  position: fixed;
+  left: 38px;
+  right: 38px;
+  bottom: 46px;
+  z-index: 80;
+
+  max-height: 54vh;
+  overflow: auto;
+
+  padding: 28px 32px 24px;
+
+  border: 1px solid rgba(255,255,255,.14);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(14,14,14,.98),
+      rgba(7,7,7,.99)
+    );
+
+  box-shadow:
+    0 -24px 80px rgba(0,0,0,.65);
+
+  backdrop-filter: blur(18px);
+}
+
+.forumPanelHead {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: end;
+
+  padding-bottom: 24px;
+
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.forumPanelLabel {
+  color: rgba(255,255,255,.3);
+
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .22em;
+}
+
+.forumPanelHead h3 {
+  margin: 10px 0 0;
+
+  font-size: clamp(38px,5vw,72px);
+  line-height: .9;
+  font-weight: 560;
+  letter-spacing: -.05em;
+}
+
+.forumPanelHead p {
+  max-width: 460px;
+  margin: 0;
+
+  color: rgba(255,255,255,.45);
+
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.topicList {
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.topic {
+  width: 100%;
+
+  padding: 17px 0;
+
+  display: grid;
+  grid-template-columns: 44px 1fr 70px 24px;
+  gap: 18px;
+  align-items: center;
+
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+
+  background: transparent;
+  color: #f3f0ea;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    padding-left .35s ease,
+    background .35s ease;
+}
+
+.topic:last-child {
+  border-bottom: 0;
+}
+
+.topic:hover {
+  padding-left: 10px;
+  background: rgba(255,255,255,.025);
+}
+
+.topicNumber {
+  color: rgba(255,255,255,.25);
+
+  font-size: 8px;
+  letter-spacing: .16em;
+}
+
+.topicMain strong {
+  display: block;
+
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.topicMain span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: rgba(255,255,255,.34);
+
+  font-size: 9px;
+}
+
+.topicReplies {
+  text-align: right;
+}
+
+.topicReplies span {
+  display: block;
+
+  font-size: 14px;
+}
+
+.topicReplies small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: rgba(255,255,255,.26);
+
+  font-size: 6px;
+  letter-spacing: .15em;
+}
+
+.topicArrow {
+  color: #c9a86a;
+
+  font-size: 16px;
+  text-align: right;
+}
+
+.forumPanelFoot {
+  padding-top: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forumPanelFoot > span {
+  color: rgba(255,255,255,.22);
+
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .2em;
+}
+
+.forumPanelFoot button {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+  color: #f3f0ea;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .18em;
+
+  cursor: pointer;
+}
+
+.forumPanelFoot button span {
+  color: #c9a86a;
+  font-size: 16px;
+}
+
+@media (max-width: 800px) {
+  .forumPanel {
+    position: fixed;
+
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+
+    max-height: 72vh;
+
+    padding: 22px 18px;
+  }
+
+  .forumPanelHead {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .topic {
+    grid-template-columns: 28px 1fr 20px;
+  }
+
+  .topicReplies {
+    display: none;
+  }
+}
+
+.card {
+  width: 100%;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cardArrow {
+  color: #c9a86a;
+  font-size: 17px;
+  transition:
+    transform .5s cubic-bezier(.16,1,.3,1);
+}
+
+.card:hover .cardArrow {
+  transform: translate(3px,-3px) rotate(8deg);
+}
+
+.panelBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(0,0,0,.58);
+  backdrop-filter: blur(5px);
+}
+
+.panelIntro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.closePanel {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,.55);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color .25s ease,
+    transform .25s ease;
+}
+
+.closePanel:hover {
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* FINAL FORUM PANEL REFINEMENT */
+
+.forumPanel {
+  max-height: 48vh;
+}
+
+.forumPanelFoot button {
+  padding: 11px 0 10px;
+  color: #f4f1ec;
+}
+
+.forumPanelFoot button::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  margin-left: 4px;
+  background: #c9a86a;
+  opacity: .7;
+}
+
+.forumPanelFoot button:hover {
+  opacity: .82;
+}
+
+/* KEEP COMPLETE FORUM PANEL VISIBLE */
+
+.forumPanel {
+  max-height: 52vh;
+  padding-top: 22px;
+  padding-bottom: 18px;
+}
+
+.forumPanelHead {
+  padding-bottom: 18px;
+}
+
+.topic {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.forumPanelFoot {
+  padding-top: 14px;
+}
+
+/* TOPIC COMPOSER */
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.composerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.composerTop h3 {
+  margin: 10px 0 0;
+
+  font-size: clamp(34px,4vw,62px);
+  line-height: .9;
+  font-weight: 560;
+  letter-spacing: -.05em;
+}
+
+.field {
+  display: block;
+}
+
+.field > span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: rgba(255,255,255,.3);
+
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .2em;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,.14);
+
+  background: transparent;
+  color: #f3f0ea;
+
+  font: inherit;
+  font-size: 14px;
+
+  outline: none;
+}
+
+.field input {
+  padding: 12px 0;
+}
+
+.field textarea {
+  padding: 12px 0;
+  resize: none;
+  line-height: 1.6;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: rgba(255,255,255,.22);
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-bottom-color: rgba(201,168,106,.55);
+}
+
+.composerFoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-top: 4px;
+}
+
+.composerFoot > span {
+  color: rgba(255,255,255,.22);
+
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+
+.composerFoot button {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  border: 0;
+  background: transparent;
+
+  color: #f3f0ea;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .18em;
+
+  cursor: pointer;
+}
+
+.composerFoot button span {
+  color: #c9a86a;
+  font-size: 16px;
+}
+
+/* KEEP TOPIC COMPOSER COMPLETE */
+
+.composer {
+  gap: 14px;
+}
+
+.composerTop {
+  padding-bottom: 14px;
+}
+
+.composerTop h3 {
+  margin-top: 8px;
+  font-size: clamp(30px,3.6vw,54px);
+}
+
+.field > span {
+  margin-bottom: 5px;
+}
+
+.field input {
+  padding: 9px 0;
+}
+
+.field textarea {
+  padding: 8px 0;
+  line-height: 1.45;
+}
+
+.composerFoot {
+  padding-top: 0;
+  margin-top: -2px;
+}
+
+/* COMMUNITY AUTH FLOW */
+
+.authMessage {
+  margin: 2px 0 8px;
+  max-width: 520px;
+  color: rgba(255,255,255,.46);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.authMessage strong {
+  color: rgba(255,255,255,.78);
+  font-weight: 500;
+}
+
+.codeField input {
+  max-width: 260px;
+  font-size: 28px;
+  letter-spacing: .3em;
+  color: #c9a86a;
+}
+
+.authError {
+  margin: -4px 0 0;
+  color: #d78b74;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.authSuccess {
+  padding: 14px 0 18px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.authSuccess > span {
+  color: #c9a86a;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .2em;
+}
+
+.authSuccess p {
+  margin: 14px 0 4px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.authSuccess small {
+  color: rgba(255,255,255,.35);
+  font-size: 10px;
+}
+
+.secondaryAction {
+  color: rgba(255,255,255,.38) !important;
+}
+
+.composerFoot button:disabled {
+  cursor: default;
+  opacity: .42;
+}

@@ -6,7 +6,10 @@ import styles from "./AwwwardsRibbon.module.css";
 export default function AwwwardsRibbon() {
   const pathname = usePathname();
 
-  if (pathname?.startsWith("/admin")) {
+  if (
+    pathname?.startsWith("/admin") ||
+    pathname?.startsWith("/community")
+  ) {
     return null;
   }
 

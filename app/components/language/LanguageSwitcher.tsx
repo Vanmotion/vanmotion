@@ -25,7 +25,8 @@ export default function LanguageSwitcher({
 
   const hidden =
     pathname.startsWith("/admin") ||
-    pathname.startsWith("/login-admin");
+    pathname.startsWith("/login-admin") ||
+    pathname.startsWith("/community");
   const isClothingPage =
     pathname.startsWith("/ropa");
 
