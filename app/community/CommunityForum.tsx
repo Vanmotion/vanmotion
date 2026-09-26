@@ -162,15 +162,10 @@ export default function CommunityForum() {
       ? forumContent[activeForum]
       : null;
 
-  const realTopics = topics
-    .filter(
-      (topic) =>
-        topic.category === activeForum,
-    )
-    .map((topic) => [
-      topic.title,
-      topic.body,
-    ]);
+  const realTopics = topics.filter(
+    (topic) =>
+      topic.category === activeForum,
+  );
 
   function resetComposer() {
     setShowComposer(false);
@@ -569,12 +564,12 @@ export default function CommunityForum() {
                         className={
                           styles.topic
                         }
-                        key={topic[0]}
+                        key={topic.id || topic[0]}
                         onClick={() => {
                           const realTopic =
                             topics.find(
                               (item) =>
-                                item.title === topic[0],
+                                item.title === topic.title,
                             );
 
                           if (realTopic) {
@@ -603,12 +598,12 @@ export default function CommunityForum() {
                           }
                         >
                           <strong>
-                            {topic[0]}
+                            {topic.title}
                           </strong>
 
                           <span>
                             COMMUNITY ·{" "}
-                            {topic[1]}
+                            {topic.body}
                           </span>
                         </div>
 
