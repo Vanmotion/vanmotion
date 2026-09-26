@@ -41,11 +41,7 @@ const forumContent = {
   MUSIC: {
     intro:
       "A community for emerging artists, musicians and creators. Present your latest tracks, share your projects and introduce your sound to a new audience. A space to discover new talent, promote your creations and connect with other artists.",
-    topics: [
-      ["Present your creation", "OPEN SUBMISSION"],
-      ["Discover new talent", "DISCUSSION"],
-      ["Collaboration space", "WORLDWIDE"],
-    ],
+    topics: [],
   },
 
   FASHION: {
@@ -61,11 +57,7 @@ const forumContent = {
   AUTOMOTIVE: {
     intro:
       "A community for vehicle builders, creators and enthusiasts. Share camper conversions, 4x4 projects, unique builds and custom transformations. A space to showcase ideas, processes and experiences behind every vehicle.",
-    topics: [
-      ["Show your build", "OPEN SUBMISSION"],
-      ["Discover unique builds", "DISCUSSION"],
-      ["Technical projects & ideas", "PROJECTS"],
-    ],
+    topics: [],
   },
 };
 
