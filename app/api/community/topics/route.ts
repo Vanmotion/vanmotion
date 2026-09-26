@@ -50,6 +50,17 @@ export async function POST(request: NextRequest) {
         title: body.title,
         body: body.message,
         authorId: session.userId,
+
+        attachments: {
+          create:
+            Array.isArray(body.attachments)
+              ? body.attachments.map(
+                  (url: string) => ({
+                    url,
+                  }),
+                )
+              : [],
+        },
       },
     });
 

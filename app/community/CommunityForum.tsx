@@ -113,6 +113,7 @@ export default function CommunityForum() {
     setAuthStep("topic");
     setTitle("");
     setMessage("");
+    setImages([]);
     setEmail("");
     setUsername("");
     setCode("");
@@ -813,6 +814,39 @@ export default function CommunityForum() {
                           setLoading(true);
 
                           try {
+                            const uploadedImages: string[] = [];
+
+                            for (const image of images) {
+                              const formData = new FormData();
+                              formData.append(
+                                "file",
+                                image,
+                              );
+
+                              const uploadResponse =
+                                await fetch(
+                                  "/api/community/upload",
+                                  {
+                                    method: "POST",
+                                    body: formData,
+                                  },
+                                );
+
+                              const uploadData =
+                                await uploadResponse.json();
+
+                              if (!uploadResponse.ok) {
+                                throw new Error(
+                                  uploadData.error ||
+                                    "Image upload failed",
+                                );
+                              }
+
+                              uploadedImages.push(
+                                uploadData.url,
+                              );
+                            }
+
                             const response = await fetch(
                               "/api/community/topics",
                               {
@@ -825,6 +859,7 @@ export default function CommunityForum() {
                                   category: activeForum,
                                   title,
                                   message,
+                                  attachments: uploadedImages,
                                 }),
                               },
                             );
