@@ -47,11 +47,7 @@ const forumContent = {
   FASHION: {
     intro:
       "A community for independent designers, fashion creators and emerging brands. Showcase your collections, share your designs and reveal the creative process behind every piece. A space to discover new ideas, talent and unique fashion proposals.",
-    topics: [
-      ["Present your collection", "OPEN SUBMISSION"],
-      ["Discover new designers", "DISCUSSION"],
-      ["Creative process & ideas", "IDEAS"],
-    ],
+    topics: [],
   },
 
   AUTOMOTIVE: {
