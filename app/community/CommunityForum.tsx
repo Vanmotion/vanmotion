@@ -42,9 +42,9 @@ const forumContent = {
     intro:
       "A community for emerging artists, musicians and creators. Present your latest tracks, share your projects and introduce your sound to a new audience. A space to discover new talent, promote your creations and connect with other artists.",
     topics: [
-      ["Present your latest track", "OPEN SUBMISSION"],
-      ["Emerging artists & new sounds", "DISCUSSION"],
-      ["Music projects & collaborations", "WORLDWIDE"],
+      ["Present your creation", "OPEN SUBMISSION"],
+      ["Discover new talent", "DISCUSSION"],
+      ["Collaboration space", "WORLDWIDE"],
     ],
   },
 
@@ -52,9 +52,9 @@ const forumContent = {
     intro:
       "A community for independent designers, fashion creators and emerging brands. Showcase your collections, share your designs and reveal the creative process behind every piece. A space to discover new ideas, talent and unique fashion proposals.",
     topics: [
-      ["Show your latest collection", "OPEN SUBMISSION"],
-      ["Independent fashion creators", "DISCUSSION"],
-      ["Creative process & production", "IDEAS"],
+      ["Present your collection", "OPEN SUBMISSION"],
+      ["Discover new designers", "DISCUSSION"],
+      ["Creative process & ideas", "IDEAS"],
     ],
   },
 
@@ -62,9 +62,9 @@ const forumContent = {
     intro:
       "A community for vehicle builders, creators and enthusiasts. Share camper conversions, 4x4 projects, unique builds and custom transformations. A space to showcase ideas, processes and experiences behind every vehicle.",
     topics: [
-      ["Show your camper conversion", "OPEN SUBMISSION"],
-      ["4x4 builds & adventures", "DISCUSSION"],
-      ["Unique vehicle projects", "PROJECTS"],
+      ["Show your build", "OPEN SUBMISSION"],
+      ["Discover unique builds", "DISCUSSION"],
+      ["Technical projects & ideas", "PROJECTS"],
     ],
   },
 };
@@ -696,7 +696,7 @@ export default function CommunityForum() {
                   }
                 >
                   <span>
-                    READ ONLY FOR NOW
+                    OPEN COMMUNITY
                   </span>
 
                   <button
@@ -710,7 +710,7 @@ export default function CommunityForum() {
                       );
                     }}
                   >
-                    START A TOPIC
+                    SHARE YOUR PROJECT ↗
                     <span>↗</span>
                   </button>
                 </div>
@@ -739,7 +739,7 @@ export default function CommunityForum() {
                     <h3>
                       {authStep ===
                       "topic"
-                        ? "START A TOPIC"
+                        ? "SHARE YOUR PROJECT ↗"
                         : authStep ===
                             "identity"
                           ? "JOIN COMMUNITY"
