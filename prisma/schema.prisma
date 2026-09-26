@@ -496,7 +496,8 @@ model CommunityTopic {
   authorId String
   author   CommunityUser @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  replies CommunityReply[]
+  replies     CommunityReply[]
+  attachments CommunityAttachment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -504,6 +505,20 @@ model CommunityTopic {
   @@index([category, createdAt])
   @@index([authorId])
   @@index([status])
+}
+
+model CommunityAttachment {
+  id String @id @default(cuid())
+
+  url  String
+  type String @default("IMAGE")
+
+  topicId String
+  topic   CommunityTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([topicId])
 }
 
 model CommunityReply {
