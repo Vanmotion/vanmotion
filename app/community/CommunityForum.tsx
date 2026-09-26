@@ -85,6 +85,9 @@ export default function CommunityForum() {
   const [message, setMessage] =
     useState("");
 
+  const [images, setImages] =
+    useState<File[]>([]);
+
   const [email, setEmail] =
     useState("");
 
@@ -537,6 +540,42 @@ export default function CommunityForum() {
                         maxLength={5000}
                       />
                     </label>
+
+                    <div
+                      className={
+                        styles.imageUploader
+                      }
+                    >
+                      <label>
+                        <span>
+                          + ADD IMAGE
+                        </span>
+
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          multiple
+                          hidden
+                          onChange={(event) => {
+                            const files = Array.from(
+                              event.target.files || [],
+                            ).slice(0, 5);
+
+                            setImages(files);
+                          }}
+                        />
+                      </label>
+
+                      {images.length > 0 && (
+                        <small>
+                          {images.length} IMAGE
+                          {images.length > 1
+                            ? "S"
+                            : ""}{" "}
+                          READY
+                        </small>
+                      )}
+                    </div>
 
                     <div
                       className={

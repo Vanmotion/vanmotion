@@ -1046,3 +1046,36 @@
   cursor: default;
   opacity: .42;
 }
+
+.imageUploader {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.imageUploader label {
+  cursor: pointer;
+  display: inline-flex;
+  width: fit-content;
+  padding: 12px 18px;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: white;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  transition: opacity .2s ease;
+}
+
+.imageUploader label:hover {
+  opacity: .7;
+}
+
+.imageUploader small {
+  color: rgba(255,255,255,.55);
+  font-size: 11px;
+  letter-spacing: .12em;
+}
+
