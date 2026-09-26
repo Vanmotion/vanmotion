@@ -1079,3 +1079,63 @@
   letter-spacing: .12em;
 }
 
+
+.communityPosts {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.communityPosts > span {
+  font-size: 10px;
+  letter-spacing: .18em;
+  color: rgba(255,255,255,.45);
+}
+
+.communityPosts article {
+  border: 1px solid rgba(255,255,255,.12);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.communityPosts article strong {
+  font-size: 22px;
+  text-transform: uppercase;
+}
+
+.communityPosts article p {
+  color: rgba(255,255,255,.65);
+  margin: 0;
+}
+
+.communityPosts article small {
+  font-size: 11px;
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.45);
+}
+
+.communityPosts img {
+  width: 100%;
+  max-width: 520px;
+  height: 320px;
+  object-fit: cover;
+  margin-top: 12px;
+}
+
+
+.communityPosts article {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.communityPosts article img {
+  width: 180px;
+  height: 140px;
+  object-fit: cover;
+  margin-top: 8px;
+}
+

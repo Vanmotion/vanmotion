@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "./community.module.css";
 
@@ -102,6 +102,33 @@ export default function CommunityForum() {
 
   const [loading, setLoading] =
     useState(false);
+
+  const [topics, setTopics] =
+    useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadTopics() {
+      try {
+        const response = await fetch(
+          "/api/community/topics",
+        );
+
+        const data =
+          await response.json();
+
+        setTopics(
+          data.topics || [],
+        );
+      } catch (error) {
+        console.error(
+          "COMMUNITY_LOAD_TOPICS_ERROR",
+          error,
+        );
+      }
+    }
+
+    loadTopics();
+  }, []);
 
   const content =
     activeForum
@@ -410,6 +437,49 @@ export default function CommunityForum() {
                     ),
                   )}
                 </div>
+
+                {topics.length > 0 && (
+                  <div
+                    className={
+                      styles.communityPosts
+                    }
+                  >
+                    <span>
+                      RECENT COMMUNITY PROJECTS
+                    </span>
+
+                    {topics.map((item) => (
+                      <article
+                        key={item.id}
+                      >
+                        <strong>
+                          {item.title}
+                        </strong>
+
+                        <p>
+                          {item.body}
+                        </p>
+
+                        <small>
+                          {item.author?.username ||
+                            "COMMUNITY USER"}
+                        </small>
+
+                        {item.attachments?.map(
+                          (image: any) => (
+                            <Image
+                              key={image.id}
+                              src={image.url}
+                              alt={item.title}
+                              width={900}
+                              height={600}
+                            />
+                          ),
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                )}
 
                 <div
                   className={
