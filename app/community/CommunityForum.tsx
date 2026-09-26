@@ -27,7 +27,7 @@ const forums = [
     number: "02",
     title: "FASHION" as ForumKey,
     image: "/images/community/fashion.png",
-    text: "Streetwear · Independent designers · Ideas",
+    text: "Streetwear · Independent fashion creators · Ideas",
   },
   {
     number: "03",
@@ -40,31 +40,31 @@ const forums = [
 const forumContent = {
   MUSIC: {
     intro:
-      "Emerging artists, new releases, unreleased tracks and independent voices.",
+      "A community for emerging artists, musicians and creators. Present your latest tracks, share your projects and introduce your sound to a new audience. A space to discover new talent, promote your creations and connect with other artists.",
     topics: [
-      ["Share your latest release", "OPEN SUBMISSION"],
-      ["Independent artists worth discovering", "DISCUSSION"],
-      ["New music from your city", "WORLDWIDE"],
+      ["Present your latest track", "OPEN SUBMISSION"],
+      ["Emerging artists & new sounds", "DISCUSSION"],
+      ["Music projects & collaborations", "WORLDWIDE"],
     ],
   },
 
   FASHION: {
     intro:
-      "Independent streetwear, new designers, graphics, garments and ideas.",
+      "A community for independent designers, fashion creators and emerging brands. Showcase your collections, share your designs and reveal the creative process behind every piece. A space to discover new ideas, talent and unique fashion proposals.",
     topics: [
-      ["Show your latest streetwear project", "OPEN SUBMISSION"],
-      ["Independent designers", "DISCUSSION"],
-      ["Graphics, fabrics and production", "IDEAS"],
+      ["Show your latest collection", "OPEN SUBMISSION"],
+      ["Independent fashion creators", "DISCUSSION"],
+      ["Creative process & production", "IDEAS"],
     ],
   },
 
   AUTOMOTIVE: {
     intro:
-      "Camper conversions, 4x4 builds, restorations and personal projects.",
+      "A community for vehicle builders, creators and enthusiasts. Share camper conversions, 4x4 projects, unique builds and custom transformations. A space to showcase ideas, processes and experiences behind every vehicle.",
     topics: [
-      ["Show us your build", "OPEN SUBMISSION"],
-      ["Camper conversion ideas", "DISCUSSION"],
-      ["4x4, restoration and modifications", "PROJECTS"],
+      ["Show your camper conversion", "OPEN SUBMISSION"],
+      ["4x4 builds & adventures", "DISCUSSION"],
+      ["Unique vehicle projects", "PROJECTS"],
     ],
   },
 };
@@ -106,6 +106,15 @@ export default function CommunityForum() {
   const [topics, setTopics] =
     useState<any[]>([]);
 
+  const [selectedTopic, setSelectedTopic] =
+    useState<any | null>(null);
+
+  const [replyText, setReplyText] =
+    useState("");
+
+  const [replies, setReplies] =
+    useState<any[]>([]);
+
   useEffect(() => {
     async function loadTopics() {
       try {
@@ -130,10 +139,50 @@ export default function CommunityForum() {
     loadTopics();
   }, []);
 
+  useEffect(() => {
+    async function loadReplies() {
+      if (!selectedTopic?.id) {
+        setReplies([]);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/community/replies?topicId=${selectedTopic.id}`,
+        );
+
+        const data =
+          await response.json();
+
+        setReplies(
+          data.replies || [],
+        );
+
+      } catch (error) {
+        console.error(
+          "COMMUNITY_LOAD_REPLIES_ERROR",
+          error,
+        );
+      }
+    }
+
+    loadReplies();
+  }, [selectedTopic]);
+
   const content =
     activeForum
       ? forumContent[activeForum]
       : null;
+
+  const realTopics = topics
+    .filter(
+      (topic) =>
+        topic.category === activeForum,
+    )
+    .map((topic) => [
+      topic.title,
+      topic.body,
+    ]);
 
   function resetComposer() {
     setShowComposer(false);
@@ -151,6 +200,52 @@ export default function CommunityForum() {
   function closePanel() {
     setActiveForum(null);
     resetComposer();
+    setSelectedTopic(null);
+  }
+
+  function closeTopic() {
+    setSelectedTopic(null);
+  }
+
+  async function sendReply() {
+    if (!replyText.trim() || !selectedTopic?.id) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "/api/community/replies",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            body: replyText,
+            topicId: selectedTopic.id,
+          }),
+        },
+      );
+
+      const data =
+        await response.json();
+
+      if (response.ok) {
+        setReplies([
+          ...replies,
+          data.reply,
+        ]);
+
+        setReplyText("");
+      }
+
+    } catch (error) {
+      console.error(
+        "COMMUNITY_SEND_REPLY_ERROR",
+        error,
+      );
+    }
   }
 
   async function requestCode() {
@@ -327,7 +422,108 @@ export default function CommunityForum() {
               event.stopPropagation()
             }
           >
-            {!showComposer ? (
+            {selectedTopic ? (
+              <>
+                <div
+                  className={
+                    styles.topicDetail
+                  }
+                >
+                  <button
+                    type="button"
+                    onClick={
+                      closeTopic
+                    }
+                    className={
+                      styles.topicBack
+                    }
+                  >
+                    ← BACK
+                  </button>
+
+                  <h2>
+                    {selectedTopic.title}
+                  </h2>
+
+                  <p>
+                    {selectedTopic.body}
+                  </p>
+
+                  {selectedTopic.attachments?.map(
+                    (image: any) => (
+                      <Image
+                        key={image.id}
+                        src={image.url}
+                        alt={
+                          selectedTopic.title
+                        }
+                        width={600}
+                        height={400}
+                      />
+                    ),
+                  )}
+
+                  <div
+                    className={
+                      styles.topicRepliesTitle
+                    }
+                  >
+                    REPLIES
+                  </div>
+
+                  <div
+                    className={
+                      styles.replyList
+                    }
+                  >
+                    {replies.map(
+                      (reply) => (
+                        <article
+                          key={reply.id}
+                          className={
+                            reply.author?.role === "ADMIN"
+                              ? styles.adminReply
+                              : styles.reply
+                          }
+                        >
+                          <strong>
+                            {reply.author?.username}
+                          </strong>
+
+                          <p>
+                            {reply.body}
+                          </p>
+                        </article>
+                      ),
+                    )}
+                  </div>
+
+                  <div
+                    className={
+                      styles.replyComposer
+                    }
+                  >
+                    <textarea
+                      value={replyText}
+                      onChange={(event) =>
+                        setReplyText(
+                          event.target.value,
+                        )
+                      }
+                      placeholder="Write your opinion..."
+                      rows={4}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={sendReply}
+                    >
+                      SEND ↗
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : !showComposer ? (
               <>
                 <div
                   className={
@@ -378,7 +574,7 @@ export default function CommunityForum() {
                     styles.topicList
                   }
                 >
-                  {content.topics.map(
+                  {[...realTopics, ...content.topics].map(
                     (topic, index) => (
                       <button
                         type="button"
@@ -386,6 +582,19 @@ export default function CommunityForum() {
                           styles.topic
                         }
                         key={topic[0]}
+                        onClick={() => {
+                          const realTopic =
+                            topics.find(
+                              (item) =>
+                                item.title === topic[0],
+                            );
+
+                          if (realTopic) {
+                            setSelectedTopic(
+                              realTopic,
+                            );
+                          }
+                        }}
                       >
                         <span
                           className={
@@ -632,19 +841,44 @@ export default function CommunityForum() {
                               event.target.files || [],
                             ).slice(0, 5);
 
-                            setImages(files);
+                            setImages((prev) =>
+                              [
+                                ...prev,
+                                ...files,
+                              ].slice(0, 5),
+                            );
                           }}
                         />
                       </label>
 
                       {images.length > 0 && (
-                        <small>
-                          {images.length} IMAGE
-                          {images.length > 1
-                            ? "S"
-                            : ""}{" "}
-                          READY
-                        </small>
+                        <>
+                          <small>
+                            {images.length} / 5 IMAGES READY
+                          </small>
+
+                          <div
+                            className={
+                              styles.imagePreviewGrid
+                            }
+                          >
+                            {images.map(
+                              (image) => (
+                                <img
+                                  key={
+                                    image.name
+                                  }
+                                  src={
+                                    URL.createObjectURL(
+                                      image,
+                                    )
+                                  }
+                                  alt=""
+                                />
+                              ),
+                            )}
+                          </div>
+                        </>
                       )}
                     </div>
 

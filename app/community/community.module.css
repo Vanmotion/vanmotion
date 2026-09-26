@@ -1139,3 +1139,90 @@
   margin-top: 8px;
 }
 
+
+.imagePreviewGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.imagePreviewGrid img {
+  width: 90px;
+  height: 70px;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+
+.replyList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.reply,
+.adminReply {
+  padding: 14px;
+  border-left: 2px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.03);
+}
+
+.reply strong,
+.adminReply strong {
+  display: block;
+  font-size: 12px;
+  letter-spacing: .12em;
+  margin-bottom: 8px;
+}
+
+.reply p,
+.adminReply p {
+  margin: 0;
+  color: rgba(255,255,255,.75);
+}
+
+.adminReply {
+  border-left-color: #ff7a00;
+  background: rgba(255,122,0,.08);
+}
+
+.adminReply strong {
+  color: #ff7a00;
+}
+
+
+.replyComposer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.replyComposer textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.15);
+  color: white;
+  padding: 14px;
+  font-family: inherit;
+}
+
+.replyComposer button {
+  align-self: flex-end;
+  padding: 12px 24px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  letter-spacing: .12em;
+}
+
+.replyComposer button:hover {
+  border-color: #ff7a00;
+  color: #ff7a00;
+}
+
