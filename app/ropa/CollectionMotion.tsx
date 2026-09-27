@@ -72,6 +72,12 @@ export default function CollectionMotion() {
             const card = entry.target as HTMLElement;
 
             if (entry.isIntersecting) {
+              if (card.dataset.vmAnimated === "1") {
+                return;
+              }
+
+              card.dataset.vmAnimated = "1";
+
               const index = cards.indexOf(card);
               const direction = index % 2 === 0 ? -1 : 1;
               const delay = (index % 2) * 130;
@@ -133,8 +139,8 @@ export default function CollectionMotion() {
                   imageAnimation,
                 );
               }
-            } else if (entry.intersectionRatio === 0) {
-              resetCard(card);
+
+              mobileObserver.unobserve(card);
             }
           });
         },
