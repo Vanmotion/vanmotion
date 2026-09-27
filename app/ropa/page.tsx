@@ -10,6 +10,7 @@ import { resolveProductImageUrl } from "@/app/lib/product-image-overrides";
 
 import { getLocalizedProductText } from "./product-translations";
 import styles from "./ropa.module.css";
+import CollectionMotion from "./CollectionMotion";
 import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
 export const dynamic = "force-dynamic";
@@ -311,6 +312,7 @@ export default async function RopaPage() {
 
   return (
     <main className={styles.page}>
+      <CollectionMotion />
       <header className={styles.header}>
         <Link href="/" className={styles.brand} aria-label="Vanmotion">
           <Image
@@ -442,7 +444,10 @@ export default async function RopaPage() {
               ).format(Number(product.price));
 
               return (
-                <article key={product.id} className={styles.collectionCard}>
+                <article
+                  key={product.id}
+                  className={styles.collectionCard}
+                >
                   <Link
                     href={`/ropa/${product.slug}`}
                     aria-label={`${language === "es" ? "Ver" : "View"} ${productText.name}`}
@@ -466,6 +471,25 @@ export default async function RopaPage() {
                           <span>{content.collection.noImage}</span>
                         </div>
                       )}
+
+                      <div
+                        className={styles.collectionHoverMeta}
+                        aria-hidden="true"
+                      >
+                        <div>
+                          <small>VANMOTION · DROP 01</small>
+                          <strong>{productText.name}</strong>
+                          <span>
+                            {productType} · {productText.color ?? "VANMOTION"}
+                          </span>
+                        </div>
+
+                        <b>
+                          {language === "es"
+                            ? "VER PIEZA"
+                            : "VIEW PIECE"} ↗
+                        </b>
+                      </div>
                     </div>
                   </Link>
 
