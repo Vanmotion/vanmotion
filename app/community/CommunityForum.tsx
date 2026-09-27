@@ -640,7 +640,12 @@ export default function CommunityForum() {
                       RECENT COMMUNITY PROJECTS
                     </span>
 
-                    {topics.map((item) => (
+                    {topics
+                      .filter(
+                        (item) =>
+                          item.category === activeForum,
+                      )
+                      .map((item) => (
                       <article
                         key={item.id}
                       >
