@@ -21,7 +21,7 @@ export default function CollectionMotion() {
       "(max-width: 760px)",
     ).matches;
 
-    if (reducedMotion || compactViewport) {
+    if (reducedMotion) {
       cards.forEach((card) => {
         card.classList.add(styles.collectionCardVisible);
       });
@@ -41,7 +41,13 @@ export default function CollectionMotion() {
           const card = entry.target as HTMLElement;
 
           if (entry.isIntersecting) {
-            card.classList.add(styles.collectionCardVisible);
+            const index = Number(
+              card.style.getPropertyValue("--vm-card-index") || 0
+            );
+
+            window.setTimeout(() => {
+              card.classList.add(styles.collectionCardVisible);
+            }, 140 + index * 90);
           } else {
             card.classList.remove(styles.collectionCardVisible);
           }
@@ -63,7 +69,7 @@ export default function CollectionMotion() {
           `.${styles.collectionMedia}`,
         );
 
-      if (!media) return;
+      if (!media || compactViewport) return;
 
       const handlePointerMove = (
         event: PointerEvent,

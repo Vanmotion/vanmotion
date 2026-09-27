@@ -2466,10 +2466,17 @@
 
 @media (max-width: 760px) {
   .collectionCard {
-    opacity: 1;
+    opacity: 0;
     clip-path: none;
-    transform: none;
-    transition: none;
+    transform: translateY(30px) scale(.985);
+    transition:
+      opacity 700ms ease,
+      transform 850ms cubic-bezier(.2,.72,.2,1);
+  }
+
+  .collectionCardVisible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 
   .collectionImage,
