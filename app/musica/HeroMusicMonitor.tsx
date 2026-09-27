@@ -94,7 +94,7 @@ export default function HeroMusicMonitor() {
 
     if (
       Math.abs(mirrorTime - recommendationVideoTime) >
-      0.25
+      1
     ) {
       player.seekTo?.(recommendationVideoTime, true);
     }
