@@ -134,11 +134,11 @@ const awards: {
   },
   {
     name: {
-      es: "CSS Winner — Site of the Day Nominee 2026",
-      en: "CSS Winner — Site of the Day Nominee 2026",
+      es: "CSS Winner — Site of the Day Nomination 2026",
+      en: "CSS Winner — Site of the Day Nomination 2026",
     },
     category: {
-      es: "Site of the Day · Nominada",
+      es: "Site of the Day · Nomination",
       en: "Site of the Day · Nominee",
     },
     description: {
