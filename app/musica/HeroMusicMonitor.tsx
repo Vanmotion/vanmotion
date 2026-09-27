@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -8,7 +9,9 @@ import {
 } from "react";
 
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
-import YouTubeRecommendationPlayer from "@/app/components/music/YouTubeRecommendationPlayer";
+import YouTubeRecommendationPlayer, {
+  type YouTubePlayerHandle,
+} from "@/app/components/music/YouTubeRecommendationPlayer";
 import styles from "./musica.module.css";
 
 const IMAGE_WIDTH = 1672;
@@ -60,15 +63,74 @@ export default function HeroMusicMonitor() {
     currentTrack,
     recommendationVideoId,
     recommendationVideoPlaying,
+    recommendationVideoTime,
   } = useMusicPlayer();
 
   const monitorRef = useRef<HTMLDivElement>(null);
+  const mirrorPlayerRef =
+    useRef<YouTubePlayerHandle | null>(null);
 
   const [geometry, setGeometry] =
     useState<MonitorGeometry | null>(null);
 
   const cover =
     currentTrack?.coverUrl ?? "/brand/vanmotion-mark.webp";
+
+  useEffect(() => {
+    if (!recommendationVideoId) {
+      return;
+    }
+
+    const player = mirrorPlayerRef.current;
+    const mirrorTime = player?.getCurrentTime?.();
+
+    if (
+      !player ||
+      typeof mirrorTime !== "number" ||
+      !Number.isFinite(mirrorTime)
+    ) {
+      return;
+    }
+
+    if (
+      Math.abs(mirrorTime - recommendationVideoTime) >
+      0.25
+    ) {
+      player.seekTo?.(recommendationVideoTime, true);
+    }
+  }, [
+    recommendationVideoId,
+    recommendationVideoTime,
+  ]);
+
+  useEffect(() => {
+    if (!recommendationVideoId) {
+      return;
+    }
+
+    const resync = () => {
+      mirrorPlayerRef.current?.seekTo?.(
+        recommendationVideoTime,
+        true,
+      );
+
+      if (recommendationVideoPlaying) {
+        mirrorPlayerRef.current?.playVideo?.();
+      }
+    };
+
+    window.addEventListener("focus", resync);
+    document.addEventListener("visibilitychange", resync);
+
+    return () => {
+      window.removeEventListener("focus", resync);
+      document.removeEventListener("visibilitychange", resync);
+    };
+  }, [
+    recommendationVideoId,
+    recommendationVideoPlaying,
+    recommendationVideoTime,
+  ]);
 
   useLayoutEffect(() => {
     const monitor = monitorRef.current;
@@ -169,15 +231,22 @@ export default function HeroMusicMonitor() {
       style={geometryStyle}
       aria-hidden="true"
     >
-      {recommendationVideoId && recommendationVideoPlaying ? (
+      {recommendationVideoId ? (
         <YouTubeRecommendationPlayer
           key={recommendationVideoId}
           videoId={recommendationVideoId}
-          title="Vídeo recomendado"
+          title="Vídeo recomendado sincronizado"
           playing={recommendationVideoPlaying}
           muted
           controls={false}
+          playerRef={mirrorPlayerRef}
           className={styles.heroMonitorVideo}
+          onReady={() => {
+            mirrorPlayerRef.current?.seekTo?.(
+              recommendationVideoTime,
+              true,
+            );
+          }}
           onPlaying={() => {}}
           onPaused={() => {}}
           onEnded={() => {}}
@@ -185,6 +254,7 @@ export default function HeroMusicMonitor() {
         />
       ) : (
         <img
+          key={cover}
           src={cover}
           alt=""
           className={styles.heroMonitorArtwork}

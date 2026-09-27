@@ -146,6 +146,7 @@ export default function GlobalMusicPlayer({
     setAudioStartHandler,
     setVideoSessionActive,
     setRecommendationVideoState,
+    setRecommendationVideoTime,
     selectTrack,
     playPrevious,
     playNext,
@@ -173,6 +174,37 @@ export default function GlobalMusicPlayer({
     activeRecommendationData,
     recommendationIsPlaying,
     setRecommendationVideoState,
+  ]);
+
+  useEffect(() => {
+    if (!activeRecommendationData) {
+      setRecommendationVideoTime(0);
+      return;
+    }
+
+    const syncTime = () => {
+      const time =
+        recommendationPlayerRef.current?.getCurrentTime?.();
+
+      if (
+        typeof time === "number" &&
+        Number.isFinite(time)
+      ) {
+        setRecommendationVideoTime(time);
+      }
+    };
+
+    syncTime();
+
+    const interval = window.setInterval(syncTime, 150);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [
+    activeRecommendationData,
+    recommendationIsPlaying,
+    setRecommendationVideoTime,
   ]);
 
   useEffect(() => {
@@ -204,6 +236,7 @@ export default function GlobalMusicPlayer({
 
   function selectRecommendation(videoId: string) {
     pausePlayback();
+    setRecommendationVideoTime(0);
     setRecommendationError(null);
     setRecommendationIsPlaying(true);
     setVideoSessionActive(true);

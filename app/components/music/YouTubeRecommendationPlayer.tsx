@@ -9,6 +9,8 @@ export type YouTubePlayerHandle = {
   pauseVideo?: () => void;
   stopVideo?: () => void;
   mute?: () => void;
+  getCurrentTime?: () => number;
+  seekTo?: (seconds: number, allowSeekAhead?: boolean) => void;
   getIframe?: () => HTMLIFrameElement;
 };
 
