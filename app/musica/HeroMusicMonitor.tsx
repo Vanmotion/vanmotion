@@ -94,7 +94,7 @@ export default function HeroMusicMonitor() {
 
     if (
       Math.abs(mirrorTime - recommendationVideoTime) >
-      1
+      1.25
     ) {
       player.seekTo?.(recommendationVideoTime, true);
     }
@@ -108,7 +108,37 @@ export default function HeroMusicMonitor() {
       return;
     }
 
+    const player = mirrorPlayerRef.current;
+
+    if (!player) {
+      return;
+    }
+
+    player.seekTo?.(
+      recommendationVideoTime,
+      true,
+    );
+
+    if (recommendationVideoPlaying) {
+      player.playVideo?.();
+    } else {
+      player.pauseVideo?.();
+    }
+  }, [
+    recommendationVideoId,
+    recommendationVideoPlaying,
+  ]);
+
+  useEffect(() => {
+    if (!recommendationVideoId) {
+      return;
+    }
+
     const resync = () => {
+      if (document.visibilityState !== "visible") {
+        return;
+      }
+
       mirrorPlayerRef.current?.seekTo?.(
         recommendationVideoTime,
         true,
@@ -116,6 +146,8 @@ export default function HeroMusicMonitor() {
 
       if (recommendationVideoPlaying) {
         mirrorPlayerRef.current?.playVideo?.();
+      } else {
+        mirrorPlayerRef.current?.pauseVideo?.();
       }
     };
 

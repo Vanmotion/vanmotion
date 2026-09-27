@@ -196,7 +196,7 @@ export default function GlobalMusicPlayer({
 
     syncTime();
 
-    const interval = window.setInterval(syncTime, 150);
+    const interval = window.setInterval(syncTime, 8000);
 
     return () => {
       window.clearInterval(interval);
@@ -557,12 +557,45 @@ export default function GlobalMusicPlayer({
             title={`${activeRecommendationData.title} · ${activeRecommendationData.artist}`}
             playing={recommendationIsPlaying}
             playerRef={recommendationPlayerRef}
+            onReady={() => {
+              const time =
+                recommendationPlayerRef.current?.getCurrentTime?.();
+
+              if (
+                typeof time === "number" &&
+                Number.isFinite(time)
+              ) {
+                setRecommendationVideoTime(time);
+              }
+            }}
             onPlaying={() => {
+              const time =
+                recommendationPlayerRef.current?.getCurrentTime?.();
+
+              if (
+                typeof time === "number" &&
+                Number.isFinite(time)
+              ) {
+                setRecommendationVideoTime(time);
+              }
+
               pausePlayback();
               setRecommendationIsPlaying(true);
               setRecommendationError(null);
             }}
-            onPaused={() => setRecommendationIsPlaying(false)}
+            onPaused={() => {
+              const time =
+                recommendationPlayerRef.current?.getCurrentTime?.();
+
+              if (
+                typeof time === "number" &&
+                Number.isFinite(time)
+              ) {
+                setRecommendationVideoTime(time);
+              }
+
+              setRecommendationIsPlaying(false);
+            }}
             onError={(message) => {
               setRecommendationIsPlaying(false);
               setRecommendationError(message);
