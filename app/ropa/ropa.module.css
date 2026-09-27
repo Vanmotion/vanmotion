@@ -110,7 +110,7 @@
   z-index: -3;
   object-fit: cover;
   object-position: center;
-  filter: saturate(0.75) contrast(1.06) brightness(0.72);
+  filter: saturate(0.90) contrast(1.03) brightness(0.84);
   transform: scale(1.01);
 }
 
@@ -119,8 +119,8 @@
   inset: 0;
   z-index: -2;
   background:
-    linear-gradient(90deg, rgba(3, 3, 3, 0.84) 0%, rgba(3, 3, 3, 0.34) 44%, rgba(3, 3, 3, 0.08) 74%),
-    linear-gradient(180deg, rgba(3, 3, 3, 0.34) 0%, rgba(3, 3, 3, 0.03) 42%, rgba(3, 3,3, 0.68) 100%);
+    linear-gradient(90deg, rgba(3, 3, 3, 0.68) 0%, rgba(3, 3, 3, 0.25) 44%, rgba(3, 3, 3, 0.05) 74%),
+    linear-gradient(180deg, rgba(3, 3, 3, 0.24) 0%, rgba(3, 3, 3, 0.02) 42%, rgba(3, 3, 3, 0.52) 100%);
 }
 
 .heroTopline,
@@ -911,15 +911,15 @@
   z-index: 0;
   object-fit: cover;
   object-position: center 34%;
-  filter: saturate(0.88) contrast(1.04) brightness(0.66);
+  filter: saturate(0.92) contrast(1.02) brightness(0.84);
   transform: none;
 }
 
 .heroShade {
   z-index: 1;
   background:
-    linear-gradient(90deg, rgba(3, 3, 3, 0.9) 0%, rgba(3, 3, 3, 0.52) 38%, rgba(3, 3, 3, 0.12) 72%),
-    linear-gradient(180deg, rgba(3, 3, 3, 0.44) 0%, rgba(3, 3, 3, 0.06) 42%, rgba(3, 3,3, 0.84) 100%);
+    linear-gradient(90deg, rgba(3, 3, 3, 0.68) 0%, rgba(3, 3, 3, 0.28) 38%, rgba(3, 3, 3, 0.05) 72%),
+    linear-gradient(180deg, rgba(3, 3, 3, 0.24) 0%, rgba(3, 3, 3, 0.03) 42%, rgba(3, 3, 3, 0.55) 100%);
 }
 
 .heroTopline,
