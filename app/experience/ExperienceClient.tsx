@@ -3,7 +3,7 @@
 import type { Language } from "@/app/language";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./experience.module.css";
 import {
   getMadridSeason,
@@ -40,6 +40,7 @@ export default function ExperienceClient({
   const [season, setSeason] = useState<Season>(getMadridSeason());
 
   const enableSeasons = true;
+
 
   const imageFor = (section: ClimateSection) =>
     seasonalSceneImage({
@@ -91,6 +92,34 @@ export default function ExperienceClient({
       window.clearInterval(clockInterval);
       window.clearInterval(weatherInterval);
     };
+  }, []);
+
+  useEffect(() => {
+    const container = document.querySelector(`.${styles.experience}`);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const element = entry.target as HTMLElement;
+
+          if (entry.isIntersecting) {
+            element.classList.add(styles.chapterVisible);
+          } else {
+            element.classList.remove(styles.chapterVisible);
+          }
+        });
+      },
+      {
+        root: container,
+        threshold: 0.25,
+      }
+    );
+
+    document
+      .querySelectorAll(`.${styles.chapter}`)
+      .forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
   }, []);
 
   const chapters = [
@@ -225,7 +254,11 @@ export default function ExperienceClient({
       </section>
 
       {chapters.map((chapter) => (
-        <section className={styles.chapter} key={chapter.number}>
+        <section
+          className={styles.chapter}
+          key={chapter.number}
+          data-chapter={chapter.number}
+        >
           <div
             className={styles.chapterImage}
             style={{

@@ -280,48 +280,7 @@
   text-transform: uppercase;
 }
 
-.chapter:nth-of-type(4) {
-  background: #0b0b0b;
-}
-
-.chapter:nth-of-type(4) .chapterImage {
-  inset: 0 0 0 48%;
-  background-size: cover;
-  background-position: center 18%;
-  transform: none;
-}
-
-.chapter:nth-of-type(4):hover .chapterImage {
-  transform: none;
-}
-
-.chapter:nth-of-type(4) .chapterShade {
-  background:
-    linear-gradient(
-      90deg,
-      #0b0b0b 0%,
-      #0b0b0b 38%,
-      rgba(11,11,11,.92) 47%,
-      rgba(11,11,11,.15) 68%,
-      rgba(11,11,11,.05) 100%
-    );
-}
-
-.chapter:nth-of-type(4) .chapterContent {
-  width: 52%;
-  padding-right: 3vw;
-}
-
-.chapter:nth-of-type(4) .chapterContent h2 {
-  font-size: clamp(68px, 8vw, 118px);
-}
-
-.chapter:nth-of-type(4) .chapterFooter {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 28px;
-}
-
+/* Bloque nth-of-type(4) temporalmente desactivado */
 .ending {
   min-height: 100svh;
   padding: 105px 30px 32px;
@@ -1186,3 +1145,48 @@
   }
 }
 /* ===== FIN AJUSTE HEADER MÓVIL ===== */
+
+
+
+
+/* VANMOTION cinematic scroll */
+
+.chapterImage {
+  opacity: 1;
+  z-index: 0;
+  transform: scale(1.08);
+  transition:
+    transform 1.4s cubic-bezier(0.2,0.7,0.2,1);
+}
+
+.chapterVisible .chapterImage {
+  transform: scale(1.025);
+}
+
+.chapterShade {
+  z-index: 1;
+}
+
+.chapterNumber,
+.chapterContent {
+  z-index: 2;
+}
+
+.chapterContent,
+.chapterNumber {
+  opacity: 0;
+  transform: translateY(45px);
+  transition:
+    opacity 900ms ease,
+    transform 900ms cubic-bezier(0.2,0.7,0.2,1);
+}
+
+.chapterVisible .chapterContent,
+.chapterVisible .chapterNumber {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chapterVisible .chapterContent {
+  transition-delay: 180ms;
+}
