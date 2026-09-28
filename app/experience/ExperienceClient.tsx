@@ -3,7 +3,7 @@
 import type { Language } from "@/app/language";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./experience.module.css";
 import {
   getMadridSeason,
@@ -104,14 +104,12 @@ export default function ExperienceClient({
 
           if (entry.isIntersecting) {
             element.classList.add(styles.chapterVisible);
-          } else {
-            element.classList.remove(styles.chapterVisible);
           }
         });
       },
       {
         root: container,
-        threshold: 0.25,
+        threshold: 0.12,
       }
     );
 
@@ -119,6 +117,135 @@ export default function ExperienceClient({
       .querySelectorAll(`.${styles.chapter}`)
       .forEach((element) => observer.observe(element));
 
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    /* VANMOTION_MOTION_V2_HOOK */
+    const scroller = document.querySelector<HTMLElement>(`.${styles.experience}`);
+    if (!scroller || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const scenes = Array.from(scroller.querySelectorAll<HTMLElement>(`.${styles.chapter}`));
+    let revealFrame = 0;
+    let wheelFrame = 0;
+    let targetScroll = scroller.scrollTop;
+
+    const clamp = (value: number, min: number, max: number) =>
+      Math.max(min, Math.min(max, value));
+
+    const updateScenes = () => {
+      revealFrame = 0;
+      const rootTop = scroller.getBoundingClientRect().top;
+      const viewHeight = scroller.clientHeight;
+      for (const scene of scenes) {
+        const rect = scene.getBoundingClientRect();
+        const top = rect.top - rootTop;
+        const bottom = rect.bottom - rootTop;
+        const entrance = clamp((viewHeight - top) / (viewHeight * 0.5), 0, 1);
+        const exit = clamp(bottom / (viewHeight * 0.5), 0, 1);
+        const visibility = Math.min(entrance, exit);
+        const progress = clamp((viewHeight - top) / (viewHeight + rect.height), 0, 1);
+        const scale = 1.09 - 0.055 * (1 - Math.abs(2 * progress - 1));
+        scene.style.setProperty("--vm-visibility", visibility.toFixed(3));
+        scene.style.setProperty("--vm-shift", `${(1 - visibility) * 32}px`);
+        scene.style.setProperty("--vm-image-scale", scale.toFixed(3));
+        /* VANMOTION_DEPTH_V4 */
+        const parallax = (0.5 - progress) * (window.innerWidth <= 700 ? 44 : 96);
+        const distance = 1 - visibility;
+        scene.style.setProperty("--vm-image-y", `${parallax.toFixed(1)}px`);
+        scene.style.setProperty("--vm-text-z", `${(-60 * distance).toFixed(1)}px`);
+        scene.style.setProperty("--vm-tilt", `${((progress < 0.5 ? 4 : -4) * distance).toFixed(1)}deg`);
+        scene.style.setProperty("--vm-shade", (0.86 + 0.14 * Math.abs(2 * progress - 1)).toFixed(3));
+      }
+      const heroGrid = scroller.querySelector<HTMLElement>(`.${styles.heroGrid}`);
+      const heroCopy = scroller.querySelector<HTMLElement>(`.${styles.heroCopy}`);
+      const heroHeight = scroller.querySelector<HTMLElement>(`.${styles.hero}`)?.clientHeight || viewHeight;
+      const heroProgress = clamp(scroller.scrollTop / heroHeight, 0, 1);
+      heroGrid?.style.setProperty("--vm-hero-y", `${(-56 * heroProgress).toFixed(1)}px`);
+      heroGrid?.style.setProperty("--vm-hero-scale", (1 - 0.075 * heroProgress).toFixed(3));
+      heroCopy?.style.setProperty("--vm-hero-copy-y", `${(-92 * heroProgress).toFixed(1)}px`);
+      heroCopy?.style.setProperty("--vm-hero-opacity", (1 - 0.32 * heroProgress).toFixed(3));
+    };
+    const onScroll = () => {
+      if (!revealFrame) revealFrame = window.requestAnimationFrame(updateScenes);
+    };
+    const animateWheel = () => {
+      const distance = targetScroll - scroller.scrollTop;
+      if (Math.abs(distance) < 0.7) {
+        scroller.scrollTop = targetScroll;
+        wheelFrame = 0;
+        return;
+      }
+      scroller.scrollTop += distance * 0.2;
+      wheelFrame = window.requestAnimationFrame(animateWheel);
+    };
+    const onWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+      event.preventDefault();
+      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? scroller.clientHeight : 1;
+      if (!wheelFrame) targetScroll = scroller.scrollTop;
+      targetScroll = clamp(
+        targetScroll + event.deltaY * unit * 0.65,
+        0,
+        scroller.scrollHeight - scroller.clientHeight
+      );
+      if (!wheelFrame) wheelFrame = window.requestAnimationFrame(animateWheel);
+    };
+
+    updateScenes();
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    if (window.matchMedia("(pointer: fine)").matches) {
+      scroller.addEventListener("wheel", onWheel, { passive: false });
+    }
+    return () => {
+      scroller.removeEventListener("scroll", onScroll);
+      scroller.removeEventListener("wheel", onWheel);
+      window.removeEventListener("resize", onScroll);
+      window.cancelAnimationFrame(revealFrame);
+      window.cancelAnimationFrame(wheelFrame);
+    };
+  }, []);
+
+  useEffect(() => {
+    /* VANMOTION_LAST_O_SPIN_HOOK */
+    const scroller = document.querySelector<HTMLElement>(`.${styles.experience}`);
+    const ending = scroller?.querySelector<HTMLElement>(`.${styles.ending}`);
+    const lastO = ending?.querySelector<HTMLElement>(`.${styles.endingSpin}`);
+    if (!scroller || !ending || !lastO) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.intersectionRatio >= 0.75) {
+          ending.classList.add(styles.endingActive);
+        } else if (!entry.isIntersecting) {
+          ending.classList.remove(styles.endingActive);
+        }
+      },
+      { root: scroller, threshold: [0, 0.75] }
+    );
+    observer.observe(lastO);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    /* VANMOTION_PHRASE_V4_HOOK */
+    const scroller = document.querySelector<HTMLElement>(`.${styles.experience}`);
+    const ending = scroller?.querySelector<HTMLElement>(`.${styles.ending}`);
+    const word = ending?.querySelector<HTMLElement>(`.${styles.endingMotion}`);
+    if (!scroller || !ending || !word) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.intersectionRatio >= 0.15) {
+          ending.classList.add(styles.endingPhraseActive);
+        } else if (!entry.isIntersecting) {
+          ending.classList.remove(styles.endingPhraseActive);
+        }
+      },
+      { root: scroller, threshold: [0, 0.15] }
+    );
+    observer.observe(word);
     return () => observer.disconnect();
   }, []);
 
@@ -298,7 +425,22 @@ export default function ExperienceClient({
         <h2>
           Madrid.
           <br />
-          {language === "es" ? "Siempre en movimiento." : "Always moving."}
+          {language === "es" ? (
+            <>
+              <span className={styles.endingFirst}>Siempre</span>{" "}
+              <span className={styles.endingSecond}>en</span>{" "}
+              <span className={styles.endingMotion}>
+                movimient<span className={styles.endingSpin}>o</span><span className={styles.endingDot}>.</span>
+              </span>
+            </>
+          ) : (
+            <>
+              <span className={styles.endingFirst}>Always</span>{" "}
+              <span className={styles.endingMotion}>
+                moving<span className={styles.endingDot}>.</span>
+              </span>
+            </>
+          )}
         </h2>
 
         <div className={styles.endingLinks}>
