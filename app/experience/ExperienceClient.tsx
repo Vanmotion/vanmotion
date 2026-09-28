@@ -149,21 +149,25 @@ export default function ExperienceClient({
         scene.style.setProperty("--vm-shift", `${(1 - visibility) * 32}px`);
         scene.style.setProperty("--vm-image-scale", scale.toFixed(3));
         /* VANMOTION_DEPTH_V4 */
-        const parallax = (0.5 - progress) * (window.innerWidth <= 700 ? 44 : 96);
+        const isMobile = window.innerWidth <= 700;
+        const parallax = (0.5 - progress) * (isMobile ? 128 : 96);
         const distance = 1 - visibility;
         scene.style.setProperty("--vm-image-y", `${parallax.toFixed(1)}px`);
-        scene.style.setProperty("--vm-text-z", `${(-60 * distance).toFixed(1)}px`);
-        scene.style.setProperty("--vm-tilt", `${((progress < 0.5 ? 4 : -4) * distance).toFixed(1)}deg`);
+        scene.style.setProperty("--vm-text-z", `${(-(isMobile ? 145 : 60) * distance).toFixed(1)}px`);
+        scene.style.setProperty("--vm-tilt", `${((progress < 0.5 ? (isMobile ? 9 : 4) : (isMobile ? -9 : -4)) * distance).toFixed(1)}deg`);
         scene.style.setProperty("--vm-shade", (0.86 + 0.14 * Math.abs(2 * progress - 1)).toFixed(3));
       }
       const heroGrid = scroller.querySelector<HTMLElement>(`.${styles.heroGrid}`);
       const heroCopy = scroller.querySelector<HTMLElement>(`.${styles.heroCopy}`);
       const heroHeight = scroller.querySelector<HTMLElement>(`.${styles.hero}`)?.clientHeight || viewHeight;
       const heroProgress = clamp(scroller.scrollTop / heroHeight, 0, 1);
-      heroGrid?.style.setProperty("--vm-hero-y", `${(-56 * heroProgress).toFixed(1)}px`);
-      heroGrid?.style.setProperty("--vm-hero-scale", (1 - 0.075 * heroProgress).toFixed(3));
-      heroCopy?.style.setProperty("--vm-hero-copy-y", `${(-92 * heroProgress).toFixed(1)}px`);
-      heroCopy?.style.setProperty("--vm-hero-opacity", (1 - 0.32 * heroProgress).toFixed(3));
+      const heroMobile = window.innerWidth <= 700;
+      heroGrid?.style.setProperty("--vm-hero-y", `${(-(heroMobile ? 58 : 56) * heroProgress).toFixed(1)}px`);
+      heroGrid?.style.setProperty("--vm-hero-scale", (1 - (heroMobile ? 0.075 : 0.075) * heroProgress).toFixed(3));
+      heroGrid?.style.setProperty("--vm-hero-grid-z", `${(heroMobile ? -125 * heroProgress : 0).toFixed(1)}px`);
+      heroCopy?.style.setProperty("--vm-hero-copy-y", `${(-(heroMobile ? 82 : 92) * heroProgress).toFixed(1)}px`);
+      heroCopy?.style.setProperty("--vm-hero-copy-z", `${(heroMobile ? 80 * heroProgress : 0).toFixed(1)}px`);
+      heroCopy?.style.setProperty("--vm-hero-opacity", (1 - (heroMobile ? 0.24 : 0.32) * heroProgress).toFixed(3));
     };
     const onScroll = () => {
       if (!revealFrame) revealFrame = window.requestAnimationFrame(updateScenes);

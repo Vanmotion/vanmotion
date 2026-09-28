@@ -1412,3 +1412,46 @@
   70% { opacity: 1; transform: translate(-6px, 5px); }
   to { opacity: 1; transform: translate(0, 0); }
 }
+
+/* VANMOTION_MOBILE_DEPTH_20260928 */
+@media (max-width: 700px) and (prefers-reduced-motion: no-preference) {
+  .hero {
+    perspective: 700px;
+  }
+
+  .heroInner {
+    transform-style: preserve-3d;
+  }
+
+  .heroGrid {
+    transform:
+      translate3d(
+        0,
+        var(--vm-hero-y, 0px),
+        var(--vm-hero-grid-z, 0px)
+      )
+      scale(var(--vm-hero-scale, 1));
+    transform-origin: 50% 50%;
+    transition: transform 160ms ease-out;
+    will-change: transform;
+  }
+
+  .heroCopy {
+    transform:
+      translate3d(
+        0,
+        var(--vm-hero-copy-y, 0px),
+        var(--vm-hero-copy-z, 0px)
+      );
+    opacity: var(--vm-hero-opacity, 1);
+    transition:
+      transform 160ms ease-out,
+      opacity 160ms ease-out;
+    will-change: transform, opacity;
+  }
+
+  .chapter {
+    perspective: 650px;
+  }
+}
+
