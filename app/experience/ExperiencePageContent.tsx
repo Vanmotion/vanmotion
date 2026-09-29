@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getExperienceEnvironment } from "@/app/lib/experience-section-image";
 import ExperienceClient from "./ExperienceClient";
+import { getMadridSeason, seasonalSceneImage } from "@/app/lib/madrid-seasons";
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
@@ -36,11 +37,28 @@ export default async function ExperiencePage() {
 
   const environment = await getExperienceEnvironment();
 
+  const initialVehicleImage = seasonalSceneImage({
+    section: "vehicles",
+    period: environment.period,
+    atmosphere: environment.weather.atmosphere,
+    season: getMadridSeason(),
+    enabled: true,
+  });
+
   return (
-    <ExperienceClient
-      language={language}
-      initialPeriod={environment.period}
-      initialWeather={environment.weather}
-    />
+    <>
+      <link
+        rel="preload"
+        as="image"
+        href={initialVehicleImage}
+        fetchPriority="high"
+      />
+
+      <ExperienceClient
+        language={language}
+        initialPeriod={environment.period}
+        initialWeather={environment.weather}
+      />
+    </>
   );
 }
