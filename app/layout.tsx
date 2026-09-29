@@ -259,7 +259,6 @@ export default async function RootLayout({
     },
     sameAs: [
       "https://www.youtube.com/@vanmotionoficial",
-      "https://www.tiktok.com/@www.vanmotion.es",
     ],
   };
 

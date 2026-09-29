@@ -1,26 +1,49 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createHash } from "crypto";
+import {
+  NextRequest,
+  NextResponse,
+} from "next/server";
+
+import {
+  communityAuthorSelect,
+  getCommunitySessionUser,
+} from "@/app/lib/community-auth";
 import { prisma } from "@/app/lib/prisma";
 
-const SESSION_COOKIE_NAME =
-  "vanmotion_community_session";
+const MAX_REPLY_LENGTH = 5000;
 
-function hashValue(value: string): string {
-  return createHash("sha256")
-    .update(value)
-    .digest("hex");
+const replySelect = {
+  id: true,
+  body: true,
+  topicId: true,
+  createdAt: true,
+  updatedAt: true,
+  author: {
+    select: communityAuthorSelect,
+  },
+} as const;
+
+function asRecord(
+  value: unknown,
+): Record<string, unknown> | null {
+  if (
+    !value ||
+    typeof value !== "object" ||
+    Array.isArray(value)
+  ) {
+    return null;
+  }
+
+  return value as Record<string, unknown>;
 }
-
-
 
 export async function GET(
   request: NextRequest,
 ) {
   try {
     const topicId =
-      request.nextUrl.searchParams.get(
-        "topicId",
-      );
+      request.nextUrl.searchParams
+        .get("topicId")
+        ?.trim();
 
     if (!topicId) {
       return NextResponse.json(
@@ -33,23 +56,47 @@ export async function GET(
       );
     }
 
+    const topic =
+      await prisma.communityTopic
+        .findUnique({
+          where: {
+            id: topicId,
+          },
+          select: {
+            id: true,
+            status: true,
+          },
+        });
+
+    if (
+      !topic ||
+      topic.status === "HIDDEN"
+    ) {
+      return NextResponse.json(
+        {
+          error: "Topic not found",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
     const replies =
-      await prisma.communityReply.findMany({
-        where: {
-          topicId,
-        },
-        include: {
-          author: true,
-        },
-        orderBy: {
-          createdAt: "asc",
-        },
-      });
+      await prisma.communityReply
+        .findMany({
+          where: {
+            topicId,
+          },
+          select: replySelect,
+          orderBy: {
+            createdAt: "asc",
+          },
+        });
 
     return NextResponse.json({
       replies,
     });
-
   } catch (error) {
     console.error(
       "COMMUNITY_GET_REPLIES_ERROR:",
@@ -58,7 +105,8 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error: "Could not load replies",
+        error:
+          "Could not load replies",
       },
       {
         status: 500,
@@ -71,14 +119,12 @@ export async function POST(
   request: NextRequest,
 ) {
   try {
-    const body = await request.json();
+    const user =
+      await getCommunitySessionUser(
+        request,
+      );
 
-    const sessionToken =
-      request.cookies.get(
-        SESSION_COOKIE_NAME,
-      )?.value;
-
-    if (!sessionToken) {
+    if (!user) {
       return NextResponse.json(
         {
           error: "Not authenticated",
@@ -89,46 +135,116 @@ export async function POST(
       );
     }
 
-    const session =
-      await prisma.communitySession.findUnique({
-        where: {
-          tokenHash:
-            hashValue(sessionToken),
-        },
-        include: {
-          user: true,
-        },
-      });
+    const rawBody: unknown =
+      await request.json();
 
-    if (
-      !session ||
-      session.expiresAt < new Date()
-    ) {
+    const data =
+      asRecord(rawBody);
+
+    if (!data) {
       return NextResponse.json(
         {
-          error: "Session expired",
+          error: "Invalid request",
         },
         {
-          status: 401,
+          status: 400,
         },
       );
     }
 
-    const reply = await prisma.communityReply.create({
-      data: {
-        body: body.body,
-        topicId: body.topicId,
-        authorId: session.user.id,
-      },
-      include: {
-        author: true,
-      },
-    });
+    const topicId =
+      typeof data.topicId ===
+        "string"
+        ? data.topicId.trim()
+        : "";
+
+    const body =
+      typeof data.body ===
+        "string"
+        ? data.body.trim()
+        : "";
+
+    if (!topicId) {
+      return NextResponse.json(
+        {
+          error: "Missing topicId",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    if (
+      !body ||
+      body.length >
+        MAX_REPLY_LENGTH
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Reply must contain between 1 and 5000 characters",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const topic =
+      await prisma.communityTopic
+        .findUnique({
+          where: {
+            id: topicId,
+          },
+          select: {
+            id: true,
+            status: true,
+          },
+        });
+
+    if (
+      !topic ||
+      topic.status === "HIDDEN"
+    ) {
+      return NextResponse.json(
+        {
+          error: "Topic not found",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    if (
+      topic.status === "LOCKED"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "This topic is locked",
+        },
+        {
+          status: 409,
+        },
+      );
+    }
+
+    const reply =
+      await prisma.communityReply
+        .create({
+          data: {
+            body,
+            topicId,
+            authorId: user.id,
+          },
+          select: replySelect,
+        });
 
     return NextResponse.json({
       reply,
     });
-
   } catch (error) {
     console.error(
       "COMMUNITY_POST_REPLY_ERROR:",
@@ -137,7 +253,8 @@ export async function POST(
 
     return NextResponse.json(
       {
-        error: "Could not create reply",
+        error:
+          "Could not create reply",
       },
       {
         status: 500,

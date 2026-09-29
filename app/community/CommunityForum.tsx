@@ -16,6 +16,47 @@ type AuthStep =
   | "code"
   | "authenticated";
 
+type CommunityAuthor = {
+  id: string;
+  username: string;
+  displayName: string | null;
+  role:
+    | "MEMBER"
+    | "MODERATOR"
+    | "ADMIN";
+};
+
+type CommunityAttachment = {
+  id: string;
+  url: string;
+  type: string;
+};
+
+type CommunityTopic = {
+  id: string;
+  category: ForumKey;
+  title: string;
+  body: string;
+  status:
+    | "OPEN"
+    | "LOCKED"
+    | "HIDDEN";
+  author: CommunityAuthor;
+  attachments:
+    CommunityAttachment[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+type CommunityReply = {
+  id: string;
+  body: string;
+  topicId: string;
+  author: CommunityAuthor;
+  createdAt: string;
+  updatedAt: string;
+};
+
 const forums = [
   {
     number: "01",
@@ -92,16 +133,16 @@ export default function CommunityForum() {
     useState(false);
 
   const [topics, setTopics] =
-    useState<any[]>([]);
+    useState<CommunityTopic[]>([]);
 
   const [selectedTopic, setSelectedTopic] =
-    useState<any | null>(null);
+    useState<CommunityTopic | null>(null);
 
   const [replyText, setReplyText] =
     useState("");
 
   const [replies, setReplies] =
-    useState<any[]>([]);
+    useState<CommunityReply[]>([]);
 
   useEffect(() => {
     async function loadTopics() {
@@ -433,7 +474,7 @@ export default function CommunityForum() {
                   </p>
 
                   {selectedTopic.attachments?.map(
-                    (image: any) => (
+                    (image: CommunityAttachment) => (
                       <Image
                         key={image.id}
                         src={image.url}
@@ -564,7 +605,7 @@ export default function CommunityForum() {
                         className={
                           styles.topic
                         }
-                        key={topic.id || topic[0]}
+                        key={topic.id}
                         onClick={() => {
                           const realTopic =
                             topics.find(
@@ -663,7 +704,7 @@ export default function CommunityForum() {
                         </small>
 
                         {item.attachments?.map(
-                          (image: any) => (
+                          (image: CommunityAttachment) => (
                             <Image
                               key={image.id}
                               src={image.url}

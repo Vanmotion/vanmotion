@@ -136,6 +136,15 @@ export async function POST(request: Request) {
         submittedHash,
       )
     ) {
+      await prisma.communityLoginCode.update({
+        where: {
+          id: loginCode.id,
+        },
+        data: {
+          usedAt: new Date(),
+        },
+      });
+
       return NextResponse.json(
         {
           error:

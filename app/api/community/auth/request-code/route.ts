@@ -6,6 +6,8 @@ import { Resend } from "resend";
 import { prisma } from "@/app/lib/prisma";
 
 const CODE_TTL_MINUTES = 10;
+const REQUEST_COOLDOWN_SECONDS = 60;
+const MAX_CODES_PER_HOUR = 5;
 
 function normalizeEmail(value: string): string {
   return value.trim().toLowerCase();
@@ -53,6 +55,63 @@ export async function POST(request: Request) {
         },
         {
           status: 500,
+        },
+      );
+    }
+
+    const now = new Date();
+
+    const cooldownSince =
+      new Date(
+        now.getTime() -
+          REQUEST_COOLDOWN_SECONDS *
+            1000,
+      );
+
+    const hourlySince =
+      new Date(
+        now.getTime() -
+          60 * 60 * 1000,
+      );
+
+    const [
+      recentCode,
+      codesLastHour,
+    ] = await Promise.all([
+      prisma.communityLoginCode.findFirst({
+        where: {
+          email,
+          createdAt: {
+            gte: cooldownSince,
+          },
+        },
+        select: {
+          id: true,
+        },
+      }),
+
+      prisma.communityLoginCode.count({
+        where: {
+          email,
+          createdAt: {
+            gte: hourlySince,
+          },
+        },
+      }),
+    ]);
+
+    if (
+      recentCode ||
+      codesLastHour >=
+        MAX_CODES_PER_HOUR
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Please wait before requesting another access code.",
+        },
+        {
+          status: 429,
         },
       );
     }
