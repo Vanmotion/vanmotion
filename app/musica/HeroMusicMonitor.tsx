@@ -153,13 +153,19 @@ export default function HeroMusicMonitor() {
       const context = canvas.getContext("2d");
 
       if (context) {
-        context.drawImage(
-          video,
-          0,
-          0,
-          width,
-          height,
-        );
+        try {
+          context.drawImage(
+            video,
+            0,
+            0,
+            width,
+            height,
+          );
+        } catch {
+          // Firefox puede tener el elemento listo antes
+          // de disponer del primer frame decodificado.
+          // No detenemos el espejo: reintentamos.
+        }
       }
 
       frameRequest = requestAnimationFrame(draw);

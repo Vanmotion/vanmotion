@@ -181,14 +181,12 @@
 
 .heroMonitorMirror {
   position: absolute;
-  left: 0;
-  top: 50%;
+  inset: 0;
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  transform: translateY(-50%);
+  height: 100%;
   object-fit: cover;
+  object-position: center;
   background: #000;
   pointer-events: none;
 }

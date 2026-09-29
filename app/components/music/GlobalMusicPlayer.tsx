@@ -109,6 +109,26 @@ function formatPlayerTime(value: number) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
+function getCompatibleRecommendationVideoUrl(
+  videoUrl: string,
+): string {
+  if (
+    typeof navigator === "undefined" ||
+    !navigator.userAgent.includes("Firefox/") ||
+    !videoUrl.includes(
+      "upload.wikimedia.org/wikipedia/commons/transcoded/",
+    ) ||
+    !videoUrl.endsWith(".360p.mpeg4.mov")
+  ) {
+    return videoUrl;
+  }
+
+  return videoUrl.replace(
+    /\.360p\.mpeg4\.mov$/,
+    ".480p.vp9.webm",
+  );
+}
+
 export default function GlobalMusicPlayer({
   language,
   recommendations,
@@ -164,6 +184,13 @@ export default function GlobalMusicPlayer({
 
   const recommendationVideoUrl =
     activeRecommendationData?.videoUrl?.trim() || null;
+
+  const recommendationPlaybackUrl =
+    recommendationVideoUrl
+      ? getCompatibleRecommendationVideoUrl(
+          recommendationVideoUrl,
+        )
+      : null;
 
   useEffect(() => {
     setVideoSessionActive(Boolean(activeRecommendationData));
@@ -271,7 +298,10 @@ export default function GlobalMusicPlayer({
     const video = recommendationVideoRef.current;
 
     if (video) {
-      video.src = selectedRecommendation.videoUrl;
+      video.src =
+        getCompatibleRecommendationVideoUrl(
+          selectedRecommendation.videoUrl,
+        );
       video.load();
 
       void video.play().catch(() => {
@@ -330,7 +360,7 @@ export default function GlobalMusicPlayer({
   useEffect(() => {
     const video = recommendationVideoRef.current;
 
-    if (!video || !recommendationVideoUrl) {
+    if (!video || !recommendationPlaybackUrl) {
       return;
     }
 
@@ -340,12 +370,12 @@ export default function GlobalMusicPlayer({
     return () => {
       video.pause();
     };
-  }, [recommendationVideoUrl]);
+  }, [recommendationPlaybackUrl]);
 
   useEffect(() => {
     const video = recommendationVideoRef.current;
 
-    if (!video || !recommendationVideoUrl) {
+    if (!video || !recommendationPlaybackUrl) {
       return;
     }
 
@@ -355,7 +385,7 @@ export default function GlobalMusicPlayer({
       video.pause();
     }
   }, [
-    recommendationVideoUrl,
+    recommendationPlaybackUrl,
     recommendationIsPlaying,
   ]);
 
@@ -620,19 +650,19 @@ export default function GlobalMusicPlayer({
             </div>
           </div>
 
-          {recommendationVideoUrl ? (
+          {recommendationPlaybackUrl ? (
             <video
               key={`${activeRecommendationData.id}:${recommendationRetry}`}
               ref={recommendationVideoRef}
               id="vanmotion-mirror-master"
-              src={recommendationVideoUrl}
+              src={recommendationPlaybackUrl}
               poster={
                 activeRecommendationData.coverUrl ??
                 "/brand/vanmotion-mark.webp"
               }
               playsInline
               autoPlay={recommendationIsPlaying}
-              controls
+              disablePictureInPicture
               preload="metadata"
               crossOrigin="anonymous"
               className={styles.youtubeEmbed}
