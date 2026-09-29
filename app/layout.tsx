@@ -258,7 +258,6 @@ export default async function RootLayout({
       name: "VANMOTION",
     },
     sameAs: [
-      "https://www.instagram.com/vanmotion_madrid",
       "https://www.youtube.com/@vanmotionoficial",
       "https://www.tiktok.com/@www.vanmotion.es",
     ],
