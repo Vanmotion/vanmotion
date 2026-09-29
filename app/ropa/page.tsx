@@ -32,9 +32,9 @@ const MANAGED_PRODUCT_SLUGS = [
 const translations = {
   es: {
     metadata: {
-      title: "Ropa urbana en Madrid para hombre y mujer",
+      title: "Ropa urbana y streetwear en Madrid",
       description:
-        "Ropa urbana VANMOTION diseñada en Madrid. Camisetas CARPE DIEM, bomber y prendas para hombre y mujer en negro y azul Ford E-150.",
+        "Ropa urbana y streetwear VANMOTION diseñados en Madrid. Drop 01 para hombre y mujer: camisetas CARPE DIEM, bomber, cargo y sudaderas con identidad propia.",
     },
     navigation: {
       vehicles: "Vehículos",
@@ -58,7 +58,7 @@ const translations = {
       headingFirst: "DOS COLORES.",
       headingSecond: "UNA IDENTIDAD.",
       intro:
-        "La ropa de VANMOTION nace del mismo lugar que los vehículos y la música: trabajo real, detalle y una identidad que no necesita exagerar.",
+        "La ropa urbana y el streetwear de VANMOTION nacen del mismo lugar que los vehículos y la música: trabajo real, detalle y una identidad que no necesita exagerar.",
       blackTitle: "Madrid · Negro",
       blackText:
         "Una presencia limpia y directa. Bomber satinada, camiseta premium y detalles discretos.",
