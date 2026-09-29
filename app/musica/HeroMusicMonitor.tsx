@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- Raw img is intentional here for dynamic/external/preview media. */
 "use client";
 
 import {
@@ -124,6 +125,10 @@ export default function HeroMusicMonitor() {
     } else {
       player.pauseVideo?.();
     }
+  // recommendationVideoTime is intentionally excluded here.
+  // The previous effect handles timeline synchronization;
+  // adding it here would seek on every playback-time update.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     recommendationVideoId,
     recommendationVideoPlaying,

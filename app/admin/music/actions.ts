@@ -40,6 +40,8 @@ function refreshMusicPages(): void {
 export async function initializeMusicLibrary(
   _formData: FormData,
 ): Promise<void> {
+  void _formData;
+
   await requireAdminSession();
   const defaultTracks = [
     {

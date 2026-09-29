@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";

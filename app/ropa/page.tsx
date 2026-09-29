@@ -222,26 +222,6 @@ const translations = {
   },
 } as const;
 
-function getEffectiveProductStatus(
-  storedStatus: string,
-  active: boolean,
-  totalStock: number,
-): string {
-  if (!active) {
-    return "HIDDEN";
-  }
-
-  if (
-    storedStatus === "DRAFT" ||
-    storedStatus === "COMING_SOON" ||
-    storedStatus === "HIDDEN"
-  ) {
-    return storedStatus;
-  }
-
-  return totalStock > 0 ? "AVAILABLE" : "SOLD_OUT";
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
   const content = translations[language];

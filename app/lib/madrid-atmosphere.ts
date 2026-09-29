@@ -4,7 +4,6 @@ import { join } from "node:path";
 import {
   fetchMadridWeather,
   getMadridPeriod,
-  sceneImage,
   type ClimateSection,
   type WeatherState,
 } from "@/app/lib/madrid-weather";
