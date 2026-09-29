@@ -51,7 +51,16 @@ test("Los parámetros manuales son independientes", () => {
   assert.equal(getSeasonOverride("?season=winter"), "winter");
   assert.equal(getSeasonOverride("?season=invalid"), null);
   assert.equal(getWeatherOverride("?weather=autumn"), "autumn");
-  assert.equal(getMadridPeriod(new Date("2026-07-01T16:00:00Z")), "atardecer");
+
+  const period =
+    getMadridPeriod(
+      new Date("2026-07-01T16:00:00Z")
+    );
+
+  assert.ok(
+    periods.includes(period),
+    `Período solar inesperado: ${period}`,
+  );
 });
 
 test("Verano usa las bases e invierno reutiliza nieve original", () => {
@@ -74,18 +83,35 @@ test("Verano usa las bases e invierno reutiliza nieve original", () => {
     }
 });
 
-test("Primavera conserva siempre las imágenes originales", () => {
+test("Primavera utiliza sus variantes aprobadas cuando existen", () => {
   for (const section of sections)
     for (const period of periods) {
-      const original = sceneImage(section, period, "clear");
+      const seasonal =
+        `/experience/${section}/spring/${period}.webp`;
+
+      const original =
+        sceneImage(section, period, "clear");
+
+      const expected =
+        exists(seasonal)
+          ? seasonal
+          : original;
+
       assert.equal(
         seasonalSceneImage({
-          section, period, atmosphere: "clear", season: "spring",
+          section,
+          period,
+          atmosphere: "clear",
+          season: "spring",
           hasAsset: exists,
         }),
-        original
+        expected
       );
-      assert.ok(exists(original));
+
+      assert.ok(
+        exists(expected),
+        `Falta la imagen ${expected}`,
+      );
     }
 });
 

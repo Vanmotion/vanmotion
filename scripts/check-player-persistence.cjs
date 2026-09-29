@@ -86,10 +86,28 @@ const track={id:'track',title:'Test track',subtitle:'VANMOTION',src:'/test.mp3',
 
 // A fake stateful React renderer tests the actual component handlers and JSX.
 test('Selection, collapse, navigation and close preserve the video identity',()=>{
+  const oldWindow=global.window;
+  global.window={
+    setInterval:()=>1,
+    clearInterval:()=>{},
+  };
+
   const rt=createRuntime();const calls=[];let audioHandler=null;
   const context={tracks:[track],currentTrack:track,currentIndex:0,isPlaying:false,currentTime:0,duration:100,volume:.75,playbackError:null,
     togglePlayback:async()=>calls.push('audio-toggle'),pausePlayback:()=>calls.push('audio-pause'),
-    setAudioStartHandler:fn=>audioHandler=fn,setVideoSessionActive:v=>{context.videoSessionActive=v;},videoSessionActive:false,
+    setAudioStartHandler:fn=>audioHandler=fn,
+    setVideoSessionActive:v=>{context.videoSessionActive=v;},
+    videoSessionActive:false,
+    recommendationVideoId:null,
+    recommendationVideoPlaying:false,
+    recommendationVideoTime:0,
+    setRecommendationVideoState:(id,playing)=>{
+      context.recommendationVideoId=id;
+      context.recommendationVideoPlaying=playing;
+    },
+    setRecommendationVideoTime:value=>{
+      context.recommendationVideoTime=value;
+    },
     selectTrack:()=>calls.push('select-track'),playPrevious:()=>{},playNext:()=>{},changeProgress:()=>{},changeVolume:()=>{},setLastTrackEndedHandler:()=>{}};
   rt.state.context=context;
   const Component=rt.load('app/components/music/GlobalMusicPlayer.tsx').default;
@@ -163,6 +181,7 @@ test('Selection, collapse, navigation and close preserve the video identity',()=
 
   assert.equal(expandedContent?.props.hidden,false);
   ui.unmount();
+  global.window=oldWindow;
 });
 
 test('Route policy never conditionally removes the player while a video is active',()=>{
@@ -185,7 +204,13 @@ test('YouTube API owns one stable host and uses the actual origin',async()=>{
   }
   const oldWindow=global.window,oldDocument=global.document;
   global.window={YT:{Player:FakePlayer},location:{origin:'http://127.0.0.1:3107'}};
-  global.document={createElement:()=>({}),head:{appendChild(){}}};
+  global.document={
+    createElement:()=>({}),
+    head:{appendChild(){}},
+    visibilityState:'visible',
+    addEventListener(){},
+    removeEventListener(){},
+  };
   try{
     let host;const events=[];
     const Component=rt.load('app/components/music/YouTubeRecommendationPlayer.tsx').default;
