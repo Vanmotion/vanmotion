@@ -109,12 +109,10 @@ function formatPlayerTime(value: number) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-function getCompatibleRecommendationVideoUrl(
+function getWikimediaVp9Url(
   videoUrl: string,
 ): string {
   if (
-    typeof navigator === "undefined" ||
-    !navigator.userAgent.includes("Firefox/") ||
     !videoUrl.includes(
       "upload.wikimedia.org/wikipedia/commons/transcoded/",
     ) ||
@@ -185,11 +183,26 @@ export default function GlobalMusicPlayer({
   const recommendationVideoUrl =
     activeRecommendationData?.videoUrl?.trim() || null;
 
+  const [preferVp9Video, setPreferVp9Video] =
+    useState(false);
+
+  useEffect(() => {
+    const probe = document.createElement("video");
+
+    const vp9Support = probe.canPlayType(
+      'video/webm; codecs="vp9, opus"',
+    );
+
+    setPreferVp9Video(vp9Support !== "");
+  }, []);
+
   const recommendationPlaybackUrl =
     recommendationVideoUrl
-      ? getCompatibleRecommendationVideoUrl(
-          recommendationVideoUrl,
-        )
+      ? preferVp9Video
+        ? getWikimediaVp9Url(
+            recommendationVideoUrl,
+          )
+        : recommendationVideoUrl
       : null;
 
   useEffect(() => {
@@ -299,9 +312,11 @@ export default function GlobalMusicPlayer({
 
     if (video) {
       video.src =
-        getCompatibleRecommendationVideoUrl(
-          selectedRecommendation.videoUrl,
-        );
+        preferVp9Video
+          ? getWikimediaVp9Url(
+              selectedRecommendation.videoUrl,
+            )
+          : selectedRecommendation.videoUrl;
       video.load();
 
       void video.play().catch(() => {
