@@ -114,6 +114,8 @@ model MusicRecommendation {
   artist String
 
   youtubeVideoId String  @unique
+  videoUrl      String?
+  muxPlaybackId  String?
   coverUrl       String?
 
   editorialHeading  String?

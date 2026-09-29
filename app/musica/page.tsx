@@ -381,13 +381,10 @@ export default async function MusicPage() {
             <div className={styles.recommendGrid}>
               {recommendations.map(
                 (recommendation, index) => (
-                  <a
+                  <article
                     key={recommendation.id}
-                    href={`https://www.youtube.com/watch?v=${recommendation.youtubeVideoId}`}
-                    target="_blank"
-                    rel="noreferrer"
                     className={styles.recommendCard}
-                    aria-label={`${recommendation.title} · ${recommendation.artist} · YouTube`}
+                    aria-label={`${recommendation.title} · ${recommendation.artist}`}
                   >
                     <span className={styles.recommendNumber}>
                       {String(index + 1).padStart(2, "0")}
@@ -487,11 +484,11 @@ export default async function MusicPage() {
 
                     <span className={styles.recommendAction}>
                       {language === "es"
-                        ? "Ver videoclip en YouTube"
-                        : "Watch on YouTube"}
-                      <span aria-hidden="true"> ↗</span>
+                        ? "Vídeo seleccionado por VANMOTION"
+                        : "Video selected by VANMOTION"}
+                      <span aria-hidden="true">●</span>
                     </span>
-                  </a>
+                  </article>
                 ),
               )}
             </div>

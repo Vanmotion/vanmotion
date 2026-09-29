@@ -614,7 +614,9 @@
 
 .spotifyRecommendedTrack {
   display: grid;
-  gap: 7px;
+  grid-template-columns: minmax(0, 1fr) 82px;
+  gap: 12px;
+  align-items: center;
 }
 
 .recommendedTrackLabel {
@@ -772,6 +774,7 @@
   border-radius: 12px;
   overflow: hidden;
   background: #000;
+  object-fit: contain;
 }
 
 
@@ -779,11 +782,12 @@
 .youtubePreviewButton {
   position: relative;
   display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
+  width: 82px;
+  aspect-ratio: 1 / 1;
+  justify-self: end;
   padding: 0;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   background: #000;
   cursor: pointer;
@@ -793,7 +797,8 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: #050505;
 }
 
 .youtubePreviewPlay {
@@ -802,8 +807,8 @@
   top: 50%;
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.78);
   color: #fff;

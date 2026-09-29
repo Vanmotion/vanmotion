@@ -10,9 +10,6 @@ import {
 } from "react";
 
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
-import YouTubeRecommendationPlayer, {
-  type YouTubePlayerHandle,
-} from "@/app/components/music/YouTubeRecommendationPlayer";
 import styles from "./musica.module.css";
 
 const IMAGE_WIDTH = 1672;
@@ -64,13 +61,11 @@ export default function HeroMusicMonitor() {
     currentTrack,
     isPlaying,
     recommendationVideoId,
-    recommendationVideoPlaying,
-    recommendationVideoTime,
   } = useMusicPlayer();
 
   const monitorRef = useRef<HTMLDivElement>(null);
-  const mirrorPlayerRef =
-    useRef<YouTubePlayerHandle | null>(null);
+  const mirrorCanvasRef =
+    useRef<HTMLCanvasElement | null>(null);
 
   const [geometry, setGeometry] =
     useState<MonitorGeometry | null>(null);
@@ -78,96 +73,110 @@ export default function HeroMusicMonitor() {
   const cover =
     currentTrack?.coverUrl ?? "/brand/vanmotion-mark.webp";
 
-  useEffect(() => {
-    if (!recommendationVideoId) {
-      return;
-    }
-
-    const player = mirrorPlayerRef.current;
-    const mirrorTime = player?.getCurrentTime?.();
-
-    if (
-      !player ||
-      typeof mirrorTime !== "number" ||
-      !Number.isFinite(mirrorTime)
-    ) {
-      return;
-    }
-
-    if (
-      Math.abs(mirrorTime - recommendationVideoTime) >
-      1.25
-    ) {
-      player.seekTo?.(recommendationVideoTime, true);
-    }
-  }, [
-    recommendationVideoId,
-    recommendationVideoTime,
-  ]);
+  const [mirrorAvailable, setMirrorAvailable] =
+    useState(false);
 
   useEffect(() => {
     if (!recommendationVideoId) {
+      setMirrorAvailable(false);
       return;
     }
 
-    const player = mirrorPlayerRef.current;
+    let frame = 0;
 
-    if (!player) {
-      return;
-    }
+    const detectMaster = () => {
+      const video =
+        document.getElementById(
+          "vanmotion-mirror-master",
+        ) as HTMLVideoElement | null;
 
-    player.seekTo?.(
-      recommendationVideoTime,
-      true,
-    );
-
-    if (recommendationVideoPlaying) {
-      player.playVideo?.();
-    } else {
-      player.pauseVideo?.();
-    }
-  // recommendationVideoTime is intentionally excluded here.
-  // The previous effect handles timeline synchronization;
-  // adding it here would seek on every playback-time update.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    recommendationVideoId,
-    recommendationVideoPlaying,
-  ]);
-
-  useEffect(() => {
-    if (!recommendationVideoId) {
-      return;
-    }
-
-    const resync = () => {
-      if (document.visibilityState !== "visible") {
+      if (video) {
+        setMirrorAvailable(true);
         return;
       }
 
-      mirrorPlayerRef.current?.seekTo?.(
-        recommendationVideoTime,
-        true,
-      );
-
-      if (recommendationVideoPlaying) {
-        mirrorPlayerRef.current?.playVideo?.();
-      } else {
-        mirrorPlayerRef.current?.pauseVideo?.();
-      }
+      setMirrorAvailable(false);
+      frame = requestAnimationFrame(detectMaster);
     };
 
-    window.addEventListener("focus", resync);
-    document.addEventListener("visibilitychange", resync);
+    detectMaster();
 
     return () => {
-      window.removeEventListener("focus", resync);
-      document.removeEventListener("visibilitychange", resync);
+      if (frame) {
+        cancelAnimationFrame(frame);
+      }
+    };
+  }, [recommendationVideoId]);
+
+  useEffect(() => {
+    if (!recommendationVideoId || !mirrorAvailable) {
+      return;
+    }
+
+    let cancelled = false;
+    let frameRequest = 0;
+
+    const draw = () => {
+      if (cancelled) {
+        return;
+      }
+
+      const video =
+        document.getElementById(
+          "vanmotion-mirror-master",
+        ) as HTMLVideoElement | null;
+
+      const canvas = mirrorCanvasRef.current;
+
+      if (
+        !video ||
+        !canvas ||
+        video.readyState < 2 ||
+        video.videoWidth <= 0 ||
+        video.videoHeight <= 0
+      ) {
+        frameRequest = requestAnimationFrame(draw);
+        return;
+      }
+
+      const width = video.videoWidth;
+      const height = video.videoHeight;
+
+      if (
+        canvas.width !== width ||
+        canvas.height !== height
+      ) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      const context = canvas.getContext("2d");
+
+      if (context) {
+        context.drawImage(
+          video,
+          0,
+          0,
+          width,
+          height,
+        );
+      }
+
+      frameRequest = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      cancelled = true;
+
+      if (frameRequest) {
+        cancelAnimationFrame(frameRequest);
+      }
     };
   }, [
     recommendationVideoId,
-    recommendationVideoPlaying,
-    recommendationVideoTime,
+    mirrorAvailable,
   ]);
 
   useLayoutEffect(() => {
@@ -270,26 +279,19 @@ export default function HeroMusicMonitor() {
       aria-hidden="true"
     >
       {recommendationVideoId && !isPlaying ? (
-        <YouTubeRecommendationPlayer
-          key={recommendationVideoId}
-          videoId={recommendationVideoId}
-          title="Vídeo recomendado sincronizado"
-          playing={recommendationVideoPlaying}
-          muted
-          controls={false}
-          playerRef={mirrorPlayerRef}
-          className={styles.heroMonitorVideo}
-          onReady={() => {
-            mirrorPlayerRef.current?.seekTo?.(
-              recommendationVideoTime,
-              true,
-            );
-          }}
-          onPlaying={() => {}}
-          onPaused={() => {}}
-          onEnded={() => {}}
-          onError={() => {}}
-        />
+        mirrorAvailable ? (
+          <canvas
+            ref={mirrorCanvasRef}
+            className={styles.heroMonitorMirror}
+          />
+        ) : (
+          <img
+            key={recommendationVideoId}
+            src={cover}
+            alt=""
+            className={styles.heroMonitorArtwork}
+          />
+        )
       ) : (
         <img
           key={cover}

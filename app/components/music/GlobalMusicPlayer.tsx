@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { flushSync } from "react-dom";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,9 +10,6 @@ import type { PublicMusicRecommendation } from "@/app/lib/music-library";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
 
 import { useMusicPlayer } from "./MusicPlayerContext";
-import YouTubeRecommendationPlayer, {
-  type YouTubePlayerHandle,
-} from "./YouTubeRecommendationPlayer";
 import styles from "./GlobalMusicPlayer.module.css";
 
 type GlobalMusicPlayerProps = {
@@ -127,8 +125,12 @@ export default function GlobalMusicPlayer({
     recommendationIsPlaying,
     setRecommendationIsPlaying,
   ] = useState(false);
-  const recommendationPlayerRef =
-    useRef<YouTubePlayerHandle | null>(null);
+  const recommendationVideoRef =
+    useRef<HTMLVideoElement | null>(null);
+  const recommendationStartingRef =
+    useRef(false);
+  const recommendationAutoplayRef =
+    useRef(false);
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
   const [recommendationRetry, setRecommendationRetry] = useState(0);
 
@@ -157,8 +159,11 @@ export default function GlobalMusicPlayer({
 
   const activeRecommendationData = recommendations.find(
     (recommendation) =>
-      recommendation.youtubeVideoId === activeRecommendation,
+      recommendation.id === activeRecommendation,
   );
+
+  const recommendationVideoUrl =
+    activeRecommendationData?.videoUrl?.trim() || null;
 
   useEffect(() => {
     setVideoSessionActive(Boolean(activeRecommendationData));
@@ -167,7 +172,7 @@ export default function GlobalMusicPlayer({
 
   useEffect(() => {
     setRecommendationVideoState(
-      activeRecommendationData?.youtubeVideoId ?? null,
+      activeRecommendationData?.id ?? null,
       Boolean(activeRecommendationData && recommendationIsPlaying),
     );
   }, [
@@ -184,7 +189,7 @@ export default function GlobalMusicPlayer({
 
     const syncTime = () => {
       const time =
-        recommendationPlayerRef.current?.getCurrentTime?.();
+        recommendationVideoRef.current?.currentTime;
 
       if (
         typeof time === "number" &&
@@ -213,7 +218,7 @@ export default function GlobalMusicPlayer({
 
   useEffect(() => {
     setAudioStartHandler(() => {
-      recommendationPlayerRef.current?.pauseVideo?.();
+      recommendationVideoRef.current?.pause();
       setRecommendationIsPlaying(false);
     });
     return () => setAudioStartHandler(null);
@@ -227,21 +232,53 @@ export default function GlobalMusicPlayer({
   }, [pathname]);
 
   function closeRecommendation() {
-    recommendationPlayerRef.current?.stopVideo?.();
+    recommendationStartingRef.current = false;
+    recommendationAutoplayRef.current = false;
+    if (recommendationVideoRef.current) {
+      recommendationVideoRef.current.pause();
+      recommendationVideoRef.current.currentTime = 0;
+    }
     setRecommendationIsPlaying(false);
     setActiveRecommendation(null);
     setVideoSessionActive(false);
     setRecommendationError(null);
   }
 
-  function selectRecommendation(videoId: string) {
+  function selectRecommendation(recommendationId: string) {
+    const selectedRecommendation =
+      recommendations.find(
+        (recommendation) =>
+          recommendation.id === recommendationId,
+      );
+
+    if (!selectedRecommendation?.videoUrl) {
+      return;
+    }
+
     pausePlayback();
     setRecommendationVideoTime(0);
     setRecommendationError(null);
-    setRecommendationIsPlaying(true);
     setVideoSessionActive(true);
-    setActiveRecommendation(videoId);
-    setExpanded(false);
+
+    recommendationStartingRef.current = true;
+
+    flushSync(() => {
+      setActiveRecommendation(recommendationId);
+      setRecommendationIsPlaying(true);
+      setExpanded(false);
+    });
+
+    const video = recommendationVideoRef.current;
+
+    if (video) {
+      video.src = selectedRecommendation.videoUrl;
+      video.load();
+
+      void video.play().catch(() => {
+        // onCanPlay hará un segundo intento manteniendo
+        // la intención iniciada por el clic del usuario.
+      });
+    }
   }
 
   const selectRecommendationRef = useRef(selectRecommendation);
@@ -254,7 +291,7 @@ export default function GlobalMusicPlayer({
       const firstRecommendation = recommendations[0];
 
       if (firstRecommendation) {
-        selectRecommendationRef.current(firstRecommendation.youtubeVideoId);
+        selectRecommendationRef.current(firstRecommendation.id);
       } else {
         setRecommendationIsPlaying(false);
         selectTrack(0, true);
@@ -289,6 +326,38 @@ export default function GlobalMusicPlayer({
     activeRecommendation !== null
       ? recommendationIsPlaying
       : isPlaying;
+
+  useEffect(() => {
+    const video = recommendationVideoRef.current;
+
+    if (!video || !recommendationVideoUrl) {
+      return;
+    }
+
+    video.pause();
+    video.load();
+
+    return () => {
+      video.pause();
+    };
+  }, [recommendationVideoUrl]);
+
+  useEffect(() => {
+    const video = recommendationVideoRef.current;
+
+    if (!video || !recommendationVideoUrl) {
+      return;
+    }
+
+    if (recommendationIsPlaying) {
+      void video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [
+    recommendationVideoUrl,
+    recommendationIsPlaying,
+  ]);
 
   return (
     <aside
@@ -481,8 +550,8 @@ export default function GlobalMusicPlayer({
                 onClick={() => {
                   const activeIndex = recommendations.findIndex(
                     (recommendation) =>
-                      recommendation.youtubeVideoId ===
-                      activeRecommendationData.youtubeVideoId,
+                      recommendation.id ===
+                      activeRecommendationData.id,
                   );
 
                   const nextRecommendation =
@@ -492,7 +561,7 @@ export default function GlobalMusicPlayer({
 
                   if (nextRecommendation) {
                     selectRecommendation(
-                      nextRecommendation.youtubeVideoId,
+                      nextRecommendation.id,
                     );
                   }
                 }}
@@ -551,69 +620,88 @@ export default function GlobalMusicPlayer({
             </div>
           </div>
 
-          <YouTubeRecommendationPlayer
-            key={`${activeRecommendationData.youtubeVideoId}:${recommendationRetry}`}
-            videoId={activeRecommendationData.youtubeVideoId}
-            title={`${activeRecommendationData.title} · ${activeRecommendationData.artist}`}
-            playing={recommendationIsPlaying}
-            playerRef={recommendationPlayerRef}
-            onReady={() => {
-              const time =
-                recommendationPlayerRef.current?.getCurrentTime?.();
-
-              if (
-                typeof time === "number" &&
-                Number.isFinite(time)
-              ) {
-                setRecommendationVideoTime(time);
+          {recommendationVideoUrl ? (
+            <video
+              key={`${activeRecommendationData.id}:${recommendationRetry}`}
+              ref={recommendationVideoRef}
+              id="vanmotion-mirror-master"
+              src={recommendationVideoUrl}
+              poster={
+                activeRecommendationData.coverUrl ??
+                "/brand/vanmotion-mark.webp"
               }
-            }}
-            onPlaying={() => {
-              const time =
-                recommendationPlayerRef.current?.getCurrentTime?.();
+              playsInline
+              autoPlay={recommendationIsPlaying}
+              controls
+              preload="metadata"
+              crossOrigin="anonymous"
+              className={styles.youtubeEmbed}
+              onCanPlay={(event) => {
+                if (
+                  recommendationStartingRef.current ||
+                  recommendationIsPlaying
+                ) {
+                  void event.currentTarget
+                    .play()
+                    .catch(() => {});
+                }
+              }}
+              onPlay={() => {
+                recommendationAutoplayRef.current = false;
+                pausePlayback();
+                setRecommendationIsPlaying(true);
+                setRecommendationError(null);
+              }}
+              onPause={(event) => {
+                if (recommendationStartingRef.current) {
+                  return;
+                }
 
-              if (
-                typeof time === "number" &&
-                Number.isFinite(time)
-              ) {
-                setRecommendationVideoTime(time);
-              }
+                if (!event.currentTarget.ended) {
+                  setRecommendationIsPlaying(false);
+                }
+              }}
+              onTimeUpdate={(event) => {
+                setRecommendationVideoTime(
+                  event.currentTarget.currentTime,
+                );
+              }}
+              onError={() => {
+                setRecommendationIsPlaying(false);
+                setRecommendationError(
+                  content.videoUnavailable,
+                );
+              }}
+              onEnded={() => {
+                const activeIndex =
+                  recommendations.findIndex(
+                    (recommendation) =>
+                      recommendation.id ===
+                      activeRecommendationData.id,
+                  );
 
-              pausePlayback();
-              setRecommendationIsPlaying(true);
-              setRecommendationError(null);
-            }}
-            onPaused={() => {
-              const time =
-                recommendationPlayerRef.current?.getCurrentTime?.();
+                const nextRecommendation =
+                  recommendations[activeIndex + 1];
 
-              if (
-                typeof time === "number" &&
-                Number.isFinite(time)
-              ) {
-                setRecommendationVideoTime(time);
-              }
+                if (nextRecommendation) {
+                  selectRecommendation(
+                    nextRecommendation.id,
+                  );
+                  return;
+                }
 
-              setRecommendationIsPlaying(false);
-            }}
-            onError={(message) => {
-              setRecommendationIsPlaying(false);
-              setRecommendationError(message);
-            }}
-            onEnded={() => {
-              const activeIndex = recommendations.findIndex(
-                (recommendation) =>
-                  recommendation.youtubeVideoId === activeRecommendationData.youtubeVideoId,
-              );
-              const nextRecommendation = recommendations[activeIndex + 1];
-              if (nextRecommendation) {
-                selectRecommendation(nextRecommendation.youtubeVideoId);
-                return;
-              }
-              closeRecommendation();
-              selectTrack(0, true);
-            }}
-          />
+                closeRecommendation();
+                selectTrack(0, true);
+              }}
+            />
+          ) : (
+            <div
+              className={styles.recommendationError}
+              role="alert"
+            >
+              <p>{content.videoUnavailable}</p>
+            </div>
+          )}
 
           {recommendationError && (
             <div className={styles.recommendationError} role="alert">
@@ -625,13 +713,6 @@ export default function GlobalMusicPlayer({
               }}>
                 {content.play}
               </button>
-              <a
-                href={`https://www.youtube.com/watch?v=${activeRecommendationData.youtubeVideoId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {content.openOnYouTube} ↗
-              </a>
             </div>
           )}
 
@@ -804,7 +885,7 @@ export default function GlobalMusicPlayer({
                           }
                           onClick={() => {
                             selectRecommendation(
-                              recommendation.youtubeVideoId,
+                              recommendation.id,
                             );
                           }}
                           aria-label={`Reproducir ${recommendation.title}`}
@@ -813,7 +894,7 @@ export default function GlobalMusicPlayer({
                           <img
                             src={
                               recommendation.coverUrl ??
-                              `https://i.ytimg.com/vi/${recommendation.youtubeVideoId}/hqdefault.jpg`
+                              "/brand/vanmotion-mark.webp"
                             }
                             alt=""
                             loading="lazy"

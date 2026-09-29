@@ -178,6 +178,21 @@
   pointer-events: none;
 }
 
+
+.heroMonitorMirror {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  transform: translateY(-50%);
+  object-fit: cover;
+  background: #000;
+  pointer-events: none;
+}
+
 .heroTopline,
 .heroFoot {
   position: absolute;
