@@ -62,6 +62,7 @@ type MonitorGeometry = {
 export default function HeroMusicMonitor() {
   const {
     currentTrack,
+    isPlaying,
     recommendationVideoId,
     recommendationVideoPlaying,
     recommendationVideoTime,
@@ -268,7 +269,7 @@ export default function HeroMusicMonitor() {
       style={geometryStyle}
       aria-hidden="true"
     >
-      {recommendationVideoId ? (
+      {recommendationVideoId && !isPlaying ? (
         <YouTubeRecommendationPlayer
           key={recommendationVideoId}
           videoId={recommendationVideoId}
