@@ -29,10 +29,10 @@ type Calibration = {
 };
 
 const DESKTOP_CALIBRATION: Calibration = {
-  x: 27.68,
-  y: 48.97,
-  width: 9.72,
-  height: 12.94,
+  x: 27.67,
+  y: 48.65,
+  width: 9.52,
+  height: 12.32,
   rotate: -0.30,
   skewX: 0.35,
   skewY: 0.30,

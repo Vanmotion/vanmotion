@@ -2068,3 +2068,14 @@
 .playerSection {
   background: #050505;
 }
+
+
+/* VANMOTION · NEWS GLASS FIXED */
+/* Referencia visual: tarjeta de noticia en Firefox */
+.heroNews,
+.heroNews:hover {
+  background: rgba(6, 6, 6, 0.80) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+/* FIN VANMOTION · NEWS GLASS FIXED */

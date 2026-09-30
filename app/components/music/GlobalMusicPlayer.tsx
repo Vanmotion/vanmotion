@@ -432,20 +432,7 @@ export default function GlobalMusicPlayer({
           }
         >
           <span className={styles.trackText}>
-            <small>{content.playerName}</small>
-
-            <strong>
-              {String(currentIndex + 1).padStart(2, "0")} ·{" "}
-              {currentTrackTitle}
-            </strong>
-
-            <span className={styles.trackMeta}>
-              {currentTrack?.subtitle
-                ? `${currentTrack.subtitle} · `
-                : ""}
-              {formatPlayerTime(currentTime)} /{" "}
-              {formatPlayerTime(duration)}
-            </span>
+<strong>{currentTrackTitle}</strong>
           </span>
         </button>
 
@@ -534,7 +521,7 @@ export default function GlobalMusicPlayer({
               : content.expandPlayer
           }
         >
-          {expanded ? "×" : "≡"}
+          {expanded ? "×" : "+"}
         </button>
       </div>
 
@@ -782,64 +769,6 @@ export default function GlobalMusicPlayer({
             : styles.expandedContentHidden
         }`}
       >
-          <div className={styles.progress}>
-            <input
-              type="range"
-              min="0"
-              max={duration || 0}
-              step="0.1"
-              value={
-                seekPreview ??
-                Math.min(currentTime, duration || 0)
-              }
-              onChange={(event) => {
-                setSeekPreview(
-                  Number(event.currentTarget.value),
-                );
-              }}
-              onPointerUp={(event) => {
-                changeProgress(
-                  Number(event.currentTarget.value),
-                );
-                setSeekPreview(null);
-              }}
-              onKeyUp={(event) => {
-                changeProgress(
-                  Number(event.currentTarget.value),
-                );
-                setSeekPreview(null);
-              }}
-              onBlur={(event) => {
-                if (seekPreview === null) {
-                  return;
-                }
-
-                changeProgress(
-                  Number(event.currentTarget.value),
-                );
-                setSeekPreview(null);
-              }}
-              aria-label={content.progress}
-            />
-          </div>
-
-          <div className={styles.volume}>
-            <span>{content.volumeShort}</span>
-
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={(event) => {
-                changeVolume(
-                  Number(event.target.value),
-                );
-              }}
-              aria-label={content.volume}
-            />
-          </div>
 
           <div className={styles.trackList}>
             {tracks.map((track, index) => {
@@ -863,22 +792,8 @@ export default function GlobalMusicPlayer({
                     selectTrack(index, true);
                   }}
                 >
-                  <span>
-                    {String(index + 1).padStart(
-                      2,
-                      "0",
-                    )}
-                  </span>
-
-                  <span>
+                  <span className={styles.minimalTrackTitle}>
                     <strong>{trackTitle}</strong>
-                    <small>{track.subtitle}</small>
-                  </span>
-
-                  <span>
-                    {active && isPlaying
-                      ? content.playing
-                      : track.format}
                   </span>
                 </button>
               );
@@ -887,17 +802,9 @@ export default function GlobalMusicPlayer({
 
           {recommendations.length > 0 && (
             <div className={styles.recommendedInPlayer}>
-              <p className={styles.recommendedTitle}>
-                {language === "es"
-                  ? "VANMOTION RECOMIENDA"
-                  : "VANMOTION RECOMMENDS"}
-              </p>
 
               {recommendations.map(
                 (recommendation, index) => {
-                  const displayNumber = String(
-                    tracks.length + index + 1,
-                  ).padStart(2, "0");
                   return (
                     <div
                       className={
@@ -910,16 +817,11 @@ export default function GlobalMusicPlayer({
                           styles.recommendedTrackLabel
                         }
                       >
-                        <span>{displayNumber}</span>
 
                         <div>
                           <strong>
                             {recommendation.title}
                           </strong>
-
-                          <small>
-                            {recommendation.artist}
-                          </small>
                         </div>
                       </div>
 
