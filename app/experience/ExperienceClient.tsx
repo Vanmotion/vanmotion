@@ -236,6 +236,9 @@ export default function ExperienceClient({
       opacity: number;
       imageY: number;
       scale: number;
+      shift: number;
+      textZ: number;
+      tilt: number;
     };
 
     const states = new Map<HTMLElement, MotionState>();
@@ -262,13 +265,13 @@ export default function ExperienceClient({
          * en los últimos centímetros de la sección.
          */
         const entrance = clamp(
-          (viewHeight - top) / (viewHeight * 0.72),
+          (viewHeight - top) / (viewHeight * 0.88),
           0,
           1
         );
 
         const exit = clamp(
-          bottom / (viewHeight * 0.88),
+          bottom / (viewHeight * 1.65),
           0,
           1
         );
@@ -285,11 +288,29 @@ export default function ExperienceClient({
          * Movimiento más perceptible de la fotografía:
          * aproximadamente +90px -> -90px.
          */
-        const targetImageY = (0.5 - progress) * 180;
+        const isMobile = window.innerWidth <= 700;
 
+        const targetImageY =
+          (0.5 - progress) * (isMobile ? 128 : 96);
+
+        /*
+         * Safari: recorrido de zoom algo más marcado.
+         * Mantiene un máximo contenido para no volver al recorte anterior.
+         */
         const targetScale =
-          1.115 -
-          0.07 * (1 - Math.abs(2 * progress - 1));
+          1.105 -
+          0.085 * (1 - Math.abs(2 * progress - 1));
+
+        /*
+         * Mismo movimiento progresivo de los rótulos que Firefox.
+         */
+        const distance = 1 - targetOpacity;
+        const targetShift = distance * 32;
+        const targetTextZ = -(isMobile ? 145 : 60) * distance;
+        const targetTilt =
+          (progress < 0.5
+            ? (isMobile ? 9 : 4)
+            : (isMobile ? -9 : -4)) * distance;
 
         let state = states.get(scene);
 
@@ -298,6 +319,9 @@ export default function ExperienceClient({
             opacity: targetOpacity,
             imageY: targetImageY,
             scale: targetScale,
+            shift: targetShift,
+            textZ: targetTextZ,
+            tilt: targetTilt,
           };
           states.set(scene, state);
         }
@@ -306,14 +330,20 @@ export default function ExperienceClient({
          * Interpolación nuestra, no transition de Safari.
          * Esto obliga a pasar por los valores intermedios.
          */
-        state.opacity += (targetOpacity - state.opacity) * 0.12;
-        state.imageY += (targetImageY - state.imageY) * 0.14;
-        state.scale += (targetScale - state.scale) * 0.14;
+        state.opacity += (targetOpacity - state.opacity) * 0.075;
+        state.imageY += (targetImageY - state.imageY) * 0.18;
+        state.scale += (targetScale - state.scale) * 0.18;
+        state.shift += (targetShift - state.shift) * 0.16;
+        state.textZ += (targetTextZ - state.textZ) * 0.16;
+        state.tilt += (targetTilt - state.tilt) * 0.16;
 
         if (
           Math.abs(targetOpacity - state.opacity) > 0.002 ||
           Math.abs(targetImageY - state.imageY) > 0.08 ||
-          Math.abs(targetScale - state.scale) > 0.0002
+          Math.abs(targetScale - state.scale) > 0.0002 ||
+          Math.abs(targetShift - state.shift) > 0.08 ||
+          Math.abs(targetTextZ - state.textZ) > 0.08 ||
+          Math.abs(targetTilt - state.tilt) > 0.01
         ) {
           keepAnimating = true;
         }
@@ -355,15 +385,43 @@ export default function ExperienceClient({
          */
         image?.style.setProperty(
           "inset",
-          "-110px -2%",
+          isMobile ? "-72px 0" : "-56px 0",
           "important"
         );
 
         content?.style.setProperty(
           "opacity",
-          state.opacity.toFixed(3),
+          "1",
           "important"
         );
+
+        content?.style.setProperty(
+          "transform",
+          `translate3d(0, ${state.shift.toFixed(1)}px, 0)`,
+          "important"
+        );
+
+        /*
+         * Safari pinta la opacidad directamente sobre cada pieza visible.
+         * Evita el salto de opacidad del contenedor 3D.
+         */
+        const textParts = content?.querySelectorAll<HTMLElement>(
+          `h2, .${styles.kicker}, .${styles.chapterFooter}`
+        );
+
+        textParts?.forEach((part) => {
+          part.style.setProperty(
+            "opacity",
+            state.opacity.toFixed(3),
+            "important"
+          );
+
+          part.style.setProperty(
+            "transition",
+            "none",
+            "important"
+          );
+        });
 
         number?.style.setProperty(
           "opacity",
@@ -548,7 +606,7 @@ export default function ExperienceClient({
                 style={{ backgroundImage: `url("${imageFor("vehicles")}")` }}
                 aria-hidden="true"
               />
-              <span>{language === "es" ? "01 · VEHÍCULOS" : "01 · VEHICLES"}</span>
+              <span>{language === "es" ? "VEHÍCULOS" : "VEHICLES"}</span>
             </Link>
 
             <Link
@@ -560,7 +618,7 @@ export default function ExperienceClient({
                 style={{ backgroundImage: `url("${imageFor("music")}")` }}
                 aria-hidden="true"
               />
-              <span>{language === "es" ? "02 · MÚSICA" : "02 · MUSIC"}</span>
+              <span>{language === "es" ? "MÚSICA" : "MUSIC"}</span>
             </Link>
 
             <Link
@@ -572,7 +630,7 @@ export default function ExperienceClient({
                 style={{ backgroundImage: `url("${imageFor("streetwear")}")` }}
                 aria-hidden="true"
               />
-              <span>{language === "es" ? "03 · ROPA" : "03 · STREETWEAR"}</span>
+              <span>{language === "es" ? "ROPA" : "STREETWEAR"}</span>
             </Link>
           </div>
         </div>

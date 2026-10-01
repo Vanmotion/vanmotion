@@ -1455,3 +1455,8 @@
   }
 }
 
+
+/* VANMOTION · PORTADAS SIN NUMERACIÓN */
+.chapterNumber {
+  display: none !important;
+}
