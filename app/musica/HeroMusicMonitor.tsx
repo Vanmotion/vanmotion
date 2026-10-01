@@ -248,7 +248,7 @@ export default function HeroMusicMonitor({
               offsetX: 5.0,
               offsetY: 1.0,
               widthScale: 0.92,
-              heightScale: 0.92,
+              heightScale: 1.08,
             }
           : {
               offsetX: 0,
