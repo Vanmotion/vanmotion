@@ -245,3 +245,244 @@
 }
 
 /* ===== FIN LANGUAGE IN HEADER ===== */
+
+
+/* VANMOTION · LANGUAGE GLASS FINAL */
+.switcher,
+.switcher.clothingPage {
+  background: rgba(6, 6, 6, 0.72) !important;
+  border: 1px solid rgba(242, 239, 232, 0.20) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+.switcher:hover,
+.switcher:focus-within {
+  background: rgba(6, 6, 6, 0.80) !important;
+}
+
+
+/* VANMOTION · LANGUAGE PLAYER DEFINITIVO V3 */
+.switcher,
+.switcher.clothingPage,
+.switcher.awardsHome {
+  min-width: 0 !important;
+  width: auto !important;
+  min-height: 38px !important;
+  height: 38px !important;
+
+  padding: 0 11px !important;
+  gap: 7px !important;
+
+  border: 0 !important;
+  border-radius: 10px !important;
+
+  background: rgba(0, 0, 0, 0.58) !important;
+  box-shadow: none !important;
+
+  -webkit-backdrop-filter: blur(6px) !important;
+  backdrop-filter: blur(6px) !important;
+
+  overflow: hidden !important;
+}
+
+.switcher button,
+.switcher.clothingPage button,
+.switcher.awardsHome button {
+  min-width: 22px !important;
+  width: 22px !important;
+  height: 36px !important;
+
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.switcher > span,
+.switcher.clothingPage > span,
+.switcher.awardsHome > span {
+  color: rgba(255,255,255,.32) !important;
+}
+
+
+/* VANMOTION · LANGUAGE CROSS-BROWSER V4 */
+.switcher,
+.switcher.clothingPage,
+.switcher.awardsHome {
+  width: auto !important;
+  min-width: 0 !important;
+
+  height: 38px !important;
+  min-height: 38px !important;
+
+  padding: 0 11px !important;
+  gap: 7px !important;
+
+  border: 0 !important;
+  border-radius: 10px !important;
+
+  background: rgba(0, 0, 0, 0.58) !important;
+  box-shadow: none !important;
+
+  -webkit-backdrop-filter: blur(6px) !important;
+  backdrop-filter: blur(6px) !important;
+
+  overflow: hidden !important;
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+.switcher button,
+.switcher.clothingPage button,
+.switcher.awardsHome button {
+  width: 22px !important;
+  min-width: 22px !important;
+
+  height: 36px !important;
+  min-height: 36px !important;
+
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+}
+
+.switcher > span,
+.switcher.clothingPage > span,
+.switcher.awardsHome > span {
+  color: rgba(255, 255, 255, 0.32) !important;
+}
+
+/* TABLET */
+@media (min-width: 721px) and (max-width: 1024px) {
+  .switcher,
+  .switcher.clothingPage,
+  .switcher.awardsHome {
+    height: 36px !important;
+    min-height: 36px !important;
+
+    padding: 0 10px !important;
+    gap: 6px !important;
+
+    border-radius: 10px !important;
+  }
+
+  .switcher button,
+  .switcher.clothingPage button,
+  .switcher.awardsHome button {
+    width: 21px !important;
+    min-width: 21px !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+}
+
+/* MÓVIL */
+@media (max-width: 720px) {
+  .switcher,
+  .switcher.clothingPage,
+  .switcher.awardsHome {
+    height: 34px !important;
+    min-height: 34px !important;
+
+    padding: 0 9px !important;
+    gap: 5px !important;
+
+    border-radius: 10px !important;
+
+    background: rgba(0, 0, 0, 0.58) !important;
+
+    -webkit-backdrop-filter: blur(6px) !important;
+    backdrop-filter: blur(6px) !important;
+  }
+
+  .switcher button,
+  .switcher.clothingPage button,
+  .switcher.awardsHome button {
+    width: 20px !important;
+    min-width: 20px !important;
+
+    height: 32px !important;
+    min-height: 32px !important;
+
+    font-size: 9px !important;
+  }
+}
+
+/* Fallback sin blur */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .switcher,
+  .switcher.clothingPage,
+  .switcher.awardsHome {
+    background: rgba(0, 0, 0, 0.72) !important;
+  }
+}
+
+
+/* VANMOTION · LANGUAGE FIREFOX MUSIC TONE V5 */
+/* Solo cambia tonalidad. Conserva forma, tamaño y posición V4. */
+.switcher,
+.switcher.clothingPage,
+.switcher.awardsHome,
+.switcher:hover,
+.switcher:focus-within,
+.switcher.clothingPage:hover,
+.switcher.clothingPage:focus-within,
+.switcher.awardsHome:hover,
+.switcher.awardsHome:focus-within {
+  background: rgba(6, 6, 6, 0.80) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+
+/* VANMOTION · LANGUAGE FIREFOX EXACT V6 */
+/* Mantiene forma, tamaño y posición actuales */
+.switcher,
+.switcher.clothingPage,
+.switcher.awardsHome,
+.switcher:hover,
+.switcher:focus-within,
+.switcher.clothingPage:hover,
+.switcher.clothingPage:focus-within,
+.switcher.awardsHome:hover,
+.switcher.awardsHome:focus-within {
+  background: rgba(6, 6, 6, 0.80) !important;
+  border-color: rgba(242, 239, 232, 0.20) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
+
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* VANMOTION · LANGUAGE FINAL CROSS PLATFORM 20261001 */
+.switcher,
+.switcher.clothingPage,
+.switcher.awardsHome,
+.switcher:hover,
+.switcher:focus,
+.switcher:focus-within,
+.switcher:active,
+.switcher.clothingPage:hover,
+.switcher.clothingPage:active,
+.switcher.awardsHome:hover,
+.switcher.awardsHome:active {
+  background: rgba(6, 6, 6, 0.80) !important;
+  border-color: rgba(242, 239, 232, 0.20) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Conserva la misma forma también en móvil y tablet */
+@media (max-width: 1024px) {
+  .switcher,
+  .switcher.clothingPage,
+  .switcher.awardsHome {
+    border-radius: 10px !important;
+  }
+}

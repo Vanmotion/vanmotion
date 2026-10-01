@@ -211,6 +211,200 @@ export default function ExperienceClient({
   }, []);
 
   useEffect(() => {
+    /*
+     * VANMOTION_SAFARI_VISUAL_V8
+     * Safari: interpolación visual propia.
+     * Firefox conserva exactamente su comportamiento actual.
+     */
+    const isSafari =
+      /Safari/i.test(navigator.userAgent) &&
+      !/Chrome|Chromium|CriOS|Edg|OPR|FxiOS/i.test(navigator.userAgent);
+
+    if (!isSafari) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const scroller =
+      document.querySelector<HTMLElement>(`.${styles.experience}`);
+
+    if (!scroller) return;
+
+    const scenes = Array.from(
+      scroller.querySelectorAll<HTMLElement>(`.${styles.chapter}`)
+    );
+
+    type MotionState = {
+      opacity: number;
+      imageY: number;
+      scale: number;
+    };
+
+    const states = new Map<HTMLElement, MotionState>();
+    let frame = 0;
+
+    const clamp = (value: number, min: number, max: number) =>
+      Math.max(min, Math.min(max, value));
+
+    const render = () => {
+      frame = 0;
+
+      const rootTop = scroller.getBoundingClientRect().top;
+      const viewHeight = scroller.clientHeight;
+
+      let keepAnimating = false;
+
+      for (const scene of scenes) {
+        const rect = scene.getBoundingClientRect();
+        const top = rect.top - rootTop;
+        const bottom = rect.bottom - rootTop;
+
+        /*
+         * Recorrido largo para que el texto no desaparezca
+         * en los últimos centímetros de la sección.
+         */
+        const entrance = clamp(
+          (viewHeight - top) / (viewHeight * 0.72),
+          0,
+          1
+        );
+
+        const exit = clamp(
+          bottom / (viewHeight * 0.88),
+          0,
+          1
+        );
+
+        const targetOpacity = Math.min(entrance, exit);
+
+        const progress = clamp(
+          (viewHeight - top) / (viewHeight + rect.height),
+          0,
+          1
+        );
+
+        /*
+         * Movimiento más perceptible de la fotografía:
+         * aproximadamente +90px -> -90px.
+         */
+        const targetImageY = (0.5 - progress) * 180;
+
+        const targetScale =
+          1.115 -
+          0.07 * (1 - Math.abs(2 * progress - 1));
+
+        let state = states.get(scene);
+
+        if (!state) {
+          state = {
+            opacity: targetOpacity,
+            imageY: targetImageY,
+            scale: targetScale,
+          };
+          states.set(scene, state);
+        }
+
+        /*
+         * Interpolación nuestra, no transition de Safari.
+         * Esto obliga a pasar por los valores intermedios.
+         */
+        state.opacity += (targetOpacity - state.opacity) * 0.12;
+        state.imageY += (targetImageY - state.imageY) * 0.14;
+        state.scale += (targetScale - state.scale) * 0.14;
+
+        if (
+          Math.abs(targetOpacity - state.opacity) > 0.002 ||
+          Math.abs(targetImageY - state.imageY) > 0.08 ||
+          Math.abs(targetScale - state.scale) > 0.0002
+        ) {
+          keepAnimating = true;
+        }
+
+        const content =
+          scene.querySelector<HTMLElement>(`.${styles.chapterContent}`);
+
+        const number =
+          scene.querySelector<HTMLElement>(`.${styles.chapterNumber}`);
+
+        const image =
+          scene.querySelector<HTMLElement>(`.${styles.chapterImage}`);
+
+        /*
+         * Sin transición CSS.
+         * El suavizado ya lo hacemos frame a frame.
+         */
+        content?.style.setProperty(
+          "transition",
+          "none",
+          "important"
+        );
+
+        number?.style.setProperty(
+          "transition",
+          "none",
+          "important"
+        );
+
+        image?.style.setProperty(
+          "transition",
+          "none",
+          "important"
+        );
+
+        /*
+         * Overscan vertical para Safari:
+         * evita que el parallax deje ver el fondo negro entre portadas.
+         */
+        image?.style.setProperty(
+          "inset",
+          "-110px -2%",
+          "important"
+        );
+
+        content?.style.setProperty(
+          "opacity",
+          state.opacity.toFixed(3),
+          "important"
+        );
+
+        number?.style.setProperty(
+          "opacity",
+          state.opacity.toFixed(3),
+          "important"
+        );
+
+        image?.style.setProperty(
+          "transform",
+          `translate3d(0, ${state.imageY.toFixed(1)}px, 0) scale(${state.scale.toFixed(4)})`,
+          "important"
+        );
+      }
+
+      if (keepAnimating) {
+        frame = window.requestAnimationFrame(render);
+      }
+    };
+
+    const requestRender = () => {
+      if (!frame) {
+        frame = window.requestAnimationFrame(render);
+      }
+    };
+
+    render();
+
+    scroller.addEventListener("scroll", requestRender, { passive: true });
+    window.addEventListener("resize", requestRender);
+
+    return () => {
+      scroller.removeEventListener("scroll", requestRender);
+      window.removeEventListener("resize", requestRender);
+
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     /* VANMOTION_LAST_O_SPIN_HOOK */
     const scroller = document.querySelector<HTMLElement>(`.${styles.experience}`);
     const ending = scroller?.querySelector<HTMLElement>(`.${styles.ending}`);
