@@ -3245,3 +3245,14 @@
     justify-content: center !important;
   }
 }
+
+/* VANMOTION · MOBILE PLAYER DESKTOP PARITY FINAL V10 */
+@media (max-width: 1024px) {
+  .player:not(.recommendationActive) {
+    background: rgb(8 8 8 / 94%) !important;
+    border: 1px solid rgb(255 255 255 / 12%) !important;
+    box-shadow: 0 16px 44px rgb(0 0 0 / 48%) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    backdrop-filter: blur(16px) !important;
+  }
+}

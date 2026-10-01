@@ -2672,3 +2672,21 @@
     background: rgba(6, 6, 6, 0.58) !important;
   }
 }
+
+/* VANMOTION · MOBILE VISUAL PARITY FINAL */
+@media (max-width: 1024px) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-visible,
+  .heroNews:focus-within,
+  .heroNews:active {
+    background: rgba(6, 6, 6, 0.58) !important;
+    border: 1px solid rgba(242, 239, 232, 0.20) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    opacity: 1 !important;
+  }
+}
