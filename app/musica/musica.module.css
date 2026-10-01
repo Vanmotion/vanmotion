@@ -2220,3 +2220,19 @@
     transform-origin: 50% 50% !important;
   }
 }
+
+/* VANMOTION · MOBILE COVER CLEAN FINAL */
+/* iPhone · Android · tablet */
+@media (max-width: 1024px) {
+  .cover {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .coverImage {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
