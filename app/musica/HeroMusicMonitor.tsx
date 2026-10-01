@@ -65,7 +65,8 @@ export default function HeroMusicMonitor({
 }: HeroMusicMonitorProps) {
 
   const isAutumnCloudySunset =
-    heroImage === "/experience/music/autumn/cloudy/atardecer.webp";
+    heroImage === "/experience/music/autumn/cloudy/atardecer.webp" ||
+    heroImage === "/experience/music/autumn/noche.webp";
   const {
     currentTrack,
     isPlaying,
