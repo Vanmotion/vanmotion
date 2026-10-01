@@ -66,6 +66,7 @@ export default function HeroMusicMonitor({
 
   const isAutumnCloudySunset =
     heroImage === "/experience/music/autumn/cloudy/atardecer.webp" ||
+    heroImage === "/experience/music/autumn/cloudy/noche.webp" ||
     heroImage === "/experience/music/autumn/noche.webp";
   const {
     currentTrack,
