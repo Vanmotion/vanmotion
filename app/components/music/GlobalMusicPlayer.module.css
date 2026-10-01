@@ -3218,3 +3218,30 @@
     overflow: hidden !important;
   }
 }
+
+/* VANMOTION · MOBILE RECOMMENDED CONTROLS FINAL V9 */
+/* iPhone / Android / tablet táctil */
+@media (hover: none), (pointer: coarse) {
+
+  /* 1 = play/pausa → oculto */
+  .player.recommendationActive
+  .recommendationStageControls button:nth-child(1),
+
+  /* 2 = siguiente recomendado → oculto */
+  .player.recommendationActive
+  .recommendationStageControls button:nth-child(2) {
+    display: none !important;
+  }
+
+  /* 3 = desplegar reproductor / menú → visible */
+  .player.recommendationActive
+  .recommendationStageControls button:nth-child(3),
+
+  /* 4 = ampliar/minimizar → visible */
+  .player.recommendationActive
+  .recommendationStageControls button:nth-child(4) {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
