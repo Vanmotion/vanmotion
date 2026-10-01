@@ -245,7 +245,7 @@ export default function HeroMusicMonitor({
       const autumnMobileInset =
         isMobile && isAutumnCloudySunset
           ? {
-              offsetX: 1.6,
+              offsetX: 4.2,
               offsetY: 1.0,
               widthScale: 0.92,
               heightScale: 0.92,
