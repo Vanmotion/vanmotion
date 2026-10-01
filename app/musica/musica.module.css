@@ -2236,3 +2236,108 @@
     box-shadow: none !important;
   }
 }
+
+/* VANMOTION · HERO NEWS INTERACTION FINAL */
+.heroNews {
+  overflow: hidden;
+  transition:
+    border-color 260ms ease,
+    transform 420ms cubic-bezier(.2,.7,.2,1),
+    box-shadow 420ms cubic-bezier(.2,.7,.2,1) !important;
+}
+
+.heroNewsThumb {
+  overflow: hidden;
+}
+
+.heroNewsThumb img {
+  transition: transform 850ms cubic-bezier(.2,.7,.2,1) !important;
+  will-change: transform;
+}
+
+/* Desktop · Safari · Firefox · Chrome */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    border-color: rgba(242, 239, 232, 0.46) !important;
+    transform: translateY(-3px) scale(1.012) !important;
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.30),
+      inset 0 0 0 1px rgba(242, 239, 232, 0.10) !important;
+  }
+
+  .heroNews:hover .heroNewsThumb img {
+    transform: scale(1.065) !important;
+  }
+}
+
+/* iPhone · Android · tablet */
+@media (hover: none), (pointer: coarse) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-visible,
+  .heroNews:focus-within {
+    background: rgba(6, 6, 6, 0.58) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .heroNews:active {
+    border-color: rgba(242, 239, 232, 0.46) !important;
+    transform: scale(.988) !important;
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.28),
+      inset 0 0 0 1px rgba(242, 239, 232, 0.10) !important;
+  }
+
+  .heroNews:active .heroNewsThumb img {
+    transform: scale(1.045) !important;
+  }
+}
+
+/* VANMOTION · HERO NEWS ACCENT · MÚSICA */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    border-color: rgba(212, 119, 40, 0.78) !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .heroNews:active {
+    border-color: rgba(212, 119, 40, 0.78) !important;
+  }
+}
+
+/* VANMOTION · SAFARI NEWS ACCENT · MÚSICA */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    border-color: rgba(212, 119, 40, 0.88) !important;
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.30),
+      inset 0 0 0 1px rgba(212, 119, 40, 0.32) !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .heroNews:active {
+    border-color: rgba(212, 119, 40, 0.88) !important;
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.28),
+      inset 0 0 0 1px rgba(212, 119, 40, 0.32) !important;
+  }
+}
+
+/* VANMOTION · SAFARI HERO NEWS OUTLINE · MÚSICA */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    outline: 1px solid rgba(212, 119, 40, 0.92) !important;
+    outline-offset: -1px !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .heroNews:active {
+    outline: 1px solid rgba(212, 119, 40, 0.92) !important;
+    outline-offset: -1px !important;
+  }
+}
