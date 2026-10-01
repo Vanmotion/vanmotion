@@ -212,8 +212,10 @@ export default function HeroMusicMonitor({
         return;
       }
 
+      const isMobile = containerWidth <= 640;
+
       const calibration =
-        containerWidth <= 640
+        isMobile
           ? MOBILE_CALIBRATION
           : DESKTOP_CALIBRATION;
 
@@ -240,21 +242,40 @@ export default function HeroMusicMonitor({
         (containerHeight - renderedHeight) *
         OBJECT_POSITION_Y;
 
+      const autumnMobileInset =
+        isMobile && isAutumnCloudySunset
+          ? {
+              offsetX: 1.6,
+              offsetY: 1.0,
+              widthScale: 0.92,
+              heightScale: 0.92,
+            }
+          : {
+              offsetX: 0,
+              offsetY: 0,
+              widthScale: 1,
+              heightScale: 1,
+            };
+
+      const baseLeft =
+        imageLeft +
+        renderedWidth * (calibration.x / 100);
+
+      const baseTop =
+        imageTop +
+        renderedHeight * (calibration.y / 100);
+
+      const baseWidth =
+        renderedWidth * (calibration.width / 100);
+
+      const baseHeight =
+        renderedHeight * (calibration.height / 100);
+
       setGeometry({
-        left:
-          imageLeft +
-          renderedWidth * (calibration.x / 100),
-
-        top:
-          imageTop +
-          renderedHeight * (calibration.y / 100),
-
-        width:
-          renderedWidth * (calibration.width / 100),
-
-        height:
-          renderedHeight * (calibration.height / 100),
-
+        left: baseLeft + autumnMobileInset.offsetX,
+        top: baseTop + autumnMobileInset.offsetY,
+        width: baseWidth * autumnMobileInset.widthScale,
+        height: baseHeight * autumnMobileInset.heightScale,
         calibration,
       });
     };
