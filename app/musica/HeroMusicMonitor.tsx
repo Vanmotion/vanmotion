@@ -276,7 +276,7 @@ export default function HeroMusicMonitor({
         width: geometry.width,
         height: geometry.height,
         transform: `
-          ${isAutumnCloudySunset ? "translate3d(-2px, -3px, 0)" : ""}
+          ${isAutumnCloudySunset ? "translate3d(1px, -3px, 0)" : ""}
           rotate(${geometry.calibration.rotate}deg)
           skewX(${geometry.calibration.skewX}deg)
           skewY(${geometry.calibration.skewY}deg)
