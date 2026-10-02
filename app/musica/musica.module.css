@@ -2370,3 +2370,13 @@
   }
 }
 
+
+
+/* VANMOTION · RECOMMENDED VIDEO FULLSCREEN ONLY 20261002 */
+.recommendVideo video::-webkit-media-controls-picture-in-picture-button {
+  display: none !important;
+}
+
+.recommendVideo video::-webkit-media-controls-airplay-button {
+  display: none !important;
+}

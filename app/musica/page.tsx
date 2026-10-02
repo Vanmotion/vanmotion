@@ -428,12 +428,15 @@ export default async function MusicPage() {
                               src={`https://www.youtube-nocookie.com/embed/${recommendation.youtubeVideoId}?rel=0&modestbranding=1`}
                               title={`${recommendation.title} · ${recommendation.artist}`}
                               loading="lazy"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; web-share"
                               allowFullScreen
                             />
                           ) : (
                             <video
                               controls
+                              controlsList="nodownload noremoteplayback"
+                              disablePictureInPicture
+                              disableRemotePlayback
                               preload="metadata"
                               playsInline
                               poster={recommendation.coverUrl ?? undefined}
