@@ -297,9 +297,9 @@ export default function ExperienceClient({
          * Safari: recorrido de zoom algo más marcado.
          * Mantiene un máximo contenido para no volver al recorte anterior.
          */
-        const targetScale =
-          1.105 -
-          0.085 * (1 - Math.abs(2 * progress - 1));
+        const targetScale = isMobile
+          ? 1.03 - 0.03 * (1 - Math.abs(2 * progress - 1))
+          : 1.105 - 0.085 * (1 - Math.abs(2 * progress - 1));
 
         /*
          * Mismo movimiento progresivo de los rótulos que Firefox.
@@ -385,7 +385,7 @@ export default function ExperienceClient({
          */
         image?.style.setProperty(
           "inset",
-          isMobile ? "-72px 0" : "-56px 0",
+          isMobile ? "-32px 0" : "-56px 0",
           "important"
         );
 
