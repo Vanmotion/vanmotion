@@ -2496,3 +2496,41 @@
     height: 32px;
   }
 }
+
+/* Recomendado · pantalla completa controlada por VANMOTION */
+.recommendVideoPlayerFullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  z-index: 99999 !important;
+  background: #000 !important;
+}
+
+.recommendVideoPlayerFullscreen .recommendVideoMedia {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+.recommendVideoPlayerFullscreen .recommendFullscreenButton {
+  position: absolute !important;
+  top: max(14px, env(safe-area-inset-top)) !important;
+  right: max(14px, env(safe-area-inset-right)) !important;
+  z-index: 100002 !important;
+}
+
+.recommendVideoPlayerFullscreen .recommendVideoControls {
+  z-index: 100001 !important;
+  padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
+}
+
+@media (max-width: 768px) {
+  .recommendVideoPlayerFullscreen {
+    height: 100dvh !important;
+  }
+}

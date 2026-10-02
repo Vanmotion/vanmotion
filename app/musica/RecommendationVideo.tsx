@@ -43,6 +43,20 @@ export default function RecommendationVideo({
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+
+  useEffect(() => {
+    if (!fullscreen) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [fullscreen]);
 
   useEffect(() => {
     if (!("BroadcastChannel" in window)) {
@@ -111,31 +125,16 @@ export default function RecommendationVideo({
     }
   };
 
-  const openFullscreen = async () => {
-    const video = videoRef.current as
-      | (HTMLVideoElement & {
-          webkitEnterFullscreen?: () => void;
-        })
-      | null;
-
-    if (!video) {
-      return;
-    }
-
-    if (typeof video.webkitEnterFullscreen === "function") {
-      video.webkitEnterFullscreen();
-      return;
-    }
-
-    if (wrapperRef.current?.requestFullscreen) {
-      await wrapperRef.current.requestFullscreen();
-    }
+  const toggleFullscreen = () => {
+    setFullscreen((current) => !current);
   };
 
   return (
     <div
       ref={wrapperRef}
-      className={styles.recommendVideoPlayer}
+      className={`${styles.recommendVideoPlayer} ${
+        fullscreen ? styles.recommendVideoPlayerFullscreen : ""
+      }`}
     >
       <video
         ref={videoRef}
@@ -169,11 +168,11 @@ export default function RecommendationVideo({
       <button
         type="button"
         className={styles.recommendFullscreenButton}
-        onClick={openFullscreen}
-        aria-label="Pantalla completa"
-        title="Pantalla completa"
+        onClick={toggleFullscreen}
+        aria-label={fullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
+        title={fullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
       >
-        ⛶
+        {fullscreen ? "✕" : "⛶"}
       </button>
 
       {!playing && (
