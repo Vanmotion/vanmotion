@@ -298,7 +298,7 @@ export default function ExperienceClient({
          * Mantiene un máximo contenido para no volver al recorte anterior.
          */
         const targetScale = isMobile
-          ? 1.03 - 0.03 * (1 - Math.abs(2 * progress - 1))
+          ? 1.008
           : 1.105 - 0.085 * (1 - Math.abs(2 * progress - 1));
 
         /*
@@ -385,13 +385,13 @@ export default function ExperienceClient({
          */
         image?.style.setProperty(
           "inset",
-          isMobile ? "0" : "-56px 0",
+          isMobile ? "-18px 0" : "-56px 0",
           "important"
         );
 
         image?.style.setProperty(
           "background-size",
-          isMobile ? "100% auto" : "cover",
+          "cover",
           "important"
         );
 
@@ -450,7 +450,7 @@ export default function ExperienceClient({
         image?.style.setProperty(
           "transform",
           isMobile
-            ? "translate3d(0, 0, 0) scale(1)"
+            ? `translate3d(0, ${(state.imageY * 0.28).toFixed(1)}px, 0) scale(${state.scale.toFixed(4)})`
             : `translate3d(0, ${state.imageY.toFixed(1)}px, 0) scale(${state.scale.toFixed(4)})`,
           "important"
         );
