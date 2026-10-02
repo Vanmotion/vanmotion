@@ -499,3 +499,31 @@
     backdrop-filter: none !important;
   }
 }
+
+/* VANMOTION · LANGUAGE POSITION HOME FINAL 20261002 */
+/* Solo portada / experience. No altera música, vehículos ni ropa. */
+
+.switcher.awardsHome {
+  top: 19px !important;
+  right: 150px !important;
+}
+
+/* Portada móvil */
+@media (max-width: 720px) {
+  .switcher.awardsHome {
+    top: 8px !important;
+    right: 120px !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}
+
+
+/* VANMOTION · LANGUAGE SAFE AREA CROSS-PLATFORM 20261002 */
+@media (max-width: 720px) {
+  .switcher.awardsHome {
+    top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+    right: 120px !important;
+  }
+}
