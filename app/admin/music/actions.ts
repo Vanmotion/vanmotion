@@ -30,6 +30,41 @@ function optionalString(
   return value || null;
 }
 
+function extractYouTubeVideoId(value: string): string | null {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (host === "youtu.be") {
+      return url.pathname.split("/").filter(Boolean)[0] ?? null;
+    }
+
+    if (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "music.youtube.com"
+    ) {
+      if (url.pathname === "/watch") {
+        return url.searchParams.get("v");
+      }
+
+      const parts = url.pathname.split("/").filter(Boolean);
+
+      if (
+        parts[0] === "embed" ||
+        parts[0] === "shorts" ||
+        parts[0] === "live"
+      ) {
+        return parts[1] ?? null;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function refreshMusicPages(): void {
   revalidatePath("/admin");
   revalidatePath("/admin/music");
@@ -421,7 +456,7 @@ export async function saveMusicRecommendation(
 
   if (!title || !artist || !videoUrl) {
     throw new Error(
-      "Título, artista y la URL directa del vídeo son obligatorios.",
+      "Título, artista y la URL del vídeo son obligatorios.",
     );
   }
 
@@ -440,6 +475,23 @@ export async function saveMusicRecommendation(
     );
   }
 
+  const existingRecommendation =
+    await prisma.musicRecommendation.findUnique({
+      where: { id },
+      select: {
+        youtubeVideoId: true,
+      },
+    });
+
+  if (!existingRecommendation) {
+    throw new Error(
+      "No se ha encontrado el tema recomendado.",
+    );
+  }
+
+  const detectedYouTubeId =
+    extractYouTubeVideoId(videoUrl);
+
   await prisma.musicRecommendation.update({
     where: {
       id,
@@ -448,6 +500,9 @@ export async function saveMusicRecommendation(
       title,
       artist,
       videoUrl,
+      youtubeVideoId:
+        detectedYouTubeId ??
+        existingRecommendation.youtubeVideoId,
       coverUrl,
       editorialHeading,
       editorialTextEs,

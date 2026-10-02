@@ -428,16 +428,16 @@ export default async function AdminMusicPage() {
                 </label>
 
                 <label className={styles.fullField}>
-                  <span>URL directa del vídeo</span>
+                  <span>URL del vídeo · YouTube oficial o MP4 directo</span>
                   <input
                     type="url"
                     name="videoUrl"
                     defaultValue={item.videoUrl ?? ""}
-                    placeholder="https://.../video.mp4"
+                    placeholder="https://www.youtube.com/watch?v=... o https://.../video.mp4"
                     required
                   />
                   <small>
-                    Pega la URL directa del archivo de vídeo con licencia.
+                    Admite vídeo oficial de YouTube o una URL directa de archivo de vídeo con licencia.
                   </small>
                 </label>
 

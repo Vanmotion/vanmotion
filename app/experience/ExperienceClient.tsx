@@ -693,7 +693,7 @@ export default function ExperienceClient({
             <>
               <span className={styles.endingFirst}>Always</span>{" "}
               <span className={styles.endingMotion}>
-                moving<span className={styles.endingDot}>.</span>
+                m<span className={styles.endingSpin}>o</span>ving<span className={styles.endingDot}>.</span>
               </span>
             </>
           )}

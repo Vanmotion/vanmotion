@@ -22,6 +22,23 @@ export const dynamic = "force-dynamic";
 
 const SITE_URL = "https://www.vanmotion.es";
 
+function isYouTubeUrl(value: string | null): boolean {
+  if (!value) return false;
+
+  try {
+    const host = new URL(value).hostname.replace(/^www\./, "");
+
+    return (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "music.youtube.com" ||
+      host === "youtu.be"
+    );
+  } catch {
+    return false;
+  }
+}
+
 function absoluteUrl(value: string): string {
   try {
     return new URL(value, SITE_URL).toString();
@@ -402,6 +419,30 @@ export default async function MusicPage() {
                       <p className={styles.recommendArtist}>
                         {recommendation.artist}
                       </p>
+
+                      {recommendation.videoUrl ? (
+                        <div className={styles.recommendVideo}>
+                          {isYouTubeUrl(recommendation.videoUrl) &&
+                          recommendation.youtubeVideoId ? (
+                            <iframe
+                              src={`https://www.youtube-nocookie.com/embed/${recommendation.youtubeVideoId}?rel=0&modestbranding=1`}
+                              title={`${recommendation.title} · ${recommendation.artist}`}
+                              loading="lazy"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allowFullScreen
+                            />
+                          ) : (
+                            <video
+                              controls
+                              preload="metadata"
+                              playsInline
+                              poster={recommendation.coverUrl ?? undefined}
+                            >
+                              <source src={recommendation.videoUrl} />
+                            </video>
+                          )}
+                        </div>
+                      ) : null}
 
                       {recommendation.documentAuthentic &&
                       recommendation.documentImageUrl ? (

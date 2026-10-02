@@ -193,6 +193,7 @@ export type PublicMusicRecommendation = {
   id: string;
   title: string;
   artist: string;
+  youtubeVideoId: string | null;
   videoUrl: string | null;
   coverUrl: string | null;
   editorialHeading: string | null;
@@ -210,6 +211,7 @@ export const fallbackRecommendations: PublicMusicRecommendation[] = [
     id: "fallback-time-after-time",
     title: "TIME AFTER TIME",
     artist: "Cyndi Lauper",
+    youtubeVideoId: null,
     videoUrl: null,
     coverUrl: null,
     editorialHeading: "1983",
@@ -228,6 +230,7 @@ export const fallbackRecommendations: PublicMusicRecommendation[] = [
     id: "fallback-sin-ti",
     title: "SIN TI",
     artist: "Jay Wheeler",
+    youtubeVideoId: null,
     videoUrl: null,
     coverUrl: null,
     editorialHeading: "2019 · PLATÓNICO",
@@ -265,6 +268,7 @@ export async function getPublicMusicRecommendations(): Promise<
           id: true,
           title: true,
           artist: true,
+          youtubeVideoId: true,
           videoUrl: true,
           coverUrl: true,
           editorialHeading: true,
