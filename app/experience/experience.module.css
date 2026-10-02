@@ -1460,3 +1460,23 @@
 .chapterNumber {
   display: none !important;
 }
+
+/* VANMOTION · LAST O CLEAN SPIN 20261002 */
+/* Elimina el punto auxiliar y deja girar solo la O en todas las plataformas. */
+
+.endingSpin::after {
+  display: none !important;
+  content: none !important;
+  animation: none !important;
+}
+
+/* Mantiene el giro limpio de la O */
+@media (prefers-reduced-motion: no-preference) {
+  .endingActive .endingSpin {
+    animation: vmLastOSpin 2.4s both;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
