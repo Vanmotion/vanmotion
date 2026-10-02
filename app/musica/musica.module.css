@@ -2534,3 +2534,44 @@
     height: 100dvh !important;
   }
 }
+
+/* Fullscreen real: sin bordes, márgenes ni separación */
+.recommendVideoPlayer:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #000 !important;
+}
+
+.recommendVideoPlayer:fullscreen .recommendVideoMedia {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  object-fit: contain !important;
+}
+
+/* Respaldo móvil cuando Fullscreen API no está disponible */
+.recommendVideoPlayerFullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  background: #000 !important;
+  z-index: 2147483647 !important;
+}

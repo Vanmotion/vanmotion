@@ -125,9 +125,44 @@ export default function RecommendationVideo({
     }
   };
 
-  const toggleFullscreen = () => {
+  const toggleFullscreen = async () => {
+    const wrapper = wrapperRef.current;
+
+    if (!wrapper) {
+      return;
+    }
+
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+      setFullscreen(false);
+      return;
+    }
+
+    try {
+      if (wrapper.requestFullscreen) {
+        await wrapper.requestFullscreen();
+        setFullscreen(true);
+        return;
+      }
+    } catch {
+      // Si el navegador no admite fullscreen real,
+      // usamos el modo pantalla completa CSS.
+    }
+
     setFullscreen((current) => !current);
   };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   return (
     <div
