@@ -1493,3 +1493,18 @@
   }
 }
 
+
+/* VANMOTION · MOBILE CHAPTER FRAMING V2
+   Menos ampliación manteniendo cover + movimiento */
+@media (max-width: 700px) {
+  .chapter {
+    min-height: 78svh !important;
+    height: 78svh !important;
+  }
+
+  .chapterImage,
+  .chapter:hover .chapterImage {
+    background-size: cover !important;
+    background-position: center center !important;
+  }
+}
