@@ -389,6 +389,24 @@ export default function ExperienceClient({
           "important"
         );
 
+        image?.style.setProperty(
+          "background-size",
+          isMobile ? "100% auto" : "cover",
+          "important"
+        );
+
+        image?.style.setProperty(
+          "background-position",
+          "center center",
+          "important"
+        );
+
+        image?.style.setProperty(
+          "background-repeat",
+          "no-repeat",
+          "important"
+        );
+
         content?.style.setProperty(
           "opacity",
           "1",
