@@ -14,6 +14,7 @@ import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
 import HeroMusicMonitor from "./HeroMusicMonitor";
+import RecommendationVideo from "./RecommendationVideo";
 import styles from "./musica.module.css";
 import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
@@ -432,17 +433,11 @@ export default async function MusicPage() {
                               allowFullScreen
                             />
                           ) : (
-                            <video
-                              controls
-                              controlsList="nodownload noremoteplayback"
-                              disablePictureInPicture
-                              disableRemotePlayback
-                              preload="metadata"
-                              playsInline
+                            <RecommendationVideo
+                              src={recommendation.videoUrl}
                               poster={recommendation.coverUrl ?? undefined}
-                            >
-                              <source src={recommendation.videoUrl} />
-                            </video>
+                              title={`${recommendation.title} · ${recommendation.artist}`}
+                            />
                           )}
                         </div>
                       ) : null}
