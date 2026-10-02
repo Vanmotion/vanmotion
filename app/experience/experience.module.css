@@ -1498,8 +1498,8 @@
    Menos ampliación manteniendo cover + movimiento */
 @media (max-width: 700px) {
   .chapter {
-    min-height: 60svh !important;
-    height: 60svh !important;
+    min-height: 42svh !important;
+    height: 42svh !important;
   }
 
   .chapterImage,

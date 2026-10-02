@@ -385,7 +385,7 @@ export default function ExperienceClient({
          */
         image?.style.setProperty(
           "inset",
-          isMobile ? "-18px 0" : "-56px 0",
+          isMobile ? "-8px 0" : "-56px 0",
           "important"
         );
 
@@ -450,7 +450,7 @@ export default function ExperienceClient({
         image?.style.setProperty(
           "transform",
           isMobile
-            ? `translate3d(0, ${(state.imageY * 0.28).toFixed(1)}px, 0) scale(${state.scale.toFixed(4)})`
+            ? `translate3d(0, ${(state.imageY * 0.12).toFixed(1)}px, 0) scale(${state.scale.toFixed(4)})`
             : `translate3d(0, ${state.imageY.toFixed(1)}px, 0) scale(${state.scale.toFixed(4)})`,
           "important"
         );
