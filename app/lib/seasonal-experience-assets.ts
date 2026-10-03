@@ -1,6 +1,9 @@
 /* Generado a partir de public/experience. */
 
 const SEASONAL_EXPERIENCE_ASSETS = new Set<string>([
+  "/experience/music/summer/rain/atardecer.webp",
+  "/experience/streetwear/summer/rain/atardecer.webp",
+  "/experience/vehicles/summer/rain/atardecer.webp",
   "/experience/music/autumn/atardecer.webp",
   "/experience/music/autumn/cloudy/atardecer.webp",
   "/experience/music/autumn/cloudy/dia.webp",
