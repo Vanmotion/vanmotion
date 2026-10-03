@@ -2575,3 +2575,61 @@
   background: #000 !important;
   z-index: 2147483647 !important;
 }
+
+/* VANMOTION · controles de vídeo uniformes Safari / Firefox */
+.recommendVideoProgress,
+.recommendVideoVolume {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Safari / Chrome */
+.recommendVideoProgress::-webkit-slider-runnable-track,
+.recommendVideoVolume::-webkit-slider-runnable-track {
+  height: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.recommendVideoProgress::-webkit-slider-thumb,
+.recommendVideoVolume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7.5px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: none;
+}
+
+/* Firefox */
+.recommendVideoProgress::-moz-range-track,
+.recommendVideoVolume::-moz-range-track {
+  height: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.recommendVideoProgress::-moz-range-progress,
+.recommendVideoVolume::-moz-range-progress {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.recommendVideoProgress::-moz-range-thumb,
+.recommendVideoVolume::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: none;
+}
