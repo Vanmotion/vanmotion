@@ -26,6 +26,22 @@ function formatTime(value: number) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
+function getMediaDuration(video: HTMLVideoElement) {
+  if (Number.isFinite(video.duration) && video.duration > 0) {
+    return video.duration;
+  }
+
+  if (video.seekable.length > 0) {
+    const end = video.seekable.end(video.seekable.length - 1);
+
+    if (Number.isFinite(end) && end > 0) {
+      return end;
+    }
+  }
+
+  return 0;
+}
+
 export default function RecommendationVideo({
   src,
   poster,
@@ -184,15 +200,38 @@ export default function RecommendationVideo({
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
         onLoadedMetadata={(event) => {
-          setDuration(event.currentTarget.duration || 0);
-          setVolume(event.currentTarget.volume);
-          setMuted(event.currentTarget.muted);
+          const video = event.currentTarget;
+
+          setDuration(getMediaDuration(video));
+          setVolume(video.volume);
+          setMuted(video.muted);
+        }}
+        onLoadedData={(event) => {
+          setDuration(getMediaDuration(event.currentTarget));
+        }}
+        onCanPlay={(event) => {
+          setDuration(getMediaDuration(event.currentTarget));
+        }}
+        onProgress={(event) => {
+          setDuration(getMediaDuration(event.currentTarget));
         }}
         onTimeUpdate={(event) => {
-          setCurrentTime(event.currentTarget.currentTime);
+          const video = event.currentTarget;
+
+          setCurrentTime(video.currentTime);
+
+          const nextDuration = getMediaDuration(video);
+
+          if (nextDuration > 0) {
+            setDuration(nextDuration);
+          }
         }}
         onDurationChange={(event) => {
-          setDuration(event.currentTarget.duration || 0);
+          const nextDuration = getMediaDuration(event.currentTarget);
+
+          if (nextDuration > 0) {
+            setDuration(nextDuration);
+          }
         }}
         onVolumeChange={(event) => {
           setVolume(event.currentTarget.volume);
@@ -244,11 +283,13 @@ export default function RecommendationVideo({
           aria-label="Progreso del vídeo"
           onChange={(event) => {
             const next = Number(event.target.value);
+            const video = videoRef.current;
 
-            if (videoRef.current) {
-              videoRef.current.currentTime = next;
+            if (!video || !Number.isFinite(next)) {
+              return;
             }
 
+            video.currentTime = next;
             setCurrentTime(next);
           }}
         />
