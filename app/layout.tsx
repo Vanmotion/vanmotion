@@ -194,8 +194,8 @@ export default async function RootLayout({
       award: [
         "WD Awards Nominee 2026 — VANMOTION Automotive Culture",
         "CSS Nectar Site of the Day 2026 — VANMOTION Cars · Music · Clothing",
-        "CSS Winner — VANMOTION Cars · Music · Clothing",
-        "CSS Design Awards Nominee 2026 — VANMOTION",
+        "CSS Winner Nominee 2026 — VANMOTION Cars · Music · Clothing",
+        "CSS Design Awards Special Kudos 2026 — VANMOTION",
         "WebsiteAwards.es Nominee 2026 — VANMOTION · E-commerce",
       ],
 
@@ -217,7 +217,7 @@ export default async function RootLayout({
         },
         {
           "@type": "CreativeWork",
-          name: "VANMOTION — CSS Design Awards Nominee 2026",
+          name: "VANMOTION — CSS Design Awards Special Kudos 2026",
           url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
         },
       ],

@@ -464,6 +464,7 @@ export default async function CollectionPage() {
               <NewsThumbnail
                 imageUrl={vehicleNews.imageUrl}
                 className={styles.heroNewsThumb}
+                lightweightMobile
               />
             </a>
 
@@ -551,7 +552,6 @@ export default async function CollectionPage() {
                     <Link
                       href={`/coleccion/${vehicle.id}`}
                       className={styles.vehicleLink}
-                      aria-label={`${content.card.viewDetails}: ${vehicleName}`}
                     >
                       <div className={styles.vehicleMedia}>
                         {image ? (

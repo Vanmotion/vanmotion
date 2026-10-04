@@ -282,7 +282,30 @@ export async function getPublicMusicRecommendations(): Promise<
         },
       });
 
-    return recommendations;
+    return recommendations.map((recommendation) => {
+      const title = recommendation.title.trim().toLowerCase();
+      const artist = recommendation.artist.trim().toLowerCase();
+
+      if (artist === "jessi" && title === "down") {
+        return {
+          ...recommendation,
+          coverUrl: "/music/recommendations/jessi-down.jpg",
+        };
+      }
+
+      if (
+        artist === "robin schulz" &&
+        title === "show me love"
+      ) {
+        return {
+          ...recommendation,
+          coverUrl:
+            "/music/recommendations/robin-show-me-love.jpg",
+        };
+      }
+
+      return recommendation;
+    });
   } catch (error) {
     console.error(
       "VANMOTION_PUBLIC_MUSIC_RECOMMENDATIONS_ERROR:",

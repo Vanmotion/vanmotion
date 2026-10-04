@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element -- Raw img is intentional here for dynamic/external/preview media. */
 "use client";
 
+import Image from "next/image";
 import {
   useEffect,
   useLayoutEffect,
@@ -91,8 +91,13 @@ export default function HeroMusicMonitor({
 
   useEffect(() => {
     if (!recommendationVideoId) {
-      setMirrorAvailable(false);
-      return;
+      const resetFrame = window.requestAnimationFrame(() => {
+        setMirrorAvailable(false);
+      });
+
+      return () => {
+        window.cancelAnimationFrame(resetFrame);
+      };
     }
 
     let frame = 0;
@@ -292,7 +297,7 @@ export default function HeroMusicMonitor({
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [isAutumnCloudySunset]);
 
   const geometryStyle: CSSProperties = geometry
     ? {
@@ -326,18 +331,24 @@ export default function HeroMusicMonitor({
             className={styles.heroMonitorMirror}
           />
         ) : (
-          <img
+          <Image
             key={recommendationVideoId}
             src={cover}
             alt=""
+            fill
+            sizes="(max-width: 700px) 42vw, 22vw"
+            quality={75}
             className={styles.heroMonitorArtwork}
           />
         )
       ) : (
-        <img
+        <Image
           key={cover}
           src={cover}
           alt=""
+          fill
+          sizes="(max-width: 700px) 42vw, 22vw"
+          quality={75}
           className={styles.heroMonitorArtwork}
         />
       )}

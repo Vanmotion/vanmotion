@@ -365,7 +365,7 @@
 
 .detailItem p {
   margin: 0;
-  color: rgba(242, 239, 232, 0.36);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 8px;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -636,7 +636,7 @@
 
 .footerBrand span,
 .copyright {
-  color: var(--paper-dim);
+  color: rgba(242, 239, 232, 0.50);
 }
 
 .footerNav {
@@ -648,7 +648,7 @@
 }
 
 .footerNav a {
-  color: var(--paper-dim);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 10px;
   transition: color 180ms ease;
 }

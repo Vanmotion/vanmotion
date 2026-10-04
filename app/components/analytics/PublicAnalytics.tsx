@@ -6,6 +6,7 @@ import {
   type BeforeSendEvent,
 } from "@vercel/analytics/next";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function isPrivatePath(pathname: string) {
   return (
@@ -19,6 +20,38 @@ function isPrivatePath(pathname: string) {
 export default function PublicAnalytics() {
   const pathname = usePathname();
   const privateRoute = isPrivatePath(pathname);
+  const [googleAnalyticsReady, setGoogleAnalyticsReady] =
+    useState(false);
+
+  useEffect(() => {
+    if (privateRoute) {
+      return;
+    }
+
+    let timer = 0;
+
+    const scheduleAnalytics = () => {
+      timer = window.setTimeout(() => {
+        setGoogleAnalyticsReady(true);
+      }, 2500);
+    };
+
+    if (document.readyState === "complete") {
+      scheduleAnalytics();
+    } else {
+      window.addEventListener("load", scheduleAnalytics, {
+        once: true,
+      });
+    }
+
+    return () => {
+      window.removeEventListener("load", scheduleAnalytics);
+
+      if (timer) {
+        window.clearTimeout(timer);
+      }
+    };
+  }, [privateRoute]);
 
   return (
     <>
@@ -37,7 +70,7 @@ export default function PublicAnalytics() {
         }}
       />
 
-      {!privateRoute && (
+      {!privateRoute && googleAnalyticsReady && (
         <GoogleAnalytics gaId="G-MS0JKQN4EG" />
       )}
     </>

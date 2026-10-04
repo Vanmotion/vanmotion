@@ -163,6 +163,20 @@
   transform: translateZ(0) scale(1.08);
 }
 
+.heroCardImage {
+  object-fit: cover;
+  object-position: center center;
+}
+
+.heroStreetImage {
+  object-position: center 18%;
+}
+
+.chapterImageAsset {
+  object-fit: cover;
+  object-position: center center;
+}
+
 .heroCard span {
   position: absolute;
   left: 18px;
@@ -401,7 +415,10 @@
 
   .chapter:nth-of-type(4) .chapterImage {
     inset: 0;
-    background-position: center 16%;
+  }
+
+  .chapter:nth-of-type(4) .chapterImageAsset {
+    object-position: center 16%;
   }
 
   .chapter:nth-of-type(4) .chapterShade {
@@ -1493,6 +1510,12 @@
   }
 }
 
+
+@media (max-width: 700px) {
+  .chapter:nth-of-type(4) .chapterImageAsset {
+    object-position: center center;
+  }
+}
 
 /* VANMOTION · MOBILE CHAPTER FRAMING V2
    Menos ampliación manteniendo cover + movimiento */

@@ -99,16 +99,6 @@ const translations = {
   }
 >;
 
-function formatPlayerTime(value: number) {
-  const safeValue =
-    Number.isFinite(value) && value > 0 ? value : 0;
-
-  const minutes = Math.floor(safeValue / 60);
-  const seconds = Math.floor(safeValue % 60);
-
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
-}
-
 function getWikimediaVp9Url(
   videoUrl: string,
 ): string {
@@ -134,8 +124,6 @@ export default function GlobalMusicPlayer({
   const content = translations[language];
   const pathname = usePathname();
   const previousPathnameRef = useRef(pathname);
-  const [seekPreview, setSeekPreview] =
-    useState<number | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [activeRecommendation, setActiveRecommendation] =
     useState<string | null>(null);
@@ -159,7 +147,6 @@ export default function GlobalMusicPlayer({
     isPlaying,
     currentTime,
     duration,
-    volume,
     playbackError,
     togglePlayback,
     pausePlayback,
@@ -170,8 +157,6 @@ export default function GlobalMusicPlayer({
     selectTrack,
     playPrevious,
     playNext,
-    changeProgress,
-    changeVolume,
     setLastTrackEndedHandler,
   } = useMusicPlayer();
 
@@ -193,7 +178,13 @@ export default function GlobalMusicPlayer({
       'video/webm; codecs="vp9, opus"',
     );
 
-    setPreferVp9Video(vp9Support !== "");
+    const frame = window.requestAnimationFrame(() => {
+      setPreferVp9Video(vp9Support !== "");
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   const recommendationPlaybackUrl =
@@ -363,10 +354,6 @@ export default function GlobalMusicPlayer({
     setLastTrackEndedHandler,
   ]);
 
-  if (tracks.length === 0 && recommendations.length === 0) {
-    return null;
-  }
-
   const currentTrackTitle = currentTrack
     ? getLocalizedTrackTitle(currentTrack, language)
     : content.playerName;
@@ -415,6 +402,10 @@ export default function GlobalMusicPlayer({
     recommendationIsPlaying,
   ]);
 
+  if (tracks.length === 0 && recommendations.length === 0) {
+    return null;
+  }
+
   return (
     <aside
       className={`${styles.player} ${
@@ -436,11 +427,7 @@ export default function GlobalMusicPlayer({
           onClick={() => {
             setExpanded((current) => !current);
           }}
-          aria-label={
-            expanded
-              ? content.closePlayer
-              : content.openPlayer
-          }
+          aria-label={`${expanded ? content.closePlayer : content.openPlayer}: ${currentTrackTitle}`}
         >
           <span className={styles.trackText}>
 <strong>{currentTrackTitle}</strong>
@@ -815,7 +802,7 @@ export default function GlobalMusicPlayer({
             <div className={styles.recommendedInPlayer}>
 
               {recommendations.map(
-                (recommendation, index) => {
+                (recommendation) => {
                   return (
                     <div
                       className={

@@ -2,6 +2,7 @@
 
 import type { Language } from "@/app/language";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import styles from "./experience.module.css";
@@ -623,9 +624,19 @@ export default function ExperienceClient({
             >
               <div
                 className={styles.heroCardMedia}
-                style={{ backgroundImage: `url("${imageFor("vehicles")}")` }}
                 aria-hidden="true"
-              />
+              >
+                <Image
+                  src={imageFor("vehicles")}
+                  alt=""
+                  fill
+                  priority
+                  fetchPriority="high"
+                  sizes="(max-width: 700px) 100vw, 55vw"
+                  quality={75}
+                  className={styles.heroCardImage}
+                />
+              </div>
               <span>{language === "es" ? "VEHÍCULOS" : "VEHICLES"}</span>
             </Link>
 
@@ -635,9 +646,17 @@ export default function ExperienceClient({
             >
               <div
                 className={styles.heroCardMedia}
-                style={{ backgroundImage: `url("${imageFor("music")}")` }}
                 aria-hidden="true"
-              />
+              >
+                <Image
+                  src={imageFor("music")}
+                  alt=""
+                  fill
+                  sizes="(max-width: 700px) 100vw, 45vw"
+                  quality={75}
+                  className={styles.heroCardImage}
+                />
+              </div>
               <span>{language === "es" ? "MÚSICA" : "MUSIC"}</span>
             </Link>
 
@@ -647,9 +666,17 @@ export default function ExperienceClient({
             >
               <div
                 className={styles.heroCardMedia}
-                style={{ backgroundImage: `url("${imageFor("streetwear")}")` }}
                 aria-hidden="true"
-              />
+              >
+                <Image
+                  src={imageFor("streetwear")}
+                  alt=""
+                  fill
+                  sizes="(max-width: 700px) 100vw, 45vw"
+                  quality={75}
+                  className={`${styles.heroCardImage} ${styles.heroStreetImage}`}
+                />
+              </div>
               <span>{language === "es" ? "ROPA" : "STREETWEAR"}</span>
             </Link>
           </div>
@@ -662,12 +689,16 @@ export default function ExperienceClient({
           key={chapter.number}
           data-chapter={chapter.number}
         >
-          <div
-            className={styles.chapterImage}
-            style={{
-              backgroundImage: `url("${chapter.image}")`,
-            }}
-          />
+          <div className={styles.chapterImage}>
+            <Image
+              src={chapter.image}
+              alt=""
+              fill
+              sizes="100vw"
+              quality={75}
+              className={styles.chapterImageAsset}
+            />
+          </div>
 
           <div className={styles.chapterShade} />
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
@@ -145,20 +146,18 @@ export default function MusicPlayer({
           }
         >
           {showCover ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               key={coverUrl}
-              src={coverUrl ?? undefined}
+              src={coverUrl!}
               alt={`${content.coverAlt} ${currentTrackTitle}`}
+              fill
+              sizes="(max-width: 700px) 92vw, 520px"
+              quality={75}
               onError={() => {
                 setCoverError(true);
               }}
               style={{
-                width: "100%",
-                height: "100%",
-                minHeight: "100%",
                 objectFit: "cover",
-                display: "block",
               }}
             />
           ) : (
@@ -285,7 +284,6 @@ export default function MusicPlayer({
                 selectTrack(index, true);
               }}
               className={active ? styles.activeTrack : ""}
-              aria-label={`${content.play}: ${trackTitle}`}
             >
               <span className={styles.trackNumber}>
                 {String(index + 1).padStart(2, "0")}
