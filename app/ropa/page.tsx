@@ -345,7 +345,6 @@ export default async function RopaPage() {
 
         <div className={styles.heroTopline}>
           <span>{content.hero.location}</span>
-          <span>{content.navigation.clothing}</span>
         </div>
 
         <h1 id="clothing-title" className={styles.srOnly}>

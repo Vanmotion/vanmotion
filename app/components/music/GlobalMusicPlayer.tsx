@@ -258,11 +258,22 @@ export default function GlobalMusicPlayer({
 
   useEffect(() => {
     setAudioStartHandler(() => {
+      recommendationStartingRef.current = false;
+      recommendationAutoplayRef.current = false;
+
       recommendationVideoRef.current?.pause();
+
       setRecommendationIsPlaying(false);
+      setActiveRecommendation(null);
+      setVideoSessionActive(false);
+      setRecommendationError(null);
     });
+
     return () => setAudioStartHandler(null);
-  }, [setAudioStartHandler]);
+  }, [
+    setAudioStartHandler,
+    setVideoSessionActive,
+  ]);
 
   useEffect(() => {
     if (previousPathnameRef.current !== pathname) {

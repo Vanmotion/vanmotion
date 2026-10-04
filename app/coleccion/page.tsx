@@ -434,7 +434,6 @@ export default async function CollectionPage() {
 
             <div className={styles.heroTopline}>
               <span>{content.hero.location}</span>
-              <span>{content.navigation.vehicles}</span>
             </div>
 
             <h1 id="collection-hero-title" className={styles.srOnly}>

@@ -317,7 +317,6 @@ export default async function MusicPage() {
 
           <div className={styles.heroTopline}>
             <span>{content.hero.location}</span>
-            <span>{content.navigation.music}</span>
           </div>
 
           <h1 id="music-hero-title" className={styles.srOnly}>
