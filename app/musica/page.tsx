@@ -313,7 +313,7 @@ export default async function MusicPage() {
             <div className={styles.heroShade} />
           </div>
 
-          <HeroMusicMonitor heroImage={heroImage} />
+          <HeroMusicMonitor />
 
           <div className={styles.heroTopline}>
             <span>{content.hero.location}</span>

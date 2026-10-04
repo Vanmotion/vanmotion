@@ -2214,10 +2214,56 @@
 }
 
 /* VANMOTION · MONITOR PROJECTION FINE TUNE */
+.heroMonitorMirror {
+  position: absolute !important;
+  left: 6.2% !important;
+  top: 7.0% !important;
+  width: 87.6% !important;
+  height: 83.8% !important;
+  overflow: hidden !important;
+  border-radius: 2px !important;
+  background: #000 !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.24) !important;
+}
+
+.heroMonitorMirror img,
+.heroMonitorMirror video,
+.heroMonitorMirror :global(img),
+.heroMonitorMirror :global(video) {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: 50% 50% !important;
+  transform-origin: 50% 50% !important;
+  background: #000 !important;
+}
+
 @media (min-width: 641px) {
-  .heroMonitorMirror {
+  .heroMonitorMirror img,
+  .heroMonitorMirror video,
+  .heroMonitorMirror :global(img),
+  .heroMonitorMirror :global(video) {
     transform: translate3d(0, 7px, 0) scale(1.06) !important;
-    transform-origin: 50% 50% !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroMonitorMirror {
+    left: 6.8% !important;
+    top: 7.5% !important;
+    width: 86.8% !important;
+    height: 82.8% !important;
+  }
+
+  .heroMonitorMirror img,
+  .heroMonitorMirror video,
+  .heroMonitorMirror :global(img),
+  .heroMonitorMirror :global(video) {
+    transform: translate3d(0, 5px, 0) scale(1.04) !important;
   }
 }
 
@@ -2696,3 +2742,129 @@
   transform: none !important;
   background: #050505 !important;
 }
+
+
+/* VANMOTION · MONITOR PROJECTION FINAL */
+.heroMonitorMirror {
+  overflow: hidden !important;
+  border-radius: 2px !important;
+  background: #000 !important;
+  clip-path: polygon(3% 4%, 97% 3%, 96% 97%, 4% 96%) !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.34) !important;
+}
+
+@media (min-width: 641px) {
+  .heroMonitorMirror {
+    transform: perspective(1200px) rotateX(7deg) rotateY(-18deg) rotateZ(-1deg) translate3d(0, 6px, 0) scale(1.16) !important;
+    transform-origin: 50% 50% !important;
+  }
+
+  .heroMonitorMirror img,
+  .heroMonitorMirror video,
+  .heroMonitorMirror :global(img),
+  .heroMonitorMirror :global(video) {
+    width: 112% !important;
+    height: 112% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    object-position: 50% 47% !important;
+    transform: translate3d(-5.5%, -4.5%, 0) !important;
+    transform-origin: 50% 50% !important;
+    background: #000 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroMonitorMirror {
+    transform: perspective(900px) rotateX(5deg) rotateY(-14deg) rotateZ(-0.8deg) translate3d(0, 4px, 0) scale(1.12) !important;
+    transform-origin: 50% 50% !important;
+  }
+
+  .heroMonitorMirror img,
+  .heroMonitorMirror video,
+  .heroMonitorMirror :global(img),
+  .heroMonitorMirror :global(video) {
+    width: 109% !important;
+    height: 109% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    object-position: 50% 48% !important;
+    transform: translate3d(-4.2%, -3.8%, 0) !important;
+    transform-origin: 50% 50% !important;
+    background: #000 !important;
+  }
+}
+
+/* ==========================================================
+   VANMOTION · MONITOR SOURCE-LOCKED FINAL 20261004
+   Coordenadas medidas sobre la fotografía original 1672x941.
+   ========================================================== */
+
+.page .heroMonitorScreen {
+  overflow: hidden !important;
+
+  /*
+   * Perspectiva propia del monitor fotografiado.
+   * El borde físico queda visible alrededor de la proyección.
+   */
+  clip-path: polygon(
+    0.4% 0.6%,
+    97.6% 0%,
+    100% 98.5%,
+    0.5% 100%
+  ) !important;
+
+  background: #050505 !important;
+  transform-origin: 50% 50% !important;
+}
+
+.page .heroMonitorMirror {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+
+  transform: none !important;
+  transform-origin: 50% 50% !important;
+
+  clip-path: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  background: #000 !important;
+  pointer-events: none !important;
+}
+
+/*
+ * Cuando todavía no hay vídeo, la portada ocupa exactamente
+ * la misma superficie de proyección.
+ */
+.page .heroMonitorArtwork {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+
+  object-fit: cover !important;
+  object-position: 50% 50% !important;
+
+  transform: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #000 !important;
+}
+

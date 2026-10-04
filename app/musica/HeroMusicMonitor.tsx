@@ -28,24 +28,19 @@ type Calibration = {
   skewY: number;
 };
 
-const DESKTOP_CALIBRATION: Calibration = {
-  x: 27.67,
-  y: 48.65,
-  width: 9.52,
-  height: 12.32,
-  rotate: -0.30,
-  skewX: 0.35,
-  skewY: 0.30,
-};
+const SCREEN_CALIBRATION: Calibration = {
+  // Zona útil medida sobre la imagen original 1672 × 941.
+  // Deja visible un borde pequeño del monitor real.
+  x: 27.4522,
+  y: 48.3528,
+  width: 9.6890,
+  height: 10.8395,
 
-const MOBILE_CALIBRATION: Calibration = {
-  x: 27.68,
-  y: 48.99,
-  width: 9.72,
-  height: 11.58,
-  rotate: -0.50,
-  skewX: -0.45,
-  skewY: -0.35,
+  // Perspectiva real del monitor de la fotografía:
+  // ligera caída horizontal + laterales inclinados.
+  rotate: 0.34,
+  skewX: 1.50,
+  skewY: 0,
 };
 
 type MonitorGeometry = {
@@ -56,22 +51,8 @@ type MonitorGeometry = {
   calibration: Calibration;
 };
 
-type HeroMusicMonitorProps = {
-  heroImage: string;
-};
-
-export default function HeroMusicMonitor({
-  heroImage,
-}: HeroMusicMonitorProps) {
-
-  const isAutumnCloudySunset =
-    heroImage === "/experience/music/autumn/cloudy/atardecer.webp" ||
-    heroImage === "/experience/music/autumn/cloudy/noche.webp" ||
-    heroImage === "/experience/music/autumn/rain/atardecer.webp" ||
-    heroImage === "/experience/music/autumn/rain/noche.webp" ||
-    heroImage === "/experience/music/autumn/noche.webp";
-
-  const {
+export default function HeroMusicMonitor() {
+const {
     currentTrack,
     isPlaying,
     recommendationVideoId,
@@ -158,32 +139,81 @@ export default function HeroMusicMonitor({
         return;
       }
 
-      const width = video.videoWidth;
-      const height = video.videoHeight;
+      const rect = canvas.getBoundingClientRect();
+      const pixelRatio = Math.min(
+        window.devicePixelRatio || 1,
+        2,
+      );
+
+      const targetWidth = Math.max(
+        1,
+        Math.round(rect.width * pixelRatio),
+      );
+
+      const targetHeight = Math.max(
+        1,
+        Math.round(rect.height * pixelRatio),
+      );
 
       if (
-        canvas.width !== width ||
-        canvas.height !== height
+        canvas.width !== targetWidth ||
+        canvas.height !== targetHeight
       ) {
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
       }
 
       const context = canvas.getContext("2d");
 
       if (context) {
+        const sourceWidth = video.videoWidth;
+        const sourceHeight = video.videoHeight;
+
+        const sourceRatio =
+          sourceWidth / sourceHeight;
+
+        const targetRatio =
+          targetWidth / targetHeight;
+
+        let sx = 0;
+        let sy = 0;
+        let sw = sourceWidth;
+        let sh = sourceHeight;
+
+        /*
+         * Equivalente a object-fit: cover.
+         * Conserva proporciones: nunca estira el vídeo.
+         */
+        if (sourceRatio > targetRatio) {
+          sw = sourceHeight * targetRatio;
+          sx = (sourceWidth - sw) / 2;
+        } else {
+          sh = sourceWidth / targetRatio;
+          sy = (sourceHeight - sh) / 2;
+        }
+
         try {
+          context.clearRect(
+            0,
+            0,
+            targetWidth,
+            targetHeight,
+          );
+
           context.drawImage(
             video,
+            sx,
+            sy,
+            sw,
+            sh,
             0,
             0,
-            width,
-            height,
+            targetWidth,
+            targetHeight,
           );
         } catch {
-          // Firefox puede tener el elemento listo antes
-          // de disponer del primer frame decodificado.
-          // No detenemos el espejo: reintentamos.
+          // Firefox puede disponer del elemento antes
+          // del primer frame decodificado.
         }
       }
 
@@ -222,12 +252,7 @@ export default function HeroMusicMonitor({
         return;
       }
 
-      const isMobile = containerWidth <= 640;
-
-      const calibration =
-        isMobile
-          ? MOBILE_CALIBRATION
-          : DESKTOP_CALIBRATION;
+      const calibration = SCREEN_CALIBRATION;
 
       /*
        * Reproduce exactamente object-fit: cover
@@ -252,22 +277,7 @@ export default function HeroMusicMonitor({
         (containerHeight - renderedHeight) *
         OBJECT_POSITION_Y;
 
-      const autumnMobileInset =
-        isMobile && isAutumnCloudySunset
-          ? {
-              offsetX: 5.0,
-              offsetY: 1.0,
-              widthScale: 0.92,
-              heightScale: 1.08,
-            }
-          : {
-              offsetX: 0,
-              offsetY: 0,
-              widthScale: 1,
-              heightScale: 1,
-            };
-
-      const baseLeft =
+const baseLeft =
         imageLeft +
         renderedWidth * (calibration.x / 100);
 
@@ -282,10 +292,10 @@ export default function HeroMusicMonitor({
         renderedHeight * (calibration.height / 100);
 
       setGeometry({
-        left: baseLeft + autumnMobileInset.offsetX,
-        top: baseTop + autumnMobileInset.offsetY,
-        width: baseWidth * autumnMobileInset.widthScale,
-        height: baseHeight * autumnMobileInset.heightScale,
+        left: baseLeft,
+        top: baseTop,
+        width: baseWidth,
+        height: baseHeight,
         calibration,
       });
     };
@@ -298,7 +308,7 @@ export default function HeroMusicMonitor({
     return () => {
       observer.disconnect();
     };
-  }, [isAutumnCloudySunset]);
+  }, []);
 
   const geometryStyle: CSSProperties = geometry
     ? {
@@ -307,7 +317,6 @@ export default function HeroMusicMonitor({
         width: geometry.width,
         height: geometry.height,
         transform: `
-          ${isAutumnCloudySunset ? "translate3d(1px, -3px, 0)" : ""}
           rotate(${geometry.calibration.rotate}deg)
           skewX(${geometry.calibration.skewX}deg)
           skewY(${geometry.calibration.skewY}deg)
