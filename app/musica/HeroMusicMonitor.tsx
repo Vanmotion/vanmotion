@@ -28,19 +28,62 @@ type Calibration = {
   skewY: number;
 };
 
-const SCREEN_CALIBRATION: Calibration = {
-  // Ajuste fino sobre la imagen original 1672 × 941.
-  // Más grande, ligeramente a la izquierda
-  // y con perspectiva mucho más suave.
+const BASE_CALIBRATION: Calibration = {
   x: 27.3000,
   y: 48.3000,
   width: 9.9500,
   height: 11.1000,
-
   rotate: 0.08,
   skewX: 0.35,
   skewY: 0,
 };
+
+/*
+ * Cada escena de otoño puede tener su propia calibración.
+ * De momento todas parten exactamente de la referencia maestra.
+ */
+const AUTUMN_CALIBRATIONS: Record<string, Calibration> = {
+  "atardecer.webp": { ...BASE_CALIBRATION },
+  "dia.webp": { ...BASE_CALIBRATION },
+  "manana-dia.webp": { ...BASE_CALIBRATION },
+  "manana.webp": { ...BASE_CALIBRATION },
+  "noche.webp": { ...BASE_CALIBRATION },
+
+  "cloudy/atardecer.webp": { ...BASE_CALIBRATION },
+  "cloudy/dia.webp": {
+    x: 27.3700,
+    y: 48.4200,
+    width: 9.9500,
+    height: 11.1000,
+    rotate: 0.08,
+    skewX: 0.35,
+    skewY: 0,
+  },
+  "cloudy/manana-dia.webp": { ...BASE_CALIBRATION },
+  "cloudy/manana.webp": { ...BASE_CALIBRATION },
+  "cloudy/noche.webp": { ...BASE_CALIBRATION },
+
+  "rain/atardecer.webp": { ...BASE_CALIBRATION },
+  "rain/dia.webp": { ...BASE_CALIBRATION },
+  "rain/manana-dia.webp": { ...BASE_CALIBRATION },
+  "rain/manana.webp": { ...BASE_CALIBRATION },
+  "rain/noche.webp": { ...BASE_CALIBRATION },
+
+  "snow/dia.webp": { ...BASE_CALIBRATION },
+};
+
+function getSceneCalibration(heroImage: string): Calibration {
+  const marker = "/experience/music/autumn/";
+  const index = heroImage.indexOf(marker);
+
+  if (index === -1) {
+    return BASE_CALIBRATION;
+  }
+
+  const key = heroImage.slice(index + marker.length);
+
+  return AUTUMN_CALIBRATIONS[key] ?? BASE_CALIBRATION;
+}
 
 type MonitorGeometry = {
   left: number;
@@ -50,8 +93,14 @@ type MonitorGeometry = {
   calibration: Calibration;
 };
 
-export default function HeroMusicMonitor() {
-const {
+type HeroMusicMonitorProps = {
+  heroImage: string;
+};
+
+export default function HeroMusicMonitor({
+  heroImage,
+}: HeroMusicMonitorProps) {
+  const {
     currentTrack,
     isPlaying,
     recommendationVideoId,
@@ -251,7 +300,7 @@ const {
         return;
       }
 
-      const calibration = SCREEN_CALIBRATION;
+      const calibration = getSceneCalibration(heroImage);
 
       /*
        * Reproduce exactamente object-fit: cover
@@ -307,7 +356,7 @@ const baseLeft =
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [heroImage]);
 
   const geometryStyle: CSSProperties = geometry
     ? {
