@@ -2810,10 +2810,10 @@
    * El borde físico queda visible alrededor de la proyección.
    */
   clip-path: polygon(
-    0.4% 0.6%,
-    97.6% 0%,
-    100% 98.5%,
-    0.5% 100%
+    0.5% 0.5%,
+    99.0% 0.2%,
+    99.6% 99.1%,
+    0.4% 99.6%
   ) !important;
 
   background: #050505 !important;

@@ -29,17 +29,16 @@ type Calibration = {
 };
 
 const SCREEN_CALIBRATION: Calibration = {
-  // Zona útil medida sobre la imagen original 1672 × 941.
-  // Deja visible un borde pequeño del monitor real.
-  x: 27.4522,
-  y: 48.3528,
-  width: 9.6890,
-  height: 10.8395,
+  // Ajuste fino sobre la imagen original 1672 × 941.
+  // Más grande, ligeramente a la izquierda
+  // y con perspectiva mucho más suave.
+  x: 27.3000,
+  y: 48.3000,
+  width: 9.9500,
+  height: 11.1000,
 
-  // Perspectiva real del monitor de la fotografía:
-  // ligera caída horizontal + laterales inclinados.
-  rotate: 0.34,
-  skewX: 1.50,
+  rotate: 0.08,
+  skewX: 0.35,
   skewY: 0,
 };
 
