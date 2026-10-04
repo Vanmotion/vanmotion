@@ -70,6 +70,7 @@ export default function HeroMusicMonitor({
     heroImage === "/experience/music/autumn/rain/atardecer.webp" ||
     heroImage === "/experience/music/autumn/rain/noche.webp" ||
     heroImage === "/experience/music/autumn/noche.webp";
+
   const {
     currentTrack,
     isPlaying,
