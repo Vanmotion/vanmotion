@@ -1,6 +1,15 @@
 /* Generado a partir de public/experience. */
 
 const SEASONAL_EXPERIENCE_ASSETS = new Set<string>([
+  "/experience/music/autumn/cloudy/manana-dia.webp",
+  "/experience/music/autumn/rain/manana-dia.webp",
+  "/experience/music/autumn/manana-dia.webp",
+  "/experience/streetwear/autumn/cloudy/manana-dia.webp",
+  "/experience/streetwear/autumn/rain/manana-dia.webp",
+  "/experience/streetwear/autumn/manana-dia.webp",
+  "/experience/vehicles/autumn/cloudy/manana-dia.webp",
+  "/experience/vehicles/autumn/rain/manana-dia.webp",
+  "/experience/vehicles/autumn/manana-dia.webp",
   "/experience/music/autumn/cloudy/manana.webp",
   "/experience/music/autumn/rain/manana.webp",
   "/experience/streetwear/autumn/cloudy/manana.webp",

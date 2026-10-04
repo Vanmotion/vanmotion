@@ -56,7 +56,14 @@ export function seasonalSceneImage({
   hasAsset?: (path: string) => boolean;
   enabled?: boolean;
 }): string {
-  const original = sceneImage(section, period, atmosphere);
+  const fallbackPeriod: Period =
+    period === "manana-dia" ? "dia" : period;
+
+  const original = sceneImage(
+    section,
+    fallbackPeriod,
+    atmosphere
+  );
 
   if (!enabled) return original;
 
@@ -105,7 +112,30 @@ export function seasonalSceneImage({
   }
 
   /*
-   * 3. Si por la mañana tampoco existe una variante horaria
+   * 3. La transición mañana-día solo existe donde hemos creado
+   * material específico. Si falta, usamos el día de esa misma
+   * estación y clima antes de recurrir al fondo genérico.
+   */
+  if (period === "manana-dia") {
+    if (atmosphere !== "clear") {
+      const seasonWeatherDay =
+        `/experience/${section}/${season}/${atmosphere}/dia.webp`;
+
+      if (hasAsset(seasonWeatherDay)) {
+        return seasonWeatherDay;
+      }
+    }
+
+    const seasonDay =
+      `/experience/${section}/${season}/dia.webp`;
+
+    if (hasAsset(seasonDay)) {
+      return seasonDay;
+    }
+  }
+
+  /*
+   * 4. Si por la mañana tampoco existe una variante horaria
    * estacional, usamos la base diurna de esa estación.
    */
   if (period === "manana") {
@@ -123,7 +153,7 @@ export function seasonalSceneImage({
    * si no hay una colección invernal específica.
    */
   if (season === "winter" && atmosphere === "clear") {
-    return sceneImage(section, period, "snow");
+    return sceneImage(section, fallbackPeriod, "snow");
   }
 
   /*

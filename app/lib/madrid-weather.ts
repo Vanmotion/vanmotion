@@ -1,7 +1,7 @@
 import * as SunCalc from "suncalc";
 
 /** Shared, browser-safe weather selection for VANMOTION. */
-export type Period = "manana" | "dia" | "atardecer" | "noche";
+export type Period = "manana" | "manana-dia" | "dia" | "atardecer" | "noche";
 export type Atmosphere = "clear" | "cloudy" | "autumn" | "rain" | "snow";
 export type ClimateSection = "vehicles" | "music" | "streetwear";
 export type WeatherState = {
@@ -33,13 +33,16 @@ export function getMadridPeriod(date = new Date()): Period {
 
   if ([dawn, solarNoon, goldenHour, dusk].every(Number.isFinite)) {
     // Mañana empieza con la primera luz.
+    // La transición mañana-día ocupa la segunda mitad de la mañana.
     // Día empieza dos horas antes del mediodía solar.
     // Atardecer empieza con la golden hour real.
     // Noche empieza al terminar el crepúsculo civil.
     const dayStart = solarNoon - 2 * 60 * 60 * 1000;
+    const morningDayStart = dawn + (dayStart - dawn) / 2;
 
     if (now < dawn || now >= dusk) return "noche";
-    if (now < dayStart) return "manana";
+    if (now < morningDayStart) return "manana";
+    if (now < dayStart) return "manana-dia";
     if (now < goldenHour) return "dia";
     return "atardecer";
   }
@@ -51,7 +54,8 @@ export function getMadridPeriod(date = new Date()): Period {
     hour12: false,
   }).format(date));
 
-  if (hour >= 6 && hour < 12) return "manana";
+  if (hour >= 6 && hour < 9) return "manana";
+  if (hour >= 9 && hour < 12) return "manana-dia";
   if (hour >= 12 && hour < 18) return "dia";
   if (hour >= 18 && hour < 21) return "atardecer";
   return "noche";
