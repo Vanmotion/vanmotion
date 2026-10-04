@@ -464,7 +464,6 @@ export default async function CollectionPage() {
               <NewsThumbnail
                 imageUrl={vehicleNews.imageUrl}
                 className={styles.heroNewsThumb}
-                lightweightMobile
               />
             </a>
 

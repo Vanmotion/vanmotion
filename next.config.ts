@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
           "**.blob.vercel-storage.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "**",
+        pathname: "/**",
+      },
     ],
   },
 
