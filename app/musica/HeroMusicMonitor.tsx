@@ -29,13 +29,13 @@ type Calibration = {
 };
 
 const BASE_CALIBRATION: Calibration = {
-  x: 27.3000,
-  y: 48.3000,
-  width: 9.9500,
-  height: 11.1000,
-  rotate: 0.08,
-  skewX: 0.35,
-  skewY: 0,
+  x: 27.5600,
+  y: 48.5400,
+  width: 9.7000,
+  height: 10.9400,
+  rotate: -1.04,
+  skewX: 1.01,
+  skewY: 1.10,
 };
 
 /*
@@ -50,15 +50,7 @@ const AUTUMN_CALIBRATIONS: Record<string, Calibration> = {
   "noche.webp": { ...BASE_CALIBRATION },
 
   "cloudy/atardecer.webp": { ...BASE_CALIBRATION },
-  "cloudy/dia.webp": {
-    x: 27.3700,
-    y: 48.4200,
-    width: 9.9500,
-    height: 11.1000,
-    rotate: 0.08,
-    skewX: 0.35,
-    skewY: 0,
-  },
+  "cloudy/dia.webp": { ...BASE_CALIBRATION },
   "cloudy/manana-dia.webp": { ...BASE_CALIBRATION },
   "cloudy/manana.webp": { ...BASE_CALIBRATION },
   "cloudy/noche.webp": { ...BASE_CALIBRATION },
