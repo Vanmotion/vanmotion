@@ -46,7 +46,15 @@ const AUTUMN_CALIBRATIONS: Record<string, Calibration> = {
   "atardecer.webp": { ...BASE_CALIBRATION },
   "dia.webp": { ...BASE_CALIBRATION },
   "manana-dia.webp": { ...BASE_CALIBRATION },
-  "manana.webp": { ...BASE_CALIBRATION },
+  "manana.webp": {
+    x: 27.6600,
+    y: 48.6100,
+    width: 9.7500,
+    height: 10.8000,
+    rotate: -0.29,
+    skewX: 0.04,
+    skewY: 0.92,
+  },
   "noche.webp": { ...BASE_CALIBRATION },
 
   "cloudy/atardecer.webp": { ...BASE_CALIBRATION },
@@ -56,12 +64,28 @@ const AUTUMN_CALIBRATIONS: Record<string, Calibration> = {
   "cloudy/noche.webp": { ...BASE_CALIBRATION },
 
   "rain/atardecer.webp": { ...BASE_CALIBRATION },
-  "rain/dia.webp": { ...BASE_CALIBRATION },
+  "rain/dia.webp": {
+    x: 27.3100,
+    y: 48.4600,
+    width: 9.7400,
+    height: 10.7200,
+    rotate: -0.58,
+    skewX: 0.57,
+    skewY: 1.10,
+  },
   "rain/manana-dia.webp": { ...BASE_CALIBRATION },
   "rain/manana.webp": { ...BASE_CALIBRATION },
   "rain/noche.webp": { ...BASE_CALIBRATION },
 
-  "snow/dia.webp": { ...BASE_CALIBRATION },
+  "snow/dia.webp": {
+    x: 27.5900,
+    y: 48.9900,
+    width: 9.6700,
+    height: 10.6500,
+    rotate: -1.04,
+    skewX: 0.39,
+    skewY: 1.10,
+  },
 };
 
 function getSceneCalibration(heroImage: string): Calibration {
