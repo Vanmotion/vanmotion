@@ -23,6 +23,7 @@ export default function RouteAwareMusicPlayer({
   const pathname = usePathname();
   const { videoSessionActive } = useMusicPlayer();
   const shouldHide = HIDDEN_PATHS.some((path) => matchesPath(pathname, path));
+  const isHome = pathname === "/";
   const isExperience = matchesPath(pathname, "/experience");
 
   // Never conditionally remove children: doing so destroys the YouTube iframe.
@@ -30,7 +31,7 @@ export default function RouteAwareMusicPlayer({
   // Without video, preserve the existing route visibility policy.
   return (
     <div
-      hidden={shouldHide && !videoSessionActive}
+      hidden={isHome || (shouldHide && !videoSessionActive)}
       data-music-player-mode={isExperience ? "experience" : "compact"}
       data-music-video-active={videoSessionActive ? "true" : "false"}
     >
