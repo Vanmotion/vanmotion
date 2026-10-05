@@ -31,7 +31,16 @@ export default function RouteAwareMusicPlayer({
   // Without video, preserve the existing route visibility policy.
   return (
     <div
-      hidden={isHome || (shouldHide && !videoSessionActive)}
+      hidden={shouldHide && !videoSessionActive}
+      aria-hidden={isHome ? true : undefined}
+      style={
+        isHome
+          ? {
+              opacity: 0,
+              pointerEvents: "none",
+            }
+          : undefined
+      }
       data-music-player-mode={isExperience ? "experience" : "compact"}
       data-music-video-active={videoSessionActive ? "true" : "false"}
     >
