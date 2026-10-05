@@ -33,7 +33,7 @@ export default function PublicAnalytics() {
     const scheduleAnalytics = () => {
       timer = window.setTimeout(() => {
         setGoogleAnalyticsReady(true);
-      }, 2500);
+      }, 8000);
     };
 
     if (document.readyState === "complete") {
