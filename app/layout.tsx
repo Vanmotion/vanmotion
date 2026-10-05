@@ -136,6 +136,15 @@ export default async function RootLayout({
     ]);
   const content = metadataTranslations[language];
 
+  const globalRecommendations = recommendations.map(
+    ({ id, title, videoUrl, coverUrl }) => ({
+      id,
+      title,
+      videoUrl,
+      coverUrl,
+    }),
+  );
+
   const websiteStructuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -287,7 +296,7 @@ export default async function RootLayout({
           <RouteAwareMusicPlayer>
             <GlobalMusicPlayer
               language={language}
-              recommendations={recommendations}
+              recommendations={globalRecommendations}
             />
           </RouteAwareMusicPlayer>
 

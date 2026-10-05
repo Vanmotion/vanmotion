@@ -6,15 +6,21 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import type { Language } from "@/app/language";
-import type { PublicMusicRecommendation } from "@/app/lib/music-library";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
+
+export type GlobalMusicRecommendation = {
+  id: string;
+  title: string;
+  videoUrl: string | null;
+  coverUrl: string | null;
+};
 
 import { useMusicPlayer } from "./MusicPlayerContext";
 import styles from "./GlobalMusicPlayer.module.css";
 
 type GlobalMusicPlayerProps = {
   language: Language;
-  recommendations: PublicMusicRecommendation[];
+  recommendations: GlobalMusicRecommendation[];
 };
 
 const translations = {
