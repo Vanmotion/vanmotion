@@ -135,154 +135,41 @@ export default function ExperienceClient({
 
     const updateScenes = () => {
       revealFrame = 0;
-
       const rootTop = scroller.getBoundingClientRect().top;
       const viewHeight = scroller.clientHeight;
-      const isMobile = window.innerWidth <= 700;
-
-      const heroGrid =
-        scroller.querySelector<HTMLElement>(`.${styles.heroGrid}`);
-      const heroCopy =
-        scroller.querySelector<HTMLElement>(`.${styles.heroCopy}`);
-      const hero =
-        scroller.querySelector<HTMLElement>(`.${styles.hero}`);
-
-      const heroHeight = hero?.clientHeight || viewHeight;
-      const heroProgress = clamp(
-        scroller.scrollTop / heroHeight,
-        0,
-        1
-      );
-
-      const measurements = scenes.map((scene) => {
+      for (const scene of scenes) {
         const rect = scene.getBoundingClientRect();
         const top = rect.top - rootTop;
         const bottom = rect.bottom - rootTop;
-
-        const entrance = clamp(
-          (viewHeight - top) / (viewHeight * 0.5),
-          0,
-          1
-        );
-
-        const exit = clamp(
-          bottom / (viewHeight * 0.5),
-          0,
-          1
-        );
-
+        const entrance = clamp((viewHeight - top) / (viewHeight * 0.5), 0, 1);
+        const exit = clamp(bottom / (viewHeight * 0.5), 0, 1);
         const visibility = Math.min(entrance, exit);
-
-        const progress = clamp(
-          (viewHeight - top) / (viewHeight + rect.height),
-          0,
-          1
-        );
-
-        const scale =
-          1.09 -
-          0.055 * (1 - Math.abs(2 * progress - 1));
-
-        const parallax =
-          (0.5 - progress) * (isMobile ? 128 : 96);
-
+        const progress = clamp((viewHeight - top) / (viewHeight + rect.height), 0, 1);
+        const scale = 1.09 - 0.055 * (1 - Math.abs(2 * progress - 1));
+        scene.style.setProperty("--vm-visibility", visibility.toFixed(3));
+        scene.style.setProperty("--vm-shift", `${(1 - visibility) * 32}px`);
+        scene.style.setProperty("--vm-image-scale", scale.toFixed(3));
+        /* VANMOTION_DEPTH_V4 */
+        const isMobile = window.innerWidth <= 700;
+        const parallax = (0.5 - progress) * (isMobile ? 128 : 96);
         const distance = 1 - visibility;
-
-        return {
-          scene,
-          visibility,
-          progress,
-          scale,
-          parallax,
-          distance,
-        };
-      });
-
-      for (const {
-        scene,
-        visibility,
-        progress,
-        scale,
-        parallax,
-        distance,
-      } of measurements) {
-        scene.style.setProperty(
-          "--vm-visibility",
-          visibility.toFixed(3)
-        );
-
-        scene.style.setProperty(
-          "--vm-shift",
-          `${(1 - visibility) * 32}px`
-        );
-
-        scene.style.setProperty(
-          "--vm-image-scale",
-          scale.toFixed(3)
-        );
-
-        scene.style.setProperty(
-          "--vm-image-y",
-          `${parallax.toFixed(1)}px`
-        );
-
-        scene.style.setProperty(
-          "--vm-text-z",
-          `${(-(isMobile ? 145 : 60) * distance).toFixed(1)}px`
-        );
-
-        scene.style.setProperty(
-          "--vm-tilt",
-          `${(
-            (progress < 0.5
-              ? (isMobile ? 9 : 4)
-              : (isMobile ? -9 : -4)) * distance
-          ).toFixed(1)}deg`
-        );
-
-        scene.style.setProperty(
-          "--vm-shade",
-          (
-            0.86 +
-            0.14 * Math.abs(2 * progress - 1)
-          ).toFixed(3)
-        );
+        scene.style.setProperty("--vm-image-y", `${parallax.toFixed(1)}px`);
+        scene.style.setProperty("--vm-text-z", `${(-(isMobile ? 145 : 60) * distance).toFixed(1)}px`);
+        scene.style.setProperty("--vm-tilt", `${((progress < 0.5 ? (isMobile ? 9 : 4) : (isMobile ? -9 : -4)) * distance).toFixed(1)}deg`);
+        scene.style.setProperty("--vm-shade", (0.86 + 0.14 * Math.abs(2 * progress - 1)).toFixed(3));
       }
-
-      heroGrid?.style.setProperty(
-        "--vm-hero-y",
-        `${(-(isMobile ? 58 : 56) * heroProgress).toFixed(1)}px`
-      );
-
-      heroGrid?.style.setProperty(
-        "--vm-hero-scale",
-        (1 - 0.075 * heroProgress).toFixed(3)
-      );
-
-      heroGrid?.style.setProperty(
-        "--vm-hero-grid-z",
-        `${(isMobile ? -125 * heroProgress : 0).toFixed(1)}px`
-      );
-
-      heroCopy?.style.setProperty(
-        "--vm-hero-copy-y",
-        `${(-(isMobile ? 82 : 92) * heroProgress).toFixed(1)}px`
-      );
-
-      heroCopy?.style.setProperty(
-        "--vm-hero-copy-z",
-        `${(isMobile ? 80 * heroProgress : 0).toFixed(1)}px`
-      );
-
-      heroCopy?.style.setProperty(
-        "--vm-hero-opacity",
-        (
-          1 -
-          (isMobile ? 0.24 : 0.32) * heroProgress
-        ).toFixed(3)
-      );
+      const heroGrid = scroller.querySelector<HTMLElement>(`.${styles.heroGrid}`);
+      const heroCopy = scroller.querySelector<HTMLElement>(`.${styles.heroCopy}`);
+      const heroHeight = scroller.querySelector<HTMLElement>(`.${styles.hero}`)?.clientHeight || viewHeight;
+      const heroProgress = clamp(scroller.scrollTop / heroHeight, 0, 1);
+      const heroMobile = window.innerWidth <= 700;
+      heroGrid?.style.setProperty("--vm-hero-y", `${(-(heroMobile ? 58 : 56) * heroProgress).toFixed(1)}px`);
+      heroGrid?.style.setProperty("--vm-hero-scale", (1 - (heroMobile ? 0.075 : 0.075) * heroProgress).toFixed(3));
+      heroGrid?.style.setProperty("--vm-hero-grid-z", `${(heroMobile ? -125 * heroProgress : 0).toFixed(1)}px`);
+      heroCopy?.style.setProperty("--vm-hero-copy-y", `${(-(heroMobile ? 82 : 92) * heroProgress).toFixed(1)}px`);
+      heroCopy?.style.setProperty("--vm-hero-copy-z", `${(heroMobile ? 80 * heroProgress : 0).toFixed(1)}px`);
+      heroCopy?.style.setProperty("--vm-hero-opacity", (1 - (heroMobile ? 0.24 : 0.32) * heroProgress).toFixed(3));
     };
-
     const onScroll = () => {
       if (!revealFrame) revealFrame = window.requestAnimationFrame(updateScenes);
     };
