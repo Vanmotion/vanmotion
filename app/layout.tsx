@@ -50,6 +50,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(siteUrl),
 
+    verification: {
+      other: {
+        "msvalidate.01": "F22E4950A7C6422FA682CED24675FC45",
+      },
+    },
+
     applicationName: "VANMOTION",
 
     title: {
