@@ -151,7 +151,7 @@ export default function MusicPlayer({
               src={coverUrl!}
               alt={`${content.coverAlt} ${currentTrackTitle}`}
               fill
-              sizes="(max-width: 700px) 92vw, 520px"
+              sizes="(max-width: 720px) 108px, (max-width: 980px) 92vw, 420px"
               quality={75}
               onError={() => {
                 setCoverError(true);
