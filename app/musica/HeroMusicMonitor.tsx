@@ -28,6 +28,22 @@ type Calibration = {
   skewY: number;
 };
 
+type ExactCorners = {
+  tl: [number, number];
+  tr: [number, number];
+  br: [number, number];
+  bl: [number, number];
+};
+
+const EXACT_CORNER_CALIBRATIONS: Record<string, ExactCorners> = {
+  "rain/dia.webp": {
+    tl: [27.470362, 48.447593],
+    tr: [36.995383, 48.501796],
+    br: [37.115233, 59.052072],
+    bl: [27.572967, 59.416696],
+  },
+};
+
 const BASE_CALIBRATION: Calibration = {
   x: 27.5600,
   y: 48.5400,
@@ -101,12 +117,147 @@ function getSceneCalibration(heroImage: string): Calibration {
   return AUTUMN_CALIBRATIONS[key] ?? BASE_CALIBRATION;
 }
 
+function getExactSceneCorners(
+  heroImage: string,
+): ExactCorners | null {
+  const marker = "/experience/music/autumn/";
+  const index = heroImage.indexOf(marker);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const key = heroImage.slice(index + marker.length);
+
+  return EXACT_CORNER_CALIBRATIONS[key] ?? null;
+}
+
+function solveLinearSystem(
+  matrix: number[][],
+  values: number[],
+): number[] {
+  const n = values.length;
+
+  const augmented = matrix.map((row, index) => [
+    ...row,
+    values[index],
+  ]);
+
+  for (let column = 0; column < n; column += 1) {
+    let pivot = column;
+
+    for (let row = column + 1; row < n; row += 1) {
+      if (
+        Math.abs(augmented[row][column]) >
+        Math.abs(augmented[pivot][column])
+      ) {
+        pivot = row;
+      }
+    }
+
+    if (Math.abs(augmented[pivot][column]) < 1e-12) {
+      throw new Error("Invalid monitor perspective");
+    }
+
+    [augmented[column], augmented[pivot]] = [
+      augmented[pivot],
+      augmented[column],
+    ];
+
+    const divisor = augmented[column][column];
+
+    for (let j = column; j <= n; j += 1) {
+      augmented[column][j] /= divisor;
+    }
+
+    for (let row = 0; row < n; row += 1) {
+      if (row === column) {
+        continue;
+      }
+
+      const factor = augmented[row][column];
+
+      for (let j = column; j <= n; j += 1) {
+        augmented[row][j] -=
+          factor * augmented[column][j];
+      }
+    }
+  }
+
+  return augmented.map((row) => row[n]);
+}
+
+function perspectiveMatrix3d(
+  width: number,
+  height: number,
+  quad: [number, number][],
+): string {
+  const source: [number, number][] = [
+    [0, 0],
+    [width, 0],
+    [width, height],
+    [0, height],
+  ];
+
+  const matrix: number[][] = [];
+  const values: number[] = [];
+
+  source.forEach(([x, y], index) => {
+    const [targetX, targetY] = quad[index];
+
+    matrix.push([
+      x,
+      y,
+      1,
+      0,
+      0,
+      0,
+      -targetX * x,
+      -targetX * y,
+    ]);
+
+    values.push(targetX);
+
+    matrix.push([
+      0,
+      0,
+      0,
+      x,
+      y,
+      1,
+      -targetY * x,
+      -targetY * y,
+    ]);
+
+    values.push(targetY);
+  });
+
+  const [
+    h11,
+    h12,
+    h13,
+    h21,
+    h22,
+    h23,
+    h31,
+    h32,
+  ] = solveLinearSystem(matrix, values);
+
+  return `matrix3d(${[
+    h11, h21, 0, h31,
+    h12, h22, 0, h32,
+    0, 0, 1, 0,
+    h13, h23, 0, 1,
+  ].join(",")})`;
+}
+
 type MonitorGeometry = {
   left: number;
   top: number;
   width: number;
   height: number;
   calibration: Calibration;
+  exactTransform?: string;
 };
 
 type HeroMusicMonitorProps = {
@@ -341,6 +492,52 @@ export default function HeroMusicMonitor({
         (containerHeight - renderedHeight) *
         OBJECT_POSITION_Y;
 
+      const exactCorners = getExactSceneCorners(heroImage);
+
+      if (exactCorners) {
+        const renderedPoints: [number, number][] = [
+          exactCorners.tl,
+          exactCorners.tr,
+          exactCorners.br,
+          exactCorners.bl,
+        ].map(([x, y]) => [
+          renderedWidth * (x / 100),
+          renderedHeight * (y / 100),
+        ]);
+
+        const xs = renderedPoints.map(([x]) => x);
+        const ys = renderedPoints.map(([, y]) => y);
+
+        const minX = Math.min(...xs);
+        const maxX = Math.max(...xs);
+        const minY = Math.min(...ys);
+        const maxY = Math.max(...ys);
+
+        const boxWidth = maxX - minX;
+        const boxHeight = maxY - minY;
+
+        const localQuad: [number, number][] =
+          renderedPoints.map(([x, y]) => [
+            x - minX,
+            y - minY,
+          ]);
+
+        setGeometry({
+          left: imageLeft + minX,
+          top: imageTop + minY,
+          width: boxWidth,
+          height: boxHeight,
+          calibration,
+          exactTransform: perspectiveMatrix3d(
+            boxWidth,
+            boxHeight,
+            localQuad,
+          ),
+        });
+
+        return;
+      }
+
 const baseLeft =
         imageLeft +
         renderedWidth * (calibration.x / 100);
@@ -380,12 +577,16 @@ const baseLeft =
         top: geometry.top,
         width: geometry.width,
         height: geometry.height,
-        transform: `
-          rotate(${geometry.calibration.rotate}deg)
-          skewX(${geometry.calibration.skewX}deg)
-          skewY(${geometry.calibration.skewY}deg)
-        `,
-        transformOrigin: "50% 50%",
+        transform:
+          geometry.exactTransform ??
+          `
+            rotate(${geometry.calibration.rotate}deg)
+            skewX(${geometry.calibration.skewX}deg)
+            skewY(${geometry.calibration.skewY}deg)
+          `,
+        transformOrigin: geometry.exactTransform
+          ? "0 0"
+          : "50% 50%",
       }
     : {
         visibility: "hidden",
