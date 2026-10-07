@@ -150,7 +150,7 @@ export default function DirectMusicRecommendationVideoUpload({
             recommendationId,
           }),
           contentType: "video/mp4",
-          multipart: true,
+          multipart: file.size > 100 * 1024 * 1024,
           onUploadProgress: ({
             percentage,
           }) => {
