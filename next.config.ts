@@ -14,7 +14,7 @@ const contentSecurityPolicy = [
   "media-src 'self' blob: https:",
   "font-src 'self' data:",
   "frame-src https://www.youtube-nocookie.com",
-  "connect-src 'self' https://*.blob.vercel-storage.com https://api.open-meteo.com https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com",
+  "connect-src 'self' https://blob.vercel-storage.com https://*.blob.vercel-storage.com https://api.open-meteo.com https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com",
   "worker-src 'self' blob:",
 ].join("; ");
 
