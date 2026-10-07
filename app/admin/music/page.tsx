@@ -5,6 +5,7 @@ import { prisma } from "@/app/lib/prisma";
 import DirectMusicAudioUpload from "./DirectMusicAudioUpload";
 import DirectMusicCoverUpload from "./DirectMusicCoverUpload";
 import DirectMusicRecommendationDocumentUpload from "./DirectMusicRecommendationDocumentUpload";
+import DirectMusicRecommendationVideoUpload from "./DirectMusicRecommendationVideoUpload";
 
 import {
   initializeMusicLibrary,
@@ -426,6 +427,12 @@ export default async function AdminMusicPage() {
                     required
                   />
                 </label>
+
+                <DirectMusicRecommendationVideoUpload
+                  recommendationId={item.id}
+                  title={item.title}
+                  hasVideo={Boolean(item.videoUrl)}
+                />
 
                 <label className={styles.fullField}>
                   <span>URL del vídeo · YouTube oficial o MP4 directo</span>
