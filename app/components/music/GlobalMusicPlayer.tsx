@@ -141,7 +141,7 @@ function getVimeoEmbedUrl(value: string | null): string | null {
       .find((part) => /^\d+$/.test(part));
 
     return id
-      ? `https://player.vimeo.com/video/${id}?dnt=1&autoplay=0`
+      ? `https://player.vimeo.com/video/${id}?dnt=1&autoplay=0&loop=0`
       : null;
   } catch {
     return null;
@@ -444,6 +444,10 @@ export default function GlobalMusicPlayer({
     };
 
     player.on("ended", onEnded);
+
+    // Evitar que Vimeo repita el videoclip
+    // antes de emitir el evento de finalizacion.
+    void player.setLoop(false).catch(() => {});
 
     return () => {
       player.off("ended", onEnded);
