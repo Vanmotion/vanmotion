@@ -333,7 +333,13 @@ export default async function MusicPage() {
             <div className={styles.heroShade} />
           </div>
 
-          <HeroMusicMonitor heroImage={heroImage} />
+          <HeroMusicMonitor
+            heroImage={heroImage}
+            recommendations={recommendations.map((item) => ({
+              id: item.id,
+              videoUrl: item.videoUrl,
+            }))}
+          />
 
           <div className={styles.heroTopline}>
             <span>{content.hero.location}</span>

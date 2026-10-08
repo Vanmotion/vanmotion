@@ -262,10 +262,31 @@ type MonitorGeometry = {
 
 type HeroMusicMonitorProps = {
   heroImage: string;
+  recommendations: Array<{
+    id: string;
+    videoUrl: string | null;
+  }>;
 };
+
+function getVimeoId(value: string | null): string | null {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./, "");
+    if (host !== "vimeo.com" && host !== "player.vimeo.com") {
+      return null;
+    }
+    return url.pathname.split("/").find(
+      (part) => /^\d+$/.test(part)
+    ) ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export default function HeroMusicMonitor({
   heroImage,
+  recommendations,
 }: HeroMusicMonitorProps) {
   const {
     currentTrack,
@@ -273,6 +294,14 @@ export default function HeroMusicMonitor({
     recommendationVideoId,
   } = useMusicPlayer();
 
+  const activeRecommendation = recommendations.find(
+    (item) => item.id === recommendationVideoId
+  );
+  const activeVimeoId = getVimeoId(
+    activeRecommendation?.videoUrl ?? null
+  );
+
+  const projectedIframeRef = useRef<HTMLIFrameElement>(null);
   const monitorRef = useRef<HTMLDivElement>(null);
   const mirrorCanvasRef =
     useRef<HTMLCanvasElement | null>(null);
@@ -449,6 +478,155 @@ export default function HeroMusicMonitor({
     mirrorAvailable,
   ]);
 
+  // vanmotion-vimeo-projection
+  useEffect(() => {
+    if (!activeVimeoId) return;
+
+    let disposed = false;
+    let frame = 0;
+    let timer: ReturnType<typeof setInterval> | null = null;
+    let cleanup = () => {};
+    let stop = () => {};
+
+    const connect = () => {
+      if (disposed) return;
+
+      const sourceFrame = document.querySelector<HTMLIFrameElement>(
+        `aside iframe[src^="https://player.vimeo.com/video/${activeVimeoId}"]`
+      );
+      const targetFrame = projectedIframeRef.current;
+
+      if (!sourceFrame || !targetFrame) {
+        frame = requestAnimationFrame(connect);
+        return;
+      }
+
+      void import("@vimeo/player").then(async ({ default: Player }) => {
+        if (disposed) return;
+
+        const source = new Player(sourceFrame);
+        const target = new Player(targetFrame);
+        let ready = false;
+        let busy = false;
+        let lastSeek = 0;
+
+        const sync = async (force = false) => {
+          if (disposed || !ready || busy) return;
+          busy = true;
+
+          try {
+            const [
+              sourcePaused,
+              sourceTime,
+              targetTime,
+              targetPaused
+            ] = await Promise.all([
+              source.getPaused(),
+              source.getCurrentTime(),
+              target.getCurrentTime(),
+              target.getPaused()
+            ]);
+
+            if (disposed) return;
+
+            if (sourcePaused) {
+              if (!targetPaused) await target.pause();
+            } else if (targetPaused) {
+              await target.play();
+            }
+
+            const difference = Math.abs(sourceTime - targetTime);
+            const threshold = force ? 0.25 : 0.65;
+
+            if (
+              difference > threshold &&
+              (force || performance.now() - lastSeek > 1300)
+            ) {
+              lastSeek = performance.now();
+
+              // Obtenemos el tiempo de nuevo para evitar
+              // utilizar una posición anterior a la espera.
+              const latestTime = await source.getCurrentTime();
+
+              if (!disposed) {
+                await target.setCurrentTime(latestTime);
+              }
+            }
+          } catch {
+            // Un retraso de Vimeo no detiene la página.
+          } finally {
+            busy = false;
+          }
+        };
+
+        const onPlay = () => {
+          void sync(true);
+        };
+
+        const onPause = () => {
+          void target.pause().catch(() => {});
+          void sync(true);
+        };
+
+        const onSeek = () => {
+          void sync(true);
+        };
+
+        try {
+          await Promise.all([source.ready(), target.ready()]);
+          if (disposed) return;
+
+          await target.setMuted(true);
+
+          await Promise.allSettled([
+            source.setAutopause(false),
+            target.setAutopause(false)
+          ]);
+
+          if (disposed) return;
+
+          ready = true;
+
+          source.on("play", onPlay);
+          source.on("playing", onPlay);
+          source.on("pause", onPause);
+          source.on("ended", onPause);
+          source.on("seeked", onSeek);
+
+          cleanup = () => {
+            source.off("play", onPlay);
+            source.off("playing", onPlay);
+            source.off("pause", onPause);
+            source.off("ended", onPause);
+            source.off("seeked", onSeek);
+          };
+
+          stop = () => {
+            void target.pause().catch(() => {});
+          };
+
+          timer = setInterval(() => {
+            void sync(false);
+          }, 650);
+
+          void sync(true);
+        } catch {
+          // Se mantiene intacto el resto del monitor.
+        }
+      }).catch(() => {});
+    };
+
+    connect();
+
+    return () => {
+      disposed = true;
+      cancelAnimationFrame(frame);
+      if (timer) clearInterval(timer);
+      cleanup();
+      stop();
+    };
+  }, [activeVimeoId]);
+
   useLayoutEffect(() => {
     const monitor = monitorRef.current;
     const hero = monitor?.parentElement;
@@ -599,7 +777,24 @@ const baseLeft =
       style={geometryStyle}
       aria-hidden="true"
     >
-      {recommendationVideoId && !isPlaying ? (
+      {activeVimeoId ? (
+        <iframe
+          ref={projectedIframeRef}
+          title="Proyección musical VANMOTION"
+          src={`https://player.vimeo.com/video/${activeVimeoId}?dnt=1&muted=1&autoplay=0&controls=0`}
+          allow="autoplay; fullscreen"
+          tabIndex={-1}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            border: 0,
+            pointerEvents: "none",
+            background: "#000",
+          }}
+        />
+      ) : recommendationVideoId && !isPlaying ? (
         mirrorAvailable ? (
           <canvas
             ref={mirrorCanvasRef}

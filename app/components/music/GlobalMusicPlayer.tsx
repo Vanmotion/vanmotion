@@ -4,6 +4,7 @@ import Link from "next/link";
 import { flushSync } from "react-dom";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import VimeoPlayer from "@vimeo/player";
 
 import type { Language } from "@/app/language";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
@@ -123,6 +124,30 @@ function getWikimediaVp9Url(
   );
 }
 
+function getVimeoEmbedUrl(value: string | null): string | null {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (host !== "vimeo.com" && host !== "player.vimeo.com") {
+      return null;
+    }
+
+    const id = url.pathname
+      .split("/")
+      .filter(Boolean)
+      .find((part) => /^\d+$/.test(part));
+
+    return id
+      ? `https://player.vimeo.com/video/${id}?dnt=1&autoplay=0`
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function GlobalMusicPlayer({
   language,
   recommendations,
@@ -137,6 +162,7 @@ export default function GlobalMusicPlayer({
     recommendationIsPlaying,
     setRecommendationIsPlaying,
   ] = useState(false);
+  const vimeoControllerRef = useRef<VimeoPlayer | null>(null);
   const recommendationVideoRef =
     useRef<HTMLVideoElement | null>(null);
   const recommendationStartingRef =
@@ -312,13 +338,34 @@ export default function GlobalMusicPlayer({
 
     flushSync(() => {
       setActiveRecommendation(recommendationId);
-      setRecommendationIsPlaying(true);
+      setRecommendationIsPlaying(
+        !Boolean(getVimeoEmbedUrl(selectedRecommendation.videoUrl))
+      );
       setExpanded(false);
     });
 
+    // Inicio desde el clic original del usuario.
+    if (getVimeoEmbedUrl(selectedRecommendation.videoUrl)) {
+      recommendationStartingRef.current = false;
+
+      const iframe = document.querySelector<HTMLIFrameElement>(
+        'aside iframe[src^="https://player.vimeo.com/video/"]'
+      );
+
+      if (iframe) {
+        const player = new VimeoPlayer(iframe);
+        vimeoControllerRef.current = player;
+        void player.play().catch(() => {
+          // Si Firefox bloquea el audio automático,
+          // Vimeo conserva su botón de reproducción.
+        });
+      }
+      return;
+    }
+
     const video = recommendationVideoRef.current;
 
-    if (video) {
+    if (video && !getVimeoEmbedUrl(selectedRecommendation.videoUrl)) {
       video.src =
         preferVp9Video
           ? getWikimediaVp9Url(
@@ -656,7 +703,16 @@ export default function GlobalMusicPlayer({
             </div>
           </div>
 
-          {recommendationPlaybackUrl ? (
+          {getVimeoEmbedUrl(recommendationVideoUrl) ? (
+            <iframe
+              key={activeRecommendationData.id}
+              src={getVimeoEmbedUrl(recommendationVideoUrl)!}
+              title={activeRecommendationData.title}
+              className={styles.youtubeEmbed}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+            />
+          ) : recommendationPlaybackUrl ? (
             <video
               key={`${activeRecommendationData.id}:${recommendationRetry}`}
               ref={recommendationVideoRef}
