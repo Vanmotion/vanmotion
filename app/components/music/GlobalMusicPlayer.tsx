@@ -156,7 +156,7 @@ export default function GlobalMusicPlayer({
   const pathname = usePathname();
   const previousPathnameRef = useRef(pathname);
   const [expanded, setExpanded] = useState(false);
-  const [musicMenuOpen, setMusicMenuOpen] = useState(false);
+  const [audioLibraryOpen, setAudioLibraryOpen] = useState(false);
   const [activeRecommendation, setActiveRecommendation] =
     useState<string | null>(null);
   const [
@@ -308,7 +308,7 @@ export default function GlobalMusicPlayer({
   }, [pathname]);
 
   function closeRecommendation() {
-    setMusicMenuOpen(false);
+    setAudioLibraryOpen(false);
     recommendationStartingRef.current = false;
     recommendationAutoplayRef.current = false;
     if (recommendationVideoRef.current) {
@@ -332,7 +332,6 @@ export default function GlobalMusicPlayer({
       return;
     }
 
-    setMusicMenuOpen(false);
     pausePlayback();
     setRecommendationVideoTime(0);
     setRecommendationError(null);
@@ -531,6 +530,8 @@ export default function GlobalMusicPlayer({
   return (
     <aside
       className={`${styles.player} ${
+        audioLibraryOpen ? styles.audioLibraryMode : ""
+      } ${
         expanded ? styles.expanded : ""
       } ${
         activeRecommendationData
@@ -540,18 +541,13 @@ export default function GlobalMusicPlayer({
         activeRecommendationData && !expanded
           ? styles.recommendationMinimized
           : ""
-      } ${
-        activeRecommendationData && musicMenuOpen
-          ? styles.recommendationMusicMenuOpen
-          : ""
       }`}
     >
-      {activeRecommendationData && musicMenuOpen && (
+      {activeRecommendationData && expanded && (
         <button
           type="button"
           className={styles.recommendationMenuCollapse}
           onClick={() => {
-            setMusicMenuOpen(false);
             setExpanded(false);
           }}
           aria-label={
@@ -566,6 +562,28 @@ export default function GlobalMusicPlayer({
           }
         >
           ↙
+        </button>
+      )}
+
+      {activeRecommendationData && (
+        <button
+          type="button"
+          className={styles.switchToMusicButton}
+          onClick={() => {
+            setAudioLibraryOpen(true);
+          }}
+          aria-label={
+            language === "es"
+              ? "Elegir canción de VANMOTION"
+              : "Choose VANMOTION music"
+          }
+          title={
+            language === "es"
+              ? "Música VANMOTION"
+              : "VANMOTION music"
+          }
+        >
+          <span aria-hidden="true">♫</span>
         </button>
       )}
 
@@ -760,46 +778,13 @@ export default function GlobalMusicPlayer({
                 →
               </button>
 
-              <button
-                type="button"
-                className={styles.recommendationMusicMenuToggle}
-                onClick={() => {
-                  if (musicMenuOpen) {
-                    setMusicMenuOpen(false);
-                    setExpanded(false);
-                  } else {
-                    setMusicMenuOpen(true);
-                  }
-                }}
-                aria-expanded={musicMenuOpen}
-                aria-controls="vanmotion-recommendation-music-list"
-                aria-label={
-                  musicMenuOpen
-                    ? (language === "es"
-                        ? "Reducir reproductor"
-                        : "Minimize player")
-                    : (language === "es"
-                        ? "Abrir menú de música"
-                        : "Open music menu")
-                }
-                title={
-                  musicMenuOpen
-                    ? (language === "es"
-                        ? "Reducir reproductor"
-                        : "Minimize player")
-                    : (language === "es"
-                        ? "Abrir menú de música"
-                        : "Open music menu")
-                }
-              >
-                {musicMenuOpen ? "↙" : "≡"}
-              </button>
+
 
               <button
                 type="button"
-                onClick={() =>
-                  setExpanded((current) => !current)
-                }
+                className={styles.recommendationSizeToggle}
+                onClick={() => setExpanded((current) => !current)}
+                aria-expanded={expanded}
                 aria-label={
                   expanded
                     ? content.minimizeRecommendation
@@ -935,16 +920,39 @@ export default function GlobalMusicPlayer({
 
       <div
         id="vanmotion-recommendation-music-list"
-        hidden={activeRecommendationData ? !musicMenuOpen : !expanded}
-        inert={activeRecommendationData ? !musicMenuOpen : !expanded}
+        hidden={activeRecommendationData ? !audioLibraryOpen : !expanded}
+        inert={activeRecommendationData ? !audioLibraryOpen : !expanded}
         className={`${styles.expandedContent} ${
-          activeRecommendationData && musicMenuOpen
-            ? styles.recommendationMusicDrawer
-            : expanded && !activeRecommendation
-              ? ""
-              : styles.expandedContentHidden
+          audioLibraryOpen || (expanded && !activeRecommendation)
+            ? ""
+            : styles.expandedContentHidden
         }`}
       >
+
+          {activeRecommendationData && audioLibraryOpen && (
+            <div className={styles.audioLibraryHeader}>
+              <button
+                type="button"
+                className={styles.audioLibraryCollapseButton}
+                onClick={() => {
+                  setAudioLibraryOpen(false);
+                  setExpanded(false);
+                }}
+                aria-label={
+                  language === "es"
+                    ? "Plegar selector de música"
+                    : "Collapse music selector"
+                }
+                title={
+                  language === "es"
+                    ? "Plegar reproductor"
+                    : "Minimize player"
+                }
+              >
+                ↙
+              </button>
+            </div>
+          )}
 
           <div className={styles.trackList}>
             {tracks.map((track, index) => {

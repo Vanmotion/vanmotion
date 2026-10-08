@@ -3496,3 +3496,460 @@ button.recommendationMusicMenuToggle {
   background: rgba(45,45,45,0.96) !important;
   outline: 1px solid white;
 }
+
+
+/* VANMOTION VIDEO ONLY TRANSPARENCY V14 */
+
+/* Sin listas debajo de un vídeo recomendado */
+.player.recommendationActive .expandedContent {
+  display: none !important;
+}
+
+/* Recuperar el acabado translúcido */
+.player.recommendationActive.expanded {
+  background: rgba(8, 8, 8, 0.58) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Vídeo abierto: únicamente el botón independiente de reducir */
+.player.recommendationActive.expanded
+.recommendationStageHeader {
+  display: none !important;
+}
+
+.player.recommendationActive.expanded
+.recommendationMenuCollapse {
+  display: inline-flex !important;
+  position: absolute !important;
+  top: 10px !important;
+  left: 10px !important;
+  right: auto !important;
+  z-index: 100 !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 38px !important;
+  height: 38px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  border-radius: 50% !important;
+
+  background: rgba(0,0,0,0.55) !important;
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.player.recommendationActive:not(.expanded)
+.recommendationMenuCollapse {
+  display: none !important;
+}
+
+/* Móvil: recuperar el control de ampliar.
+   Sin depender de la posición de los botones. */
+@media (max-width: 1024px), (hover: none), (pointer: coarse) {
+  .player.recommendationActive:not(.expanded)
+  .recommendationStageControls button {
+    display: none !important;
+  }
+
+  .player.recommendationActive:not(.expanded)
+  .recommendationStageControls button.recommendationSizeToggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .player.recommendationActive:not(.expanded)
+  .recommendationStageHeader {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+}
+
+
+/* VANMOTION SWITCH TO AUDIO V15 */
+
+/* Acceso discreto desde cualquier sección */
+.player.recommendationActive .switchToMusicButton {
+  position: absolute !important;
+  top: 10px !important;
+  left: 10px !important;
+  z-index: 120 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 36px !important;
+  height: 36px !important;
+
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  border-radius: 50% !important;
+
+  background: rgba(0,0,0,0.55) !important;
+  color: white !important;
+
+  font-size: 20px !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  touch-action: manipulation;
+}
+
+/* Al ampliar, se sitúa junto al botón de reducir */
+.player.recommendationActive.expanded .switchToMusicButton {
+  left: 56px !important;
+}
+
+.player .switchToMusicButton:hover,
+.player .switchToMusicButton:focus-visible {
+  background: rgba(35,35,35,0.85) !important;
+  outline: 1px solid white;
+}
+
+
+/* VANMOTION DISCREET VIDEO CONTROLS V16 */
+
+/* Botón de música reducido y alineado a la derecha */
+.player.recommendationActive > .switchToMusicButton {
+  position: absolute !important;
+  top: 9px !important;
+  left: auto !important;
+  right: 80px !important;
+  z-index: 120 !important;
+
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+  padding: 0 !important;
+
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 50% !important;
+  background: rgba(0,0,0,0.43) !important;
+  color: rgba(255,255,255,0.94) !important;
+  font-size: 16px !important;
+
+  -webkit-backdrop-filter: blur(5px) !important;
+  backdrop-filter: blur(5px) !important;
+  transition: opacity 160ms ease !important;
+}
+
+/* Al ampliar: música a la derecha y reducir a la izquierda */
+.player.recommendationActive.expanded > .switchToMusicButton {
+  top: 10px !important;
+  right: 10px !important;
+  left: auto !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+}
+
+.player.recommendationActive.expanded
+> .recommendationMenuCollapse {
+  background: rgba(0,0,0,0.43) !important;
+  border-color: rgba(255,255,255,0.14) !important;
+  transition: opacity 160ms ease !important;
+}
+
+/* ORDENADOR: aparecer únicamente al pasar el ratón */
+@media (hover: hover) and (pointer: fine) {
+  .player.recommendationActive > .switchToMusicButton,
+  .player.recommendationActive.expanded
+  > .recommendationMenuCollapse {
+    opacity: 0 !important;
+  }
+
+  .player.recommendationActive:hover
+  > .switchToMusicButton,
+  .player.recommendationActive:focus-within
+  > .switchToMusicButton,
+  .player.recommendationActive.expanded:hover
+  > .recommendationMenuCollapse,
+  .player.recommendationActive.expanded:focus-within
+  > .recommendationMenuCollapse {
+    opacity: 1 !important;
+  }
+}
+
+/* MÓVILES: discretos, pero siempre accesibles al tacto */
+@media (hover: none), (pointer: coarse) {
+  .player.recommendationActive:not(.expanded)
+  > .switchToMusicButton {
+    top: 8px !important;
+    right: 48px !important;
+    left: auto !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+  }
+
+  .player.recommendationActive.expanded
+  > .switchToMusicButton {
+    right: 10px !important;
+    left: auto !important;
+  }
+
+  .player.recommendationActive
+  > .switchToMusicButton,
+  .player.recommendationActive.expanded
+  > .recommendationMenuCollapse {
+    opacity: 0.68 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    touch-action: manipulation;
+  }
+
+  .player.recommendationActive
+  > .switchToMusicButton:focus-visible,
+  .player.recommendationActive.expanded
+  > .recommendationMenuCollapse:focus-visible {
+    opacity: 1 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player.recommendationActive > .switchToMusicButton,
+  .player.recommendationActive.expanded
+  > .recommendationMenuCollapse {
+    transition: none !important;
+  }
+}
+
+
+/* VANMOTION AUDIO SELECTOR CONTINUITY V17 */
+
+/* Biblioteca translúcida, independiente del vídeo */
+.player.recommendationActive.audioLibraryMode,
+.player.recommendationActive.expanded.audioLibraryMode,
+.player.recommendationActive.recommendationMinimized.audioLibraryMode:not(.expanded) {
+  width: min(350px, calc(100vw - 20px)) !important;
+  max-height: calc(100dvh - 24px) !important;
+  background: rgba(8,8,8,0.60) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+/* Mantener Vimeo o MP4 montado y reproduciéndose.
+   No usar display:none, hidden ni desmontar el iframe. */
+.player.recommendationActive.audioLibraryMode
+.recommendationStage {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  opacity: 0 !important;
+  clip-path: inset(100%) !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+.player.recommendationActive.audioLibraryMode
+.recommendationStage .youtubeEmbed {
+  width: 100% !important;
+  aspect-ratio: 16 / 9 !important;
+}
+
+/* Sin botones ni imagen de vídeo sobre el selector */
+.player.recommendationActive.audioLibraryMode
+> .switchToMusicButton,
+.player.recommendationActive.audioLibraryMode
+> .recommendationMenuCollapse {
+  display: none !important;
+}
+
+/* Mostrar solo la biblioteca */
+.player.recommendationActive.audioLibraryMode
+.expandedContent {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  max-height: min(65dvh, 480px) !important;
+  padding: 10px 12px 12px !important;
+  margin: 0 !important;
+  overflow-y: auto !important;
+  background: transparent !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.audioLibraryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 2px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.88);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.audioLibraryHeader button {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 7px;
+  color: white;
+  background: rgba(255,255,255,0.08);
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: normal;
+}
+
+/* Móviles */
+@media (max-width: 640px), (pointer: coarse) {
+  .player.recommendationActive.audioLibraryMode
+  .expandedContent {
+    max-height: min(60dvh, 440px) !important;
+    overscroll-behavior: contain;
+  }
+}
+
+
+/* VANMOTION COMPACT AUDIO SELECTOR V18 */
+
+/* Panel más estrecho y translúcido */
+.player.recommendationActive.audioLibraryMode,
+.player.recommendationActive.expanded.audioLibraryMode,
+.player.recommendationActive.recommendationMinimized.audioLibraryMode:not(.expanded) {
+  width: min(290px, calc(100vw - 20px)) !important;
+  height: auto !important;
+  max-height: min(58dvh, 355px) !important;
+  background: rgba(6, 6, 6, 0.80) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+/* Eliminar el espacio vacío superior sin desmontar el vídeo */
+.player.recommendationActive.recommendationMinimized.audioLibraryMode:not(.expanded)
+.recommendationStage,
+.player.recommendationActive.expanded.audioLibraryMode
+.recommendationStage {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  opacity: 0 !important;
+  clip-path: inset(100%) !important;
+  pointer-events: none !important;
+}
+
+/* Selector compacto */
+.player.recommendationActive.audioLibraryMode
+.expandedContent {
+  display: block !important;
+  position: relative !important;
+  top: auto !important;
+  width: 100% !important;
+  max-height: min(56dvh, 335px) !important;
+  margin: 0 !important;
+  padding: 8px 11px !important;
+  background: transparent !important;
+  border: 0 !important;
+  overflow-y: auto !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Sin repetir los vídeos recomendados en la lista */
+.player.recommendationActive.audioLibraryMode
+.recommendedInPlayer {
+  display: none !important;
+}
+
+/* Cabecera solo con el botón plegar */
+.player.recommendationActive.audioLibraryMode
+.audioLibraryHeader {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  min-height: 32px !important;
+  margin: 0 !important;
+  padding: 0 0 5px !important;
+  border: 0 !important;
+}
+
+/* Botón pequeño a la izquierda */
+.player.recommendationActive.audioLibraryMode
+.audioLibraryCollapseButton {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 29px !important;
+  height: 29px !important;
+  min-width: 29px !important;
+  min-height: 29px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  border-radius: 50% !important;
+  background: rgba(0,0,0,0.38) !important;
+  color: white !important;
+  font-size: 17px !important;
+  cursor: pointer !important;
+}
+
+/* Canciones más compactas */
+.player.recommendationActive.audioLibraryMode
+.trackList {
+  max-height: min(40dvh, 265px) !important;
+  margin: 0 !important;
+  overflow-y: auto !important;
+}
+
+.player.recommendationActive.audioLibraryMode
+.trackList button {
+  min-height: 35px !important;
+  padding: 5px 3px !important;
+}
+
+/* Adaptación táctil */
+@media (max-width: 640px), (pointer: coarse) {
+  .player.recommendationActive.audioLibraryMode,
+  .player.recommendationActive.recommendationMinimized.audioLibraryMode:not(.expanded) {
+    width: min(286px, calc(100vw - 16px)) !important;
+    max-height: min(55dvh, 335px) !important;
+  }
+
+  .player.recommendationActive.audioLibraryMode
+  .audioLibraryCollapseButton {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    touch-action: manipulation;
+  }
+}
+
+
+/* VANMOTION MATCH RADIO BACKGROUND V19 */
+
+/* Mismo fondo que el reproductor musical en móviles */
+@media (max-width: 1024px) {
+  .player.recommendationActive.audioLibraryMode,
+  .player.recommendationActive.expanded.audioLibraryMode,
+  .player.recommendationActive.recommendationMinimized.audioLibraryMode:not(.expanded) {
+    background: rgba(8, 8, 8, 0.58) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
