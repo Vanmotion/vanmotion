@@ -3368,3 +3368,131 @@
     font-size: 12px;
   }
 }
+
+
+/* VANMOTION RECOMMENDATION MENU FINAL V12 */
+
+/* Toda la fila selecciona el recomendado */
+.player .spotifyRecommendedTrack {
+  width: 100% !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  font: inherit !important;
+  color: inherit !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 0 !important;
+}
+
+.player .spotifyRecommendedTrack:hover,
+.player .spotifyRecommendedTrack:focus-visible {
+  background: rgba(255,255,255,0.07) !important;
+}
+
+.player .spotifyRecommendedTrack:focus-visible {
+  outline: 1px solid white !important;
+  outline-offset: -1px;
+}
+
+/* Vídeo ampliado: controles a la izquierda */
+.player.recommendationActive.expanded
+.recommendationStageHeader {
+  left: 10px !important;
+  right: auto !important;
+}
+
+/* Menú musical abierto: botón de reducir a la izquierda */
+.player.recommendationActive.recommendationMusicMenuOpen
+.recommendationStageHeader,
+.player.recommendationActive.recommendationMusicMenuOpen:not(:hover)
+.recommendationStageHeader,
+.player.recommendationActive.recommendationMusicMenuOpen:not(:hover):focus-within
+.recommendationStageHeader {
+  position: absolute !important;
+  top: 8px !important;
+  left: 10px !important;
+  right: auto !important;
+  z-index: 50 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* Sin ampliar ni otros botones mientras el menú está abierto */
+.player.recommendationActive.recommendationMusicMenuOpen
+.recommendationStageControls
+button:not(.recommendationMusicMenuToggle) {
+  display: none !important;
+}
+
+/* Botón ↙ visible en escritorio y móvil */
+.player.recommendationActive.recommendationMusicMenuOpen
+.recommendationStageControls
+button.recommendationMusicMenuToggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: rgba(0,0,0,0.8) !important;
+  color: white !important;
+  font-size: 17px !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+
+/* VANMOTION COLLAPSE BUTTON V13 */
+
+/* Ocultar controles antiguos con el selector desplegado */
+.player.recommendationActive.recommendationMusicMenuOpen
+.recommendationStageHeader {
+  display: none !important;
+}
+
+/* Botón independiente, siempre visible a la izquierda */
+.player.recommendationActive.recommendationMusicMenuOpen
+.recommendationMenuCollapse {
+  position: absolute !important;
+  top: 10px !important;
+  left: 10px !important;
+  right: auto !important;
+  z-index: 100 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+
+  padding: 0 !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  border-radius: 50% !important;
+
+  background: rgba(0,0,0,0.85) !important;
+  color: white !important;
+
+  font-size: 19px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  touch-action: manipulation;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.player .recommendationMenuCollapse:hover,
+.player .recommendationMenuCollapse:focus-visible {
+  background: rgba(45,45,45,0.96) !important;
+  outline: 1px solid white;
+}

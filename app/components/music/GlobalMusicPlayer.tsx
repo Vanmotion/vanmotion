@@ -546,6 +546,29 @@ export default function GlobalMusicPlayer({
           : ""
       }`}
     >
+      {activeRecommendationData && musicMenuOpen && (
+        <button
+          type="button"
+          className={styles.recommendationMenuCollapse}
+          onClick={() => {
+            setMusicMenuOpen(false);
+            setExpanded(false);
+          }}
+          aria-label={
+            language === "es"
+              ? "Volver al reproductor reducido"
+              : "Return to minimized player"
+          }
+          title={
+            language === "es"
+              ? "Reducir reproductor"
+              : "Minimize player"
+          }
+        >
+          ↙
+        </button>
+      )}
+
       <div className={styles.mainRow} hidden={Boolean(activeRecommendationData)}>
         <button
           type="button"
@@ -741,22 +764,35 @@ export default function GlobalMusicPlayer({
                 type="button"
                 className={styles.recommendationMusicMenuToggle}
                 onClick={() => {
-                  setMusicMenuOpen((current) => !current);
+                  if (musicMenuOpen) {
+                    setMusicMenuOpen(false);
+                    setExpanded(false);
+                  } else {
+                    setMusicMenuOpen(true);
+                  }
                 }}
                 aria-expanded={musicMenuOpen}
                 aria-controls="vanmotion-recommendation-music-list"
                 aria-label={
-                  language === "es"
-                    ? "Abrir menú de música"
-                    : "Open music menu"
+                  musicMenuOpen
+                    ? (language === "es"
+                        ? "Reducir reproductor"
+                        : "Minimize player")
+                    : (language === "es"
+                        ? "Abrir menú de música"
+                        : "Open music menu")
                 }
                 title={
-                  language === "es"
-                    ? "Abrir menú de música"
-                    : "Open music menu"
+                  musicMenuOpen
+                    ? (language === "es"
+                        ? "Reducir reproductor"
+                        : "Minimize player")
+                    : (language === "es"
+                        ? "Abrir menú de música"
+                        : "Open music menu")
                 }
               >
-                ≡
+                {musicMenuOpen ? "↙" : "≡"}
               </button>
 
               <button
@@ -910,39 +946,6 @@ export default function GlobalMusicPlayer({
         }`}
       >
 
-          {activeRecommendationData && musicMenuOpen && (
-            <div
-              className={styles.recommendationMusicQuickControls}
-              role="group"
-              aria-label="Controles de música VANMOTION"
-            >
-              <button
-                type="button"
-                aria-label={content.previousTrack}
-                onClick={() => {
-                  closeRecommendation();
-                  playPrevious();
-                }}
-              >‹</button>
-              <button
-                type="button"
-                aria-label={content.play}
-                onClick={() => {
-                  closeRecommendation();
-                  selectTrack(0, true);
-                }}
-              >▶ VANMOTION</button>
-              <button
-                type="button"
-                aria-label={content.nextTrack}
-                onClick={() => {
-                  closeRecommendation();
-                  playNext();
-                }}
-              >›</button>
-            </div>
-          )}
-
           <div className={styles.trackList}>
             {tracks.map((track, index) => {
               const active = index === currentIndex;
@@ -976,67 +979,40 @@ export default function GlobalMusicPlayer({
           {recommendations.length > 0 && (
             <div className={styles.recommendedInPlayer}>
 
-              {recommendations.map(
-                (recommendation) => {
-                  return (
-                    <div
-                      className={
-                        styles.spotifyRecommendedTrack
+              {recommendations.map((recommendation) => (
+                <button
+                  key={recommendation.id}
+                  type="button"
+                  className={styles.spotifyRecommendedTrack}
+                  onClick={() => selectRecommendation(recommendation.id)}
+                  aria-label={`Reproducir ${recommendation.title}`}
+                >
+                  <span className={styles.recommendedTrackLabel}>
+                    <strong>{recommendation.title}</strong>
+                  </span>
+
+                  <span
+                    className={styles.youtubePreviewButton}
+                    aria-hidden="true"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={
+                        recommendation.coverUrl ??
+                        "/brand/vanmotion-mark.webp"
                       }
-                      key={recommendation.id}
-                    >
-                      <div
-                        className={
-                          styles.recommendedTrackLabel
-                        }
-                      >
-
-                        <div>
-                          <strong>
-                            {recommendation.title}
-                          </strong>
-                        </div>
-                      </div>
-
-                      <button
-                          type="button"
-                          className={
-                            styles.youtubePreviewButton
-                          }
-                          onClick={() => {
-                            selectRecommendation(
-                              recommendation.id,
-                            );
-                          }}
-                          aria-label={`Reproducir ${recommendation.title}`}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={
-                              recommendation.coverUrl ??
-                              "/brand/vanmotion-mark.webp"
-                            }
-                            alt=""
-                            loading="lazy"
-                            decoding="async"
-                            fetchPriority="low"
-                            className={
-                              styles.youtubePreviewImage
-                            }
-                          />
-
-                          <span
-                            className={
-                              styles.youtubePreviewPlay
-                            }
-                          >
-                            ▶
-                          </span>
-                      </button>
-                    </div>
-                  );
-                },
-              )}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      fetchPriority="low"
+                      className={styles.youtubePreviewImage}
+                    />
+                    <span className={styles.youtubePreviewPlay}>
+                      ▶
+                    </span>
+                  </span>
+                </button>
+              ))}
             </div>
           )}
 
