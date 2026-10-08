@@ -156,6 +156,7 @@ export default function GlobalMusicPlayer({
   const pathname = usePathname();
   const previousPathnameRef = useRef(pathname);
   const [expanded, setExpanded] = useState(false);
+  const [musicMenuOpen, setMusicMenuOpen] = useState(false);
   const [activeRecommendation, setActiveRecommendation] =
     useState<string | null>(null);
   const [
@@ -307,6 +308,7 @@ export default function GlobalMusicPlayer({
   }, [pathname]);
 
   function closeRecommendation() {
+    setMusicMenuOpen(false);
     recommendationStartingRef.current = false;
     recommendationAutoplayRef.current = false;
     if (recommendationVideoRef.current) {
@@ -330,6 +332,7 @@ export default function GlobalMusicPlayer({
       return;
     }
 
+    setMusicMenuOpen(false);
     pausePlayback();
     setRecommendationVideoTime(0);
     setRecommendationError(null);
@@ -537,6 +540,10 @@ export default function GlobalMusicPlayer({
         activeRecommendationData && !expanded
           ? styles.recommendationMinimized
           : ""
+      } ${
+        activeRecommendationData && musicMenuOpen
+          ? styles.recommendationMusicMenuOpen
+          : ""
       }`}
     >
       <div className={styles.mainRow} hidden={Boolean(activeRecommendationData)}>
@@ -732,10 +739,21 @@ export default function GlobalMusicPlayer({
 
               <button
                 type="button"
+                className={styles.recommendationMusicMenuToggle}
                 onClick={() => {
+                  if (
+                    window.matchMedia(
+                      "(max-width: 1024px), (hover: none), (pointer: coarse)"
+                    ).matches
+                  ) {
+                    setMusicMenuOpen((current) => !current);
+                    return;
+                  }
                   closeRecommendation();
                   setExpanded(true);
                 }}
+                aria-expanded={musicMenuOpen}
+                aria-controls="vanmotion-recommendation-music-list"
                 aria-label={
                   language === "es"
                     ? "Abrir menú de música"
@@ -889,14 +907,50 @@ export default function GlobalMusicPlayer({
       )}
 
       <div
-        hidden={!expanded || Boolean(activeRecommendation)}
-        inert={!expanded || Boolean(activeRecommendation)}
+        id="vanmotion-recommendation-music-list"
+        hidden={activeRecommendationData ? !musicMenuOpen : !expanded}
+        inert={activeRecommendationData ? !musicMenuOpen : !expanded}
         className={`${styles.expandedContent} ${
-          expanded && !activeRecommendation
-            ? ""
-            : styles.expandedContentHidden
+          activeRecommendationData && musicMenuOpen
+            ? styles.recommendationMusicDrawer
+            : expanded && !activeRecommendation
+              ? ""
+              : styles.expandedContentHidden
         }`}
       >
+
+          {activeRecommendationData && musicMenuOpen && (
+            <div
+              className={styles.recommendationMusicQuickControls}
+              role="group"
+              aria-label="Controles de música VANMOTION"
+            >
+              <button
+                type="button"
+                aria-label={content.previousTrack}
+                onClick={() => {
+                  closeRecommendation();
+                  playPrevious();
+                }}
+              >‹</button>
+              <button
+                type="button"
+                aria-label={content.play}
+                onClick={() => {
+                  closeRecommendation();
+                  selectTrack(0, true);
+                }}
+              >▶ VANMOTION</button>
+              <button
+                type="button"
+                aria-label={content.nextTrack}
+                onClick={() => {
+                  closeRecommendation();
+                  playNext();
+                }}
+              >›</button>
+            </div>
+          )}
 
           <div className={styles.trackList}>
             {tracks.map((track, index) => {

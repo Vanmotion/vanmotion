@@ -3256,3 +3256,67 @@
     backdrop-filter: none !important;
   }
 }
+
+
+/* VANMOTION · MOBILE MUSIC MENU DURING RECOMMENDATIONS */
+@media (max-width: 1024px), (pointer: coarse) {
+  .player.recommendationActive
+  .recommendationStageHeader {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  .player.recommendationActive
+  .recommendationStageControls
+  button.recommendationMusicMenuToggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+  }
+
+  .player.recommendationActive.recommendationMusicMenuOpen {
+    max-height: calc(100dvh - 16px - env(safe-area-inset-bottom, 0px)) !important;
+    overflow-y: auto !important;
+    background: rgba(6, 6, 6, 0.94) !important;
+  }
+
+  .player.recommendationActive.recommendationMinimized.recommendationMusicMenuOpen:not(.expanded) {
+    width: min(360px, calc(100vw - 12px)) !important;
+  }
+
+  .player.recommendationActive .recommendationMusicDrawer {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    max-height: min(44dvh, 360px) !important;
+    padding: 12px !important;
+    overflow-y: auto !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: rgba(6, 6, 6, 0.96) !important;
+    border-top: 1px solid rgba(255,255,255,0.12) !important;
+  }
+
+  .recommendationMusicQuickControls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 5px 0 12px;
+  }
+
+  .recommendationMusicQuickControls button {
+    min-height: 36px;
+    min-width: 42px;
+    padding: 5px 12px;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+  }
+}
