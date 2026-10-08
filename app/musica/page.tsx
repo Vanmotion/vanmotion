@@ -15,6 +15,7 @@ import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
 import HeroMusicMonitor from "./HeroMusicMonitor";
 import RecommendationVideo from "./RecommendationVideo";
+import ExclusiveMediaCoordinator from "./ExclusiveMediaCoordinator";
 import styles from "./musica.module.css";
 import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
@@ -317,6 +318,7 @@ export default async function MusicPage() {
       </header>
 
       <main>
+        <ExclusiveMediaCoordinator />
         <section
           className={styles.hero}
           aria-labelledby="music-hero-title"
@@ -447,7 +449,7 @@ export default async function MusicPage() {
                       </p>
 
                       {recommendation.videoUrl ? (
-                        <div className={styles.recommendVideo}>
+                        <div className={styles.recommendVideo} data-vanmotion-recommendation>
                           {isYouTubeUrl(recommendation.videoUrl) &&
                           recommendation.youtubeVideoId ? (
                             <iframe
