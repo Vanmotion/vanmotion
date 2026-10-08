@@ -187,6 +187,7 @@ export default function GlobalMusicPlayer({
     setRecommendationVideoState,
     setRecommendationVideoTime,
     selectTrack,
+    changeProgress,
     playPrevious,
     playNext,
     setLastTrackEndedHandler,
@@ -385,6 +386,71 @@ export default function GlobalMusicPlayer({
   useEffect(() => {
     selectRecommendationRef.current = selectRecommendation;
   });
+
+  // VANMOTION AUTO-SEQUENCE VIMEO
+  const advanceRecommendationRef =
+    useRef<(id: string) => void>(() => {});
+
+  advanceRecommendationRef.current = (finishedId) => {
+    if (activeRecommendation !== finishedId) return;
+
+    const index = recommendations.findIndex(
+      (item) => item.id === finishedId
+    );
+
+    if (index < 0) return;
+
+    const next = recommendations
+      .slice(index + 1)
+      .find((item) => Boolean(item.videoUrl));
+
+    if (next) {
+      selectRecommendationRef.current(next.id);
+      return;
+    }
+
+    closeRecommendation();
+    changeProgress(0);
+
+    if (tracks.length > 0) {
+      selectTrack(0, true);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      !activeRecommendationData ||
+      !getVimeoEmbedUrl(recommendationVideoUrl)
+    ) {
+      return;
+    }
+
+    const iframe = document.querySelector<HTMLIFrameElement>(
+      'aside iframe[src^="https://player.vimeo.com/video/"]'
+    );
+
+    if (!iframe) return;
+
+    const player = new VimeoPlayer(iframe);
+    const finishedId = activeRecommendationData.id;
+    let handled = false;
+
+    const onEnded = () => {
+      if (handled) return;
+      handled = true;
+      advanceRecommendationRef.current(finishedId);
+    };
+
+    player.on("ended", onEnded);
+
+    return () => {
+      player.off("ended", onEnded);
+    };
+  }, [
+    activeRecommendationData?.id,
+    recommendationVideoUrl,
+  ]);
+
 
   useEffect(() => {
     setLastTrackEndedHandler(() => {
@@ -603,7 +669,8 @@ export default function GlobalMusicPlayer({
             </span>
 
             <div className={styles.recommendationStageControls}>
-              <button
+              {!getVimeoEmbedUrl(recommendationVideoUrl) && (
+                <button
                 type="button"
                 onClick={() => {
                   setRecommendationError(null);
@@ -627,6 +694,7 @@ export default function GlobalMusicPlayer({
               >
                 {recommendationIsPlaying ? "Ⅱ" : "▶"}
               </button>
+              )}
 
               <button
                 type="button"
