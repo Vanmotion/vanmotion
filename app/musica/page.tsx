@@ -40,6 +40,26 @@ function isYouTubeUrl(value: string | null): boolean {
   }
 }
 
+function getVimeoEmbedUrl(value: string): string | null {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (host !== "vimeo.com" && host !== "player.vimeo.com") {
+      return null;
+    }
+
+    const parts = url.pathname.split("/").filter(Boolean);
+    const id = parts.find((part) => /^\d+$/.test(part));
+
+    if (!id) return null;
+
+    return `https://player.vimeo.com/video/${id}?dnt=1`;
+  } catch {
+    return null;
+  }
+}
+
 function absoluteUrl(value: string): string {
   try {
     return new URL(value, SITE_URL).toString();
@@ -429,6 +449,14 @@ export default async function MusicPage() {
                               title={`${recommendation.title} · ${recommendation.artist}`}
                               loading="lazy"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; web-share"
+                              allowFullScreen
+                            />
+                          ) : getVimeoEmbedUrl(recommendation.videoUrl) ? (
+                            <iframe
+                              src={getVimeoEmbedUrl(recommendation.videoUrl)!}
+                              title={`${recommendation.title} · ${recommendation.artist}`}
+                              loading="lazy"
+                              allow="autoplay; fullscreen; picture-in-picture"
                               allowFullScreen
                             />
                           ) : (
