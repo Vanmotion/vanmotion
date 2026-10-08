@@ -3320,3 +3320,51 @@
     font-size: 12px;
   }
 }
+
+
+/* VANMOTION · DESKTOP MUSIC MENU WITHOUT STOPPING VIDEO */
+@media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+  .player.recommendationActive.recommendationMusicMenuOpen,
+  .player.recommendationActive.recommendationMinimized.recommendationMusicMenuOpen:not(.expanded) {
+    max-height: calc(100dvh - 24px - env(safe-area-inset-bottom, 0px)) !important;
+    overflow-y: auto !important;
+    background: rgba(6, 6, 6, 0.96) !important;
+  }
+
+  .player.recommendationActive.recommendationMinimized.recommendationMusicMenuOpen:not(.expanded) {
+    width: min(390px, calc(100vw - 24px)) !important;
+  }
+
+  .player.recommendationActive .recommendationMusicDrawer {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    max-height: min(48dvh, 400px) !important;
+    padding: 12px !important;
+    overflow-y: auto !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: rgba(6, 6, 6, 0.96) !important;
+    border-top: 1px solid rgba(255,255,255,0.12) !important;
+  }
+
+  .recommendationMusicQuickControls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 5px 0 12px;
+  }
+
+  .recommendationMusicQuickControls button {
+    min-height: 36px;
+    min-width: 42px;
+    padding: 5px 12px;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+  }
+}

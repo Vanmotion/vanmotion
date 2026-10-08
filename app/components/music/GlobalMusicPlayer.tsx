@@ -741,16 +741,7 @@ export default function GlobalMusicPlayer({
                 type="button"
                 className={styles.recommendationMusicMenuToggle}
                 onClick={() => {
-                  if (
-                    window.matchMedia(
-                      "(max-width: 1024px), (hover: none), (pointer: coarse)"
-                    ).matches
-                  ) {
-                    setMusicMenuOpen((current) => !current);
-                    return;
-                  }
-                  closeRecommendation();
-                  setExpanded(true);
+                  setMusicMenuOpen((current) => !current);
                 }}
                 aria-expanded={musicMenuOpen}
                 aria-controls="vanmotion-recommendation-music-list"
