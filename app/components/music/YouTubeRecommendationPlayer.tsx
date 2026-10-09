@@ -12,6 +12,9 @@ export type YouTubePlayerHandle = {
   getCurrentTime?: () => number;
   getPlayerState?: () => number;
   seekTo?: (seconds: number, allowSeekAhead: boolean) => void;
+  getPlaybackRate?: () => number;
+  setPlaybackRate?: (rate: number) => void;
+  getAvailablePlaybackRates?: () => number[];
   getIframe?: () => HTMLIFrameElement;
 };
 
@@ -296,6 +299,9 @@ export default function YouTubeRecommendationPlayer({
 
           if (!sync.playing) {
             safariPlayingSinceRef.current = 0;
+            if (player.getPlaybackRate?.() !== 1) {
+              player.setPlaybackRate?.(1);
+            }
             if (state === 1 || state === 3) player.pauseVideo?.();
             return;
           }
@@ -316,13 +322,49 @@ export default function YouTubeRecommendationPlayer({
 
           if (
             stableFor >= 1600 &&
-            (lastProjectionSeekRef.current === 0 || sinceSeek >= 5000) &&
             typeof actual === "number" &&
-            Number.isFinite(actual) &&
-            Math.abs(target - actual) > 1.35
+            Number.isFinite(actual)
           ) {
-            lastProjectionSeekRef.current = now;
-            player.seekTo?.(target, true);
+            const drift = target - actual;
+            const rates = player.getAvailablePlaybackRates?.() ?? [1];
+            const reportedRate = player.getPlaybackRate?.();
+            const currentRate =
+              typeof reportedRate === "number" &&
+              Number.isFinite(reportedRate) ? reportedRate : 1;
+
+            const canSpeedUp = rates.includes(1.25);
+            const canSlowDown = rates.includes(0.75);
+            let nextRate = currentRate;
+
+            if (drift > 0.5 && drift < 2.2 && canSpeedUp) {
+              nextRate = 1.25;
+            } else if (
+              drift < -0.5 && drift > -1.5 && canSlowDown
+            ) {
+              nextRate = 0.75;
+            } else if (
+              Math.abs(drift) < 0.2 ||
+              drift >= 2.2 || drift <= -1.5
+            ) {
+              nextRate = 1;
+            }
+
+            if (nextRate !== currentRate) {
+              player.setPlaybackRate?.(nextRate);
+            }
+
+            const needsSeek =
+              drift > (canSpeedUp ? 2.2 : 1.1) ||
+              drift < (canSlowDown ? -1.5 : -1.1);
+
+            if (
+              needsSeek &&
+              (lastProjectionSeekRef.current === 0 ||
+                sinceSeek >= 6000)
+            ) {
+              lastProjectionSeekRef.current = now;
+              player.seekTo?.(target, true);
+            }
           }
 
           return;
