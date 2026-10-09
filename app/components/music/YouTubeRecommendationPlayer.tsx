@@ -152,6 +152,7 @@ export default function YouTubeRecommendationPlayer({
   const playerRef = useRef<YouTubePlayerInstance | null>(null);
   const playerReadyRef = useRef(false);
   const lastProjectionSeekRef = useRef(0);
+  const safariPlayingSinceRef = useRef(0);
   const playingRef = useRef(playing);
   const callbacksRef = useRef({
     onPlaying,
@@ -282,6 +283,51 @@ export default function YouTubeRecommendationPlayer({
         const target = Math.max(0, sync.seconds + (sync.playing
           ? Math.max(0, (performance.now() - sync.sentAt) / 1000)
           : 0));
+        // Safari: permitir que YouTube estabilice la reproducción
+        // antes de corregir el tiempo. Firefox conserva su ajuste.
+        const safariProjection =
+          /Safari/i.test(navigator.userAgent) &&
+          !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|Android/i.test(
+            navigator.userAgent
+          );
+
+        if (safariProjection) {
+          const now = performance.now();
+
+          if (!sync.playing) {
+            safariPlayingSinceRef.current = 0;
+            if (state === 1 || state === 3) player.pauseVideo?.();
+            return;
+          }
+
+          if (state !== 1) {
+            safariPlayingSinceRef.current = 0;
+            if (state !== 3) player.playVideo?.();
+            return;
+          }
+
+          if (safariPlayingSinceRef.current === 0) {
+            safariPlayingSinceRef.current = now;
+            return;
+          }
+
+          const stableFor = now - safariPlayingSinceRef.current;
+          const sinceSeek = now - lastProjectionSeekRef.current;
+
+          if (
+            stableFor >= 1600 &&
+            (lastProjectionSeekRef.current === 0 || sinceSeek >= 5000) &&
+            typeof actual === "number" &&
+            Number.isFinite(actual) &&
+            Math.abs(target - actual) > 1.35
+          ) {
+            lastProjectionSeekRef.current = now;
+            player.seekTo?.(target, true);
+          }
+
+          return;
+        }
+
         // Alinear la proyección ANTES de iniciar su reproducción evita
         // que arranque desde el segundo cero mientras el flotante ya avanza.
         if (typeof actual === "number" && Number.isFinite(actual)) {
