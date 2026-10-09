@@ -790,6 +790,7 @@ const baseLeft =
           videoId={activeYouTubeId}
           title="Proyección musical VANMOTION"
           playing={recommendationVideoPlaying}
+          syncRole="projection"
           muted
           controls={false}
           className={styles.heroMonitorVideo}

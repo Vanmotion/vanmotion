@@ -820,6 +820,7 @@ export default function GlobalMusicPlayer({
               videoId={activeYouTubeId}
               title={activeRecommendationData.title}
               playing={recommendationIsPlaying}
+              syncRole="source"
               onPlaying={() => {
                 pausePlayback();
                 setRecommendationIsPlaying(true);

@@ -9,8 +9,36 @@ export type YouTubePlayerHandle = {
   pauseVideo?: () => void;
   stopVideo?: () => void;
   mute?: () => void;
+  getCurrentTime?: () => number;
+  getPlayerState?: () => number;
+  seekTo?: (seconds: number, allowSeekAhead: boolean) => void;
   getIframe?: () => HTMLIFrameElement;
 };
+
+// VANMOTION: una sola fuente sonora; el monitor sigue su posición.
+// Los dos iframes son de YouTube: no se puede copiar su imagen al canvas.
+type MonitorSync = {
+  videoId: string;
+  seconds: number;
+  playing: boolean;
+  sentAt: number;
+};
+
+const MONITOR_SYNC_EVENT = "vanmotion:youtube-monitor-sync";
+
+function publishYouTubeSync(player: YouTubePlayerHandle | null, videoId: string) {
+  if (!player) return;
+  try {
+    const seconds = player.getCurrentTime?.();
+    const state = player.getPlayerState?.();
+    if (typeof seconds !== "number" || !Number.isFinite(seconds) || typeof state !== "number") return;
+    window.dispatchEvent(new CustomEvent<MonitorSync>(MONITOR_SYNC_EVENT, {
+      detail: { videoId, seconds, playing: state === 1, sentAt: performance.now() },
+    }));
+  } catch {
+    // YouTube puede no estar listo durante un cambio de canción.
+  }
+}
 
 type YouTubePlayerInstance = YouTubePlayerHandle;
 type YouTubeStateChangeEvent = { data: number };
@@ -102,6 +130,7 @@ type YouTubeRecommendationPlayerProps = {
   muted?: boolean;
   controls?: boolean;
   className?: string;
+  syncRole?: "source" | "projection";
 };
 
 export default function YouTubeRecommendationPlayer({
@@ -117,9 +146,12 @@ export default function YouTubeRecommendationPlayer({
   muted = false,
   controls = true,
   className,
+  syncRole,
 }: YouTubeRecommendationPlayerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayerInstance | null>(null);
+  const playerReadyRef = useRef(false);
+  const lastProjectionSeekRef = useRef(0);
   const playingRef = useRef(playing);
   const callbacksRef = useRef({
     onPlaying,
@@ -168,13 +200,16 @@ export default function YouTubeRecommendationPlayer({
           onReady: (event) => {
             if (cancelled) return;
             playerRef.current = event.target;
+            playerReadyRef.current = true;
+            if (syncRole === "source") publishYouTubeSync(event.target, videoId);
             if (externalPlayerRef) externalPlayerRef.current = event.target;
             if (muted) event.target.mute?.();
             callbacksRef.current.onReady?.();
-            if (playingRef.current) event.target.playVideo?.();
+            if (playingRef.current && syncRole !== "projection") event.target.playVideo?.();
           },
           onStateChange: (event) => {
             if (cancelled) return;
+            if (syncRole === "source") publishYouTubeSync(playerRef.current, videoId);
             if (event.data === 1) callbacksRef.current.onPlaying();
             else if (event.data === 2) callbacksRef.current.onPaused();
             else if (event.data === 0) callbacksRef.current.onEnded();
@@ -203,6 +238,7 @@ export default function YouTubeRecommendationPlayer({
 
     return () => {
       cancelled = true;
+      playerReadyRef.current = false;
       if (externalPlayerRef && externalPlayerRef.current === instance) {
         externalPlayerRef.current = null;
       }
@@ -211,14 +247,62 @@ export default function YouTubeRecommendationPlayer({
       // React owns the host; YouTube owns its children.
       host.replaceChildren();
     };
-  }, [videoId, externalPlayerRef, muted, controls]);
+  }, [videoId, externalPlayerRef, muted, controls, syncRole]);
 
   useEffect(() => {
     const player = playerRef.current;
-    if (!player) return;
+    if (!player || syncRole === "projection") return;
     if (playing) player.playVideo?.();
     else player.pauseVideo?.();
-  }, [playing]);
+  }, [playing, syncRole]);
+
+  // Fuente: anuncia estado y tiempo incluso después de saltar dentro del vídeo.
+  useEffect(() => {
+    if (syncRole !== "source") return;
+    const tick = () => {
+      if (playerReadyRef.current) publishYouTubeSync(playerRef.current, videoId);
+    };
+    const interval = window.setInterval(tick, 400);
+    return () => window.clearInterval(interval);
+  }, [syncRole, videoId]);
+
+  // Proyección: siempre silenciada; sigue al flotante y corrige el desfase.
+  useEffect(() => {
+    if (syncRole !== "projection") return;
+    const follow = (event: Event) => {
+      const sync = (event as CustomEvent<MonitorSync>).detail;
+      if (!sync || sync.videoId !== videoId || !playerReadyRef.current) return;
+      if (!Number.isFinite(sync.seconds) || !Number.isFinite(sync.sentAt)) return;
+      if (performance.now() - sync.sentAt > 1800) return;
+      const player = playerRef.current;
+      if (!player) return;
+      try {
+        const state = player.getPlayerState?.();
+        const actual = player.getCurrentTime?.();
+        const target = Math.max(0, sync.seconds + (sync.playing
+          ? Math.max(0, (performance.now() - sync.sentAt) / 1000)
+          : 0));
+        if (sync.playing) {
+          if (state !== 1 && state !== 3) player.playVideo?.();
+        } else if (state === 1 || state === 3) {
+          player.pauseVideo?.();
+        }
+        if (typeof actual !== "number" || !Number.isFinite(actual)) return;
+        const difference = Math.abs(target - actual);
+        const now = performance.now();
+        const tolerance = sync.playing ? 0.7 : 0.4;
+        if (difference > tolerance &&
+            (difference > 3 || now - lastProjectionSeekRef.current > 1200)) {
+          lastProjectionSeekRef.current = now;
+          player.seekTo?.(target, true);
+        }
+      } catch {
+        // En Safari/Firefox el iframe puede tardar en admitir comandos.
+      }
+    };
+    window.addEventListener(MONITOR_SYNC_EVENT, follow);
+    return () => window.removeEventListener(MONITOR_SYNC_EVENT, follow);
+  }, [syncRole, videoId]);
 
   return (
     <div
