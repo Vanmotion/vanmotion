@@ -5,6 +5,8 @@ import { flushSync } from "react-dom";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import VimeoPlayer from "@vimeo/player";
+import YouTubeRecommendationPlayer from "./YouTubeRecommendationPlayer";
+import { getYouTubeVideoId } from "./YouTubeUrl";
 
 import type { Language } from "@/app/language";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
@@ -202,6 +204,8 @@ export default function GlobalMusicPlayer({
   const recommendationVideoUrl =
     activeRecommendationData?.videoUrl?.trim() || null;
 
+  const activeYouTubeId = getYouTubeVideoId(recommendationVideoUrl);
+
   const [preferVp9Video, setPreferVp9Video] =
     useState(false);
 
@@ -363,6 +367,11 @@ export default function GlobalMusicPlayer({
           // Vimeo conserva su botón de reproducción.
         });
       }
+      return;
+    }
+
+    if (getYouTubeVideoId(selectedRecommendation.videoUrl)) {
+      recommendationStartingRef.current = false;
       return;
     }
 
@@ -805,7 +814,27 @@ export default function GlobalMusicPlayer({
             </div>
           </div>
 
-          {getVimeoEmbedUrl(recommendationVideoUrl) ? (
+          {activeYouTubeId ? (
+            <YouTubeRecommendationPlayer
+              key={activeRecommendationData.id}
+              videoId={activeYouTubeId}
+              title={activeRecommendationData.title}
+              playing={recommendationIsPlaying}
+              onPlaying={() => {
+                pausePlayback();
+                setRecommendationIsPlaying(true);
+                setRecommendationError(null);
+              }}
+              onPaused={() => setRecommendationIsPlaying(false)}
+              onEnded={() => {
+                advanceRecommendationRef.current(activeRecommendationData.id);
+              }}
+              onError={(message) => {
+                setRecommendationIsPlaying(false);
+                setRecommendationError(message);
+              }}
+            />
+          ) : getVimeoEmbedUrl(recommendationVideoUrl) ? (
             <iframe
               key={activeRecommendationData.id}
               src={getVimeoEmbedUrl(recommendationVideoUrl)!}

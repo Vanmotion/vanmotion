@@ -11,6 +11,8 @@ import {
 
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
 import styles from "./musica.module.css";
+import YouTubeRecommendationPlayer from "@/app/components/music/YouTubeRecommendationPlayer";
+import { getYouTubeVideoId } from "@/app/components/music/YouTubeUrl";
 
 const IMAGE_WIDTH = 1672;
 const IMAGE_HEIGHT = 941;
@@ -292,12 +294,16 @@ export default function HeroMusicMonitor({
     currentTrack,
     isPlaying,
     recommendationVideoId,
+    recommendationVideoPlaying,
   } = useMusicPlayer();
 
   const activeRecommendation = recommendations.find(
     (item) => item.id === recommendationVideoId
   );
   const activeVimeoId = getVimeoId(
+    activeRecommendation?.videoUrl ?? null
+  );
+  const activeYouTubeId = getYouTubeVideoId(
     activeRecommendation?.videoUrl ?? null
   );
 
@@ -316,7 +322,7 @@ export default function HeroMusicMonitor({
     useState(false);
 
   useEffect(() => {
-    if (!recommendationVideoId) {
+    if (!recommendationVideoId || activeYouTubeId) {
       const resetFrame = window.requestAnimationFrame(() => {
         setMirrorAvailable(false);
       });
@@ -350,10 +356,10 @@ export default function HeroMusicMonitor({
         cancelAnimationFrame(frame);
       }
     };
-  }, [recommendationVideoId]);
+  }, [recommendationVideoId, activeYouTubeId]);
 
   useEffect(() => {
-    if (!recommendationVideoId || !mirrorAvailable) {
+    if (!recommendationVideoId || !mirrorAvailable || activeYouTubeId) {
       return;
     }
 
@@ -476,6 +482,7 @@ export default function HeroMusicMonitor({
   }, [
     recommendationVideoId,
     mirrorAvailable,
+    activeYouTubeId,
   ]);
 
   // vanmotion-vimeo-projection
@@ -777,7 +784,21 @@ const baseLeft =
       style={geometryStyle}
       aria-hidden="true"
     >
-      {activeVimeoId ? (
+      {activeYouTubeId ? (
+        <YouTubeRecommendationPlayer
+          key={activeYouTubeId}
+          videoId={activeYouTubeId}
+          title="Proyección musical VANMOTION"
+          playing={recommendationVideoPlaying}
+          muted
+          controls={false}
+          className={styles.heroMonitorVideo}
+          onPlaying={() => {}}
+          onPaused={() => {}}
+          onEnded={() => {}}
+          onError={() => {}}
+        />
+      ) : activeVimeoId ? (
         <iframe
           ref={projectedIframeRef}
           title="Proyección musical VANMOTION"
