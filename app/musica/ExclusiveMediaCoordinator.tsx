@@ -138,7 +138,8 @@ export default function ExclusiveMediaCoordinator() {
         .forEach((frame) => {
           if (
             youtubePlayers.has(frame) ||
-            !isPlaybackSource(frame)
+            !isPlaybackSource(frame) ||
+            Boolean(frame.closest("aside"))
           ) return;
 
           try {
