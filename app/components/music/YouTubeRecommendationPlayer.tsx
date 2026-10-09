@@ -262,7 +262,7 @@ export default function YouTubeRecommendationPlayer({
     const tick = () => {
       if (playerReadyRef.current) publishYouTubeSync(playerRef.current, videoId);
     };
-    const interval = window.setInterval(tick, 400);
+    const interval = window.setInterval(tick, 250);
     return () => window.clearInterval(interval);
   }, [syncRole, videoId]);
 
@@ -282,19 +282,25 @@ export default function YouTubeRecommendationPlayer({
         const target = Math.max(0, sync.seconds + (sync.playing
           ? Math.max(0, (performance.now() - sync.sentAt) / 1000)
           : 0));
+        // Alinear la proyección ANTES de iniciar su reproducción evita
+        // que arranque desde el segundo cero mientras el flotante ya avanza.
+        if (typeof actual === "number" && Number.isFinite(actual)) {
+          const difference = Math.abs(target - actual);
+          const now = performance.now();
+          const tolerance = sync.playing ? 0.42 : 0.2;
+          const enoughTime = lastProjectionSeekRef.current === 0 ||
+            now - lastProjectionSeekRef.current > 1250;
+
+          if (difference > tolerance && (difference > 2.5 || enoughTime)) {
+            lastProjectionSeekRef.current = now;
+            player.seekTo?.(target, true);
+          }
+        }
+
         if (sync.playing) {
           if (state !== 1 && state !== 3) player.playVideo?.();
         } else if (state === 1 || state === 3) {
           player.pauseVideo?.();
-        }
-        if (typeof actual !== "number" || !Number.isFinite(actual)) return;
-        const difference = Math.abs(target - actual);
-        const now = performance.now();
-        const tolerance = sync.playing ? 0.7 : 0.4;
-        if (difference > tolerance &&
-            (difference > 3 || now - lastProjectionSeekRef.current > 1200)) {
-          lastProjectionSeekRef.current = now;
-          player.seekTo?.(target, true);
         }
       } catch {
         // En Safari/Firefox el iframe puede tardar en admitir comandos.
