@@ -73,6 +73,11 @@ const staticPages: MetadataRoute.Sitemap = [
 async function getVehiclePages(): Promise<MetadataRoute.Sitemap> {
   try {
     const vehicles = await prisma.vehicle.findMany({
+      where: {
+        status: {
+          in: ["AVAILABLE", "RESERVED", "SOLD", "EMBLEM"],
+        },
+      },
       select: {
         id: true,
         updatedAt: true,
