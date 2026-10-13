@@ -1,2 +1,8 @@
 tmp-video/
 tmp-calibracion/
+.venv-calibrador/
+.env
+.env.*
+backup-autumn-night/
+*.bak
+*.bak-*
