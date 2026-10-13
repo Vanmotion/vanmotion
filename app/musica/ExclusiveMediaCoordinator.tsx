@@ -90,6 +90,9 @@ export default function ExclusiveMediaCoordinator() {
 
     document.addEventListener("play", handleNativePlay, true);
 
+    const handleFloatingVideoPlay = () => pauseOthers(document.body);
+    window.addEventListener("vanmotion:floating-video-play", handleFloatingVideoPlay);
+
     const discoverPlayers = () => {
       if (disposed) return;
 
@@ -111,7 +114,10 @@ export default function ExclusiveMediaCoordinator() {
           ) return;
 
           const player = new VimeoPlayer(frame);
-          const handlePlay = () => pauseOthers(frame);
+          const handlePlay = () => {
+            pauseOthers(frame);
+            window.dispatchEvent(new Event("vanmotion:embedded-video-play"));
+          };
 
           vimeoPlayers.set(frame, { player, handlePlay });
           player.on("play", handlePlay);
@@ -148,6 +154,7 @@ export default function ExclusiveMediaCoordinator() {
                 onStateChange: (event) => {
                   if (event.data === yt.PlayerState.PLAYING) {
                     pauseOthers(frame);
+                    window.dispatchEvent(new Event("vanmotion:embedded-video-play"));
                   }
                 },
               },
@@ -161,6 +168,12 @@ export default function ExclusiveMediaCoordinator() {
     };
 
     const observer = new MutationObserver(discoverPlayers);
+    const youtubeDiscoveryTimer = window.setInterval(() => {
+      discoverPlayers();
+      if (ytWindow.YT?.Player) {
+        window.clearInterval(youtubeDiscoveryTimer);
+      }
+    }, 500);
 
     observer.observe(document.body, {
       childList: true,
@@ -192,6 +205,8 @@ export default function ExclusiveMediaCoordinator() {
     return () => {
       disposed = true;
       observer.disconnect();
+      window.clearInterval(youtubeDiscoveryTimer);
+      window.removeEventListener("vanmotion:floating-video-play", handleFloatingVideoPlay);
 
       document.removeEventListener(
         "play",

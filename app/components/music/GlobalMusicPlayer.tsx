@@ -286,6 +286,20 @@ export default function GlobalMusicPlayer({
   }, [setRecommendationVideoState]);
 
   useEffect(() => {
+    const pauseFloatingForEmbedded = () => {
+      recommendationStartingRef.current = false;
+      recommendationAutoplayRef.current = false;
+      recommendationVideoRef.current?.pause();
+      if (vimeoControllerRef.current) {
+        void vimeoControllerRef.current.pause().catch(() => {});
+      }
+      setRecommendationIsPlaying(false);
+    };
+    window.addEventListener("vanmotion:embedded-video-play", pauseFloatingForEmbedded);
+    return () => window.removeEventListener("vanmotion:embedded-video-play", pauseFloatingForEmbedded);
+  }, []);
+
+  useEffect(() => {
     setAudioStartHandler(() => {
       recommendationStartingRef.current = false;
       recommendationAutoplayRef.current = false;
@@ -336,6 +350,7 @@ export default function GlobalMusicPlayer({
       return;
     }
 
+    window.dispatchEvent(new Event("vanmotion:floating-video-play"));
     pausePlayback();
     setRecommendationVideoTime(0);
     setRecommendationError(null);
@@ -822,6 +837,7 @@ export default function GlobalMusicPlayer({
               playing={recommendationIsPlaying}
               syncRole="source"
               onPlaying={() => {
+                window.dispatchEvent(new Event("vanmotion:floating-video-play"));
                 pausePlayback();
                 setRecommendationIsPlaying(true);
                 setRecommendationError(null);
