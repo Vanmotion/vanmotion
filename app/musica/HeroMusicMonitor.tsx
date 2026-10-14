@@ -46,6 +46,141 @@ const EXACT_CORNER_CALIBRATIONS: Record<string, ExactCorners> = {
   },
 };
 
+const WINTER_EXACT_CORNER_CALIBRATIONS: Record<string, ExactCorners> = {
+  "manana.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+  "cloudy/manana.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+  "rain/manana.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+  "snow/manana.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+  "manana-dia.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+  "cloudy/manana-dia.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+  "rain/manana-dia.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+  "snow/manana-dia.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "dia.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "cloudy/dia.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "rain/dia.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "snow/dia.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "atardecer.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "cloudy/atardecer.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "rain/atardecer.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "snow/atardecer.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "noche.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "cloudy/noche.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "rain/noche.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+
+  "snow/noche.webp": {
+    tl: [27.5966, 48.4122],
+    tr: [38.1630, 48.5648],
+    br: [38.8213, 59.7806],
+    bl: [28.0152, 60.0394],
+  },
+};
+
 const BASE_CALIBRATION: Calibration = {
   x: 27.5600,
   y: 48.5400,
@@ -106,32 +241,59 @@ const AUTUMN_CALIBRATIONS: Record<string, Calibration> = {
   },
 };
 
-function getSceneCalibration(heroImage: string): Calibration {
-  const marker = "/experience/music/autumn/";
-  const index = heroImage.indexOf(marker);
+function getMusicSceneMatch(heroImage: string): {
+  season: "autumn" | "winter";
+  key: string;
+} | null {
+  const seasons = ["autumn", "winter"] as const;
 
-  if (index === -1) {
+  for (const season of seasons) {
+    const marker = `/experience/music/${season}/`;
+    const index = heroImage.indexOf(marker);
+
+    if (index !== -1) {
+      return {
+        season,
+        key: heroImage.slice(index + marker.length),
+      };
+    }
+  }
+
+  return null;
+}
+
+function getSceneCalibration(heroImage: string): Calibration {
+  const match = getMusicSceneMatch(heroImage);
+
+  if (!match) {
     return BASE_CALIBRATION;
   }
 
-  const key = heroImage.slice(index + marker.length);
+  if (match.season === "autumn") {
+    return AUTUMN_CALIBRATIONS[match.key] ?? BASE_CALIBRATION;
+  }
 
-  return AUTUMN_CALIBRATIONS[key] ?? BASE_CALIBRATION;
+  return BASE_CALIBRATION;
 }
 
 function getExactSceneCorners(
   heroImage: string,
 ): ExactCorners | null {
-  const marker = "/experience/music/autumn/";
-  const index = heroImage.indexOf(marker);
+  const match = getMusicSceneMatch(heroImage);
 
-  if (index === -1) {
+  if (!match) {
     return null;
   }
 
-  const key = heroImage.slice(index + marker.length);
+  if (match.season === "autumn") {
+    return EXACT_CORNER_CALIBRATIONS[match.key] ?? null;
+  }
 
-  return EXACT_CORNER_CALIBRATIONS[key] ?? null;
+  if (match.season === "winter") {
+    return WINTER_EXACT_CORNER_CALIBRATIONS[match.key] ?? null;
+  }
+
+  return null;
 }
 
 function solveLinearSystem(
@@ -781,10 +943,34 @@ const baseLeft =
     <div
       ref={monitorRef}
       className={styles.heroMonitorScreen}
+      data-winter-exact={
+        heroImage.startsWith("/experience/music/winter/") &&
+        Boolean(geometry?.exactTransform)
+          ? "true"
+          : undefined
+      }
       style={geometryStyle}
       aria-hidden="true"
     >
-      {activeYouTubeId ? (
+      {/* VANMOTION_MONITOR_TEST_WINTER */}
+      {process.env.NODE_ENV === "development" &&
+      heroImage === "/experience/music/winter/manana.webp" ? (
+        <video
+          src="/__monitor-test-invierno.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            pointerEvents: "none",
+          }}
+        />
+      ) : activeYouTubeId ? (
         <YouTubeRecommendationPlayer
           key={activeYouTubeId}
           videoId={activeYouTubeId}

@@ -232,8 +232,44 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function MusicPage() {
-  const heroImage = await getMadridSectionHeroImage("music");
+export default async function MusicPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ winterPreview?: string }>;
+}) {
+  // VANMOTION_WINTER_PREVIEW_URL
+  // Solamente funciona en desarrollo local.
+  const preview = (await searchParams)?.winterPreview;
+
+  const previews: Record<string, string> = {
+    despejado: "/experience/music/winter/manana.webp",
+    nublado: "/experience/music/winter/cloudy/manana.webp",
+    lluvia: "/experience/music/winter/rain/manana.webp",
+    nieve: "/experience/music/winter/snow/manana.webp",
+    "transicion-despejado": "/experience/music/winter/manana-dia.webp",
+    "transicion-nublado": "/experience/music/winter/cloudy/manana-dia.webp",
+    "transicion-lluvia": "/experience/music/winter/rain/manana-dia.webp",
+    "transicion-nieve": "/experience/music/winter/snow/manana-dia.webp",
+    "dia-despejado": "/experience/music/winter/dia.webp",
+    "dia-nublado": "/experience/music/winter/cloudy/dia.webp",
+    "dia-lluvia": "/experience/music/winter/rain/dia.webp",
+    "dia-nieve": "/experience/music/winter/snow/dia.webp",
+    "atardecer-despejado": "/experience/music/winter/atardecer.webp",
+    "atardecer-nublado": "/experience/music/winter/cloudy/atardecer.webp",
+    "atardecer-lluvia": "/experience/music/winter/rain/atardecer.webp",
+    "atardecer-nieve": "/experience/music/winter/snow/atardecer.webp",
+    "noche-despejado": "/experience/music/winter/noche.webp",
+    "noche-nublado": "/experience/music/winter/cloudy/noche.webp",
+    "noche-lluvia": "/experience/music/winter/rain/noche.webp",
+    "noche-nieve": "/experience/music/winter/snow/noche.webp",
+  };
+
+  const previewImage = preview ? previews[preview] : null;
+
+  const heroImage =
+    process.env.NODE_ENV === "development" && previewImage
+      ? previewImage
+      : await getMadridSectionHeroImage("music");
   const language = await getCurrentLanguage();
   const content = translations[language];
   const [, musicNews] = await getDailyNews(language);

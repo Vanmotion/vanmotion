@@ -39,6 +39,8 @@
     "**/*_backup.ts",
     "**/*_backup.tsx",
     ".local-archive",
+    "tmp-calibracion",
+    "tmp-video",
     "vanmotion-bomber-portadas-hombre"
   ]
 }
