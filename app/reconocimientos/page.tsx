@@ -1,3 +1,4 @@
+import AwwwardsRibbon from "@/app/components/awwwards/AwwwardsRibbon";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getCurrentLanguage } from "@/app/lib/language";
@@ -299,7 +300,7 @@ export default async function ReconocimientosPage() {
           </div>
 
           <p className={styles.counter}>
-            2026 · {String(certificates.length).padStart(2, "0")}
+            2026 · {String(certificates.length + 1).padStart(2, "0")}
           </p>
         </header>
 
@@ -339,6 +340,20 @@ export default async function ReconocimientosPage() {
               </footer>
             </article>
           ))}
+
+          <article className={`${styles.certificate} ${styles.awwwardsCertificate}`}>
+            <div className={styles.document}>
+              <AwwwardsRibbon />
+            </div>
+
+            <footer className={styles.certificateMeta}>
+              <span>08</span>
+              <div>
+                <strong>Awwwards — Nominee 2026</strong>
+                <small>NOMINACIÓN · 17 SEPTIEMBRE 2026</small>
+              </div>
+            </footer>
+          </article>
         </section>
 
         <footer className={styles.footer}>
