@@ -143,7 +143,7 @@ function getVimeoEmbedUrl(value: string | null): string | null {
       .find((part) => /^\d+$/.test(part));
 
     return id
-      ? `https://player.vimeo.com/video/${id}?dnt=1&autoplay=0&loop=0`
+      ? `https://player.vimeo.com/video/${id}?dnt=1&autoplay=0&loop=0&autopause=0`
       : null;
   } catch {
     return null;
@@ -172,6 +172,7 @@ export default function GlobalMusicPlayer({
     useRef(false);
   const recommendationAutoplayRef =
     useRef(false);
+  const externalRecommendationSourceRef = useRef(false);
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
   const [recommendationRetry, setRecommendationRetry] = useState(0);
 
@@ -240,6 +241,8 @@ export default function GlobalMusicPlayer({
   }, [activeRecommendationData, setVideoSessionActive]);
 
   useEffect(() => {
+    if (externalRecommendationSourceRef.current) return;
+
     setRecommendationVideoState(
       activeRecommendationData?.id ?? null,
       Boolean(activeRecommendationData && recommendationIsPlaying),
@@ -251,33 +254,44 @@ export default function GlobalMusicPlayer({
   ]);
 
   useEffect(() => {
-    if (!activeRecommendationData) {
-      setRecommendationVideoTime(0);
-      return;
-    }
-
-    const syncTime = () => {
-      const time =
-        recommendationVideoRef.current?.currentTime;
-
+    const handleYouTubeSync = (event: Event) => {
+      const sync = (
+        event as CustomEvent<{
+          videoId: string;
+          seconds: number;
+          playing: boolean;
+        }>
+      ).detail;
       if (
-        typeof time === "number" &&
-        Number.isFinite(time)
+        !sync ||
+        sync.videoId !== activeYouTubeId ||
+        !Number.isFinite(sync.seconds)
       ) {
-        setRecommendationVideoTime(time);
+        return;
+      }
+
+      setRecommendationVideoTime(sync.seconds);
+      if (!externalRecommendationSourceRef.current && activeRecommendationData) {
+        setRecommendationVideoState(
+          activeRecommendationData.id,
+          sync.playing,
+        );
       }
     };
 
-    syncTime();
-
-    const interval = window.setInterval(syncTime, 8000);
-
-    return () => {
-      window.clearInterval(interval);
-    };
+    window.addEventListener(
+      "vanmotion:youtube-monitor-sync",
+      handleYouTubeSync,
+    );
+    return () =>
+      window.removeEventListener(
+        "vanmotion:youtube-monitor-sync",
+        handleYouTubeSync,
+      );
   }, [
     activeRecommendationData,
-    recommendationIsPlaying,
+    activeYouTubeId,
+    setRecommendationVideoState,
     setRecommendationVideoTime,
   ]);
 
@@ -287,6 +301,7 @@ export default function GlobalMusicPlayer({
 
   useEffect(() => {
     const pauseFloatingForEmbedded = () => {
+      externalRecommendationSourceRef.current = true;
       recommendationStartingRef.current = false;
       recommendationAutoplayRef.current = false;
       recommendationVideoRef.current?.pause();
@@ -300,7 +315,30 @@ export default function GlobalMusicPlayer({
   }, []);
 
   useEffect(() => {
+    const handleFloatingMediaState = (event: Event) => {
+      const detail = (
+        event as CustomEvent<{ playing: boolean }>
+      ).detail;
+      if (typeof detail?.playing === "boolean") {
+        setRecommendationIsPlaying(detail.playing);
+        if (detail.playing) setRecommendationError(null);
+      }
+    };
+
+    window.addEventListener(
+      "vanmotion:floating-media-state",
+      handleFloatingMediaState,
+    );
+    return () =>
+      window.removeEventListener(
+        "vanmotion:floating-media-state",
+        handleFloatingMediaState,
+      );
+  }, []);
+
+  useEffect(() => {
     setAudioStartHandler(() => {
+      externalRecommendationSourceRef.current = false;
       recommendationStartingRef.current = false;
       recommendationAutoplayRef.current = false;
 
@@ -309,6 +347,7 @@ export default function GlobalMusicPlayer({
       setRecommendationIsPlaying(false);
       setActiveRecommendation(null);
       setVideoSessionActive(false);
+      setRecommendationVideoState(null, false);
       setRecommendationError(null);
     });
 
@@ -316,6 +355,7 @@ export default function GlobalMusicPlayer({
   }, [
     setAudioStartHandler,
     setVideoSessionActive,
+    setRecommendationVideoState,
   ]);
 
   useEffect(() => {
@@ -350,6 +390,7 @@ export default function GlobalMusicPlayer({
       return;
     }
 
+    externalRecommendationSourceRef.current = false;
     window.dispatchEvent(new Event("vanmotion:floating-video-play"));
     pausePlayback();
     setRecommendationVideoTime(0);
@@ -417,35 +458,37 @@ export default function GlobalMusicPlayer({
   const advanceRecommendationRef =
     useRef<(id: string) => void>(() => {});
 
-  advanceRecommendationRef.current = (finishedId) => {
-    if (activeRecommendation !== finishedId) return;
+  useEffect(() => {
+    advanceRecommendationRef.current = (finishedId) => {
+      if (activeRecommendation !== finishedId) return;
 
-    const index = recommendations.findIndex(
-      (item) => item.id === finishedId
-    );
+      const index = recommendations.findIndex(
+        (item) => item.id === finishedId
+      );
 
-    if (index < 0) return;
+      if (index < 0) return;
 
-    const next = recommendations
-      .slice(index + 1)
-      .find((item) => Boolean(item.videoUrl));
+      const next = recommendations
+        .slice(index + 1)
+        .find((item) => Boolean(item.videoUrl));
 
-    if (next) {
-      selectRecommendationRef.current(next.id);
-      return;
-    }
+      if (next) {
+        selectRecommendationRef.current(next.id);
+        return;
+      }
 
-    closeRecommendation();
-    changeProgress(0);
+      closeRecommendation();
+      changeProgress(0);
 
-    if (tracks.length > 0) {
-      selectTrack(0, true);
-    }
-  };
+      if (tracks.length > 0) {
+        selectTrack(0, true);
+      }
+    };
+  });
 
   useEffect(() => {
     if (
-      !activeRecommendationData ||
+      !activeRecommendation ||
       !getVimeoEmbedUrl(recommendationVideoUrl)
     ) {
       return;
@@ -458,7 +501,7 @@ export default function GlobalMusicPlayer({
     if (!iframe) return;
 
     const player = new VimeoPlayer(iframe);
-    const finishedId = activeRecommendationData.id;
+    const finishedId = activeRecommendation;
     let handled = false;
 
     const onEnded = () => {
@@ -477,7 +520,7 @@ export default function GlobalMusicPlayer({
       player.off("ended", onEnded);
     };
   }, [
-    activeRecommendationData?.id,
+    activeRecommendation,
     recommendationVideoUrl,
   ]);
 
@@ -557,6 +600,7 @@ export default function GlobalMusicPlayer({
 
   return (
     <aside
+      data-active-recommendation-id={activeRecommendationData?.id}
       className={`${styles.player} ${
         audioLibraryOpen ? styles.audioLibraryMode : ""
       } ${

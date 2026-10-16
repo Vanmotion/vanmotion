@@ -11,6 +11,7 @@ import {
   getPublicMusicRecommendations,
   getPublicMusicTracks,
 } from "@/app/lib/music-library";
+import { getLocalVimeoTestRecommendations } from "@/app/lib/local-vimeo-test";
 
 import "./globals.css";
 
@@ -141,7 +142,10 @@ export default async function RootLayout({
     ]);
   const content = metadataTranslations[language];
 
-  const globalRecommendations = recommendations.map(
+  const globalRecommendations = [
+    ...getLocalVimeoTestRecommendations(),
+    ...recommendations,
+  ].map(
     ({ id, title, videoUrl, coverUrl }) => ({
       id,
       title,

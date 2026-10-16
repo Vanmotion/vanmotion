@@ -10,6 +10,7 @@ import {
   getPublicMusicTracks,
 } from "@/app/lib/music-library";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
+import { getLocalVimeoTestRecommendations } from "@/app/lib/local-vimeo-test";
 import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
@@ -55,7 +56,7 @@ function getVimeoEmbedUrl(value: string): string | null {
 
     if (!id) return null;
 
-    return `https://player.vimeo.com/video/${id}?dnt=1`;
+    return `https://player.vimeo.com/video/${id}?dnt=1&autopause=0`;
   } catch {
     return null;
   }
@@ -273,8 +274,10 @@ export default async function MusicPage({
   const language = await getCurrentLanguage();
   const content = translations[language];
   const [, musicNews] = await getDailyNews(language);
-  const recommendations =
-    await getPublicMusicRecommendations();
+  const recommendations = [
+    ...getLocalVimeoTestRecommendations(),
+    ...(await getPublicMusicRecommendations()),
+  ];
   const tracks = await getPublicMusicTracks();
 
   const musicStructuredData = {
@@ -485,7 +488,11 @@ export default async function MusicPage({
                       </p>
 
                       {recommendation.videoUrl ? (
-                        <div className={styles.recommendVideo} data-vanmotion-recommendation>
+                        <div
+                          className={styles.recommendVideo}
+                          data-vanmotion-recommendation
+                          data-recommendation-id={recommendation.id}
+                        >
                           {isYouTubeUrl(recommendation.videoUrl) &&
                           recommendation.youtubeVideoId ? (
                             <iframe
