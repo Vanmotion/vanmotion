@@ -966,7 +966,7 @@ const baseLeft =
             />
           )}
           <YouTubeRecommendationPlayer
-            key={activeYouTubeId}
+            key={`${recommendationVideoId}:${activeYouTubeId}`}
             videoId={activeYouTubeId}
             title="Proyección musical VANMOTION"
             playing={recommendationVideoPlaying}
@@ -996,6 +996,7 @@ const baseLeft =
             />
           )}
           <iframe
+            key={`${recommendationVideoId}:${activeVimeoId}`}
             ref={projectedIframeRef}
             title="Proyección musical VANMOTION"
             src={`https://player.vimeo.com/video/${activeVimeoId}?dnt=1&muted=1&autoplay=0&controls=0&autopause=0`}
