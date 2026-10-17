@@ -64,7 +64,7 @@ export default function LanguageSwitcher() {
         : currentLanguage;
 
   const isAwardsHome =
-    pathname === "/" ||
+    isPilotHome ||
     pathname.startsWith("/experience");
 
   if (hidden) {

@@ -9,7 +9,7 @@ type RouteAwareMusicPlayerProps = { children: ReactNode };
 const HIDDEN_PATHS = [
   "/admin", "/login-admin", "/aviso-legal", "/privacidad",
   "/cookies", "/condiciones-compra", "/desistimiento",
-  "/reconocimientos",
+  "/reconocimientos", "/en-us/reconocimientos",
   "/community",
 ];
 
@@ -23,7 +23,7 @@ export default function RouteAwareMusicPlayer({
   const pathname = usePathname();
   const { videoSessionActive } = useMusicPlayer();
   const shouldHide = HIDDEN_PATHS.some((path) => matchesPath(pathname, path));
-  const isHome = pathname === "/";
+  const isHome = pathname === "/" || pathname === "/en-us" || pathname === "/en-us/";
   const isExperience = matchesPath(pathname, "/experience");
 
   // Never conditionally remove children: doing so destroys the YouTube iframe.
