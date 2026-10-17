@@ -3,10 +3,20 @@
 import { cookies } from "next/headers";
 
 import {
+  DEFAULT_LANGUAGE,
   isLanguage,
   LANGUAGE_COOKIE,
   type Language,
 } from "@/app/language";
+
+export async function getSavedLanguage(): Promise<Language> {
+  const savedLanguage = (await cookies())
+    .get(LANGUAGE_COOKIE)?.value;
+
+  return isLanguage(savedLanguage)
+    ? savedLanguage
+    : DEFAULT_LANGUAGE;
+}
 
 export async function changeLanguage(
   language: Language,

@@ -533,7 +533,7 @@ export default function ExperienceClient({
       title: language === "es" ? "Vehículos" : "Vehicles",
       text: language === "es" ? "Máquinas con historia. Elegidas por lo que nos hacen sentir." : "Machines with history. Selected for what they make us feel.",
       image: imageFor("vehicles"),
-      href: "/coleccion",
+      href: language === "es" ? "/coleccion" : "/en-us/coleccion",
       link: language === "es" ? "Explorar colección" : "Explore collection",
     },
     {
@@ -542,7 +542,7 @@ export default function ExperienceClient({
       title: language === "es" ? "Música" : "Music",
       text: language === "es" ? "Sonido, atmósfera y carretera. Parte de una misma cultura." : "Sound, atmosphere and the road. Part of the same culture.",
       image: imageFor("music"),
-      href: "/musica",
+      href: language === "es" ? "/musica" : "/en-us/musica",
       link: language === "es" ? "Entrar en el sonido" : "Enter sound",
     },
     {
@@ -568,7 +568,10 @@ export default function ExperienceClient({
     >
 
       <header className={styles.header}>
-        <Link href="/" className={styles.brand}>
+        <Link
+          href={language === "es" ? "/" : "/en-us"}
+          className={styles.brand}
+        >
           VANMOTION
         </Link>
 
@@ -619,7 +622,11 @@ export default function ExperienceClient({
 
           <div className={styles.heroGrid}>
             <Link
-              href="/coleccion"
+              href={
+                language === "es"
+                  ? "/coleccion"
+                  : "/en-us/coleccion"
+              }
               className={`${styles.heroCard} ${styles.heroVehicle}`}
             >
               <div
@@ -641,7 +648,11 @@ export default function ExperienceClient({
             </Link>
 
             <Link
-              href="/musica"
+              href={
+                language === "es"
+                  ? "/musica"
+                  : "/en-us/musica"
+              }
               className={`${styles.heroCard} ${styles.heroMusic}`}
             >
               <div
@@ -763,7 +774,13 @@ export default function ExperienceClient({
               {language === "es" ? "Contacto" : "Contact"} ↗
             </Link>
 
-            <Link href="/reconocimientos">
+            <Link
+              href={
+                language === "es"
+                  ? "/reconocimientos"
+                  : "/en-us/reconocimientos"
+              }
+            >
               {language === "es"
                 ? "Reconocimientos"
                 : "Recognition"} ↗

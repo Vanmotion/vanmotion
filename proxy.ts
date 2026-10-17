@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  LANGUAGE_COOKIE,
+  ROUTE_LANGUAGE_HEADER,
+} from "@/app/language";
 
 const SESSION_COOKIE_NAME =
   "vanmotion_admin_session";
@@ -99,6 +103,61 @@ function isStripeWebhookRoute(
   );
 }
 
+function continueWithRouteLanguage(
+  request: NextRequest,
+) {
+  const requestHeaders = new Headers(
+    request.headers,
+  );
+
+  requestHeaders.delete(
+    ROUTE_LANGUAGE_HEADER,
+  );
+
+  const pathname =
+    request.nextUrl.pathname;
+  const isEnglishRoute =
+    pathname === "/en-us" ||
+    pathname.startsWith("/en-us/");
+
+  if (isEnglishRoute) {
+    requestHeaders.set(
+      ROUTE_LANGUAGE_HEADER,
+      "en",
+    );
+  } else if (pathname === "/") {
+    requestHeaders.set(
+      ROUTE_LANGUAGE_HEADER,
+      "es",
+    );
+  }
+
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
+  if (
+    request.method === "GET" &&
+    isEnglishRoute
+  ) {
+    response.cookies.set({
+      name: LANGUAGE_COOKIE,
+      value: "en",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+      secure:
+        process.env.NODE_ENV ===
+        "production",
+      httpOnly: true,
+    });
+  }
+
+  return response;
+}
+
 export function proxy(
   request: NextRequest,
 ) {
@@ -144,7 +203,9 @@ export function proxy(
    * navegar por toda la web durante el desarrollo.
    */
   if (adminSessionIsValid) {
-    return NextResponse.next();
+    return continueWithRouteLanguage(
+      request,
+    );
   }
 
   /*
@@ -168,7 +229,9 @@ export function proxy(
     );
   }
 
-  return NextResponse.next();
+  return continueWithRouteLanguage(
+    request,
+  );
 }
 
 export const config = {

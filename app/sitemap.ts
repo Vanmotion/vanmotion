@@ -14,7 +14,17 @@ const staticPages: MetadataRoute.Sitemap = [
     priority: 1,
   },
   {
+    url: `${siteUrl}/en-us`,
+    changeFrequency: "weekly",
+    priority: 1,
+  },
+  {
     url: `${siteUrl}/coleccion`,
+    changeFrequency: "daily",
+    priority: 0.9,
+  },
+  {
+    url: `${siteUrl}/en-us/coleccion`,
     changeFrequency: "daily",
     priority: 0.9,
   },
@@ -29,12 +39,22 @@ const staticPages: MetadataRoute.Sitemap = [
     priority: 0.8,
   },
   {
+    url: `${siteUrl}/en-us/musica`,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  },
+  {
     url: `${siteUrl}/noticias`,
     changeFrequency: "hourly",
     priority: 0.8,
   },
   {
     url: `${siteUrl}/reconocimientos`,
+    changeFrequency: "monthly",
+    priority: 0.7,
+  },
+  {
+    url: `${siteUrl}/en-us/reconocimientos`,
     changeFrequency: "monthly",
     priority: 0.7,
   },
@@ -87,12 +107,20 @@ async function getVehiclePages(): Promise<MetadataRoute.Sitemap> {
       },
     });
 
-    return vehicles.map((vehicle) => ({
-      url: `${siteUrl}/coleccion/${encodeURIComponent(vehicle.id)}`,
-      lastModified: vehicle.updatedAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    }));
+    return vehicles.flatMap((vehicle) => [
+      {
+        url: `${siteUrl}/coleccion/${encodeURIComponent(vehicle.id)}`,
+        lastModified: vehicle.updatedAt,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      },
+      {
+        url: `${siteUrl}/en-us/coleccion/${encodeURIComponent(vehicle.id)}`,
+        lastModified: vehicle.updatedAt,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      },
+    ]);
   } catch (error) {
     console.error("VANMOTION_SITEMAP_VEHICLES_ERROR", error);
     return [];

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
+import { ROUTE_LANGUAGE_HEADER } from "@/app/language";
 import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
@@ -208,6 +210,10 @@ export async function generateMetadata(): Promise<Metadata> {
     description: content.metadataDescription,
     alternates: {
       canonical: "/musica",
+      languages: {
+        "es-ES": `${SITE_URL}/musica`,
+        "en-US": `${SITE_URL}/en-us/musica`,
+      },
     },
     openGraph: {
       title: content.metadataTitle,
@@ -272,6 +278,8 @@ export default async function MusicPage({
       ? previewImage
       : await getMadridSectionHeroImage("music");
   const language = await getCurrentLanguage();
+  const isEnglishMusicRoute =
+    (await headers()).get(ROUTE_LANGUAGE_HEADER) === "en";
   const content = translations[language];
   const [, musicNews] = await getDailyNews(language);
   const recommendations = [
@@ -320,7 +328,11 @@ export default async function MusicPage({
         }}
       />
       <header className={styles.header}>
-        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+        <Link
+          href={isEnglishMusicRoute ? "/en-us" : "/"}
+          className={styles.brand}
+          aria-label="Vanmotion"
+        >
           <Image
             src="/brand/vanmotion-mark.webp"
             alt=""
@@ -341,7 +353,14 @@ export default async function MusicPage({
           }
         >
           <Link href="/coleccion">{content.navigation.vehicles}</Link>
-          <Link href="/musica" aria-current="page">
+          <Link
+            href={
+              isEnglishMusicRoute
+                ? "/en-us/musica"
+                : "/musica"
+            }
+            aria-current="page"
+          >
             {content.navigation.music}
           </Link>
           <Link href="/ropa">{content.navigation.clothing}</Link>

@@ -10,6 +10,7 @@ import { getYouTubeVideoId } from "./YouTubeUrl";
 
 import type { Language } from "@/app/language";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
+import { useLanguage } from "@/app/components/language/LanguageProvider";
 
 export type GlobalMusicRecommendation = {
   id: string;
@@ -22,7 +23,6 @@ import { useMusicPlayer } from "./MusicPlayerContext";
 import styles from "./GlobalMusicPlayer.module.css";
 
 type GlobalMusicPlayerProps = {
-  language: Language;
   recommendations: GlobalMusicRecommendation[];
 };
 
@@ -151,9 +151,9 @@ function getVimeoEmbedUrl(value: string | null): string | null {
 }
 
 export default function GlobalMusicPlayer({
-  language,
   recommendations,
 }: GlobalMusicPlayerProps) {
+  const { language } = useLanguage();
   const content = translations[language];
   const pathname = usePathname();
   const previousPathnameRef = useRef(pathname);

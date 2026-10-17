@@ -1,8 +1,11 @@
 import AwwwardsRibbon from "@/app/components/awwwards/AwwwardsRibbon";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { getCurrentLanguage } from "@/app/lib/language";
 import styles from "./reconocimientos.module.css";
+
+const siteUrl = "https://www.vanmotion.es";
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
@@ -36,7 +39,12 @@ export async function generateMetadata(): Promise<Metadata> {
       "digital experience",
     ],
     alternates: {
-      canonical: "https://www.vanmotion.es/reconocimientos",
+      canonical: `${siteUrl}/reconocimientos`,
+      languages: {
+        "es-ES": `${siteUrl}/reconocimientos`,
+        "en-US": `${siteUrl}/en-us/reconocimientos`,
+        "x-default": `${siteUrl}/reconocimientos`,
+      },
     },
     openGraph: {
       title,
@@ -242,9 +250,18 @@ const awards: {
   },
 ];
 
-export default async function ReconocimientosPage() {
-  const language = await getCurrentLanguage();
+export async function ReconocimientosContent({
+  englishRoute = false,
+}: {
+  englishRoute?: boolean;
+} = {}) {
+  const language = englishRoute
+    ? "en"
+    : await getCurrentLanguage();
   const content = translations[language];
+  const pageUrl = englishRoute
+    ? `${siteUrl}/en-us/reconocimientos`
+    : `${siteUrl}/reconocimientos`;
 
   const certificates = [
     awards[3], // CSSDA Special Kudos
@@ -264,8 +281,13 @@ export default async function ReconocimientosPage() {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     name: "VANMOTION — Automotive Culture",
-    url: "https://www.vanmotion.es/reconocimientos",
-    inLanguage: language === "es" ? "es-ES" : "en-GB",
+    url: pageUrl,
+    inLanguage:
+      language === "es"
+        ? "es-ES"
+        : englishRoute
+          ? "en-US"
+          : "en-GB",
     about: [
       "Automotive culture",
       "Digital experience",
@@ -357,10 +379,22 @@ export default async function ReconocimientosPage() {
         </section>
 
         <footer className={styles.footer}>
-          <span>VANMOTION</span>
+          <Link
+            href={language === "es" ? "/" : "/en-us"}
+            style={{
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            VANMOTION
+          </Link>
           <span>MADRID · 2026</span>
         </footer>
       </main>
     </>
   );
+}
+
+export default async function ReconocimientosPage() {
+  return <ReconocimientosContent />;
 }

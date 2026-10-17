@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
 
 import PublicAnalytics from "@/app/components/analytics/PublicAnalytics";
 import LanguageSwitcher from "@/app/components/language/LanguageSwitcher";
+import { LanguageProvider } from "@/app/components/language/LanguageProvider";
 import RouteAwareMusicPlayer from "@/app/components/layout/RouteAwareMusicPlayer";
 import GlobalMusicPlayer from "@/app/components/music/GlobalMusicPlayer";
 import MusicPlayerProvider from "@/app/components/music/MusicPlayerContext";
+import { ROUTE_LANGUAGE_HEADER } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import {
   getPublicMusicRecommendations,
@@ -134,13 +137,24 @@ type RootLayoutProps = {
 export default async function RootLayout({
   children,
 }: RootLayoutProps) {
-  const [language, tracks, recommendations] =
+  const [
+    language,
+    tracks,
+    recommendations,
+    requestHeaders,
+  ] =
     await Promise.all([
       getCurrentLanguage(),
       getPublicMusicTracks(),
       getPublicMusicRecommendations(),
+      headers(),
     ]);
   const content = metadataTranslations[language];
+  const htmlLanguage =
+    requestHeaders.get(ROUTE_LANGUAGE_HEADER) ===
+      "en" || language === "en"
+      ? "en-US"
+      : "es";
 
   const globalRecommendations = [
     ...getLocalVimeoTestRecommendations(),
@@ -281,7 +295,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang={language}>
+    <html lang={htmlLanguage}>
       <body>
         <script
           type="application/ld+json"
@@ -297,21 +311,22 @@ export default async function RootLayout({
           }}
         />
 
-        <MusicPlayerProvider tracks={tracks}>
-          {children}
+        <LanguageProvider initialLanguage={language}>
+          <MusicPlayerProvider tracks={tracks}>
+            {children}
 
-          <LanguageSwitcher currentLanguage={language} />
+            <LanguageSwitcher />
 
-          <RouteAwareMusicPlayer>
-            <GlobalMusicPlayer
-              language={language}
-              recommendations={globalRecommendations}
-            />
-          </RouteAwareMusicPlayer>
+            <RouteAwareMusicPlayer>
+              <GlobalMusicPlayer
+                recommendations={globalRecommendations}
+              />
+            </RouteAwareMusicPlayer>
 
 
-          <PublicAnalytics />
-        </MusicPlayerProvider>
+            <PublicAnalytics />
+          </MusicPlayerProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

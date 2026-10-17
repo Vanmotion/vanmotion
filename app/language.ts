@@ -12,6 +12,9 @@ export const DEFAULT_LANGUAGE: Language =
 export const LANGUAGE_COOKIE =
   "vanmotion-language";
 
+export const ROUTE_LANGUAGE_HEADER =
+  "x-vanmotion-route-language";
+
 export function isLanguage(
   value: unknown,
 ): value is Language {

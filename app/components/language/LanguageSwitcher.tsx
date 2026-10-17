@@ -8,18 +8,15 @@ import {
 
 import { changeLanguage } from "@/actions/languageActions";
 import type { Language } from "@/app/language";
+import { useLanguage } from "./LanguageProvider";
 
 import styles from "./LanguageSwitcher.module.css";
 
-type LanguageSwitcherProps = {
-  currentLanguage: Language;
-};
-
-export default function LanguageSwitcher({
-  currentLanguage,
-}: LanguageSwitcherProps) {
+export default function LanguageSwitcher() {
   const pathname = usePathname();
   const router = useRouter();
+  const { language: currentLanguage, setLanguage } =
+    useLanguage();
   const [isPending, startTransition] =
     useTransition();
 
@@ -29,6 +26,42 @@ export default function LanguageSwitcher({
     pathname.startsWith("/community");
   const isClothingPage =
     pathname.startsWith("/ropa");
+  const isSpanishPilotHome =
+    pathname === "/";
+  const isEnglishPilotHome =
+    pathname === "/en-us" ||
+    pathname === "/en-us/";
+  const isAwardsPage =
+    pathname === "/reconocimientos" ||
+    pathname === "/en-us/reconocimientos";
+  const isEnglishAwardsPage =
+    pathname === "/en-us/reconocimientos";
+  const isMusicPage =
+    pathname === "/musica" ||
+    pathname === "/en-us/musica";
+  const isEnglishMusicPage =
+    pathname === "/en-us/musica";
+  const isSpanishCollectionPage =
+    pathname === "/coleccion" ||
+    pathname.startsWith("/coleccion/");
+  const isEnglishCollectionPage =
+    pathname === "/en-us/coleccion" ||
+    pathname.startsWith("/en-us/coleccion/");
+  const isCollectionPage =
+    isSpanishCollectionPage ||
+    isEnglishCollectionPage;
+  const isPilotHome =
+    isSpanishPilotHome ||
+    isEnglishPilotHome;
+  const selectedLanguage =
+    isEnglishPilotHome ||
+    isEnglishAwardsPage ||
+    isEnglishMusicPage ||
+    isEnglishCollectionPage
+      ? "en"
+      : isSpanishPilotHome
+        ? "es"
+        : currentLanguage;
 
   const isAwardsHome =
     pathname === "/" ||
@@ -39,7 +72,7 @@ export default function LanguageSwitcher({
   }
 
   const selectorLabel =
-    currentLanguage === "es"
+    selectedLanguage === "es"
       ? "Seleccionar idioma"
       : "Select language";
 
@@ -47,7 +80,7 @@ export default function LanguageSwitcher({
     language: Language,
   ): void {
     if (
-      language === currentLanguage ||
+      language === selectedLanguage ||
       isPending
     ) {
       return;
@@ -55,6 +88,46 @@ export default function LanguageSwitcher({
 
     startTransition(async () => {
       await changeLanguage(language);
+      setLanguage(language);
+
+      if (isPilotHome) {
+        router.push(
+          language === "es" ? "/" : "/en-us",
+        );
+        return;
+      }
+
+      if (isAwardsPage) {
+        router.push(
+          language === "es"
+            ? "/reconocimientos"
+            : "/en-us/reconocimientos",
+        );
+        return;
+      }
+
+      if (isMusicPage) {
+        router.push(
+          language === "es"
+            ? "/musica"
+            : "/en-us/musica",
+        );
+        return;
+      }
+
+      if (isCollectionPage) {
+        const spanishPath = pathname.replace(
+          /^\/en-us(?=\/)/,
+          "",
+        );
+        router.push(
+          language === "es"
+            ? spanishPath
+            : `/en-us${spanishPath}`,
+        );
+        return;
+      }
+
       router.refresh();
     });
   }
@@ -79,12 +152,12 @@ export default function LanguageSwitcher({
         onClick={() => selectLanguage("es")}
         disabled={isPending}
         className={
-          currentLanguage === "es"
+          selectedLanguage === "es"
             ? styles.active
             : ""
         }
         aria-label="Español"
-        aria-pressed={currentLanguage === "es"}
+        aria-pressed={selectedLanguage === "es"}
         title="Español"
       >
         <span aria-hidden="true">🇪🇸</span>
@@ -97,12 +170,12 @@ export default function LanguageSwitcher({
         onClick={() => selectLanguage("en")}
         disabled={isPending}
         className={
-          currentLanguage === "en"
+          selectedLanguage === "en"
             ? styles.active
             : ""
         }
         aria-label="English"
-        aria-pressed={currentLanguage === "en"}
+        aria-pressed={selectedLanguage === "en"}
         title="English"
       >
         <span aria-hidden="true">🇬🇧</span>

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
+import { ROUTE_LANGUAGE_HEADER } from "@/app/language";
 import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
@@ -13,6 +15,8 @@ import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
 
 export const dynamic = "force-dynamic";
+
+const SITE_URL = "https://www.vanmotion.es";
 
 const fuelLabels: Record<Language, Record<string, string>> = {
   es: {
@@ -273,20 +277,33 @@ function getVehicleDisplayPriority(vehicle: {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const language = await getCurrentLanguage();
+  const [language, requestHeaders] = await Promise.all([
+    getCurrentLanguage(),
+    headers(),
+  ]);
+  const isEnglishRoute =
+    requestHeaders.get(ROUTE_LANGUAGE_HEADER) === "en";
   const content = translations[language];
+  const canonicalUrl = isEnglishRoute
+    ? `${SITE_URL}/en-us/coleccion`
+    : `${SITE_URL}/coleccion`;
 
   return {
     title: content.metadataTitle,
     description: content.metadataDescription,
     alternates: {
-      canonical: "/coleccion",
+      canonical: canonicalUrl,
+      languages: {
+        "es-ES": `${SITE_URL}/coleccion`,
+        "en-US": `${SITE_URL}/en-us/coleccion`,
+        "x-default": `${SITE_URL}/coleccion`,
+      },
     },
     openGraph: {
       title: content.metadataTitle,
       description: content.metadataDescription,
       type: "website",
-      url: "/coleccion",
+      url: canonicalUrl,
       images: [
         {
           url: "/vehiculos/portada-inicio-vehiculos.webp",
@@ -308,10 +325,21 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CollectionPage() {
   const heroImage = await getMadridSectionHeroImage("vehicles");
-  const language = await getCurrentLanguage();
+  const [language, requestHeaders] = await Promise.all([
+    getCurrentLanguage(),
+    headers(),
+  ]);
+  const isEnglishRoute =
+    requestHeaders.get(ROUTE_LANGUAGE_HEADER) === "en";
   const content = translations[language];
   const [vehicleNews] = await getDailyNews(language);
-  const locale = language === "es" ? "es-ES" : "en-GB";
+  const locale = language === "es" ? "es-ES" : "en-US";
+  const collectionUrl = isEnglishRoute
+    ? `${SITE_URL}/en-us/coleccion`
+    : `${SITE_URL}/coleccion`;
+  const collectionPath = isEnglishRoute
+    ? "/en-us/coleccion"
+    : "/coleccion";
 
   const vehicles = await prisma.vehicle.findMany({
     where: {
@@ -354,17 +382,17 @@ export default async function CollectionPage() {
   const collectionStructuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    url: "https://www.vanmotion.es/coleccion",
+    url: collectionUrl,
     name: content.metadataTitle,
     description: content.metadataDescription,
-    inLanguage: language === "es" ? "es-ES" : "en-GB",
+    inLanguage: language === "es" ? "es-ES" : "en-US",
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: orderedVehicles.length,
       itemListElement: orderedVehicles.map((vehicle, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        url: `https://www.vanmotion.es/coleccion/${vehicle.id}`,
+        url: `${collectionUrl}/${encodeURIComponent(vehicle.id)}`,
         name: [
           vehicle.brand.name,
           vehicle.model,
@@ -386,7 +414,11 @@ export default async function CollectionPage() {
         }}
       />
       <header className={styles.header}>
-        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+        <Link
+          href={isEnglishRoute ? "/en-us" : "/"}
+          className={styles.brand}
+          aria-label="Vanmotion"
+        >
           <Image
             src="/brand/vanmotion-mark.webp"
             alt=""
@@ -402,8 +434,14 @@ export default async function CollectionPage() {
           className={styles.navigation}
           aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
         >
-          <Link href="/coleccion" aria-current="page">{content.navigation.vehicles}</Link>
-          <Link href="/musica">{content.navigation.music}</Link>
+          <Link href={collectionPath} aria-current="page">
+            {content.navigation.vehicles}
+          </Link>
+          <Link
+            href={isEnglishRoute ? "/en-us/musica" : "/musica"}
+          >
+            {content.navigation.music}
+          </Link>
           <Link href="/ropa">{content.navigation.clothing}</Link>
           <Link
             href="/contacto"
@@ -549,7 +587,7 @@ export default async function CollectionPage() {
                     className={styles.vehicleCard}
                   >
                     <Link
-                      href={`/coleccion/${vehicle.id}`}
+                      href={`${collectionPath}/${encodeURIComponent(vehicle.id)}`}
                       className={styles.vehicleLink}
                     >
                       <div className={styles.vehicleMedia}>
