@@ -28,7 +28,15 @@ export default function RouteAwareMusicPlayer({
     pathname === "/en-us" ||
     pathname === "/en-us/" ||
     matchesPath(pathname, "/reconocimientos") ||
-    matchesPath(pathname, "/en-us/reconocimientos");
+    matchesPath(pathname, "/en-us/reconocimientos") ||
+    matchesPath(pathname, "/contacto") ||
+    [
+      "/aviso-legal",
+      "/privacidad",
+      "/cookies",
+      "/condiciones-compra",
+      "/desistimiento",
+    ].some((path) => matchesPath(pathname, path));
   const isExperience = matchesPath(pathname, "/experience");
 
   // Never conditionally remove children: doing so destroys the YouTube iframe.
@@ -36,7 +44,7 @@ export default function RouteAwareMusicPlayer({
   // Without video, preserve the existing route visibility policy.
   return (
     <div
-      hidden={shouldHide && !videoSessionActive}
+      hidden={shouldHide && !videoSessionActive && !isHome}
       aria-hidden={isHome ? true : undefined}
       style={
         isHome
