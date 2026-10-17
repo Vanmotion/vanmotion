@@ -23,7 +23,12 @@ export default function RouteAwareMusicPlayer({
   const pathname = usePathname();
   const { videoSessionActive } = useMusicPlayer();
   const shouldHide = HIDDEN_PATHS.some((path) => matchesPath(pathname, path));
-  const isHome = pathname === "/" || pathname === "/en-us" || pathname === "/en-us/";
+  const isHome =
+    pathname === "/" ||
+    pathname === "/en-us" ||
+    pathname === "/en-us/" ||
+    matchesPath(pathname, "/reconocimientos") ||
+    matchesPath(pathname, "/en-us/reconocimientos");
   const isExperience = matchesPath(pathname, "/experience");
 
   // Never conditionally remove children: doing so destroys the YouTube iframe.
