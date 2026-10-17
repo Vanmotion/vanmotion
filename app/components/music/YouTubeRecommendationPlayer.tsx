@@ -260,6 +260,14 @@ export default function YouTubeRecommendationPlayer({
     else player.pauseVideo?.();
   }, [playing, syncRole]);
 
+
+  useEffect(() => {
+    if (syncRole !== "source") return;
+    const onEmbeddedPlay = () => playerRef.current?.pauseVideo?.();
+    window.addEventListener("vanmotion:embedded-video-play", onEmbeddedPlay);
+    return () => window.removeEventListener("vanmotion:embedded-video-play", onEmbeddedPlay);
+  }, [syncRole]);
+
   // Fuente: anuncia estado y tiempo incluso después de saltar dentro del vídeo.
   useEffect(() => {
     if (syncRole !== "source") return;

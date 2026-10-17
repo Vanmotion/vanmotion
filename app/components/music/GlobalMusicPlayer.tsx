@@ -314,6 +314,21 @@ export default function GlobalMusicPlayer({
     return () => window.removeEventListener("vanmotion:embedded-video-play", pauseFloatingForEmbedded);
   }, []);
 
+
+  useEffect(() => {
+    const onIframeFocus = () => {
+      window.setTimeout(() => {
+        const frame = document.activeElement;
+        if (frame instanceof HTMLIFrameElement &&
+            frame.closest("[data-vanmotion-recommendation]")) {
+          window.dispatchEvent(new Event("vanmotion:embedded-video-play"));
+        }
+      }, 0);
+    };
+    window.addEventListener("blur", onIframeFocus);
+    return () => window.removeEventListener("blur", onIframeFocus);
+  }, []);
+
   useEffect(() => {
     const handleFloatingMediaState = (event: Event) => {
       const detail = (
