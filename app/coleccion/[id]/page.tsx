@@ -686,12 +686,14 @@ export default async function PublicVehiclePage({
   };
   return (
     <div className={styles.page}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
-        }}
-      />
+      {!isEmblem ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
+          }}
+        />
+      ) : null}
 
       {!isEmblem ? (
         <script
