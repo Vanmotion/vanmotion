@@ -29,26 +29,36 @@ function absoluteUrl(value: string): string {
 
 const fuelLabels: Record<Language, Record<string, string>> = {
   es: {
+    DIESEL: "Diésel",
     Diesel: "Diésel",
     Diésel: "Diésel",
+    GASOLINE: "Gasolina",
     Gasoline: "Gasolina",
     Petrol: "Gasolina",
     Gasolina: "Gasolina",
+    HYBRID: "Híbrido",
+    PLUG_IN_HYBRID: "Híbrido enchufable",
     Hybrid: "Híbrido",
     Híbrido: "Híbrido",
+    ELECTRIC: "Eléctrico",
     Electric: "Eléctrico",
     Eléctrico: "Eléctrico",
     LPG: "GLP",
     GLP: "GLP",
   },
   en: {
+    DIESEL: "Diesel",
     Diesel: "Diesel",
     Diésel: "Diesel",
+    GASOLINE: "Petrol",
     Gasoline: "Petrol",
     Petrol: "Petrol",
     Gasolina: "Petrol",
+    HYBRID: "Hybrid",
+    PLUG_IN_HYBRID: "Plug-in hybrid",
     Hybrid: "Hybrid",
     Híbrido: "Hybrid",
+    ELECTRIC: "Electric",
     Electric: "Electric",
     Eléctrico: "Electric",
     LPG: "LPG",
@@ -58,6 +68,8 @@ const fuelLabels: Record<Language, Record<string, string>> = {
 
 const transmissionLabels: Record<Language, Record<string, string>> = {
   es: {
+    MANUAL: "Manual",
+    AUTOMATIC: "Automática",
     Manual: "Manual",
     Automatic: "Automática",
     Automática: "Automática",
@@ -65,6 +77,8 @@ const transmissionLabels: Record<Language, Record<string, string>> = {
     Semiautomática: "Semiautomática",
   },
   en: {
+    MANUAL: "Manual",
+    AUTOMATIC: "Automatic",
     Manual: "Manual",
     Automatic: "Automatic",
     Automática: "Automatic",
@@ -75,24 +89,50 @@ const transmissionLabels: Record<Language, Record<string, string>> = {
 
 const drivetrainLabels: Record<Language, Record<string, string>> = {
   es: {
+    FRONT: "Delantera",
     FWD: "Delantera",
     Delantera: "Delantera",
+    delantera: "Delantera",
+
+    REAR: "Trasera",
     RWD: "Trasera",
     Trasera: "Trasera",
-    AWD: "Integral AWD",
-    "Integral AWD": "Integral AWD",
+    trasera: "Trasera",
+
+    AWD: "Integral (AWD)",
+    "Integral AWD": "Integral (AWD)",
+    "Tracción total AWD": "Integral (AWD)",
+    "Tracción integral (AWD)": "Integral (AWD)",
+
+    FOUR_WHEEL_DRIVE: "4x4",
     "4WD": "4x4",
     "4x4": "4x4",
+    "4×4": "4x4",
+    "Integral / 4x4": "Integral / 4x4",
+    "ntegral / 4x4": "Integral / 4x4",
   },
   en: {
+    FRONT: "Front-wheel drive",
     FWD: "Front-wheel drive",
     Delantera: "Front-wheel drive",
+    delantera: "Front-wheel drive",
+
+    REAR: "Rear-wheel drive",
     RWD: "Rear-wheel drive",
     Trasera: "Rear-wheel drive",
+    trasera: "Rear-wheel drive",
+
     AWD: "All-wheel drive",
     "Integral AWD": "All-wheel drive",
+    "Tracción total AWD": "All-wheel drive",
+    "Tracción integral (AWD)": "All-wheel drive",
+
+    FOUR_WHEEL_DRIVE: "Four-wheel drive",
     "4WD": "Four-wheel drive",
     "4x4": "Four-wheel drive",
+    "4×4": "Four-wheel drive",
+    "Integral / 4x4": "Four-wheel drive",
+    "ntegral / 4x4": "Four-wheel drive",
   },
 };
 

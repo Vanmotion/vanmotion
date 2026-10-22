@@ -20,26 +20,36 @@ const SITE_URL = "https://www.vanmotion.es";
 
 const fuelLabels: Record<Language, Record<string, string>> = {
   es: {
+    DIESEL: "Diésel",
     Diesel: "Diésel",
     Diésel: "Diésel",
+    GASOLINE: "Gasolina",
     Gasoline: "Gasolina",
     Petrol: "Gasolina",
     Gasolina: "Gasolina",
+    HYBRID: "Híbrido",
+    PLUG_IN_HYBRID: "Híbrido enchufable",
     Hybrid: "Híbrido",
     Híbrido: "Híbrido",
+    ELECTRIC: "Eléctrico",
     Electric: "Eléctrico",
     Eléctrico: "Eléctrico",
     LPG: "GLP",
     GLP: "GLP",
   },
   en: {
+    DIESEL: "Diesel",
     Diesel: "Diesel",
     Diésel: "Diesel",
+    GASOLINE: "Petrol",
     Gasoline: "Petrol",
     Petrol: "Petrol",
     Gasolina: "Petrol",
+    HYBRID: "Hybrid",
+    PLUG_IN_HYBRID: "Plug-in hybrid",
     Hybrid: "Hybrid",
     Híbrido: "Hybrid",
+    ELECTRIC: "Electric",
     Electric: "Electric",
     Eléctrico: "Electric",
     LPG: "LPG",
@@ -49,6 +59,8 @@ const fuelLabels: Record<Language, Record<string, string>> = {
 
 const transmissionLabels: Record<Language, Record<string, string>> = {
   es: {
+    MANUAL: "Manual",
+    AUTOMATIC: "Automática",
     Manual: "Manual",
     Automatic: "Automática",
     Automática: "Automática",
@@ -56,6 +68,8 @@ const transmissionLabels: Record<Language, Record<string, string>> = {
     Semiautomática: "Semiautomática",
   },
   en: {
+    MANUAL: "Manual",
+    AUTOMATIC: "Automatic",
     Manual: "Manual",
     Automatic: "Automatic",
     Automática: "Automatic",
