@@ -40,10 +40,10 @@ type ExactCorners = {
 
 const EXACT_CORNER_CALIBRATIONS: Record<string, ExactCorners> = {
   "rain/dia.webp": {
-    tl: [27.470362, 48.447593],
-    tr: [36.995383, 48.501796],
-    br: [37.115233, 59.052072],
-    bl: [27.572967, 59.416696],
+    tl: [27.370362, 48.327593],
+    tr: [37.175383, 48.401796],
+    br: [37.255233, 58.832072],
+    bl: [27.492967, 59.796696],
   },
 };
 
@@ -52,133 +52,133 @@ const WINTER_EXACT_CORNER_CALIBRATIONS: Record<string, ExactCorners> = {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
   "cloudy/manana.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
   "rain/manana.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
   "snow/manana.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
   "manana-dia.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
   "cloudy/manana-dia.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
   "rain/manana-dia.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
   "snow/manana-dia.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "dia.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "cloudy/dia.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "rain/dia.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "snow/dia.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "atardecer.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "cloudy/atardecer.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "rain/atardecer.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "snow/atardecer.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "noche.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "cloudy/noche.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "rain/noche.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 
   "snow/noche.webp": {
     tl: [27.5966, 48.4122],
     tr: [38.1630, 48.5648],
     br: [38.8213, 59.7806],
-    bl: [28.0152, 60.0394],
+    bl: [28.0152, 60.3194],
   },
 };
 
@@ -189,7 +189,7 @@ const BASE_CALIBRATION: Calibration = {
   height: 10.9400,
   rotate: -1.04,
   skewX: 1.01,
-  skewY: 1.10,
+  skewY: 0.88,
 };
 
 /*
@@ -201,13 +201,13 @@ const AUTUMN_CALIBRATIONS: Record<string, Calibration> = {
   "dia.webp": { ...BASE_CALIBRATION },
   "manana-dia.webp": { ...BASE_CALIBRATION },
   "manana.webp": {
-    x: 27.6600,
-    y: 48.6100,
-    width: 9.7500,
-    height: 10.8000,
+    x: 27.4400,
+    y: 48.4300,
+    width: 10.3700,
+    height: 11.3600,
     rotate: -0.29,
     skewX: 0.04,
-    skewY: 0.92,
+    skewY: 0.70,
   },
   "noche.webp": { ...BASE_CALIBRATION },
 
@@ -219,26 +219,26 @@ const AUTUMN_CALIBRATIONS: Record<string, Calibration> = {
 
   "rain/atardecer.webp": { ...BASE_CALIBRATION },
   "rain/dia.webp": {
-    x: 27.3100,
-    y: 48.4600,
-    width: 9.7400,
-    height: 10.7200,
+    x: 27.0900,
+    y: 48.2800,
+    width: 10.3600,
+    height: 11.2800,
     rotate: -0.58,
     skewX: 0.57,
-    skewY: 1.10,
+    skewY: 0.88,
   },
   "rain/manana-dia.webp": { ...BASE_CALIBRATION },
   "rain/manana.webp": { ...BASE_CALIBRATION },
   "rain/noche.webp": { ...BASE_CALIBRATION },
 
   "snow/dia.webp": {
-    x: 27.5900,
-    y: 48.9900,
-    width: 9.6700,
-    height: 10.6500,
+    x: 27.3700,
+    y: 48.8100,
+    width: 10.2900,
+    height: 11.2100,
     rotate: -1.04,
     skewX: 0.39,
-    skewY: 1.10,
+    skewY: 0.88,
   },
 };
 
@@ -1257,6 +1257,7 @@ export default function HeroMusicMonitor({
     >
     <div
       ref={monitorRef}
+      data-autumn-monitor={heroImage.startsWith("/experience/music/autumn/") ? "true" : undefined}
       className={styles.heroMonitorScreen}
       data-winter-exact={
         heroImage.startsWith("/experience/music/winter/") &&

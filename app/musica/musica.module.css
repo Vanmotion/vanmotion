@@ -2307,8 +2307,7 @@
     border-color: rgba(242, 239, 232, 0.46) !important;
     transform: translateY(-3px) scale(1.012) !important;
     box-shadow:
-      0 20px 48px rgba(0, 0, 0, 0.30),
-      inset 0 0 0 1px rgba(242, 239, 232, 0.10) !important;
+      0 20px 48px rgba(0, 0, 0, 0.30) !important;
   }
 
   .heroNews:hover .heroNewsThumb img {
@@ -2332,8 +2331,7 @@
     border-color: rgba(242, 239, 232, 0.46) !important;
     transform: scale(.988) !important;
     box-shadow:
-      0 14px 34px rgba(0, 0, 0, 0.28),
-      inset 0 0 0 1px rgba(242, 239, 232, 0.10) !important;
+      0 14px 34px rgba(0, 0, 0, 0.28) !important;
   }
 
   .heroNews:active .heroNewsThumb img {
@@ -2359,8 +2357,7 @@
   .heroNews:hover {
     border-color: rgba(212, 119, 40, 0.88) !important;
     box-shadow:
-      0 20px 48px rgba(0, 0, 0, 0.30),
-      inset 0 0 0 1px rgba(212, 119, 40, 0.32) !important;
+      0 20px 48px rgba(0, 0, 0, 0.30) !important;
   }
 }
 
@@ -2368,26 +2365,9 @@
   .heroNews:active {
     border-color: rgba(212, 119, 40, 0.88) !important;
     box-shadow:
-      0 14px 34px rgba(0, 0, 0, 0.28),
-      inset 0 0 0 1px rgba(212, 119, 40, 0.32) !important;
+      0 14px 34px rgba(0, 0, 0, 0.28) !important;
   }
 }
-
-/* VANMOTION · SAFARI HERO NEWS OUTLINE · MÚSICA */
-@media (hover: hover) and (pointer: fine) {
-  .heroNews:hover {
-    outline: 1px solid rgba(212, 119, 40, 0.92) !important;
-    outline-offset: -1px !important;
-  }
-}
-
-@media (hover: none), (pointer: coarse) {
-  .heroNews:active {
-    outline: 1px solid rgba(212, 119, 40, 0.92) !important;
-    outline-offset: -1px !important;
-  }
-}
-
 
 /* VANMOTION · RECOMMENDED VIDEO UNIVERSAL 20261002 */
 .recommendVideo {
@@ -2891,4 +2871,25 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* VANMOTION_NEWS_SINGLE_BORDER_20261022
+   Un único borde existente, sin outline ni shadow interior.
+   En escritorio la tarjeta no cruza el monitor de la imagen. */
+@media (min-width: 721px) {
+  .heroNews {
+    bottom: 48px;
+  }
+}
+
+/* VANMOTION_AUTUMN_BR_CROP_20261022 */
+/* Subir SOLO la esquina inferior derecha visible del monitor en otoño.
+   Se conservan las otras tres esquinas, los vídeos y las escenas de invierno. */
+.page .heroMonitorScreen[data-autumn-monitor="true"] {
+  clip-path: polygon(
+    0.5% 0.5%,
+    99.0% 0.2%,
+    99.6% 94.8%,
+    0.4% 99.6%
+  ) !important;
 }
