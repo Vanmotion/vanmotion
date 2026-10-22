@@ -13,6 +13,7 @@ import {
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
 import styles from "./musica.module.css";
 import autumnMonitorCalibration from "./autumn-monitor-calibration.json";
+import autumnRainDayCalibration from "./autumn-monitor-calibration-rain-dia.json";
 import YouTubeRecommendationPlayer from "@/app/components/music/YouTubeRecommendationPlayer";
 import { getYouTubeVideoId } from "@/app/components/music/YouTubeUrl";
 
@@ -288,6 +289,11 @@ function getExactSceneCorners(
   }
 
   if (match.season === "autumn") {
+    // VANMOTION_CALIBRADOR_LLUVIA_DIA_V1: esta escena usa su propia calibración.
+    if (match.key === "rain/dia.webp" && autumnRainDayCalibration.active) {
+      return autumnRainDayCalibration.corners as unknown as ExactCorners;
+    }
+
     // VANMOTION_CALIBRADOR_4_ESQUINAS: si se guarda una calibración,
     // se utiliza para TODAS las fotografías de Música de otoño.
     if (autumnMonitorCalibration.active) {
