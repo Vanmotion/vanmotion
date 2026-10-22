@@ -244,6 +244,32 @@ const translations = {
   },
 } as const;
 
+function localizedVehicleModel(
+  model: string,
+  language: Language,
+): string {
+  if (language !== "en") return model;
+
+  const englishNames: Record<string, string> = {
+    "Clase G": "G-Class",
+    Cabrio: "Convertible",
+  };
+
+  return englishNames[model] ?? model;
+}
+
+function localizedVehicleVersion(
+  version: string | null,
+  language: Language,
+): string | null {
+  if (!version || language !== "en") return version;
+
+  return version
+    .replaceAll("Automático", "Automatic")
+    .replaceAll("Furgón de carga", "Cargo van")
+    .replaceAll("3 plazas", "3 seats");
+}
+
 function translateValue(
   dictionary: Record<string, string>,
   value: string | null,
@@ -410,8 +436,8 @@ export default async function CollectionPage() {
         url: `${collectionUrl}/${encodeURIComponent(vehicle.id)}`,
         name: [
           vehicle.brand.name,
-          vehicle.model,
-          vehicle.version,
+          localizedVehicleModel(vehicle.model, language),
+          localizedVehicleVersion(vehicle.version, language),
           vehicle.year,
         ]
           .filter(Boolean)
@@ -537,10 +563,18 @@ export default async function CollectionPage() {
           ) : (
             <div className={styles.vehicleGrid}>
               {orderedVehicles.map((vehicle) => {
+                const displayModel = localizedVehicleModel(
+                  vehicle.model,
+                  language,
+                );
+                const displayVersion = localizedVehicleVersion(
+                  vehicle.version,
+                  language,
+                );
                 const vehicleName = [
                   vehicle.brand.name,
-                  vehicle.model,
-                  vehicle.version,
+                  displayModel,
+                  displayVersion,
                 ]
                   .filter(Boolean)
                   .join(" ");
@@ -635,8 +669,8 @@ export default async function CollectionPage() {
                       <div className={styles.vehicleContent}>
                         <div>
                           <p className={styles.vehicleBrand}>{vehicle.brand.name}</p>
-                          <h2>{vehicle.model}</h2>
-                          {vehicle.version && <p className={styles.vehicleVersion}>{vehicle.version}</p>}
+                          <h2>{displayModel}</h2>
+                          {displayVersion && <p className={styles.vehicleVersion}>{displayVersion}</p>}
                         </div>
 
                         <div className={styles.vehicleDetails}>
