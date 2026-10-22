@@ -93,6 +93,7 @@ export default function LanguageSwitcher() {
       if (isPilotHome) {
         router.push(
           language === "es" ? "/" : "/en-us",
+          { scroll: false },
         );
         return;
       }
@@ -102,6 +103,7 @@ export default function LanguageSwitcher() {
           language === "es"
             ? "/reconocimientos"
             : "/en-us/reconocimientos",
+          { scroll: false },
         );
         return;
       }
@@ -111,6 +113,7 @@ export default function LanguageSwitcher() {
           language === "es"
             ? "/musica"
             : "/en-us/musica",
+          { scroll: false },
         );
         return;
       }
@@ -124,6 +127,7 @@ export default function LanguageSwitcher() {
           language === "es"
             ? spanishPath
             : `/en-us${spanishPath}`,
+          { scroll: false },
         );
         return;
       }
