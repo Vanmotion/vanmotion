@@ -14,7 +14,7 @@ const translations = {
   es: {
     metadataTitle: "Condiciones de compra",
     metadataDescription:
-      "Información esencial sobre las compras online realizadas en VANMOTION.",
+      "Consulta las condiciones de compra online de VANMOTION: productos, precios, pagos, plazos de entrega, desistimiento, devoluciones, reembolsos y garantías.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",
@@ -111,7 +111,7 @@ const translations = {
   en: {
     metadataTitle: "Purchase terms",
     metadataDescription:
-      "Essential information about online purchases made through VANMOTION.",
+      "Read the terms for online purchases at VANMOTION, including products, prices, payments, delivery times, withdrawal, returns, refunds and product warranties.",
     navigation: {
       vehicles: "Vehicles",
       music: "Music",

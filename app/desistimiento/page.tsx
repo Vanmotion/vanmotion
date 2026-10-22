@@ -23,7 +23,7 @@ const translations = {
   es: {
     metadataTitle: "Desistimiento",
     metadataDescription:
-      "Formulario para comunicar a VANMOTION el desistimiento de una compra online.",
+      "Comunica a VANMOTION el desistimiento de tu compra online. Registra la solicitud con la referencia del pedido y consulta cómo gestionar la devolución del producto.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",
@@ -142,7 +142,7 @@ const translations = {
   en: {
     metadataTitle: "Withdrawal",
     metadataDescription:
-      "Form for notifying VANMOTION of withdrawal from an online purchase.",
+      "Notify VANMOTION that you wish to withdraw from an online purchase. Register your request using the order reference and find out how to arrange a product return.",
     navigation: {
       vehicles: "Vehicles",
       music: "Music",
