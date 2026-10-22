@@ -261,6 +261,7 @@ function formatPrice(price: unknown, locale: string): string {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
+    useGrouping: true,
   }).format(Number(price));
 }
 
