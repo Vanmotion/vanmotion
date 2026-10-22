@@ -505,6 +505,8 @@ export default function HeroMusicMonitor({
     let timer: number | null = null;
     let busy = false;
     let lastSeek = 0;
+    let seeking = false;
+    let starting = false;
     let targetReady = false;
     let VimeoPlayerConstructor:
       | typeof import("@vimeo/player").default
@@ -554,20 +556,56 @@ export default function HeroMusicMonitor({
         setRecommendationVideoTime(sourceTime);
         setRecommendationVideoState(recommendationVideoId, !sourcePaused);
 
+        // The floating player keeps playing while the Music page unmounts.
+        // On return the projected iframe starts at t=0. Vimeo can reject a
+        // seek before its video is playable: a failed seek MUST NOT suppress
+        // the play command or leave the monitor permanently hidden.
+        if (!sourcePaused && targetPaused && !starting) {
+          starting = true;
+          void targetPlayer
+            .play()
+            .then(() => {
+              if (!disposed && target === targetPlayer) {
+                setProjectionReadyFor(recommendationVideoId);
+              }
+            })
+            .catch(() => {
+              // Keep retrying: browser policies can delay Vimeo startup.
+            })
+            .finally(() => {
+              starting = false;
+            });
+        } else if (sourcePaused && !targetPaused) {
+          void targetPlayer.pause().catch(() => {});
+        }
+
         const drift = sourceTime - targetTime;
         const tolerance = sourcePaused ? 0.15 : 0.45;
         if (
+          !seeking &&
+          (sourcePaused || !targetPaused) &&
           Math.abs(drift) > tolerance &&
           (force || Math.abs(drift) > 1 || performance.now() - lastSeek > 750)
         ) {
+          seeking = true;
           lastSeek = performance.now();
-          await targetPlayer.setCurrentTime(Math.max(0, sourceTime));
+          void targetPlayer
+            .setCurrentTime(Math.max(0, sourceTime))
+            .then(() => {
+              if (!disposed && source === sourcePlayer && target === targetPlayer) {
+                setProjectionReadyFor(recommendationVideoId);
+              }
+            })
+            .catch(() => {
+              // Retry the seek after playback becomes available.
+            })
+            .finally(() => {
+              seeking = false;
+            });
         }
 
-        if (!sourcePaused && targetPaused) {
-          await targetPlayer.play();
-        } else if (sourcePaused && !targetPaused) {
-          await targetPlayer.pause();
+        if (!disposed && source === sourcePlayer && target === targetPlayer && !targetPaused) {
+          setProjectionReadyFor(recommendationVideoId);
         }
       } catch {
         // Vimeo may reject a command while either iframe is seeking.
@@ -645,7 +683,9 @@ export default function HeroMusicMonitor({
       void player
         .ready()
         .then(async () => {
-          await player.setAutopause(false);
+          // Autopause is best-effort: an SDK rejection must not prevent
+          // reconnecting this source after returning to the Music page.
+          await player.setAutopause(false).catch(() => {});
           if (disposed || source !== player) return;
           sourceFrameRef = sourceFrame;
           connectingFrame = null;
@@ -692,7 +732,9 @@ export default function HeroMusicMonitor({
         target = new Player(targetFrame);
         try {
           await target.ready();
-          await Promise.all([
+          // The monitor must continue initializing even if an optional
+          // Vimeo configuration command fails during route remount.
+          await Promise.allSettled([
             target.setAutopause(false),
             target.setMuted(true),
           ]);
