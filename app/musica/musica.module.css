@@ -2893,3 +2893,11 @@
     0.4% 99.6%
   ) !important;
 }
+
+
+/* VANMOTION_CALIBRADOR_4_ESQUINAS: la homografía guardada define
+   directamente las 4 esquinas de otoño. No recortar otra vez por CSS. */
+.page .heroMonitorScreen[data-autumn-calibrated="true"] {
+  clip-path: none !important;
+  transform-origin: 0 0 !important;
+}

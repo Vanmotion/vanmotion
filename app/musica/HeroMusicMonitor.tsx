@@ -12,6 +12,7 @@ import {
 
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
 import styles from "./musica.module.css";
+import autumnMonitorCalibration from "./autumn-monitor-calibration.json";
 import YouTubeRecommendationPlayer from "@/app/components/music/YouTubeRecommendationPlayer";
 import { getYouTubeVideoId } from "@/app/components/music/YouTubeUrl";
 
@@ -287,6 +288,11 @@ function getExactSceneCorners(
   }
 
   if (match.season === "autumn") {
+    // VANMOTION_CALIBRADOR_4_ESQUINAS: si se guarda una calibración,
+    // se utiliza para TODAS las fotografías de Música de otoño.
+    if (autumnMonitorCalibration.active) {
+      return autumnMonitorCalibration.corners as unknown as ExactCorners;
+    }
     return EXACT_CORNER_CALIBRATIONS[match.key] ?? null;
   }
 
@@ -1257,6 +1263,10 @@ export default function HeroMusicMonitor({
     >
     <div
       ref={monitorRef}
+      data-autumn-calibrated={
+        heroImage.startsWith("/experience/music/autumn/") &&
+        autumnMonitorCalibration.active ? "true" : undefined
+      }
       data-autumn-monitor={heroImage.startsWith("/experience/music/autumn/") ? "true" : undefined}
       className={styles.heroMonitorScreen}
       data-winter-exact={
