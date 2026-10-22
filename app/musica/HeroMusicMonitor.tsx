@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type RefObject,
 } from "react";
 
 import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
@@ -425,7 +426,6 @@ type MonitorGeometry = {
 };
 
 type HeroMusicMonitorProps = {
-  heroImage: string;
   recommendations: Array<{
     id: string;
     videoUrl: string | null;
@@ -448,8 +448,52 @@ function getVimeoId(value: string | null): string | null {
   }
 }
 
+
+type VimeoMirrorFrameProps = {
+  videoId: string;
+  playing: boolean;
+  startTime: number;
+  ready: boolean;
+  iframeRef: RefObject<HTMLIFrameElement | null>;
+};
+
+// Conserva el punto inicial durante la vida del iframe.
+// Así cambiar el estado de reproducción no recarga el vídeo.
+function VimeoMirrorFrame({
+  videoId,
+  playing,
+  startTime,
+  iframeRef,
+}: VimeoMirrorFrameProps) {
+  const [resume] = useState(() => ({
+    playing,
+    seconds: Number.isFinite(startTime)
+      ? Math.floor(Math.max(0, startTime))
+      : 0,
+  }));
+
+  return (
+    <iframe
+      ref={iframeRef}
+      title="Proyección musical VANMOTION"
+      src={`https://player.vimeo.com/video/${videoId}?dnt=1&muted=1&autoplay=1&controls=0&autopause=0&playsinline=1#t=${resume.seconds}s`}
+      allow="autoplay; fullscreen"
+      tabIndex={-1}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        border: 0,
+        pointerEvents: "none",
+        background: "#000",
+        opacity: 1,
+      }}
+    />
+  );
+}
+
 export default function HeroMusicMonitor({
-  heroImage,
   recommendations,
 }: HeroMusicMonitorProps) {
   const {
@@ -476,7 +520,11 @@ export default function HeroMusicMonitor({
   const directVideoSyncRef = useRef<(() => void) | null>(null);
   const recommendationVideoPlayingRef = useRef(recommendationVideoPlaying);
   const recommendationVideoTimeRef = useRef(recommendationVideoTime);
+  const recommendationVideoTimestampRef = useRef(0);
   const monitorRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLElement | null>(null);
+  const [heroImage, setHeroImage] = useState("");
+  const [heroAnchorVersion, setHeroAnchorVersion] = useState(0);
   const [geometry, setGeometry] =
     useState<MonitorGeometry | null>(null);
   const [projectionReadyFor, setProjectionReadyFor] =
@@ -492,9 +540,44 @@ export default function HeroMusicMonitor({
       ? activeRecommendation.videoUrl
       : null;
 
+  // Keep one projected media player alive in RootLayout. A Next.js route
+  // change no longer destroys its iframe. The DOM anchor only supplies the
+  // current photo's geometry; the iframe itself is NEVER moved or recreated.
+  useEffect(() => {
+    const detectAnchor = () => {
+      const anchor = document.querySelector<HTMLElement>(
+        "[data-vanmotion-music-monitor-anchor]",
+      );
+      const nextImage = anchor?.dataset.vanmotionMusicMonitorAnchor ?? "";
+      setHeroImage((old) => old === nextImage ? old : nextImage);
+      if (anchor !== anchorRef.current) {
+        anchorRef.current = anchor;
+        setHeroAnchorVersion((version) => version + 1);
+        setProjectionReadyFor(null);
+        if (anchor) {
+          // Safari may have suspended an offscreen muted iframe. Each player
+          // must realign to the still-running audio source before uncovering.
+          window.dispatchEvent(
+            new Event("vanmotion:music-projection-return"),
+          );
+        }
+      }
+    };
+    const observer = new MutationObserver(detectAnchor);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-vanmotion-music-monitor-anchor"],
+    });
+    detectAnchor();
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     recommendationVideoPlayingRef.current = recommendationVideoPlaying;
     recommendationVideoTimeRef.current = recommendationVideoTime;
+    recommendationVideoTimestampRef.current = performance.now();
   }, [recommendationVideoPlaying, recommendationVideoTime]);
 
   // vanmotion-vimeo-projection
@@ -507,7 +590,14 @@ export default function HeroMusicMonitor({
     let lastSeek = 0;
     let seeking = false;
     let starting = false;
+    let rateSupported = true;
+    let ratePending = false;
+    let currentRate = 1;
     let targetReady = false;
+    // Never reveal a fresh Vimeo mirror until it follows the source clock.
+    // This applies after changing language, route and in every browser.
+    let initialAligned = false;
+
     let VimeoPlayerConstructor:
       | typeof import("@vimeo/player").default
       | null = null;
@@ -565,7 +655,11 @@ export default function HeroMusicMonitor({
           void targetPlayer
             .play()
             .then(() => {
-              if (!disposed && target === targetPlayer) {
+              if (
+                !disposed &&
+                target === targetPlayer &&
+                initialAligned
+              ) {
                 setProjectionReadyFor(recommendationVideoId);
               }
             })
@@ -579,13 +673,93 @@ export default function HeroMusicMonitor({
           void targetPlayer.pause().catch(() => {});
         }
 
+        // Safari: alinear antes de mostrar la proyección.
+        if (!initialAligned) {
+          if (!Number.isFinite(targetTime)) return;
+
+          if (!sourcePaused && targetPaused) return;
+
+          const initialDrift = sourceTime - targetTime;
+
+          if (Math.abs(initialDrift) > 0.45) {
+            if (
+              !seeking &&
+              (lastSeek === 0 ||
+                performance.now() - lastSeek > 700)
+            ) {
+              seeking = true;
+              lastSeek = performance.now();
+
+              void targetPlayer
+                .setCurrentTime(
+                  Math.max(
+                    0,
+                    sourceTime + (!sourcePaused ? 0.12 : 0)
+                  )
+                )
+                .catch(() => {})
+                .finally(() => {
+                  seeking = false;
+                });
+            }
+            return;
+          }
+
+          initialAligned = true;
+          setProjectionReadyFor(recommendationVideoId);
+        }
+
         const drift = sourceTime - targetTime;
-        const tolerance = sourcePaused ? 0.15 : 0.45;
+
+        // Corregir diferencias moderadas sin saltar fotogramas.
+        const smoothCorrection =
+          !sourcePaused &&
+          !targetPaused &&
+          !seeking &&
+          Math.abs(drift) > 0.18 &&
+          Math.abs(drift) < 0.9;
+
+        const desiredRate = smoothCorrection
+          ? drift > 0 ? 1.08 : 0.92
+          : 1;
+
+        if (
+          rateSupported &&
+          !ratePending &&
+          Math.abs(currentRate - desiredRate) > 0.01
+        ) {
+          ratePending = true;
+
+          void targetPlayer.setPlaybackRate(desiredRate)
+            .then((actualRate) => {
+              if (disposed || target !== targetPlayer) return;
+
+              if (Math.abs(actualRate - desiredRate) > 0.03) {
+                rateSupported = false;
+              } else {
+                currentRate = actualRate;
+              }
+            })
+            .catch(() => {
+              // Algunos vídeos de Vimeo no permiten cambiar velocidad.
+              rateSupported = false;
+              if (currentRate !== 1) {
+                void targetPlayer.setPlaybackRate(1).catch(() => {});
+              }
+            })
+            .finally(() => {
+              ratePending = false;
+            });
+        }
+
+        const tolerance = sourcePaused
+          ? 0.15
+          : rateSupported ? 0.9 : 0.45;
         if (
           !seeking &&
           (sourcePaused || !targetPaused) &&
           Math.abs(drift) > tolerance &&
-          (force || Math.abs(drift) > 1 || performance.now() - lastSeek > 750)
+          (force || Math.abs(drift) > 2 || performance.now() - lastSeek > 1200)
         ) {
           seeking = true;
           lastSeek = performance.now();
@@ -712,6 +886,16 @@ export default function HeroMusicMonitor({
       connect();
       void sync(true);
     };
+    const handleProjectionReturn = () => {
+      initialAligned = false;
+      setProjectionReadyFor(null);
+      connect();
+      void sync(true);
+    };
+    window.addEventListener(
+      "vanmotion:music-projection-return",
+      handleProjectionReturn,
+    );
 
     window.addEventListener(
       "vanmotion:floating-media-state",
@@ -741,8 +925,16 @@ export default function HeroMusicMonitor({
           if (disposed) return;
 
           targetReady = true;
-          onTargetPlaying = () => setProjectionReadyFor(recommendationVideoId);
-          onTargetSeeked = () => setProjectionReadyFor(recommendationVideoId);
+          onTargetPlaying = () => {
+            if (initialAligned) {
+              setProjectionReadyFor(recommendationVideoId);
+            }
+          };
+          onTargetSeeked = () => {
+            if (initialAligned) {
+              setProjectionReadyFor(recommendationVideoId);
+            }
+          };
           target.on("playing", onTargetPlaying);
           target.on("seeked", onTargetSeeked);
           connect();
@@ -767,6 +959,10 @@ export default function HeroMusicMonitor({
         "vanmotion:embedded-video-play",
         handleSourceChange,
       );
+      window.removeEventListener(
+        "vanmotion:music-projection-return",
+        handleProjectionReturn,
+      );
       disconnectSource();
       if (target) {
         target.off("playing", onTargetPlaying);
@@ -788,25 +984,57 @@ export default function HeroMusicMonitor({
 
     video.muted = true;
 
+    let lastHardSeek = 0;
+
     const sync = () => {
+      const playing = recommendationVideoPlayingRef.current;
+
       if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-        const targetTime = recommendationVideoTimeRef.current;
-        const playing = recommendationVideoPlayingRef.current;
+        const elapsed = playing
+          ? Math.min(
+              0.5,
+              Math.max(
+                0,
+                (performance.now() -
+                  recommendationVideoTimestampRef.current) / 1000
+              )
+            )
+          : 0;
+
+        const targetTime =
+          recommendationVideoTimeRef.current + elapsed;
+
         const drift = targetTime - video.currentTime;
-        const tolerance = playing ? 0.45 : 0.15;
-        if (Math.abs(drift) > tolerance) {
+        const difference = Math.abs(drift);
+        const now = performance.now();
+
+        if (
+          (!playing && difference > 0.12) ||
+          (playing &&
+            difference > 0.8 &&
+            (lastHardSeek === 0 || now - lastHardSeek > 1300))
+        ) {
           try {
+            video.playbackRate = 1;
             video.currentTime = Math.max(0, targetTime);
+            lastHardSeek = now;
           } catch {
-            // The browser may reject a seek until the media is seekable.
+            // Esperar a que el navegador permita el seek.
           }
+        } else if (playing && difference > 0.14 && difference <= 0.8) {
+          video.playbackRate = drift > 0 ? 1.08 : 0.92;
+        } else {
+          video.playbackRate = 1;
         }
       }
 
-      if (recommendationVideoPlayingRef.current) {
-        void video.play().catch(() => {});
+      if (playing) {
+        if (video.paused) {
+          void video.play().catch(() => {});
+        }
       } else {
-        video.pause();
+        video.playbackRate = 1;
+        if (!video.paused) video.pause();
       }
     };
 
@@ -838,19 +1066,44 @@ export default function HeroMusicMonitor({
     directVideoSyncRef.current?.();
   }, [recommendationVideoPlaying, recommendationVideoTime]);
 
-  useLayoutEffect(() => {
-    const monitor = monitorRef.current;
-    const hero = monitor?.parentElement;
+  useEffect(() => {
+    const resume = () => {
+      directVideoSyncRef.current?.();
+      const video = projectedVideoRef.current;
+      if (
+        video &&
+        video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+        Math.abs(video.currentTime - recommendationVideoTimeRef.current) < 0.5
+      ) {
+        setProjectionReadyFor(activeRecommendation?.id ?? null);
+      }
+    };
+    window.addEventListener("vanmotion:music-projection-return", resume);
+    return () => window.removeEventListener(
+      "vanmotion:music-projection-return", resume,
+    );
+  }, [activeRecommendation?.id]);
 
-    if (!monitor || !hero) {
+  useLayoutEffect(() => {
+    const hero = anchorRef.current;
+
+    if (!hero) {
+      setGeometry(null);
       return;
     }
 
     const updateGeometry = () => {
-      const {
-        width: containerWidth,
-        height: containerHeight,
-      } = hero.getBoundingClientRect();
+      if (!hero.isConnected) {
+        setGeometry(null);
+        return;
+      }
+      const rect = hero.getBoundingClientRect();
+      const containerWidth = rect.width;
+      const containerHeight = rect.height;
+      // Document coordinates are stable while scrolling. CSS paints the
+      // persistent projection with the photo without JS scroll updates.
+      const documentLeft = rect.left + window.scrollX;
+      const documentTop = rect.top + window.scrollY;
 
       if (containerWidth <= 0 || containerHeight <= 0) {
         return;
@@ -912,8 +1165,8 @@ export default function HeroMusicMonitor({
           ]);
 
         setGeometry({
-          left: imageLeft + minX,
-          top: imageTop + minY,
+          left: documentLeft + imageLeft + minX,
+          top: documentTop + imageTop + minY,
           width: boxWidth,
           height: boxHeight,
           calibration,
@@ -927,7 +1180,7 @@ export default function HeroMusicMonitor({
         return;
       }
 
-const baseLeft =
+      const baseLeft =
         imageLeft +
         renderedWidth * (calibration.x / 100);
 
@@ -942,8 +1195,8 @@ const baseLeft =
         renderedHeight * (calibration.height / 100);
 
       setGeometry({
-        left: baseLeft,
-        top: baseTop,
+        left: documentLeft + baseLeft,
+        top: documentTop + baseTop,
         width: baseWidth,
         height: baseHeight,
         calibration,
@@ -954,14 +1207,17 @@ const baseLeft =
 
     const observer = new ResizeObserver(updateGeometry);
     observer.observe(hero);
+    window.addEventListener("resize", updateGeometry);
 
     return () => {
       observer.disconnect();
+      window.removeEventListener("resize", updateGeometry);
     };
-  }, [heroImage]);
+  }, [heroImage, heroAnchorVersion]);
 
   const geometryStyle: CSSProperties = geometry
     ? {
+        position: "absolute",
         left: geometry.left,
         top: geometry.top,
         width: geometry.width,
@@ -978,10 +1234,27 @@ const baseLeft =
           : "50% 50%",
       }
     : {
+        position: "absolute",
         visibility: "hidden",
       };
 
   return (
+    <div
+      className={styles.page}
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: 0,
+        height: 0,
+        minHeight: 0,
+        zIndex: 5,
+        overflow: "visible",
+        background: "transparent",
+        pointerEvents: "none",
+      }}
+      aria-hidden="true"
+    >
     <div
       ref={monitorRef}
       className={styles.heroMonitorScreen}
@@ -1026,6 +1299,14 @@ const baseLeft =
         </>
       ) : activeVimeoId ? (
         <>
+          <VimeoMirrorFrame
+            key={`${recommendationVideoId}:${activeVimeoId}`}
+            videoId={activeVimeoId}
+            playing={recommendationVideoPlaying}
+            startTime={recommendationVideoTime}
+            ready={projectionReadyFor === recommendationVideoId}
+            iframeRef={projectedIframeRef}
+          />
           {projectionReadyFor !== recommendationVideoId && (
             <Image
               key={`vimeo-poster-${recommendationVideoId}`}
@@ -1035,26 +1316,14 @@ const baseLeft =
               sizes="(max-width: 700px) 42vw, 22vw"
               quality={75}
               className={styles.heroMonitorArtwork}
+              style={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 2,
+                pointerEvents: "none",
+              }}
             />
           )}
-          <iframe
-            key={`${recommendationVideoId}:${activeVimeoId}`}
-            ref={projectedIframeRef}
-            title="Proyección musical VANMOTION"
-            src={`https://player.vimeo.com/video/${activeVimeoId}?dnt=1&muted=1&autoplay=0&controls=0&autopause=0`}
-            allow="autoplay; fullscreen"
-            tabIndex={-1}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              border: 0,
-              pointerEvents: "none",
-              background: "#000",
-              opacity: projectionReadyFor === recommendationVideoId ? 1 : 0,
-            }}
-          />
         </>
       ) : activeDirectVideoUrl ? (
         <video
@@ -1081,6 +1350,7 @@ const baseLeft =
           className={styles.heroMonitorArtwork}
         />
       )}
+    </div>
     </div>
   );
 }

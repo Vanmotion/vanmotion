@@ -16,7 +16,6 @@ import { getLocalVimeoTestRecommendations } from "@/app/lib/local-vimeo-test";
 import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
-import HeroMusicMonitor from "./HeroMusicMonitor";
 import RecommendationVideo from "./RecommendationVideo";
 import ExclusiveMediaCoordinator from "./ExclusiveMediaCoordinator";
 import styles from "./musica.module.css";
@@ -380,6 +379,7 @@ export default async function MusicPage({
         <section
           className={styles.hero}
           aria-labelledby="music-hero-title"
+          data-vanmotion-music-monitor-anchor={heroImage}
         >
           <div className={styles.heroMedia} aria-hidden="true">
             <Image
@@ -392,14 +392,6 @@ export default async function MusicPage({
             />
             <div className={styles.heroShade} />
           </div>
-
-          <HeroMusicMonitor
-            heroImage={heroImage}
-            recommendations={recommendations.map((item) => ({
-              id: item.id,
-              videoUrl: item.videoUrl,
-            }))}
-          />
 
           <div className={styles.heroTopline}>
             <span>{content.hero.location}</span>

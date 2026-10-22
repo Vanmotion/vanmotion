@@ -7,6 +7,7 @@ import LanguageSwitcher from "@/app/components/language/LanguageSwitcher";
 import { LanguageProvider } from "@/app/components/language/LanguageProvider";
 import RouteAwareMusicPlayer from "@/app/components/layout/RouteAwareMusicPlayer";
 import GlobalMusicPlayer from "@/app/components/music/GlobalMusicPlayer";
+import HeroMusicMonitor from "@/app/musica/HeroMusicMonitor";
 import MusicPlayerProvider from "@/app/components/music/MusicPlayerContext";
 import { ROUTE_LANGUAGE_HEADER } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
@@ -316,6 +317,9 @@ export default async function RootLayout({
             {children}
 
             <LanguageSwitcher />
+
+            {/* Persistent projector: never unmount on route/language changes. */}
+            <HeroMusicMonitor recommendations={globalRecommendations} />
 
             <RouteAwareMusicPlayer>
               <GlobalMusicPlayer

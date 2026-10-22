@@ -156,6 +156,7 @@ export default function YouTubeRecommendationPlayer({
   const playerReadyRef = useRef(false);
   const lastProjectionSeekRef = useRef(0);
   const safariPlayingSinceRef = useRef(0);
+  const safariInitialAlignedRef = useRef(false);
   const playingRef = useRef(playing);
   const callbacksRef = useRef({
     onPlaying,
@@ -210,12 +211,38 @@ export default function YouTubeRecommendationPlayer({
             if (muted) event.target.mute?.();
             callbacksRef.current.onReady?.();
             if (playingRef.current && syncRole !== "projection") event.target.playVideo?.();
+
+            // Safari: reactivar la proyección silenciada al reconstruirla.
+            const safari =
+              /Safari/i.test(navigator.userAgent) &&
+              !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|Android/i.test(
+                navigator.userAgent
+              );
+
+            if (
+              safari &&
+              syncRole === "projection" &&
+              muted &&
+              playingRef.current
+            ) {
+              event.target.playVideo?.();
+            }
           },
           onStateChange: (event) => {
             if (cancelled) return;
             if (syncRole === "source") publishYouTubeSync(playerRef.current, videoId);
-            if (event.data === 1) callbacksRef.current.onPlaying();
-            else if (event.data === 2) callbacksRef.current.onPaused();
+            if (event.data === 1) {
+              // Do not reveal a remounted projection merely because it
+              // started playing; first align it with the source position.
+              if (
+                syncRole !== "projection" ||
+                safariInitialAlignedRef.current
+              ) {
+                callbacksRef.current.onPlaying();
+              }
+            } else if (event.data === 2) {
+              callbacksRef.current.onPaused();
+            }
             else if (event.data === 0) callbacksRef.current.onEnded();
           },
           onError: (event) => {
@@ -278,6 +305,26 @@ export default function YouTubeRecommendationPlayer({
     return () => window.clearInterval(interval);
   }, [syncRole, videoId]);
 
+  // Safari may suspend the persistent but visually hidden projection.
+  // On return, keep the SAME iframe and hide its frames until source-aligned.
+  useEffect(() => {
+    if (syncRole !== "projection") return;
+    const realign = () => {
+      safariInitialAlignedRef.current = false;
+      safariPlayingSinceRef.current = 0;
+      lastProjectionSeekRef.current = 0;
+      const player = playerRef.current;
+      if (playerReadyRef.current && player) {
+        player.mute?.();
+        if (playingRef.current) player.playVideo?.();
+      }
+    };
+    window.addEventListener("vanmotion:music-projection-return", realign);
+    return () => window.removeEventListener(
+      "vanmotion:music-projection-return", realign,
+    );
+  }, [syncRole]);
+
   // Proyección: siempre silenciada; sigue al flotante y corrige el desfase.
   useEffect(() => {
     if (syncRole !== "projection") return;
@@ -302,10 +349,56 @@ export default function YouTubeRecommendationPlayer({
             navigator.userAgent
           );
 
+        // The existing Safari path already waits for first alignment.
+        // Apply the same initial gate in Firefox/Chromium, where onPlaying
+        // previously exposed a mirror still running from second zero.
+        if (!safariProjection && !safariInitialAlignedRef.current) {
+          const now = performance.now();
+          if (!sync.playing) {
+            safariPlayingSinceRef.current = 0;
+            if (state === 1 || state === 3) player.pauseVideo?.();
+            if (player.getPlaybackRate?.() !== 1) {
+              player.setPlaybackRate?.(1);
+            }
+            return;
+          }
+
+          if (typeof actual === "number" && Number.isFinite(actual)) {
+            const drift = target - actual;
+            if (Math.abs(drift) > 0.45) {
+              if (
+                lastProjectionSeekRef.current === 0 ||
+                now - lastProjectionSeekRef.current >= 1000
+              ) {
+                lastProjectionSeekRef.current = now;
+                player.seekTo?.(target, true);
+              }
+            } else if (state === 1) {
+              safariInitialAlignedRef.current = true;
+              callbacksRef.current.onPlaying();
+            }
+          }
+          if (state !== 1 && state !== 3) player.playVideo?.();
+          return;
+        }
+
+        // Reset the gate whenever the source pauses; a subsequent seek or
+        // resume must realign before its projected frames become visible.
+        if (!safariProjection && !sync.playing) {
+          safariInitialAlignedRef.current = false;
+          safariPlayingSinceRef.current = 0;
+          if (state === 1 || state === 3) player.pauseVideo?.();
+          if (player.getPlaybackRate?.() !== 1) {
+            player.setPlaybackRate?.(1);
+          }
+          return;
+        }
+
         if (safariProjection) {
           const now = performance.now();
 
           if (!sync.playing) {
+            safariInitialAlignedRef.current = false;
             safariPlayingSinceRef.current = 0;
             if (player.getPlaybackRate?.() !== 1) {
               player.setPlaybackRate?.(1);
@@ -320,7 +413,49 @@ export default function YouTubeRecommendationPlayer({
             return;
           }
 
+          if (!safariInitialAlignedRef.current) {
+            if (
+              typeof actual !== "number" ||
+              !Number.isFinite(actual)
+            ) {
+              return;
+            }
+
+            const initialDrift = target - actual;
+
+            if (Math.abs(initialDrift) > 0.45) {
+              if (
+                lastProjectionSeekRef.current === 0 ||
+                now - lastProjectionSeekRef.current > 1000
+              ) {
+                lastProjectionSeekRef.current = now;
+                player.seekTo?.(target, true);
+              }
+              return;
+            }
+
+            safariInitialAlignedRef.current = true;
+            safariPlayingSinceRef.current = now;
+            callbacksRef.current.onPlaying();
+            return;
+          }
+
           if (safariPlayingSinceRef.current === 0) {
+            // Recuperar inmediatamente un desfase grande tras navegar.
+            // Los ajustes pequeños mantienen la estrategia suave.
+            if (
+              typeof actual === "number" &&
+              Number.isFinite(actual) &&
+              Math.abs(target - actual) > 1.25 &&
+              (
+                lastProjectionSeekRef.current === 0 ||
+                now - lastProjectionSeekRef.current > 1500
+              )
+            ) {
+              lastProjectionSeekRef.current = now;
+              player.seekTo?.(target, true);
+            }
+
             safariPlayingSinceRef.current = now;
             return;
           }
@@ -378,16 +513,47 @@ export default function YouTubeRecommendationPlayer({
           return;
         }
 
-        // Alinear la proyección ANTES de iniciar su reproducción evita
-        // que arranque desde el segundo cero mientras el flotante ya avanza.
+        // Espejo adaptativo: ajustar velocidad si YouTube lo permite.
         if (typeof actual === "number" && Number.isFinite(actual)) {
-          const difference = Math.abs(target - actual);
+          const drift = target - actual;
+          const difference = Math.abs(drift);
           const now = performance.now();
-          const tolerance = sync.playing ? 0.42 : 0.2;
-          const enoughTime = lastProjectionSeekRef.current === 0 ||
-            now - lastProjectionSeekRef.current > 1250;
+          const rates = player.getAvailablePlaybackRates?.() ?? [1];
 
-          if (difference > tolerance && (difference > 2.5 || enoughTime)) {
+          const smoothCorrection =
+            sync.playing &&
+            state === 1 &&
+            difference > 0.25 &&
+            difference < 1;
+
+          const desiredRate = smoothCorrection
+            ? drift > 0 && rates.includes(1.25)
+              ? 1.25
+              : drift < 0 && rates.includes(0.75)
+                ? 0.75
+                : 1
+            : 1;
+
+          const currentRate = player.getPlaybackRate?.();
+
+          if (
+            typeof currentRate === "number" &&
+            Math.abs(currentRate - desiredRate) > 0.01
+          ) {
+            player.setPlaybackRate?.(desiredRate);
+          }
+
+          const tolerance = !sync.playing
+            ? 0.2
+            : desiredRate === 1 ? 0.55 : 1;
+
+          const cooldown = difference > 2 ? 900 : 1700;
+
+          const enoughTime =
+            lastProjectionSeekRef.current === 0 ||
+            now - lastProjectionSeekRef.current > cooldown;
+
+          if (difference > tolerance && enoughTime) {
             lastProjectionSeekRef.current = now;
             player.seekTo?.(target, true);
           }

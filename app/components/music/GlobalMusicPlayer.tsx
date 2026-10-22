@@ -469,6 +469,55 @@ export default function GlobalMusicPlayer({
     selectRecommendationRef.current = selectRecommendation;
   });
 
+  // VANMOTION VIMEO MASTER CLOCK
+  // El monitor puede desmontarse al cambiar de sección o idioma.
+  // El tiempo real debe seguir viniendo del reproductor principal.
+  useEffect(() => {
+    if (
+      !activeRecommendation ||
+      !getVimeoEmbedUrl(recommendationVideoUrl)
+    ) {
+      return;
+    }
+
+    const iframe = document.querySelector<HTMLIFrameElement>(
+      'aside iframe[src^="https://player.vimeo.com/video/"]'
+    );
+
+    if (!iframe) return;
+
+    const player = new VimeoPlayer(iframe);
+    let disposed = false;
+
+    const onTimeUpdate = (event: { seconds: number }) => {
+      if (
+        !disposed &&
+        Number.isFinite(event.seconds)
+      ) {
+        setRecommendationVideoTime(event.seconds);
+      }
+    };
+
+    player.on("timeupdate", onTimeUpdate);
+
+    void player.getCurrentTime()
+      .then((seconds) => {
+        if (!disposed && Number.isFinite(seconds)) {
+          setRecommendationVideoTime(seconds);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      disposed = true;
+      player.off("timeupdate", onTimeUpdate);
+    };
+  }, [
+    activeRecommendation,
+    recommendationVideoUrl,
+    setRecommendationVideoTime,
+  ]);
+
   // VANMOTION AUTO-SEQUENCE VIMEO
   const advanceRecommendationRef =
     useRef<(id: string) => void>(() => {});
