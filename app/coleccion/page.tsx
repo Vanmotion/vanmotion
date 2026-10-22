@@ -9,6 +9,7 @@ import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
 import { prisma } from "@/app/lib/prisma";
 import NewsThumbnail from "@/app/components/news/NewsThumbnail";
+import { localizedVehicleModel, localizedVehicleVersion, localizedVehicleImageAlt } from "./vehicle-display";
 
 import styles from "./coleccion.module.css";
 import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
@@ -243,32 +244,6 @@ const translations = {
     },
   },
 } as const;
-
-function localizedVehicleModel(
-  model: string,
-  language: Language,
-): string {
-  if (language !== "en") return model;
-
-  const englishNames: Record<string, string> = {
-    "Clase G": "G-Class",
-    Cabrio: "Convertible",
-  };
-
-  return englishNames[model] ?? model;
-}
-
-function localizedVehicleVersion(
-  version: string | null,
-  language: Language,
-): string | null {
-  if (!version || language !== "en") return version;
-
-  return version
-    .replaceAll("Automático", "Automatic")
-    .replaceAll("Furgón de carga", "Cargo van")
-    .replaceAll("3 plazas", "3 seats");
-}
 
 function translateValue(
   dictionary: Record<string, string>,
@@ -643,7 +618,7 @@ export default async function CollectionPage() {
                         {image ? (
                           <Image
                             src={image.url}
-                            alt={image.alt ?? vehicleName}
+                            alt={image.alt ? localizedVehicleImageAlt(image.alt, language) : vehicleName}
                             fill
                             sizes="(max-width: 620px) 50vw, (max-width: 1100px) 50vw, 25vw"
                             className={styles.vehicleImage}

@@ -13,6 +13,7 @@ import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
 
 import VehicleGallery from "./VehicleGallery";
+import { localizedVehicleModel, localizedVehicleVersion, localizedVehicleImageAlt } from "../vehicle-display";
 import styles from "./vehicle.module.css";
 
 export const dynamic = "force-dynamic";
@@ -424,7 +425,11 @@ export async function generateMetadata({
   const isEnglishRoute =
     requestHeaders.get(ROUTE_LANGUAGE_HEADER) === "en";
   const locale = language === "es" ? "es-ES" : "en-US";
-  const vehicleName = [vehicle.brand.name, vehicle.model, vehicle.version]
+  const vehicleName = [
+    vehicle.brand.name,
+    localizedVehicleModel(vehicle.model, language),
+    localizedVehicleVersion(vehicle.version, language),
+  ]
     .filter(Boolean)
     .join(" ");
   const spanishUrl = `${SITE_URL}/coleccion/${encodeURIComponent(id)}`;
@@ -562,7 +567,11 @@ export default async function PublicVehiclePage({
       : vehicle.status === "SOLD"
         ? content.status.sold
         : null;
-  const vehicleName = [vehicle.brand.name, vehicle.model, vehicle.version]
+  const vehicleName = [
+    vehicle.brand.name,
+    localizedVehicleModel(vehicle.model, language),
+    localizedVehicleVersion(vehicle.version, language),
+  ]
     .filter(Boolean)
     .join(" ");
 
@@ -819,8 +828,8 @@ export default async function PublicVehiclePage({
 
           <div className={styles.heroCopy}>
             <p>{vehicle.brand.name}</p>
-            <h1>{vehicle.model}</h1>
-            {vehicle.version && <span>{vehicle.version}</span>}
+            <h1>{localizedVehicleModel(vehicle.model, language)}</h1>
+            {vehicle.version && <span>{localizedVehicleVersion(vehicle.version, language)}</span>}
           </div>
 
           <div className={styles.heroMeta}>
@@ -865,7 +874,7 @@ export default async function PublicVehiclePage({
               images={vehicle.images.map((image) => ({
                 id: image.id,
                 url: image.url,
-                alt: image.alt,
+                alt: image.alt ? localizedVehicleImageAlt(image.alt, language) : image.alt,
               }))}
               vehicleName={vehicleName}
               emptyLabel={content.photoSoon}
@@ -876,8 +885,8 @@ export default async function PublicVehiclePage({
           <aside className={styles.infoPanel}>
             <div className={styles.infoHeading}>
               <p>{vehicle.brand.name}</p>
-              <h2>{vehicle.model}</h2>
-              {vehicle.version && <span>{vehicle.version}</span>}
+              <h2>{localizedVehicleModel(vehicle.model, language)}</h2>
+              {vehicle.version && <span>{localizedVehicleVersion(vehicle.version, language)}</span>}
             </div>
 
             <div className={styles.priceBlock}>
