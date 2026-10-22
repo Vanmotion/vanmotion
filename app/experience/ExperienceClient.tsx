@@ -4,7 +4,8 @@ import type { Language } from "@/app/language";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import styles from "./experience.module.css";
 import {
   getMadridSeason,
@@ -33,6 +34,66 @@ export default function ExperienceClient({
   initialPeriod: Period;
   initialWeather: WeatherState;
 }) {
+  const pathname = usePathname();
+
+  useLayoutEffect(() => {
+    const scroller = document.querySelector<HTMLElement>(
+      "[data-vanmotion-home-scroll]",
+    );
+
+    if (!scroller) return;
+
+    let saved: {
+      target?: string;
+      top?: number;
+      savedAt?: number;
+    };
+
+    try {
+      const raw = window.sessionStorage.getItem(
+        "vanmotion:home-language-scroll",
+      );
+
+      if (!raw) return;
+
+      window.sessionStorage.removeItem(
+        "vanmotion:home-language-scroll",
+      );
+
+      saved = JSON.parse(raw);
+    } catch {
+      return;
+    }
+
+    if (
+      saved.target !== pathname ||
+      typeof saved.top !== "number" ||
+      !Number.isFinite(saved.top) ||
+      typeof saved.savedAt !== "number" ||
+      Date.now() - saved.savedAt > 30000
+    ) {
+      return;
+    }
+
+    const previousBehavior = scroller.style.scrollBehavior;
+
+    scroller.style.scrollBehavior = "auto";
+
+    scroller.scrollTop = Math.min(
+      Math.max(0, saved.top),
+      Math.max(0, scroller.scrollHeight - scroller.clientHeight),
+    );
+
+    const frame = window.requestAnimationFrame(() => {
+      scroller.style.scrollBehavior = previousBehavior;
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      scroller.style.scrollBehavior = previousBehavior;
+    };
+  }, [pathname]);
+
   const [time, setTime] = useState("--:--");
   const [period, setPeriod] =
     useState<Period>(initialPeriod);
@@ -559,6 +620,7 @@ export default function ExperienceClient({
   return (
     <main
       className={styles.experience}
+      data-vanmotion-home-scroll="true"
       data-period={period}
       data-season={season}
       data-atmosphere={atmosphere}

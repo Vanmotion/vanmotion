@@ -91,6 +91,25 @@ export default function LanguageSwitcher() {
       setLanguage(language);
 
       if (isPilotHome) {
+        const scroller = document.querySelector<HTMLElement>(
+          "[data-vanmotion-home-scroll]",
+        );
+
+        if (scroller) {
+          try {
+            window.sessionStorage.setItem(
+              "vanmotion:home-language-scroll",
+              JSON.stringify({
+                target: language === "es" ? "/" : "/en-us",
+                top: scroller.scrollTop,
+                savedAt: Date.now(),
+              }),
+            );
+          } catch {
+            // El cambio de idioma funciona aunque no haya almacenamiento.
+          }
+        }
+
         router.push(
           language === "es" ? "/" : "/en-us",
           { scroll: false },
