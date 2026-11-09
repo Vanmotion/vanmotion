@@ -1141,3 +1141,13 @@
 }
 
 /* ===== FIN FINAL MOTION POLISH ===== */
+
+
+/* VANMOTION FIX CONTRASTE NAVEGADORES */
+.endingLinks,
+.endingNav,
+.endingBottom,
+.endingSocials a {
+  animation: none !important;
+  opacity: 1;
+}
