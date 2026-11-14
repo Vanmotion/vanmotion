@@ -1,5 +1,7 @@
 import { Seasons } from "astronomy-engine";
 import { sceneImage } from "./madrid-weather";
+import { seasonalExperienceAssetExists } from "./seasonal-experience-assets";
+
 import type {
   Atmosphere,
   ClimateSection,
@@ -9,7 +11,10 @@ import type {
 export type Season = "spring" | "summer" | "autumn" | "winter";
 
 const SEASONS = new Set<Season>([
-  "spring", "summer", "autumn", "winter",
+  "spring",
+  "summer",
+  "autumn",
+  "winter",
 ]);
 
 export function getMadridSeason(date = new Date()): Season {
@@ -33,7 +38,7 @@ export function getMadridSeason(date = new Date()): Season {
 
 export function getSeasonOverride(search: string): Season | null {
   const value = new URLSearchParams(search).get("season");
-  return SEASONS.has(value as Season) ? value as Season : null;
+  return SEASONS.has(value as Season) ? (value as Season) : null;
 }
 
 export function seasonalSceneImage({
@@ -41,28 +46,119 @@ export function seasonalSceneImage({
   period,
   atmosphere,
   season,
-  hasAsset,
+  hasAsset = seasonalExperienceAssetExists,
+  enabled = true,
 }: {
   section: ClimateSection;
   period: Period;
   atmosphere: Atmosphere;
   season: Season;
-  hasAsset: (path: string) => boolean;
+  hasAsset?: (path: string) => boolean;
+  enabled?: boolean;
 }): string {
-  const original = sceneImage(section, period, atmosphere);
+  const fallbackPeriod: Period =
+    period === "manana-dia" ? "dia" : period;
 
-  // La meteorología observada tiene prioridad sobre la estación.
-  if (atmosphere !== "clear") return original;
+  const original = sceneImage(
+    section,
+    fallbackPeriod,
+    atmosphere
+  );
 
-  // Invierno reutiliza las fotos originales de nieve; no crea una
-  // colección invernal adicional.
-  if (season === "winter") return sceneImage(section, period, "snow");
+  if (!enabled) return original;
 
-  // Primavera permanece en su selección original y verano usa las bases.
-  if (season !== "autumn") return original;
+  /*
+   * 1. ESTACIÓN + METEOROLOGÍA + MOMENTO DEL DÍA.
+   *
+   * Ejemplo:
+   * /experience/music/autumn/cloudy/dia.webp
+   */
+  if (atmosphere !== "clear") {
+    const exactSeasonWeather =
+      `/experience/${section}/${season}/${atmosphere}/${period}.webp`;
 
-  const seasonal = `/experience/${section}/${season}/${period}.webp`;
+    if (hasAsset(exactSeasonWeather)) {
+      return exactSeasonWeather;
+    }
 
-  // No se permite seleccionar una imagen que no esté disponible.
-  return hasAsset(seasonal) ? seasonal : original;
+    /*
+     * Por la mañana algunas colecciones meteorológicas estacionales
+     * solo disponen de "dia.webp".
+     *
+     * Preferimos conservar ESTACIÓN + CLIMA antes que caer
+     * en una imagen meteorológica genérica de otra estación.
+     */
+    if (period === "manana") {
+      const seasonWeatherDay =
+        `/experience/${section}/${season}/${atmosphere}/dia.webp`;
+
+      if (hasAsset(seasonWeatherDay)) {
+        return seasonWeatherDay;
+      }
+    }
+  }
+
+  /*
+   * 2. ESTACIÓN + MOMENTO DEL DÍA.
+   *
+   * Ejemplo:
+   * /experience/vehicles/autumn/manana.webp
+   */
+  const exactSeason =
+    `/experience/${section}/${season}/${period}.webp`;
+
+  if (hasAsset(exactSeason)) {
+    return exactSeason;
+  }
+
+  /*
+   * 3. La transición mañana-día solo existe donde hemos creado
+   * material específico. Si falta, usamos el día de esa misma
+   * estación y clima antes de recurrir al fondo genérico.
+   */
+  if (period === "manana-dia") {
+    if (atmosphere !== "clear") {
+      const seasonWeatherDay =
+        `/experience/${section}/${season}/${atmosphere}/dia.webp`;
+
+      if (hasAsset(seasonWeatherDay)) {
+        return seasonWeatherDay;
+      }
+    }
+
+    const seasonDay =
+      `/experience/${section}/${season}/dia.webp`;
+
+    if (hasAsset(seasonDay)) {
+      return seasonDay;
+    }
+  }
+
+  /*
+   * 4. Si por la mañana tampoco existe una variante horaria
+   * estacional, usamos la base diurna de esa estación.
+   */
+  if (period === "manana") {
+    const seasonDay =
+      `/experience/${section}/${season}/dia.webp`;
+
+    if (hasAsset(seasonDay)) {
+      return seasonDay;
+    }
+  }
+
+  /*
+   * 4. Invierno conserva el comportamiento anterior:
+   * con cielo despejado utiliza la colección de nieve existente
+   * si no hay una colección invernal específica.
+   */
+  if (season === "winter" && atmosphere === "clear") {
+    return sceneImage(section, fallbackPeriod, "snow");
+  }
+
+  /*
+   * 5. Último fallback: meteorología original.
+   * Nunca inventamos una ruta que no exista.
+   */
+  return original;
 }

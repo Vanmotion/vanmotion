@@ -1,22 +1,29 @@
 "use client";
 
 import Link from "next/link";
+import { flushSync } from "react-dom";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import VimeoPlayer from "@vimeo/player";
+import YouTubeRecommendationPlayer from "./YouTubeRecommendationPlayer";
+import { getYouTubeVideoId } from "./YouTubeUrl";
 
 import type { Language } from "@/app/language";
-import type { PublicMusicRecommendation } from "@/app/lib/music-library";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
+import { useLanguage } from "@/app/components/language/LanguageProvider";
+
+export type GlobalMusicRecommendation = {
+  id: string;
+  title: string;
+  videoUrl: string | null;
+  coverUrl: string | null;
+};
 
 import { useMusicPlayer } from "./MusicPlayerContext";
-import YouTubeRecommendationPlayer, {
-  type YouTubePlayerHandle,
-} from "./YouTubeRecommendationPlayer";
 import styles from "./GlobalMusicPlayer.module.css";
 
 type GlobalMusicPlayerProps = {
-  language: Language;
-  recommendations: PublicMusicRecommendation[];
+  recommendations: GlobalMusicRecommendation[];
 };
 
 const translations = {
@@ -101,34 +108,71 @@ const translations = {
   }
 >;
 
-function formatPlayerTime(value: number) {
-  const safeValue =
-    Number.isFinite(value) && value > 0 ? value : 0;
+function getWikimediaVp9Url(
+  videoUrl: string,
+): string {
+  if (
+    !videoUrl.includes(
+      "upload.wikimedia.org/wikipedia/commons/transcoded/",
+    ) ||
+    !videoUrl.endsWith(".360p.mpeg4.mov")
+  ) {
+    return videoUrl;
+  }
 
-  const minutes = Math.floor(safeValue / 60);
-  const seconds = Math.floor(safeValue % 60);
+  return videoUrl.replace(
+    /\.360p\.mpeg4\.mov$/,
+    ".480p.vp9.webm",
+  );
+}
 
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+function getVimeoEmbedUrl(value: string | null): string | null {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (host !== "vimeo.com" && host !== "player.vimeo.com") {
+      return null;
+    }
+
+    const id = url.pathname
+      .split("/")
+      .filter(Boolean)
+      .find((part) => /^\d+$/.test(part));
+
+    return id
+      ? `https://player.vimeo.com/video/${id}?dnt=1&autoplay=0&loop=0&autopause=0`
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 export default function GlobalMusicPlayer({
-  language,
   recommendations,
 }: GlobalMusicPlayerProps) {
+  const { language } = useLanguage();
   const content = translations[language];
   const pathname = usePathname();
   const previousPathnameRef = useRef(pathname);
-  const [seekPreview, setSeekPreview] =
-    useState<number | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [audioLibraryOpen, setAudioLibraryOpen] = useState(false);
   const [activeRecommendation, setActiveRecommendation] =
     useState<string | null>(null);
   const [
     recommendationIsPlaying,
     setRecommendationIsPlaying,
   ] = useState(false);
-  const recommendationPlayerRef =
-    useRef<YouTubePlayerHandle | null>(null);
+  const vimeoControllerRef = useRef<VimeoPlayer | null>(null);
+  const recommendationVideoRef =
+    useRef<HTMLVideoElement | null>(null);
+  const recommendationStartingRef =
+    useRef(false);
+  const recommendationAutoplayRef =
+    useRef(false);
+  const externalRecommendationSourceRef = useRef(false);
   const [recommendationError, setRecommendationError] = useState<string | null>(null);
   const [recommendationRetry, setRecommendationRetry] = useState(0);
 
@@ -139,25 +183,57 @@ export default function GlobalMusicPlayer({
     isPlaying,
     currentTime,
     duration,
-    volume,
     playbackError,
     togglePlayback,
     pausePlayback,
     setAudioStartHandler,
     setVideoSessionActive,
     setRecommendationVideoState,
+    setRecommendationVideoTime,
     selectTrack,
+    changeProgress,
     playPrevious,
     playNext,
-    changeProgress,
-    changeVolume,
     setLastTrackEndedHandler,
   } = useMusicPlayer();
 
   const activeRecommendationData = recommendations.find(
     (recommendation) =>
-      recommendation.youtubeVideoId === activeRecommendation,
+      recommendation.id === activeRecommendation,
   );
+
+  const recommendationVideoUrl =
+    activeRecommendationData?.videoUrl?.trim() || null;
+
+  const activeYouTubeId = getYouTubeVideoId(recommendationVideoUrl);
+
+  const [preferVp9Video, setPreferVp9Video] =
+    useState(false);
+
+  useEffect(() => {
+    const probe = document.createElement("video");
+
+    const vp9Support = probe.canPlayType(
+      'video/webm; codecs="vp9, opus"',
+    );
+
+    const frame = window.requestAnimationFrame(() => {
+      setPreferVp9Video(vp9Support !== "");
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  const recommendationPlaybackUrl =
+    recommendationVideoUrl
+      ? preferVp9Video
+        ? getWikimediaVp9Url(
+            recommendationVideoUrl,
+          )
+        : recommendationVideoUrl
+      : null;
 
   useEffect(() => {
     setVideoSessionActive(Boolean(activeRecommendationData));
@@ -165,8 +241,10 @@ export default function GlobalMusicPlayer({
   }, [activeRecommendationData, setVideoSessionActive]);
 
   useEffect(() => {
+    if (externalRecommendationSourceRef.current) return;
+
     setRecommendationVideoState(
-      activeRecommendationData?.youtubeVideoId ?? null,
+      activeRecommendationData?.id ?? null,
       Boolean(activeRecommendationData && recommendationIsPlaying),
     );
   }, [
@@ -176,16 +254,124 @@ export default function GlobalMusicPlayer({
   ]);
 
   useEffect(() => {
+    const handleYouTubeSync = (event: Event) => {
+      const sync = (
+        event as CustomEvent<{
+          videoId: string;
+          seconds: number;
+          playing: boolean;
+        }>
+      ).detail;
+      if (
+        !sync ||
+        sync.videoId !== activeYouTubeId ||
+        !Number.isFinite(sync.seconds)
+      ) {
+        return;
+      }
+
+      setRecommendationVideoTime(sync.seconds);
+      if (!externalRecommendationSourceRef.current && activeRecommendationData) {
+        setRecommendationVideoState(
+          activeRecommendationData.id,
+          sync.playing,
+        );
+      }
+    };
+
+    window.addEventListener(
+      "vanmotion:youtube-monitor-sync",
+      handleYouTubeSync,
+    );
+    return () =>
+      window.removeEventListener(
+        "vanmotion:youtube-monitor-sync",
+        handleYouTubeSync,
+      );
+  }, [
+    activeRecommendationData,
+    activeYouTubeId,
+    setRecommendationVideoState,
+    setRecommendationVideoTime,
+  ]);
+
+  useEffect(() => {
     return () => setRecommendationVideoState(null, false);
   }, [setRecommendationVideoState]);
 
   useEffect(() => {
-    setAudioStartHandler(() => {
-      recommendationPlayerRef.current?.pauseVideo?.();
+    const pauseFloatingForEmbedded = () => {
+      externalRecommendationSourceRef.current = true;
+      recommendationStartingRef.current = false;
+      recommendationAutoplayRef.current = false;
+      recommendationVideoRef.current?.pause();
+      if (vimeoControllerRef.current) {
+        void vimeoControllerRef.current.pause().catch(() => {});
+      }
       setRecommendationIsPlaying(false);
+    };
+    window.addEventListener("vanmotion:embedded-video-play", pauseFloatingForEmbedded);
+    return () => window.removeEventListener("vanmotion:embedded-video-play", pauseFloatingForEmbedded);
+  }, []);
+
+
+  useEffect(() => {
+    const onIframeFocus = () => {
+      window.setTimeout(() => {
+        const frame = document.activeElement;
+        if (frame instanceof HTMLIFrameElement &&
+            frame.closest("[data-vanmotion-recommendation]")) {
+          window.dispatchEvent(new Event("vanmotion:embedded-video-play"));
+        }
+      }, 0);
+    };
+    window.addEventListener("blur", onIframeFocus);
+    return () => window.removeEventListener("blur", onIframeFocus);
+  }, []);
+
+  useEffect(() => {
+    const handleFloatingMediaState = (event: Event) => {
+      const detail = (
+        event as CustomEvent<{ playing: boolean }>
+      ).detail;
+      if (typeof detail?.playing === "boolean") {
+        setRecommendationIsPlaying(detail.playing);
+        if (detail.playing) setRecommendationError(null);
+      }
+    };
+
+    window.addEventListener(
+      "vanmotion:floating-media-state",
+      handleFloatingMediaState,
+    );
+    return () =>
+      window.removeEventListener(
+        "vanmotion:floating-media-state",
+        handleFloatingMediaState,
+      );
+  }, []);
+
+  useEffect(() => {
+    setAudioStartHandler(() => {
+      externalRecommendationSourceRef.current = false;
+      recommendationStartingRef.current = false;
+      recommendationAutoplayRef.current = false;
+
+      recommendationVideoRef.current?.pause();
+
+      setRecommendationIsPlaying(false);
+      setActiveRecommendation(null);
+      setVideoSessionActive(false);
+      setRecommendationVideoState(null, false);
+      setRecommendationError(null);
     });
+
     return () => setAudioStartHandler(null);
-  }, [setAudioStartHandler]);
+  }, [
+    setAudioStartHandler,
+    setVideoSessionActive,
+    setRecommendationVideoState,
+  ]);
 
   useEffect(() => {
     if (previousPathnameRef.current !== pathname) {
@@ -195,20 +381,87 @@ export default function GlobalMusicPlayer({
   }, [pathname]);
 
   function closeRecommendation() {
-    recommendationPlayerRef.current?.stopVideo?.();
+    setAudioLibraryOpen(false);
+    recommendationStartingRef.current = false;
+    recommendationAutoplayRef.current = false;
+    if (recommendationVideoRef.current) {
+      recommendationVideoRef.current.pause();
+      recommendationVideoRef.current.currentTime = 0;
+    }
     setRecommendationIsPlaying(false);
     setActiveRecommendation(null);
     setVideoSessionActive(false);
     setRecommendationError(null);
   }
 
-  function selectRecommendation(videoId: string) {
+  function selectRecommendation(recommendationId: string) {
+    const selectedRecommendation =
+      recommendations.find(
+        (recommendation) =>
+          recommendation.id === recommendationId,
+      );
+
+    if (!selectedRecommendation?.videoUrl) {
+      return;
+    }
+
+    externalRecommendationSourceRef.current = false;
+    window.dispatchEvent(new Event("vanmotion:floating-video-play"));
     pausePlayback();
+    setRecommendationVideoTime(0);
     setRecommendationError(null);
-    setRecommendationIsPlaying(true);
     setVideoSessionActive(true);
-    setActiveRecommendation(videoId);
-    setExpanded(false);
+
+    recommendationStartingRef.current = true;
+
+    flushSync(() => {
+      setActiveRecommendation(recommendationId);
+      setRecommendationIsPlaying(
+        !Boolean(getVimeoEmbedUrl(selectedRecommendation.videoUrl))
+      );
+      setExpanded(false);
+    });
+
+    // Inicio desde el clic original del usuario.
+    if (getVimeoEmbedUrl(selectedRecommendation.videoUrl)) {
+      recommendationStartingRef.current = false;
+
+      const iframe = document.querySelector<HTMLIFrameElement>(
+        'aside iframe[src^="https://player.vimeo.com/video/"]'
+      );
+
+      if (iframe) {
+        const player = new VimeoPlayer(iframe);
+        vimeoControllerRef.current = player;
+        void player.play().catch(() => {
+          // Si Firefox bloquea el audio automático,
+          // Vimeo conserva su botón de reproducción.
+        });
+      }
+      return;
+    }
+
+    if (getYouTubeVideoId(selectedRecommendation.videoUrl)) {
+      recommendationStartingRef.current = false;
+      return;
+    }
+
+    const video = recommendationVideoRef.current;
+
+    if (video && !getVimeoEmbedUrl(selectedRecommendation.videoUrl)) {
+      video.src =
+        preferVp9Video
+          ? getWikimediaVp9Url(
+              selectedRecommendation.videoUrl,
+            )
+          : selectedRecommendation.videoUrl;
+      video.load();
+
+      void video.play().catch(() => {
+        // onCanPlay hará un segundo intento manteniendo
+        // la intención iniciada por el clic del usuario.
+      });
+    }
   }
 
   const selectRecommendationRef = useRef(selectRecommendation);
@@ -216,12 +469,132 @@ export default function GlobalMusicPlayer({
     selectRecommendationRef.current = selectRecommendation;
   });
 
+  // VANMOTION VIMEO MASTER CLOCK
+  // El monitor puede desmontarse al cambiar de sección o idioma.
+  // El tiempo real debe seguir viniendo del reproductor principal.
+  useEffect(() => {
+    if (
+      !activeRecommendation ||
+      !getVimeoEmbedUrl(recommendationVideoUrl)
+    ) {
+      return;
+    }
+
+    const iframe = document.querySelector<HTMLIFrameElement>(
+      'aside iframe[src^="https://player.vimeo.com/video/"]'
+    );
+
+    if (!iframe) return;
+
+    const player = new VimeoPlayer(iframe);
+    let disposed = false;
+
+    const onTimeUpdate = (event: { seconds: number }) => {
+      if (
+        !disposed &&
+        Number.isFinite(event.seconds)
+      ) {
+        setRecommendationVideoTime(event.seconds);
+      }
+    };
+
+    player.on("timeupdate", onTimeUpdate);
+
+    void player.getCurrentTime()
+      .then((seconds) => {
+        if (!disposed && Number.isFinite(seconds)) {
+          setRecommendationVideoTime(seconds);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      disposed = true;
+      player.off("timeupdate", onTimeUpdate);
+    };
+  }, [
+    activeRecommendation,
+    recommendationVideoUrl,
+    setRecommendationVideoTime,
+  ]);
+
+  // VANMOTION AUTO-SEQUENCE VIMEO
+  const advanceRecommendationRef =
+    useRef<(id: string) => void>(() => {});
+
+  useEffect(() => {
+    advanceRecommendationRef.current = (finishedId) => {
+      if (activeRecommendation !== finishedId) return;
+
+      const index = recommendations.findIndex(
+        (item) => item.id === finishedId
+      );
+
+      if (index < 0) return;
+
+      const next = recommendations
+        .slice(index + 1)
+        .find((item) => Boolean(item.videoUrl));
+
+      if (next) {
+        selectRecommendationRef.current(next.id);
+        return;
+      }
+
+      closeRecommendation();
+      changeProgress(0);
+
+      if (tracks.length > 0) {
+        selectTrack(0, true);
+      }
+    };
+  });
+
+  useEffect(() => {
+    if (
+      !activeRecommendation ||
+      !getVimeoEmbedUrl(recommendationVideoUrl)
+    ) {
+      return;
+    }
+
+    const iframe = document.querySelector<HTMLIFrameElement>(
+      'aside iframe[src^="https://player.vimeo.com/video/"]'
+    );
+
+    if (!iframe) return;
+
+    const player = new VimeoPlayer(iframe);
+    const finishedId = activeRecommendation;
+    let handled = false;
+
+    const onEnded = () => {
+      if (handled) return;
+      handled = true;
+      advanceRecommendationRef.current(finishedId);
+    };
+
+    player.on("ended", onEnded);
+
+    // Evitar que Vimeo repita el videoclip
+    // antes de emitir el evento de finalizacion.
+    void player.setLoop(false).catch(() => {});
+
+    return () => {
+      player.off("ended", onEnded);
+    };
+  }, [
+    activeRecommendation,
+    recommendationVideoUrl,
+  ]);
+
+
   useEffect(() => {
     setLastTrackEndedHandler(() => {
       const firstRecommendation = recommendations[0];
 
       if (firstRecommendation) {
-        selectRecommendationRef.current(firstRecommendation.youtubeVideoId);
+        selectRecommendationRef.current(firstRecommendation.id);
       } else {
         setRecommendationIsPlaying(false);
         selectTrack(0, true);
@@ -236,10 +609,6 @@ export default function GlobalMusicPlayer({
     selectTrack,
     setLastTrackEndedHandler,
   ]);
-
-  if (tracks.length === 0 && recommendations.length === 0) {
-    return null;
-  }
 
   const currentTrackTitle = currentTrack
     ? getLocalizedTrackTitle(currentTrack, language)
@@ -257,9 +626,48 @@ export default function GlobalMusicPlayer({
       ? recommendationIsPlaying
       : isPlaying;
 
+  useEffect(() => {
+    const video = recommendationVideoRef.current;
+
+    if (!video || !recommendationPlaybackUrl) {
+      return;
+    }
+
+    video.pause();
+    video.load();
+
+    return () => {
+      video.pause();
+    };
+  }, [recommendationPlaybackUrl]);
+
+  useEffect(() => {
+    const video = recommendationVideoRef.current;
+
+    if (!video || !recommendationPlaybackUrl) {
+      return;
+    }
+
+    if (recommendationIsPlaying) {
+      void video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [
+    recommendationPlaybackUrl,
+    recommendationIsPlaying,
+  ]);
+
+  if (tracks.length === 0 && recommendations.length === 0) {
+    return null;
+  }
+
   return (
     <aside
+      data-active-recommendation-id={activeRecommendationData?.id}
       className={`${styles.player} ${
+        audioLibraryOpen ? styles.audioLibraryMode : ""
+      } ${
         expanded ? styles.expanded : ""
       } ${
         activeRecommendationData
@@ -271,6 +679,50 @@ export default function GlobalMusicPlayer({
           : ""
       }`}
     >
+      {activeRecommendationData && expanded && (
+        <button
+          type="button"
+          className={styles.recommendationMenuCollapse}
+          onClick={() => {
+            setExpanded(false);
+          }}
+          aria-label={
+            language === "es"
+              ? "Volver al reproductor reducido"
+              : "Return to minimized player"
+          }
+          title={
+            language === "es"
+              ? "Reducir reproductor"
+              : "Minimize player"
+          }
+        >
+          ↙
+        </button>
+      )}
+
+      {activeRecommendationData && (
+        <button
+          type="button"
+          className={styles.switchToMusicButton}
+          onClick={() => {
+            setAudioLibraryOpen(true);
+          }}
+          aria-label={
+            language === "es"
+              ? "Elegir canción de VANMOTION"
+              : "Choose VANMOTION music"
+          }
+          title={
+            language === "es"
+              ? "Música VANMOTION"
+              : "VANMOTION music"
+          }
+        >
+          <span aria-hidden="true">♫</span>
+        </button>
+      )}
+
       <div className={styles.mainRow} hidden={Boolean(activeRecommendationData)}>
         <button
           type="button"
@@ -278,27 +730,10 @@ export default function GlobalMusicPlayer({
           onClick={() => {
             setExpanded((current) => !current);
           }}
-          aria-label={
-            expanded
-              ? content.closePlayer
-              : content.openPlayer
-          }
+          aria-label={`${expanded ? content.closePlayer : content.openPlayer}: ${currentTrackTitle}`}
         >
           <span className={styles.trackText}>
-            <small>{content.playerName}</small>
-
-            <strong>
-              {String(currentIndex + 1).padStart(2, "0")} ·{" "}
-              {currentTrackTitle}
-            </strong>
-
-            <span className={styles.trackMeta}>
-              {currentTrack?.subtitle
-                ? `${currentTrack.subtitle} · `
-                : ""}
-              {formatPlayerTime(currentTime)} /{" "}
-              {formatPlayerTime(duration)}
-            </span>
+<strong>{currentTrackTitle}</strong>
           </span>
         </button>
 
@@ -387,7 +822,7 @@ export default function GlobalMusicPlayer({
               : content.expandPlayer
           }
         >
-          {expanded ? "×" : "≡"}
+          {expanded ? "×" : "+"}
         </button>
       </div>
 
@@ -418,7 +853,8 @@ export default function GlobalMusicPlayer({
             </span>
 
             <div className={styles.recommendationStageControls}>
-              <button
+              {!getVimeoEmbedUrl(recommendationVideoUrl) && (
+                <button
                 type="button"
                 onClick={() => {
                   setRecommendationError(null);
@@ -442,14 +878,15 @@ export default function GlobalMusicPlayer({
               >
                 {recommendationIsPlaying ? "Ⅱ" : "▶"}
               </button>
+              )}
 
               <button
                 type="button"
                 onClick={() => {
                   const activeIndex = recommendations.findIndex(
                     (recommendation) =>
-                      recommendation.youtubeVideoId ===
-                      activeRecommendationData.youtubeVideoId,
+                      recommendation.id ===
+                      activeRecommendationData.id,
                   );
 
                   const nextRecommendation =
@@ -459,7 +896,7 @@ export default function GlobalMusicPlayer({
 
                   if (nextRecommendation) {
                     selectRecommendation(
-                      nextRecommendation.youtubeVideoId,
+                      nextRecommendation.id,
                     );
                   }
                 }}
@@ -477,31 +914,13 @@ export default function GlobalMusicPlayer({
                 →
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  closeRecommendation();
-                  setExpanded(true);
-                }}
-                aria-label={
-                  language === "es"
-                    ? "Abrir menú de música"
-                    : "Open music menu"
-                }
-                title={
-                  language === "es"
-                    ? "Abrir menú de música"
-                    : "Open music menu"
-                }
-              >
-                ≡
-              </button>
+
 
               <button
                 type="button"
-                onClick={() =>
-                  setExpanded((current) => !current)
-                }
+                className={styles.recommendationSizeToggle}
+                onClick={() => setExpanded((current) => !current)}
+                aria-expanded={expanded}
                 aria-label={
                   expanded
                     ? content.minimizeRecommendation
@@ -518,36 +937,119 @@ export default function GlobalMusicPlayer({
             </div>
           </div>
 
-          <YouTubeRecommendationPlayer
-            key={`${activeRecommendationData.youtubeVideoId}:${recommendationRetry}`}
-            videoId={activeRecommendationData.youtubeVideoId}
-            title={`${activeRecommendationData.title} · ${activeRecommendationData.artist}`}
-            playing={recommendationIsPlaying}
-            playerRef={recommendationPlayerRef}
-            onPlaying={() => {
-              pausePlayback();
-              setRecommendationIsPlaying(true);
-              setRecommendationError(null);
-            }}
-            onPaused={() => setRecommendationIsPlaying(false)}
-            onError={(message) => {
-              setRecommendationIsPlaying(false);
-              setRecommendationError(message);
-            }}
-            onEnded={() => {
-              const activeIndex = recommendations.findIndex(
-                (recommendation) =>
-                  recommendation.youtubeVideoId === activeRecommendationData.youtubeVideoId,
-              );
-              const nextRecommendation = recommendations[activeIndex + 1];
-              if (nextRecommendation) {
-                selectRecommendation(nextRecommendation.youtubeVideoId);
-                return;
+          {activeYouTubeId ? (
+            <YouTubeRecommendationPlayer
+              key={activeRecommendationData.id}
+              videoId={activeYouTubeId}
+              title={activeRecommendationData.title}
+              playing={recommendationIsPlaying}
+              syncRole="source"
+              onPlaying={() => {
+                window.dispatchEvent(new Event("vanmotion:floating-video-play"));
+                pausePlayback();
+                setRecommendationIsPlaying(true);
+                setRecommendationError(null);
+              }}
+              onPaused={() => setRecommendationIsPlaying(false)}
+              onEnded={() => {
+                advanceRecommendationRef.current(activeRecommendationData.id);
+              }}
+              onError={(message) => {
+                setRecommendationIsPlaying(false);
+                setRecommendationError(message);
+              }}
+            />
+          ) : getVimeoEmbedUrl(recommendationVideoUrl) ? (
+            <iframe
+              key={activeRecommendationData.id}
+              src={getVimeoEmbedUrl(recommendationVideoUrl)!}
+              title={activeRecommendationData.title}
+              className={styles.youtubeEmbed}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+            />
+          ) : recommendationPlaybackUrl ? (
+            <video
+              key={`${activeRecommendationData.id}:${recommendationRetry}`}
+              ref={recommendationVideoRef}
+              id="vanmotion-mirror-master"
+              src={recommendationPlaybackUrl}
+              poster={
+                activeRecommendationData.coverUrl ??
+                "/brand/vanmotion-mark.webp"
               }
-              closeRecommendation();
-              selectTrack(0, true);
-            }}
-          />
+              playsInline
+              autoPlay={recommendationIsPlaying}
+              disablePictureInPicture
+              preload="metadata"
+              crossOrigin="anonymous"
+              className={styles.youtubeEmbed}
+              onCanPlay={(event) => {
+                if (
+                  recommendationStartingRef.current ||
+                  recommendationIsPlaying
+                ) {
+                  void event.currentTarget
+                    .play()
+                    .catch(() => {});
+                }
+              }}
+              onPlay={() => {
+                recommendationAutoplayRef.current = false;
+                pausePlayback();
+                setRecommendationIsPlaying(true);
+                setRecommendationError(null);
+              }}
+              onPause={(event) => {
+                if (recommendationStartingRef.current) {
+                  return;
+                }
+
+                if (!event.currentTarget.ended) {
+                  setRecommendationIsPlaying(false);
+                }
+              }}
+              onTimeUpdate={(event) => {
+                setRecommendationVideoTime(
+                  event.currentTarget.currentTime,
+                );
+              }}
+              onError={() => {
+                setRecommendationIsPlaying(false);
+                setRecommendationError(
+                  content.videoUnavailable,
+                );
+              }}
+              onEnded={() => {
+                const activeIndex =
+                  recommendations.findIndex(
+                    (recommendation) =>
+                      recommendation.id ===
+                      activeRecommendationData.id,
+                  );
+
+                const nextRecommendation =
+                  recommendations[activeIndex + 1];
+
+                if (nextRecommendation) {
+                  selectRecommendation(
+                    nextRecommendation.id,
+                  );
+                  return;
+                }
+
+                closeRecommendation();
+                selectTrack(0, true);
+              }}
+            />
+          ) : (
+            <div
+              className={styles.recommendationError}
+              role="alert"
+            >
+              <p>{content.videoUnavailable}</p>
+            </div>
+          )}
 
           {recommendationError && (
             <div className={styles.recommendationError} role="alert">
@@ -559,13 +1061,6 @@ export default function GlobalMusicPlayer({
               }}>
                 {content.play}
               </button>
-              <a
-                href={`https://www.youtube.com/watch?v=${activeRecommendationData.youtubeVideoId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {content.openOnYouTube} ↗
-              </a>
             </div>
           )}
 
@@ -582,72 +1077,40 @@ export default function GlobalMusicPlayer({
       )}
 
       <div
-        hidden={!expanded || Boolean(activeRecommendation)}
-        inert={!expanded || Boolean(activeRecommendation)}
+        id="vanmotion-recommendation-music-list"
+        hidden={activeRecommendationData ? !audioLibraryOpen : !expanded}
+        inert={activeRecommendationData ? !audioLibraryOpen : !expanded}
         className={`${styles.expandedContent} ${
-          expanded && !activeRecommendation
+          audioLibraryOpen || (expanded && !activeRecommendation)
             ? ""
             : styles.expandedContentHidden
         }`}
       >
-          <div className={styles.progress}>
-            <input
-              type="range"
-              min="0"
-              max={duration || 0}
-              step="0.1"
-              value={
-                seekPreview ??
-                Math.min(currentTime, duration || 0)
-              }
-              onChange={(event) => {
-                setSeekPreview(
-                  Number(event.currentTarget.value),
-                );
-              }}
-              onPointerUp={(event) => {
-                changeProgress(
-                  Number(event.currentTarget.value),
-                );
-                setSeekPreview(null);
-              }}
-              onKeyUp={(event) => {
-                changeProgress(
-                  Number(event.currentTarget.value),
-                );
-                setSeekPreview(null);
-              }}
-              onBlur={(event) => {
-                if (seekPreview === null) {
-                  return;
+
+          {activeRecommendationData && audioLibraryOpen && (
+            <div className={styles.audioLibraryHeader}>
+              <button
+                type="button"
+                className={styles.audioLibraryCollapseButton}
+                onClick={() => {
+                  setAudioLibraryOpen(false);
+                  setExpanded(false);
+                }}
+                aria-label={
+                  language === "es"
+                    ? "Plegar selector de música"
+                    : "Collapse music selector"
                 }
-
-                changeProgress(
-                  Number(event.currentTarget.value),
-                );
-                setSeekPreview(null);
-              }}
-              aria-label={content.progress}
-            />
-          </div>
-
-          <div className={styles.volume}>
-            <span>{content.volumeShort}</span>
-
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={(event) => {
-                changeVolume(
-                  Number(event.target.value),
-                );
-              }}
-              aria-label={content.volume}
-            />
-          </div>
+                title={
+                  language === "es"
+                    ? "Plegar reproductor"
+                    : "Minimize player"
+                }
+              >
+                ↙
+              </button>
+            </div>
+          )}
 
           <div className={styles.trackList}>
             {tracks.map((track, index) => {
@@ -671,22 +1134,8 @@ export default function GlobalMusicPlayer({
                     selectTrack(index, true);
                   }}
                 >
-                  <span>
-                    {String(index + 1).padStart(
-                      2,
-                      "0",
-                    )}
-                  </span>
-
-                  <span>
+                  <span className={styles.minimalTrackTitle}>
                     <strong>{trackTitle}</strong>
-                    <small>{track.subtitle}</small>
-                  </span>
-
-                  <span>
-                    {active && isPlaying
-                      ? content.playing
-                      : track.format}
                   </span>
                 </button>
               );
@@ -695,81 +1144,41 @@ export default function GlobalMusicPlayer({
 
           {recommendations.length > 0 && (
             <div className={styles.recommendedInPlayer}>
-              <p className={styles.recommendedTitle}>
-                {language === "es"
-                  ? "VANMOTION RECOMIENDA"
-                  : "VANMOTION RECOMMENDS"}
-              </p>
 
-              {recommendations.map(
-                (recommendation, index) => {
-                  const displayNumber = String(
-                    tracks.length + index + 1,
-                  ).padStart(2, "0");
-                  return (
-                    <div
-                      className={
-                        styles.spotifyRecommendedTrack
+              {recommendations.map((recommendation) => (
+                <button
+                  key={recommendation.id}
+                  type="button"
+                  className={styles.spotifyRecommendedTrack}
+                  onClick={() => selectRecommendation(recommendation.id)}
+                  aria-label={`Reproducir ${recommendation.title}`}
+                >
+                  <span className={styles.recommendedTrackLabel}>
+                    <strong>{recommendation.title}</strong>
+                  </span>
+
+                  <span
+                    className={styles.youtubePreviewButton}
+                    aria-hidden="true"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={
+                        recommendation.coverUrl ??
+                        "/brand/vanmotion-mark.webp"
                       }
-                      key={recommendation.id}
-                    >
-                      <div
-                        className={
-                          styles.recommendedTrackLabel
-                        }
-                      >
-                        <span>{displayNumber}</span>
-
-                        <div>
-                          <strong>
-                            {recommendation.title}
-                          </strong>
-
-                          <small>
-                            {recommendation.artist}
-                          </small>
-                        </div>
-                      </div>
-
-                      <button
-                          type="button"
-                          className={
-                            styles.youtubePreviewButton
-                          }
-                          onClick={() => {
-                            selectRecommendation(
-                              recommendation.youtubeVideoId,
-                            );
-                          }}
-                          aria-label={`Reproducir ${recommendation.title}`}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={
-                              recommendation.coverUrl ??
-                              `https://i.ytimg.com/vi/${recommendation.youtubeVideoId}/hqdefault.jpg`
-                            }
-                            alt=""
-                            loading="lazy"
-                            decoding="async"
-                            fetchPriority="low"
-                            className={
-                              styles.youtubePreviewImage
-                            }
-                          />
-
-                          <span
-                            className={
-                              styles.youtubePreviewPlay
-                            }
-                          >
-                            ▶
-                          </span>
-                      </button>
-                    </div>
-                  );
-                },
-              )}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      fetchPriority="low"
+                      className={styles.youtubePreviewImage}
+                    />
+                    <span className={styles.youtubePreviewPlay}>
+                      ▶
+                    </span>
+                  </span>
+                </button>
+              ))}
             </div>
           )}
 

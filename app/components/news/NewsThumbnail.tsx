@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 type NewsThumbnailProps = {
@@ -22,11 +23,14 @@ export default function NewsThumbnail({
       className={className}
       aria-hidden="true"
     >
-      <img
+      <Image
         src={imageUrl}
         alt=""
+        width={160}
+        height={160}
+        sizes="(max-width: 720px) 64px, 80px"
+        quality={60}
         loading="lazy"
-        decoding="async"
         onError={() => setFailed(true)}
       />
     </span>

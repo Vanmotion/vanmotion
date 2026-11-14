@@ -193,7 +193,8 @@ export type PublicMusicRecommendation = {
   id: string;
   title: string;
   artist: string;
-  youtubeVideoId: string;
+  youtubeVideoId: string | null;
+  videoUrl: string | null;
   coverUrl: string | null;
   editorialHeading: string | null;
   editorialTextEs: string | null;
@@ -210,7 +211,8 @@ export const fallbackRecommendations: PublicMusicRecommendation[] = [
     id: "fallback-time-after-time",
     title: "TIME AFTER TIME",
     artist: "Cyndi Lauper",
-    youtubeVideoId: "VdQY7BusJNU",
+    youtubeVideoId: null,
+    videoUrl: null,
     coverUrl: null,
     editorialHeading: "1983",
     editorialTextEs:
@@ -228,7 +230,8 @@ export const fallbackRecommendations: PublicMusicRecommendation[] = [
     id: "fallback-sin-ti",
     title: "SIN TI",
     artist: "Jay Wheeler",
-    youtubeVideoId: "3WOPP2ZaoK8",
+    youtubeVideoId: null,
+    videoUrl: null,
     coverUrl: null,
     editorialHeading: "2019 · PLATÓNICO",
     editorialTextEs:
@@ -266,6 +269,7 @@ export async function getPublicMusicRecommendations(): Promise<
           title: true,
           artist: true,
           youtubeVideoId: true,
+          videoUrl: true,
           coverUrl: true,
           editorialHeading: true,
           editorialTextEs: true,
@@ -278,7 +282,30 @@ export async function getPublicMusicRecommendations(): Promise<
         },
       });
 
-    return recommendations;
+    return recommendations.map((recommendation) => {
+      const title = recommendation.title.trim().toLowerCase();
+      const artist = recommendation.artist.trim().toLowerCase();
+
+      if (artist === "jessi" && title === "down") {
+        return {
+          ...recommendation,
+          coverUrl: "/music/recommendations/jessi-down.jpg",
+        };
+      }
+
+      if (
+        artist === "robin schulz" &&
+        title === "show me love"
+      ) {
+        return {
+          ...recommendation,
+          coverUrl:
+            "/music/recommendations/robin-show-me-love.jpg",
+        };
+      }
+
+      return recommendation;
+    });
   } catch (error) {
     console.error(
       "VANMOTION_PUBLIC_MUSIC_RECOMMENDATIONS_ERROR:",

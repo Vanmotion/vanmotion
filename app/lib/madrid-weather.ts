@@ -1,5 +1,7 @@
+import * as SunCalc from "suncalc";
+
 /** Shared, browser-safe weather selection for VANMOTION. */
-export type Period = "manana" | "dia" | "atardecer" | "noche";
+export type Period = "manana" | "manana-dia" | "dia" | "atardecer" | "noche";
 export type Atmosphere = "clear" | "cloudy" | "autumn" | "rain" | "snow";
 export type ClimateSection = "vehicles" | "music" | "streetwear";
 export type WeatherState = {
@@ -17,11 +19,43 @@ const CLOUDY = new Set([2, 3, 45, 48]);
 const ATMOSPHERES = new Set<Atmosphere>(["clear", "cloudy", "autumn", "rain", "snow"]);
 const URL = "https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&current=weather_code,cloud_cover,precipitation,rain,snowfall&timezone=Europe%2FMadrid&timeformat=unixtime";
 
+const MADRID_LAT = 40.4168;
+const MADRID_LON = -3.7038;
+
 export function getMadridPeriod(date = new Date()): Period {
+  const times = SunCalc.getTimes(date, MADRID_LAT, MADRID_LON);
+
+  const now = date.getTime();
+  const dawn = times.dawn?.getTime() ?? Number.NaN;
+  const solarNoon = times.solarNoon.getTime();
+  const goldenHour = times.goldenHour?.getTime() ?? Number.NaN;
+  const dusk = times.dusk?.getTime() ?? Number.NaN;
+
+  if ([dawn, solarNoon, goldenHour, dusk].every(Number.isFinite)) {
+    // Mañana empieza con la primera luz.
+    // La transición mañana-día ocupa la segunda mitad de la mañana.
+    // Día empieza dos horas antes del mediodía solar.
+    // Atardecer empieza con la golden hour real.
+    // Noche empieza al terminar el crepúsculo civil.
+    const dayStart = solarNoon - 2 * 60 * 60 * 1000;
+    const morningDayStart = dawn + (dayStart - dawn) / 2;
+
+    if (now < dawn || now >= dusk) return "noche";
+    if (now < morningDayStart) return "manana";
+    if (now < dayStart) return "manana-dia";
+    if (now < goldenHour) return "dia";
+    return "atardecer";
+  }
+
+  // Respaldo por si el cálculo solar no estuviera disponible.
   const hour = Number(new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Europe/Madrid", hour: "2-digit", hour12: false,
+    timeZone: "Europe/Madrid",
+    hour: "2-digit",
+    hour12: false,
   }).format(date));
-  if (hour >= 6 && hour < 12) return "manana";
+
+  if (hour >= 6 && hour < 9) return "manana";
+  if (hour >= 9 && hour < 12) return "manana-dia";
   if (hour >= 12 && hour < 18) return "dia";
   if (hour >= 18 && hour < 21) return "atardecer";
   return "noche";
@@ -79,7 +113,7 @@ export function parseMadridWeather(raw: unknown, now = new Date()): WeatherState
   // A single cloudy artwork represents both partial and heavy cloud cover.
   // When present, actual model cloud cover refines the WMO code's broad category.
   else if (code === 45 || code === 48) atmosphere = "cloudy";
-  else if (cover !== null) atmosphere = cover >= 60 ? "cloudy" : "clear";
+  else if (cover !== null) atmosphere = cover >= 80 ? "cloudy" : "clear";
   else atmosphere = CLOUDY.has(code) ? "cloudy" : "clear";
   return { atmosphere, source: "model", weatherCode: code, cloudCover: cover, observedAt: new Date(timestamp * 1000).toISOString() };
 }

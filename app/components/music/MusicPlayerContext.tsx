@@ -30,6 +30,8 @@ type MusicPlayerContextValue = {
   setVideoSessionActive: (active: boolean) => void;
   recommendationVideoId: string | null;
   recommendationVideoPlaying: boolean;
+  recommendationVideoTime: number;
+  setRecommendationVideoTime: (time: number) => void;
   setRecommendationVideoState: (
     videoId: string | null,
     playing: boolean,
@@ -73,6 +75,8 @@ export default function MusicPlayerProvider({
     useState<string | null>(null);
   const [recommendationVideoPlaying, setRecommendationVideoPlaying] =
     useState(false);
+  const [recommendationVideoTime, setRecommendationVideoTime] =
+    useState(0);
 
   const setRecommendationVideoState = useCallback(
     (videoId: string | null, playing: boolean) => {
@@ -376,6 +380,8 @@ export default function MusicPlayerProvider({
     setVideoSessionActive,
     recommendationVideoId,
     recommendationVideoPlaying,
+    recommendationVideoTime,
+    setRecommendationVideoTime,
     setRecommendationVideoState,
     selectTrack,
     playPrevious,

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
+import { ROUTE_LANGUAGE_HEADER } from "@/app/language";
 import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
@@ -10,10 +12,12 @@ import {
   getPublicMusicTracks,
 } from "@/app/lib/music-library";
 import { getLocalizedTrackTitle } from "@/app/lib/music-track-titles";
+import { getLocalVimeoTestRecommendations } from "@/app/lib/local-vimeo-test";
 import NewsThumbnail from "@/app/components/news/NewsThumbnail";
 
 import DatabaseMusicPlayer from "./DatabaseMusicPlayer";
-import HeroMusicMonitor from "./HeroMusicMonitor";
+import RecommendationVideo from "./RecommendationVideo";
+import ExclusiveMediaCoordinator from "./ExclusiveMediaCoordinator";
 import styles from "./musica.module.css";
 import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
@@ -21,6 +25,43 @@ import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 export const dynamic = "force-dynamic";
 
 const SITE_URL = "https://www.vanmotion.es";
+
+function isYouTubeUrl(value: string | null): boolean {
+  if (!value) return false;
+
+  try {
+    const host = new URL(value).hostname.replace(/^www\./, "");
+
+    return (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "music.youtube.com" ||
+      host === "youtu.be"
+    );
+  } catch {
+    return false;
+  }
+}
+
+function getVimeoEmbedUrl(value: string): string | null {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (host !== "vimeo.com" && host !== "player.vimeo.com") {
+      return null;
+    }
+
+    const parts = url.pathname.split("/").filter(Boolean);
+    const id = parts.find((part) => /^\d+$/.test(part));
+
+    if (!id) return null;
+
+    return `https://player.vimeo.com/video/${id}?dnt=1&autopause=0`;
+  } catch {
+    return null;
+  }
+}
 
 function absoluteUrl(value: string): string {
   try {
@@ -32,9 +73,9 @@ function absoluteUrl(value: string): string {
 
 const translations = {
   es: {
-    metadataTitle: "Música original y producción musical en Madrid",
+    metadataTitle: "Música de VANMOTION: temas y producción en Madrid",
     metadataDescription:
-      "Música original y producción musical de VANMOTION en Madrid. Escucha temas oficiales, sesiones de estudio y nuevos lanzamientos.",
+      "Escucha la música original de VANMOTION: temas oficiales, sesiones de estudio y nuevos lanzamientos producidos en Madrid.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",
@@ -168,6 +209,10 @@ export async function generateMetadata(): Promise<Metadata> {
     description: content.metadataDescription,
     alternates: {
       canonical: "/musica",
+      languages: {
+        "es-ES": `${SITE_URL}/musica`,
+        "en-US": `${SITE_URL}/en-us/musica`,
+      },
     },
     openGraph: {
       title: content.metadataTitle,
@@ -193,13 +238,53 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function MusicPage() {
-  const heroImage = await getMadridSectionHeroImage("music");
+export default async function MusicPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ winterPreview?: string }>;
+}) {
+  // VANMOTION_WINTER_PREVIEW_URL
+  // Solamente funciona en desarrollo local.
+  const preview = (await searchParams)?.winterPreview;
+
+  const previews: Record<string, string> = {
+    despejado: "/experience/music/winter/manana.webp",
+    nublado: "/experience/music/winter/cloudy/manana.webp",
+    lluvia: "/experience/music/winter/rain/manana.webp",
+    nieve: "/experience/music/winter/snow/manana.webp",
+    "transicion-despejado": "/experience/music/winter/manana-dia.webp",
+    "transicion-nublado": "/experience/music/winter/cloudy/manana-dia.webp",
+    "transicion-lluvia": "/experience/music/winter/rain/manana-dia.webp",
+    "transicion-nieve": "/experience/music/winter/snow/manana-dia.webp",
+    "dia-despejado": "/experience/music/winter/dia.webp",
+    "dia-nublado": "/experience/music/winter/cloudy/dia.webp",
+    "dia-lluvia": "/experience/music/winter/rain/dia.webp",
+    "dia-nieve": "/experience/music/winter/snow/dia.webp",
+    "atardecer-despejado": "/experience/music/winter/atardecer.webp",
+    "atardecer-nublado": "/experience/music/winter/cloudy/atardecer.webp",
+    "atardecer-lluvia": "/experience/music/winter/rain/atardecer.webp",
+    "atardecer-nieve": "/experience/music/winter/snow/atardecer.webp",
+    "noche-despejado": "/experience/music/winter/noche.webp",
+    "noche-nublado": "/experience/music/winter/cloudy/noche.webp",
+    "noche-lluvia": "/experience/music/winter/rain/noche.webp",
+    "noche-nieve": "/experience/music/winter/snow/noche.webp",
+  };
+
+  const previewImage = preview ? previews[preview] : null;
+
+  const heroImage =
+    process.env.NODE_ENV === "development" && previewImage
+      ? previewImage
+      : await getMadridSectionHeroImage("music");
   const language = await getCurrentLanguage();
+  const isEnglishMusicRoute =
+    (await headers()).get(ROUTE_LANGUAGE_HEADER) === "en";
   const content = translations[language];
   const [, musicNews] = await getDailyNews(language);
-  const recommendations =
-    await getPublicMusicRecommendations();
+  const recommendations = [
+    ...getLocalVimeoTestRecommendations(),
+    ...(await getPublicMusicRecommendations()),
+  ];
   const tracks = await getPublicMusicTracks();
 
   const musicStructuredData = {
@@ -242,7 +327,11 @@ export default async function MusicPage() {
         }}
       />
       <header className={styles.header}>
-        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+        <Link
+          href={isEnglishMusicRoute ? "/en-us" : "/"}
+          className={styles.brand}
+          aria-label="Vanmotion"
+        >
           <Image
             src="/brand/vanmotion-mark.webp"
             alt=""
@@ -263,7 +352,14 @@ export default async function MusicPage() {
           }
         >
           <Link href="/coleccion">{content.navigation.vehicles}</Link>
-          <Link href="/musica" aria-current="page">
+          <Link
+            href={
+              isEnglishMusicRoute
+                ? "/en-us/musica"
+                : "/musica"
+            }
+            aria-current="page"
+          >
             {content.navigation.music}
           </Link>
           <Link href="/ropa">{content.navigation.clothing}</Link>
@@ -279,9 +375,11 @@ export default async function MusicPage() {
       </header>
 
       <main>
+        <ExclusiveMediaCoordinator />
         <section
           className={styles.hero}
           aria-labelledby="music-hero-title"
+          data-vanmotion-music-monitor-anchor={heroImage}
         >
           <div className={styles.heroMedia} aria-hidden="true">
             <Image
@@ -295,11 +393,8 @@ export default async function MusicPage() {
             <div className={styles.heroShade} />
           </div>
 
-          <HeroMusicMonitor />
-
           <div className={styles.heroTopline}>
             <span>{content.hero.location}</span>
-            <span>{content.navigation.music}</span>
           </div>
 
           <h1 id="music-hero-title" className={styles.srOnly}>
@@ -381,13 +476,10 @@ export default async function MusicPage() {
             <div className={styles.recommendGrid}>
               {recommendations.map(
                 (recommendation, index) => (
-                  <a
+                  <article
                     key={recommendation.id}
-                    href={`https://www.youtube.com/watch?v=${recommendation.youtubeVideoId}`}
-                    target="_blank"
-                    rel="noreferrer"
                     className={styles.recommendCard}
-                    aria-label={`${recommendation.title} · ${recommendation.artist} · YouTube`}
+                    aria-label={`${recommendation.title} · ${recommendation.artist}`}
                   >
                     <span className={styles.recommendNumber}>
                       {String(index + 1).padStart(2, "0")}
@@ -405,6 +497,39 @@ export default async function MusicPage() {
                       <p className={styles.recommendArtist}>
                         {recommendation.artist}
                       </p>
+
+                      {recommendation.videoUrl ? (
+                        <div
+                          className={styles.recommendVideo}
+                          data-vanmotion-recommendation
+                          data-recommendation-id={recommendation.id}
+                        >
+                          {isYouTubeUrl(recommendation.videoUrl) &&
+                          recommendation.youtubeVideoId ? (
+                            <iframe
+                              src={`https://www.youtube-nocookie.com/embed/${recommendation.youtubeVideoId}?rel=0&modestbranding=1&enablejsapi=1`}
+                              title={`${recommendation.title} · ${recommendation.artist}`}
+                              loading="lazy"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; web-share"
+                              allowFullScreen
+                            />
+                          ) : getVimeoEmbedUrl(recommendation.videoUrl) ? (
+                            <iframe
+                              src={getVimeoEmbedUrl(recommendation.videoUrl)!}
+                              title={`${recommendation.title} · ${recommendation.artist}`}
+                              loading="lazy"
+                              allow="autoplay; fullscreen; picture-in-picture"
+                              allowFullScreen
+                            />
+                          ) : (
+                            <RecommendationVideo
+                              src={recommendation.videoUrl}
+                              poster={recommendation.coverUrl ?? undefined}
+                              title={`${recommendation.title} · ${recommendation.artist}`}
+                            />
+                          )}
+                        </div>
+                      ) : null}
 
                       {recommendation.documentAuthentic &&
                       recommendation.documentImageUrl ? (
@@ -487,11 +612,11 @@ export default async function MusicPage() {
 
                     <span className={styles.recommendAction}>
                       {language === "es"
-                        ? "Ver videoclip en YouTube"
-                        : "Watch on YouTube"}
-                      <span aria-hidden="true"> ↗</span>
+                        ? "Vídeo seleccionado por VANMOTION"
+                        : "Video selected by VANMOTION"}
+                      <span aria-hidden="true">●</span>
                     </span>
-                  </a>
+                  </article>
                 ),
               )}
             </div>

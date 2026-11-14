@@ -66,3 +66,6 @@ reel-*-backup.html
 # Archivos sueltos de trabajo
 reel-vanmotion-abatido.html
 public/ropa/aprobadas/hombre/camiseta-negra/frontal-v12.webp
+
+# Archivos subidos por usuarios
+/public/uploads/community/

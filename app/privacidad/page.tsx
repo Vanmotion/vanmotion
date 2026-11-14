@@ -174,7 +174,7 @@ export async function generateMetadata(): Promise<Metadata> {
       canonical: CANONICAL_URL,
     },
     robots: {
-      index: true,
+      index: false,
       follow: true,
     },
     openGraph: {

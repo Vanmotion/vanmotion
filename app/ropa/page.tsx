@@ -10,6 +10,7 @@ import { resolveProductImageUrl } from "@/app/lib/product-image-overrides";
 
 import { getLocalizedProductText } from "./product-translations";
 import styles from "./ropa.module.css";
+import CollectionMotion from "./CollectionMotion";
 import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
 export const dynamic = "force-dynamic";
@@ -31,9 +32,9 @@ const MANAGED_PRODUCT_SLUGS = [
 const translations = {
   es: {
     metadata: {
-      title: "Ropa urbana, camisetas y bomber en Madrid",
+      title: "Ropa urbana y streetwear en Madrid",
       description:
-        "Ropa urbana VANMOTION diseñada en Madrid: camisetas CARPE DIEM y bomber para hombre y mujer en negro y azul Ford E-150.",
+        "Ropa urbana y streetwear VANMOTION diseñados en Madrid. Drop 01 para hombre y mujer: camisetas CARPE DIEM, bomber, cargo y sudaderas con identidad propia.",
     },
     navigation: {
       vehicles: "Vehículos",
@@ -57,7 +58,7 @@ const translations = {
       headingFirst: "DOS COLORES.",
       headingSecond: "UNA IDENTIDAD.",
       intro:
-        "La ropa de VANMOTION nace del mismo lugar que los vehículos y la música: trabajo real, detalle y una identidad que no necesita exagerar.",
+        "La ropa urbana y el streetwear de VANMOTION nacen del mismo lugar que los vehículos y la música: trabajo real, detalle y una identidad que no necesita exagerar.",
       blackTitle: "Madrid · Negro",
       blackText:
         "Una presencia limpia y directa. Bomber satinada, camiseta premium y detalles discretos.",
@@ -221,26 +222,6 @@ const translations = {
   },
 } as const;
 
-function getEffectiveProductStatus(
-  storedStatus: string,
-  active: boolean,
-  totalStock: number,
-): string {
-  if (!active) {
-    return "HIDDEN";
-  }
-
-  if (
-    storedStatus === "DRAFT" ||
-    storedStatus === "COMING_SOON" ||
-    storedStatus === "HIDDEN"
-  ) {
-    return storedStatus;
-  }
-
-  return totalStock > 0 ? "AVAILABLE" : "SOLD_OUT";
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
   const content = translations[language];
@@ -311,6 +292,7 @@ export default async function RopaPage() {
 
   return (
     <main className={styles.page}>
+      <CollectionMotion />
       <header className={styles.header}>
         <Link href="/" className={styles.brand} aria-label="Vanmotion">
           <Image
@@ -363,7 +345,6 @@ export default async function RopaPage() {
 
         <div className={styles.heroTopline}>
           <span>{content.hero.location}</span>
-          <span>{content.navigation.clothing}</span>
         </div>
 
         <h1 id="clothing-title" className={styles.srOnly}>
@@ -442,7 +423,10 @@ export default async function RopaPage() {
               ).format(Number(product.price));
 
               return (
-                <article key={product.id} className={styles.collectionCard}>
+                <article
+                  key={product.id}
+                  className={styles.collectionCard}
+                >
                   <Link
                     href={`/ropa/${product.slug}`}
                     aria-label={`${language === "es" ? "Ver" : "View"} ${productText.name}`}
@@ -466,6 +450,25 @@ export default async function RopaPage() {
                           <span>{content.collection.noImage}</span>
                         </div>
                       )}
+
+                      <div
+                        className={styles.collectionHoverMeta}
+                        aria-hidden="true"
+                      >
+                        <div>
+                          <small>VANMOTION · DROP 01</small>
+                          <strong>{productText.name}</strong>
+                          <span>
+                            {productType} · {productText.color ?? "VANMOTION"}
+                          </span>
+                        </div>
+
+                        <b>
+                          {language === "es"
+                            ? "VER PIEZA"
+                            : "VIEW PIECE"} ↗
+                        </b>
+                      </div>
                     </div>
                   </Link>
 

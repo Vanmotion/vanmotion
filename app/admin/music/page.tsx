@@ -4,8 +4,8 @@ import { prisma } from "@/app/lib/prisma";
 
 import DirectMusicAudioUpload from "./DirectMusicAudioUpload";
 import DirectMusicCoverUpload from "./DirectMusicCoverUpload";
-import DirectMusicRecommendationCoverUpload from "./DirectMusicRecommendationCoverUpload";
 import DirectMusicRecommendationDocumentUpload from "./DirectMusicRecommendationDocumentUpload";
+import DirectMusicRecommendationVideoUpload from "./DirectMusicRecommendationVideoUpload";
 
 import {
   initializeMusicLibrary,
@@ -379,8 +379,7 @@ export default async function AdminMusicPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={
-                      item.coverUrl ??
-                      `https://i.ytimg.com/vi/${item.youtubeVideoId}/hqdefault.jpg`
+                      item.coverUrl ?? "/brand/vanmotion-mark.webp"
                     }
                     alt=""
                   />
@@ -429,14 +428,37 @@ export default async function AdminMusicPage() {
                   />
                 </label>
 
+                <DirectMusicRecommendationVideoUpload
+                  recommendationId={item.id}
+                  title={item.title}
+                  hasVideo={Boolean(item.videoUrl)}
+                />
+
                 <label className={styles.fullField}>
-                  <span>Enlace de YouTube</span>
+                  <span>URL del vídeo · YouTube oficial o MP4 directo</span>
                   <input
                     type="url"
-                    name="youtube"
-                    defaultValue={`https://www.youtube.com/watch?v=${item.youtubeVideoId}`}
+                    name="videoUrl"
+                    defaultValue={item.videoUrl ?? ""}
+                    placeholder="https://www.youtube.com/watch?v=... o https://.../video.mp4"
                     required
                   />
+                  <small>
+                    Admite vídeo oficial de YouTube o una URL directa de archivo de vídeo con licencia.
+                  </small>
+                </label>
+
+                <label className={styles.fullField}>
+                  <span>URL de la portada original</span>
+                  <input
+                    type="url"
+                    name="coverUrl"
+                    defaultValue={item.coverUrl ?? ""}
+                    placeholder="https://.../portada.jpg"
+                  />
+                  <small>
+                    Portada recomendada: cuadrada 1:1 · ideal 3000 × 3000 px.
+                  </small>
                 </label>
 
                 <label>
@@ -454,6 +476,7 @@ export default async function AdminMusicPage() {
                 <label>
                   <span>Estilo visual</span>
                   <select
+                    key={`editorial-style-${item.id}-${item.editorialStyle ?? "paper"}`}
                     name="editorialStyle"
                     defaultValue={
                       item.editorialStyle ?? "paper"
@@ -559,11 +582,6 @@ export default async function AdminMusicPage() {
                 </strong>
               </div>
 
-              <DirectMusicRecommendationCoverUpload
-                recommendationId={item.id}
-                title={item.title}
-                hasCover={Boolean(item.coverUrl)}
-              />
 
               <div className={styles.coverStatus}>
                 <span>Documento original</span>

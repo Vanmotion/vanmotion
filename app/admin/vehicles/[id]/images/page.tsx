@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { updateVehicleImageAlt } from "./updateVehicleImageAltAction";
 import { notFound } from "next/navigation";
 import {
   deleteVehicleImage,
@@ -17,6 +18,7 @@ interface VehicleImagesPageProps {
     subida?: string;
     principal?: string;
     eliminada?: string;
+    descripcion?: string;
   }>;
 }
 
@@ -30,6 +32,7 @@ export default async function VehicleImagesPage({
       subida,
       principal,
       eliminada,
+      descripcion,
     },
   ] = await Promise.all([
     params,
@@ -76,7 +79,9 @@ export default async function VehicleImagesPage({
   const successMessage =
     subida === "1"
       ? "La fotografía se ha subido correctamente."
-      : principal === "1"
+      : descripcion === "1"
+        ? "La descripción de la fotografía se ha guardado."
+        : principal === "1"
         ? "La imagen principal se ha actualizado."
         : eliminada === "1"
           ? "La fotografía se ha eliminado."
@@ -317,9 +322,45 @@ export default async function VehicleImagesPage({
                 </div>
 
                 <div className="p-5">
-                  <p className="min-h-10 text-sm leading-5 text-white/50">
-                    {image.alt || "Sin descripción"}
-                  </p>
+                  <form
+                    action={updateVehicleImageAlt}
+                    className="space-y-3"
+                  >
+                    <input
+                      type="hidden"
+                      name="vehicleId"
+                      value={vehicle.id}
+                    />
+                    <input
+                      type="hidden"
+                      name="imageId"
+                      value={image.id}
+                    />
+
+                    <label
+                      htmlFor={`alt-${image.id}`}
+                      className="block text-xs font-medium text-white/60"
+                    >
+                      Descripción de la fotografía
+                    </label>
+
+                    <textarea
+                      id={`alt-${image.id}`}
+                      name="alt"
+                      rows={3}
+                      maxLength={180}
+                      required
+                      defaultValue={image.alt ?? ""}
+                      className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-white/50"
+                    />
+
+                    <button
+                      type="submit"
+                      className="rounded-lg border border-white/15 px-3 py-2 text-sm font-medium text-white/80 transition hover:bg-white hover:text-black"
+                    >
+                      Guardar descripción
+                    </button>
+                  </form>
 
                   <div className="mt-5 flex flex-wrap gap-2 border-t border-white/10 pt-5">
                     {index !== 0 && (

@@ -178,6 +178,19 @@
   pointer-events: none;
 }
 
+
+.heroMonitorMirror {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background: #000;
+  pointer-events: none;
+}
+
 .heroTopline,
 .heroFoot {
   position: absolute;
@@ -357,7 +370,7 @@
 
 .trackInformation p {
   margin: 0;
-  color: rgba(242, 239, 232, 0.45);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -416,7 +429,7 @@
 }
 
 .progressSection span {
-  color: rgba(242, 239, 232, 0.42);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 10px;
   text-align: center;
 }
@@ -438,7 +451,7 @@
 }
 
 .volume span {
-  color: rgba(242, 239, 232, 0.4);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 8px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -480,7 +493,7 @@
 }
 
 .trackNumber {
-  color: rgba(242, 239, 232, 0.28);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 11px;
 }
 
@@ -495,7 +508,7 @@
 
 .trackName small {
   margin-top: 7px;
-  color: rgba(242, 239, 232, 0.38);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 11px;
 }
 
@@ -641,7 +654,7 @@
 
 .footerBrand span,
 .copyright {
-  color: var(--paper-dim);
+  color: rgba(242, 239, 232, 0.50);
 }
 
 .footerNav {
@@ -653,7 +666,7 @@
 }
 
 .footerNav a {
-  color: var(--paper-dim);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 10px;
   transition: color 180ms ease;
 }
@@ -1741,7 +1754,7 @@
   font-family: "American Typewriter", "Courier New", monospace;
   font-size: 11px;
   letter-spacing: 0.12em;
-  opacity: 0.55;
+  opacity: 0.70;
 }
 
 .recommendFoundPaper p {
@@ -1757,7 +1770,7 @@
   font-family: "American Typewriter", "Courier New", monospace;
   font-size: 9px;
   letter-spacing: 0.06em;
-  opacity: 0.52;
+  opacity: 0.70;
 }
 
 @media (max-width: 700px) {
@@ -2054,4 +2067,837 @@
 /* VANMOTION · continuidad visual entre hero y reproductor */
 .playerSection {
   background: #050505;
+}
+
+
+/* VANMOTION · NEWS GLASS FIXED */
+/* Referencia visual: tarjeta de noticia en Firefox */
+.heroNews,
+.heroNews:hover {
+  background: rgba(6, 6, 6, 0.80) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+/* FIN VANMOTION · NEWS GLASS FIXED */
+
+
+/* VANMOTION · GLASS UNIFICADO FINAL */
+.heroNews,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.72) !important;
+  border: 1px solid rgba(242, 239, 232, 0.20) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+.heroNews:hover {
+  background: rgba(6, 6, 6, 0.80) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+
+/* VANMOTION · NEWS GLASS DEFINITIVO V3 */
+.heroNews,
+.heroNews:hover,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.68) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18) !important;
+
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+
+/* VANMOTION · GLASS CROSS-BROWSER V4 */
+.heroNews,
+.heroNews:hover,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.68) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 12px !important;
+
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.18) !important;
+
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+/* Fallback para navegadores sin backdrop-filter */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-within {
+    background: rgba(6, 6, 6, 0.78) !important;
+  }
+}
+
+/* TABLET */
+@media (min-width: 721px) and (max-width: 1024px) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-within {
+    border-radius: 11px !important;
+    -webkit-backdrop-filter: blur(9px) !important;
+    backdrop-filter: blur(9px) !important;
+  }
+}
+
+/* MÓVIL */
+@media (max-width: 720px) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-within {
+    border-radius: 10px !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+}
+
+
+/* VANMOTION · FIREFOX MUSIC TONE FINAL V5 */
+.heroNews,
+.heroNews:hover,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.80) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+
+/* VANMOTION · FIREFOX MUSIC EXACT V6 */
+.heroNews,
+.heroNews:hover,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.80) !important;
+  border: 1px solid rgba(242, 239, 232, 0.20) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
+
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+
+  opacity: 1 !important;
+}
+
+/* VANMOTION · MOBILE VISUAL PARITY FINAL */
+@media (max-width: 1024px) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-visible,
+  .heroNews:focus-within,
+  .heroNews:active {
+    background: rgba(6, 6, 6, 0.58) !important;
+    border: 1px solid rgba(242, 239, 232, 0.20) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* VANMOTION · MONITOR PROJECTION FINE TUNE */
+.heroMonitorMirror {
+  position: absolute !important;
+  left: 6.2% !important;
+  top: 7.0% !important;
+  width: 87.6% !important;
+  height: 83.8% !important;
+  overflow: hidden !important;
+  border-radius: 2px !important;
+  background: #000 !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.24) !important;
+}
+
+.heroMonitorMirror img,
+.heroMonitorMirror video,
+.heroMonitorMirror :global(img),
+.heroMonitorMirror :global(video) {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: 50% 50% !important;
+  transform-origin: 50% 50% !important;
+  background: #000 !important;
+}
+
+@media (min-width: 641px) {
+  .heroMonitorMirror img,
+  .heroMonitorMirror video,
+  .heroMonitorMirror :global(img),
+  .heroMonitorMirror :global(video) {
+    transform: translate3d(0, 7px, 0) scale(1.06) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroMonitorMirror {
+    left: 6.8% !important;
+    top: 7.5% !important;
+    width: 86.8% !important;
+    height: 82.8% !important;
+  }
+
+  .heroMonitorMirror img,
+  .heroMonitorMirror video,
+  .heroMonitorMirror :global(img),
+  .heroMonitorMirror :global(video) {
+    transform: translate3d(0, 5px, 0) scale(1.04) !important;
+  }
+}
+
+/* VANMOTION · MOBILE COVER CLEAN FINAL */
+/* iPhone · Android · tablet */
+@media (max-width: 1024px) {
+  .cover {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .coverImage {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
+
+/* VANMOTION · HERO NEWS INTERACTION FINAL */
+.heroNews {
+  overflow: hidden;
+  transition:
+    border-color 260ms ease,
+    transform 420ms cubic-bezier(.2,.7,.2,1),
+    box-shadow 420ms cubic-bezier(.2,.7,.2,1) !important;
+}
+
+.heroNewsThumb {
+  overflow: hidden;
+}
+
+.heroNewsThumb img {
+  transition: transform 850ms cubic-bezier(.2,.7,.2,1) !important;
+  will-change: transform;
+}
+
+/* Desktop · Safari · Firefox · Chrome */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    border-color: rgba(242, 239, 232, 0.46) !important;
+    transform: translateY(-3px) scale(1.012) !important;
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.30) !important;
+  }
+
+  .heroNews:hover .heroNewsThumb img {
+    transform: scale(1.065) !important;
+  }
+}
+
+/* iPhone · Android · tablet */
+@media (hover: none), (pointer: coarse) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-visible,
+  .heroNews:focus-within {
+    background: rgba(6, 6, 6, 0.58) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .heroNews:active {
+    border-color: rgba(242, 239, 232, 0.46) !important;
+    transform: scale(.988) !important;
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.28) !important;
+  }
+
+  .heroNews:active .heroNewsThumb img {
+    transform: scale(1.045) !important;
+  }
+}
+
+/* VANMOTION · HERO NEWS ACCENT · MÚSICA */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    border-color: rgba(212, 119, 40, 0.78) !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .heroNews:active {
+    border-color: rgba(212, 119, 40, 0.78) !important;
+  }
+}
+
+/* VANMOTION · SAFARI NEWS ACCENT · MÚSICA */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    border-color: rgba(212, 119, 40, 0.88) !important;
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.30) !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .heroNews:active {
+    border-color: rgba(212, 119, 40, 0.88) !important;
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.28) !important;
+  }
+}
+
+/* VANMOTION · RECOMMENDED VIDEO UNIVERSAL 20261002 */
+.recommendVideo {
+  position: relative;
+  width: 100%;
+  margin-top: 28px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid rgba(242, 239, 232, 0.12);
+}
+
+.recommendVideo iframe,
+.recommendVideo video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+  background: #000;
+}
+
+@media (max-width: 720px) {
+  .recommendVideo {
+    margin-top: 22px;
+  }
+}
+
+
+
+/* VANMOTION · RECOMMENDED VIDEO FULLSCREEN ONLY 20261002 */
+.recommendVideo video::-webkit-media-controls-picture-in-picture-button {
+  display: none !important;
+}
+
+.recommendVideo video::-webkit-media-controls-airplay-button {
+  display: none !important;
+}
+
+/* VANMOTION · RECOMMENDED VIDEO CONTROLS FINAL 20261002 */
+.recommendVideoPlayer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.recommendVideoMedia {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+.recommendFullscreenButton {
+  position: absolute;
+  z-index: 5;
+  top: 10px;
+  left: 10px;
+  width: 42px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(20, 29, 33, 0.68);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.recommendCenterPlay {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: 50%;
+  width: 62px;
+  height: 62px;
+  border: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(20, 20, 20, 0.7);
+  color: #fff;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.recommendVideoControls {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 22px 10px 9px;
+  background:
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.82),
+      rgba(0, 0, 0, 0)
+    );
+}
+
+.recommendVideoControls button {
+  flex: 0 0 auto;
+  border: 0;
+  padding: 3px 5px;
+  background: transparent;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.recommendVideoTime {
+  flex: 0 0 auto;
+  color: #fff;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.recommendVideoProgress {
+  flex: 1 1 auto;
+  min-width: 50px;
+}
+
+.recommendVideoVolume {
+  flex: 0 0 62px;
+  width: 62px;
+}
+
+@media (max-width: 720px) {
+  .recommendVideoControls {
+    gap: 6px;
+    padding-inline: 8px;
+  }
+
+  .recommendVideoVolume {
+    display: none;
+  }
+
+  .recommendVideoTime {
+    font-size: 10px;
+  }
+
+  .recommendFullscreenButton {
+    width: 38px;
+    height: 32px;
+  }
+}
+
+/* Recomendado · pantalla completa controlada por VANMOTION */
+.recommendVideoPlayerFullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  z-index: 99999 !important;
+  background: #000 !important;
+}
+
+.recommendVideoPlayerFullscreen .recommendVideoMedia {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+.recommendVideoPlayerFullscreen .recommendFullscreenButton {
+  position: absolute !important;
+  top: max(14px, env(safe-area-inset-top)) !important;
+  right: max(14px, env(safe-area-inset-right)) !important;
+  z-index: 100002 !important;
+}
+
+.recommendVideoPlayerFullscreen .recommendVideoControls {
+  z-index: 100001 !important;
+  padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
+}
+
+@media (max-width: 768px) {
+  .recommendVideoPlayerFullscreen {
+    height: 100dvh !important;
+  }
+}
+
+/* Fullscreen real: sin bordes, márgenes ni separación */
+.recommendVideoPlayer:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #000 !important;
+}
+
+.recommendVideoPlayer:fullscreen .recommendVideoMedia {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  object-fit: contain !important;
+}
+
+/* Respaldo móvil cuando Fullscreen API no está disponible */
+.recommendVideoPlayerFullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  background: #000 !important;
+  z-index: 2147483647 !important;
+}
+
+/* VANMOTION · controles de vídeo uniformes Safari / Firefox */
+.recommendVideoProgress,
+.recommendVideoVolume {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Safari / Chrome */
+.recommendVideoProgress::-webkit-slider-runnable-track,
+.recommendVideoVolume::-webkit-slider-runnable-track {
+  height: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.recommendVideoProgress::-webkit-slider-thumb,
+.recommendVideoVolume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7.5px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: none;
+}
+
+/* Firefox */
+.recommendVideoProgress::-moz-range-track,
+.recommendVideoVolume::-moz-range-track {
+  height: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.recommendVideoProgress::-moz-range-progress,
+.recommendVideoVolume::-moz-range-progress {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.recommendVideoProgress::-moz-range-thumb,
+.recommendVideoVolume::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: none;
+}
+
+
+/* VANMOTION · PORTADAS LIMPIAS FINAL 20261004 */
+.cover {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.cover img,
+.coverImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+
+/* VANMOTION · PORTADA CUADRADA FINAL 20261004 */
+.cover {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.cover img,
+.coverImage {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  display: block !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+
+/* VANMOTION · MONITOR PORTADA COMPLETA FINAL 20261004 */
+.heroMonitorArtwork {
+  position: absolute !important;
+  inset: 0 !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  transform: none !important;
+  background: #050505 !important;
+}
+
+
+/* VANMOTION · MONITOR PROJECTION FINAL */
+.heroMonitorMirror {
+  overflow: hidden !important;
+  border-radius: 2px !important;
+  background: #000 !important;
+  clip-path: polygon(3% 4%, 97% 3%, 96% 97%, 4% 96%) !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.34) !important;
+}
+
+@media (min-width: 641px) {
+  .heroMonitorMirror {
+    transform: perspective(1200px) rotateX(7deg) rotateY(-18deg) rotateZ(-1deg) translate3d(0, 6px, 0) scale(1.16) !important;
+    transform-origin: 50% 50% !important;
+  }
+
+  .heroMonitorMirror img,
+  .heroMonitorMirror video,
+  .heroMonitorMirror :global(img),
+  .heroMonitorMirror :global(video) {
+    width: 112% !important;
+    height: 112% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    object-position: 50% 47% !important;
+    transform: translate3d(-5.5%, -4.5%, 0) !important;
+    transform-origin: 50% 50% !important;
+    background: #000 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroMonitorMirror {
+    transform: perspective(900px) rotateX(5deg) rotateY(-14deg) rotateZ(-0.8deg) translate3d(0, 4px, 0) scale(1.12) !important;
+    transform-origin: 50% 50% !important;
+  }
+
+  .heroMonitorMirror img,
+  .heroMonitorMirror video,
+  .heroMonitorMirror :global(img),
+  .heroMonitorMirror :global(video) {
+    width: 109% !important;
+    height: 109% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    object-position: 50% 48% !important;
+    transform: translate3d(-4.2%, -3.8%, 0) !important;
+    transform-origin: 50% 50% !important;
+    background: #000 !important;
+  }
+}
+
+/* ==========================================================
+   VANMOTION · MONITOR SOURCE-LOCKED FINAL 20261004
+   Coordenadas medidas sobre la fotografía original 1672x941.
+   ========================================================== */
+
+.page .heroMonitorScreen {
+  overflow: hidden !important;
+
+  /*
+   * Perspectiva propia del monitor fotografiado.
+   * El borde físico queda visible alrededor de la proyección.
+   */
+  clip-path: polygon(
+    0.5% 0.5%,
+    99.0% 0.2%,
+    99.6% 99.1%,
+    0.4% 99.6%
+  ) !important;
+
+  background: #050505 !important;
+  transform-origin: 50% 50% !important;
+}
+
+.page .heroMonitorMirror {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+
+  transform: none !important;
+  transform-origin: 50% 50% !important;
+
+  clip-path: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  background: #000 !important;
+  pointer-events: none !important;
+}
+
+/*
+ * Cuando todavía no hay vídeo, la portada ocupa exactamente
+ * la misma superficie de proyección.
+ */
+.page .heroMonitorArtwork {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+
+  object-fit: cover !important;
+  object-position: 50% 50% !important;
+
+  transform: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #000 !important;
+}
+
+
+
+/* VANMOTION_WINTER_MONITOR_PERSPECTIVE */
+.page .heroMonitorScreen[data-winter-exact="true"] {
+  transform-origin: 0 0 !important;
+  clip-path: none !important;
+}
+
+
+/* VANMOTION_WINTER_SCREEN_FIT_V2 */
+.heroMonitorScreen[data-winter-exact="true"] {
+  clip-path: none !important;
+  transform-origin: 0 0 !important;
+}
+
+.heroMonitorScreen[data-winter-exact="true"] .heroMonitorVideo,
+.heroMonitorScreen[data-winter-exact="true"] .heroMonitorArtwork,
+.heroMonitorScreen[data-winter-exact="true"] .heroMonitorMirror {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* VANMOTION_NEWS_SINGLE_BORDER_20261022
+   Un único borde existente, sin outline ni shadow interior.
+   En escritorio la tarjeta no cruza el monitor de la imagen. */
+@media (min-width: 721px) {
+  .heroNews {
+    bottom: 48px;
+  }
+}
+
+/* VANMOTION_AUTUMN_BR_CROP_20261022 */
+/* Subir SOLO la esquina inferior derecha visible del monitor en otoño.
+   Se conservan las otras tres esquinas, los vídeos y las escenas de invierno. */
+.page .heroMonitorScreen[data-autumn-monitor="true"] {
+  clip-path: polygon(
+    0.5% 0.5%,
+    99.0% 0.2%,
+    99.6% 90.5%,
+    0.4% 99.6%
+  ) !important;
+}
+
+
+/* VANMOTION_CALIBRADOR_4_ESQUINAS: la homografía guardada define
+   directamente las 4 esquinas de otoño. No recortar otra vez por CSS. */
+.page .heroMonitorScreen[data-autumn-calibrated="true"] {
+  clip-path: none !important;
+  transform-origin: 0 0 !important;
 }

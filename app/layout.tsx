@@ -1,16 +1,21 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
 
 import PublicAnalytics from "@/app/components/analytics/PublicAnalytics";
 import LanguageSwitcher from "@/app/components/language/LanguageSwitcher";
+import { LanguageProvider } from "@/app/components/language/LanguageProvider";
 import RouteAwareMusicPlayer from "@/app/components/layout/RouteAwareMusicPlayer";
 import GlobalMusicPlayer from "@/app/components/music/GlobalMusicPlayer";
+import HeroMusicMonitor from "@/app/musica/HeroMusicMonitor";
 import MusicPlayerProvider from "@/app/components/music/MusicPlayerContext";
+import { ROUTE_LANGUAGE_HEADER } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import {
   getPublicMusicRecommendations,
   getPublicMusicTracks,
 } from "@/app/lib/music-library";
+import { getLocalVimeoTestRecommendations } from "@/app/lib/local-vimeo-test";
 
 import "./globals.css";
 
@@ -48,6 +53,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: new URL(siteUrl),
+
+    verification: {
+      other: {
+        "msvalidate.01": "F22E4950A7C6422FA682CED24675FC45",
+      },
+    },
 
     applicationName: "VANMOTION",
 
@@ -127,13 +138,36 @@ type RootLayoutProps = {
 export default async function RootLayout({
   children,
 }: RootLayoutProps) {
-  const [language, tracks, recommendations] =
+  const [
+    language,
+    tracks,
+    recommendations,
+    requestHeaders,
+  ] =
     await Promise.all([
       getCurrentLanguage(),
       getPublicMusicTracks(),
       getPublicMusicRecommendations(),
+      headers(),
     ]);
   const content = metadataTranslations[language];
+  const htmlLanguage =
+    requestHeaders.get(ROUTE_LANGUAGE_HEADER) ===
+      "en" || language === "en"
+      ? "en-US"
+      : "es";
+
+  const globalRecommendations = [
+    ...getLocalVimeoTestRecommendations(),
+    ...recommendations,
+  ].map(
+    ({ id, title, videoUrl, coverUrl }) => ({
+      id,
+      title,
+      videoUrl,
+      coverUrl,
+    }),
+  );
 
   const websiteStructuredData = {
     "@context": "https://schema.org",
@@ -193,8 +227,8 @@ export default async function RootLayout({
       award: [
         "WD Awards Nominee 2026 — VANMOTION Automotive Culture",
         "CSS Nectar Site of the Day 2026 — VANMOTION Cars · Music · Clothing",
-        "CSS Winner — VANMOTION Cars · Music · Clothing",
-        "CSS Design Awards Nominee 2026 — VANMOTION",
+        "CSS Winner Nominee 2026 — VANMOTION Cars · Music · Clothing",
+        "CSS Design Awards Special Kudos 2026 — VANMOTION",
         "WebsiteAwards.es Nominee 2026 — VANMOTION · E-commerce",
       ],
 
@@ -216,7 +250,7 @@ export default async function RootLayout({
         },
         {
           "@type": "CreativeWork",
-          name: "VANMOTION — CSS Design Awards Nominee 2026",
+          name: "VANMOTION — CSS Design Awards Special Kudos 2026",
           url: "https://www.cssdesignawards.com/sites/vanmotion/50065/",
         },
       ],
@@ -257,14 +291,12 @@ export default async function RootLayout({
       name: "VANMOTION",
     },
     sameAs: [
-      "https://www.instagram.com/vanmotion_madrid",
       "https://www.youtube.com/@vanmotionoficial",
-      "https://www.tiktok.com/@www.vanmotion.es",
     ],
   };
 
   return (
-    <html lang={language}>
+    <html lang={htmlLanguage}>
       <body>
         <script
           type="application/ld+json"
@@ -280,20 +312,25 @@ export default async function RootLayout({
           }}
         />
 
-        <MusicPlayerProvider tracks={tracks}>
-          {children}
+        <LanguageProvider initialLanguage={language}>
+          <MusicPlayerProvider tracks={tracks}>
+            {children}
 
-          <LanguageSwitcher currentLanguage={language} />
+            <LanguageSwitcher />
 
-          <RouteAwareMusicPlayer>
-            <GlobalMusicPlayer
-              language={language}
-              recommendations={recommendations}
-            />
-          </RouteAwareMusicPlayer>
+            {/* Persistent projector: never unmount on route/language changes. */}
+            <HeroMusicMonitor recommendations={globalRecommendations} />
 
-          <PublicAnalytics />
-        </MusicPlayerProvider>
+            <RouteAwareMusicPlayer>
+              <GlobalMusicPlayer
+                recommendations={globalRecommendations}
+              />
+            </RouteAwareMusicPlayer>
+
+
+            <PublicAnalytics />
+          </MusicPlayerProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -1,0 +1,10 @@
+tmp-video/
+tmp-calibracion/
+.venv-calibrador/
+.env
+.env.*
+backup-autumn-night/
+*.bak
+*.bak-*
+public/__calibrador-monitor-invierno.html
+public/__monitor-test-invierno.mp4

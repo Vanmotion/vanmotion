@@ -273,21 +273,25 @@ export default async function LegalNoticePage() {
             {
               href: "/privacidad",
               label: "Privacidad",
+              explanation: "Tratamos los datos facilitados en consultas y compras, como el nombre, contacto, entrega y pedidos, además de los datos técnicos necesarios para la seguridad. Los utilizamos para responder solicitudes, gestionar compras y cumplir obligaciones legales. No vendemos datos personales ni almacenamos el número completo de la tarjeta. Puedes solicitar acceso, rectificación, supresión, oposición, limitación o portabilidad y ejercer tus derechos mediante el formulario de contacto. También puedes reclamar ante la Agencia Española de Protección de Datos.",
               note: "Usamos solo los datos necesarios para responder consultas, gestionar pedidos y mantener la seguridad del servicio. Puedes ejercer tus derechos mediante el correo indicado.",
             },
             {
               href: "/cookies",
               label: "Cookies",
+              explanation: "Utilizamos la cookie propia vanmotion-language para recordar el idioma seleccionado. El área privada puede utilizar vanmotion_admin_session para mantener la sesión administrativa. Según nuestra política actual, no empleamos cookies publicitarias ni de elaboración de perfiles en la navegación pública. Puedes consultar, bloquear o eliminar las cookies desde tu navegador. Los servicios externos pueden aplicar sus propias políticas cuando accedes a ellos.",
               note: "La navegación pública utiliza únicamente cookies técnicas necesarias. Los servicios externos aplican sus propias políticas cuando se abren.",
             },
             {
               href: "/condiciones-compra",
               label: "Compra",
+              explanation: "Las compras de productos físicos muestran las características, el precio, los impuestos y las condiciones antes de confirmar el pago. Stripe procesa los pagos y VANMOTION no almacena el número completo de la tarjeta. Si un producto pagado no puede entregarse, se ofrecen las soluciones previstas en las condiciones de compra. Los consumidores disponen, con las excepciones legales aplicables, de 14 días naturales desde la recepción para desistir. Los productos nuevos cuentan con la garantía legal correspondiente.",
               note: "Antes del pago se muestran el producto, el precio y las condiciones. El cobro se realiza mediante Stripe y VANMOTION no guarda el número completo de la tarjeta.",
             },
             {
               href: "/desistimiento",
               label: "Desistimiento",
+              explanation: "Puedes comunicar el desistimiento de una compra mediante el formulario específico, indicando la referencia del pedido y el correo utilizado. No necesitas justificar tu decisión. La solicitud queda registrada y recibirás constancia e instrucciones para la devolución. El producto debe devolverse dentro del plazo indicado en las condiciones. El formulario no genera automáticamente un reembolso: este se tramita conforme a las condiciones de compra y la normativa aplicable.",
               note: "Las solicitudes de devolución se comunican mediante el formulario de desistimiento y se tramitan conforme a las condiciones de compra.",
             },
           ],
@@ -309,21 +313,25 @@ export default async function LegalNoticePage() {
             {
               href: "/privacidad",
               label: "Privacy",
+              explanation: "We process information supplied through enquiries and purchases, including names, contact details, deliveries and orders, together with technical data needed for security. Information is used to respond to requests, manage purchases and meet legal obligations. We do not sell personal data or store full card numbers. You may request access, correction, erasure, objection, restriction or portability through the contact form. You may also complain to the Spanish Data Protection Agency.",
               note: "We use only the data needed to answer enquiries, manage orders and maintain service security. You may exercise your rights through the email shown.",
             },
             {
               href: "/cookies",
               label: "Cookies",
+              explanation: "The first-party vanmotion-language cookie remembers your selected language. The private administration area may use vanmotion_admin_session to maintain an authorised session. According to our current policy, public browsing does not use advertising or profiling cookies. You can view, block or delete cookies through your browser settings. External services may apply their own policies when you visit them.",
               note: "Public browsing uses only necessary technical cookies. External services apply their own policies when opened.",
             },
             {
               href: "/condiciones-compra",
               label: "Purchases",
+              explanation: "Physical product purchases display characteristics, prices, taxes and applicable conditions before payment confirmation. Stripe processes payments and VANMOTION does not store full card numbers. If a paid product cannot be delivered, the remedies described in the purchase terms apply. Consumers generally have 14 calendar days after receipt to withdraw, subject to statutory exceptions. New products are covered by the applicable legal guarantee.",
               note: "The product, price and terms are shown before payment. Payment is processed through Stripe and VANMOTION does not store the full card number.",
             },
             {
               href: "/desistimiento",
               label: "Withdrawal",
+              explanation: "You can communicate withdrawal using the dedicated form with your order reference and purchase email address. No explanation is required. Your request is recorded and you receive confirmation and return instructions. Products must be returned within the period stated in the purchase conditions. Submitting the form does not automatically issue a refund: refunds are handled under the purchase terms and applicable law.",
               note: "Return requests are submitted through the withdrawal form and processed according to the purchase conditions.",
             },
           ],
@@ -409,7 +417,7 @@ export default async function LegalNoticePage() {
                 <div>
                   <dt>{compact.email}</dt>
                   <dd>
-                    <a href={`mailto:${legal.email}`}>{legal.email}</a>
+                    {legal.email}
                   </dd>
                 </div>
               </dl>
@@ -420,14 +428,17 @@ export default async function LegalNoticePage() {
               aria-label={compact.documentsLabel}
             >
               {compact.documents.map((document, index) => (
-                <article key={document.label}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-
-                  <div>
-                    <strong>{document.label}</strong>
-                    <small>{document.note}</small>
-                  </div>
-                </article>
+                <details key={document.label}>
+                  <summary>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <span>
+                      <strong>{document.label}</strong>
+                      <small>{document.note}</small>
+                    </span>
+                    <b aria-hidden="true">+</b>
+                  </summary>
+                  <p>{document.explanation}</p>
+                </details>
               ))}
             </section>
           </div>

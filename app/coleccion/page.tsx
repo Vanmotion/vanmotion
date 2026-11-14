@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
+import { ROUTE_LANGUAGE_HEADER } from "@/app/language";
 import type { Language } from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { getDailyNews } from "@/app/lib/daily-news";
 import { prisma } from "@/app/lib/prisma";
 import NewsThumbnail from "@/app/components/news/NewsThumbnail";
+import { localizedVehicleModel, localizedVehicleVersion, localizedVehicleImageAlt } from "./vehicle-display";
 
 import styles from "./coleccion.module.css";
 import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
@@ -14,28 +17,40 @@ import { getMadridSectionHeroImage } from "@/app/lib/madrid-atmosphere";
 
 export const dynamic = "force-dynamic";
 
+const SITE_URL = "https://www.vanmotion.es";
+
 const fuelLabels: Record<Language, Record<string, string>> = {
   es: {
+    DIESEL: "Diésel",
     Diesel: "Diésel",
     Diésel: "Diésel",
+    GASOLINE: "Gasolina",
     Gasoline: "Gasolina",
     Petrol: "Gasolina",
     Gasolina: "Gasolina",
+    HYBRID: "Híbrido",
+    PLUG_IN_HYBRID: "Híbrido enchufable",
     Hybrid: "Híbrido",
     Híbrido: "Híbrido",
+    ELECTRIC: "Eléctrico",
     Electric: "Eléctrico",
     Eléctrico: "Eléctrico",
     LPG: "GLP",
     GLP: "GLP",
   },
   en: {
+    DIESEL: "Diesel",
     Diesel: "Diesel",
     Diésel: "Diesel",
+    GASOLINE: "Petrol",
     Gasoline: "Petrol",
     Petrol: "Petrol",
     Gasolina: "Petrol",
+    HYBRID: "Hybrid",
+    PLUG_IN_HYBRID: "Plug-in hybrid",
     Hybrid: "Hybrid",
     Híbrido: "Hybrid",
+    ELECTRIC: "Electric",
     Electric: "Electric",
     Eléctrico: "Electric",
     LPG: "LPG",
@@ -45,6 +60,8 @@ const fuelLabels: Record<Language, Record<string, string>> = {
 
 const transmissionLabels: Record<Language, Record<string, string>> = {
   es: {
+    MANUAL: "Manual",
+    AUTOMATIC: "Automática",
     Manual: "Manual",
     Automatic: "Automática",
     Automática: "Automática",
@@ -52,6 +69,8 @@ const transmissionLabels: Record<Language, Record<string, string>> = {
     Semiautomática: "Semiautomática",
   },
   en: {
+    MANUAL: "Manual",
+    AUTOMATIC: "Automatic",
     Manual: "Manual",
     Automatic: "Automatic",
     Automática: "Automatic",
@@ -62,9 +81,9 @@ const transmissionLabels: Record<Language, Record<string, string>> = {
 
 const translations = {
   es: {
-    metadataTitle: "Vehículos y furgonetas de ocasión en Madrid",
+    metadataTitle: "Vehículos de ocasión y furgonetas en Madrid",
     metadataDescription:
-      "Vehículos y furgonetas de ocasión seleccionados por VANMOTION en Madrid. Datos claros, fotografías reales y atención directa.",
+      "Vehículos de ocasión y furgonetas seleccionados por VANMOTION en Madrid. Fotografías reales, información clara y atención directa.",
     navigation: {
       vehicles: "Vehículos",
       music: "Música",
@@ -243,6 +262,7 @@ function formatPrice(price: unknown, locale: string): string {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
+    useGrouping: true,
   }).format(Number(price));
 }
 
@@ -273,20 +293,33 @@ function getVehicleDisplayPriority(vehicle: {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const language = await getCurrentLanguage();
+  const [language, requestHeaders] = await Promise.all([
+    getCurrentLanguage(),
+    headers(),
+  ]);
+  const isEnglishRoute =
+    requestHeaders.get(ROUTE_LANGUAGE_HEADER) === "en";
   const content = translations[language];
+  const canonicalUrl = isEnglishRoute
+    ? `${SITE_URL}/en-us/coleccion`
+    : `${SITE_URL}/coleccion`;
 
   return {
     title: content.metadataTitle,
     description: content.metadataDescription,
     alternates: {
-      canonical: "/coleccion",
+      canonical: canonicalUrl,
+      languages: {
+        "es-ES": `${SITE_URL}/coleccion`,
+        "en-US": `${SITE_URL}/en-us/coleccion`,
+        "x-default": `${SITE_URL}/coleccion`,
+      },
     },
     openGraph: {
       title: content.metadataTitle,
       description: content.metadataDescription,
       type: "website",
-      url: "/coleccion",
+      url: canonicalUrl,
       images: [
         {
           url: "/vehiculos/portada-inicio-vehiculos.webp",
@@ -308,10 +341,21 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CollectionPage() {
   const heroImage = await getMadridSectionHeroImage("vehicles");
-  const language = await getCurrentLanguage();
+  const [language, requestHeaders] = await Promise.all([
+    getCurrentLanguage(),
+    headers(),
+  ]);
+  const isEnglishRoute =
+    requestHeaders.get(ROUTE_LANGUAGE_HEADER) === "en";
   const content = translations[language];
   const [vehicleNews] = await getDailyNews(language);
-  const locale = language === "es" ? "es-ES" : "en-GB";
+  const locale = language === "es" ? "es-ES" : "en-US";
+  const collectionUrl = isEnglishRoute
+    ? `${SITE_URL}/en-us/coleccion`
+    : `${SITE_URL}/coleccion`;
+  const collectionPath = isEnglishRoute
+    ? "/en-us/coleccion"
+    : "/coleccion";
 
   const vehicles = await prisma.vehicle.findMany({
     where: {
@@ -354,21 +398,21 @@ export default async function CollectionPage() {
   const collectionStructuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    url: "https://www.vanmotion.es/coleccion",
+    url: collectionUrl,
     name: content.metadataTitle,
     description: content.metadataDescription,
-    inLanguage: language === "es" ? "es-ES" : "en-GB",
+    inLanguage: language === "es" ? "es-ES" : "en-US",
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: orderedVehicles.length,
       itemListElement: orderedVehicles.map((vehicle, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        url: `https://www.vanmotion.es/coleccion/${vehicle.id}`,
+        url: `${collectionUrl}/${encodeURIComponent(vehicle.id)}`,
         name: [
           vehicle.brand.name,
-          vehicle.model,
-          vehicle.version,
+          localizedVehicleModel(vehicle.model, language),
+          localizedVehicleVersion(vehicle.version, language),
           vehicle.year,
         ]
           .filter(Boolean)
@@ -386,7 +430,11 @@ export default async function CollectionPage() {
         }}
       />
       <header className={styles.header}>
-        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+        <Link
+          href={isEnglishRoute ? "/en-us" : "/"}
+          className={styles.brand}
+          aria-label="Vanmotion"
+        >
           <Image
             src="/brand/vanmotion-mark.webp"
             alt=""
@@ -402,8 +450,14 @@ export default async function CollectionPage() {
           className={styles.navigation}
           aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
         >
-          <Link href="/coleccion" aria-current="page">{content.navigation.vehicles}</Link>
-          <Link href="/musica">{content.navigation.music}</Link>
+          <Link href={collectionPath} aria-current="page">
+            {content.navigation.vehicles}
+          </Link>
+          <Link
+            href={isEnglishRoute ? "/en-us/musica" : "/musica"}
+          >
+            {content.navigation.music}
+          </Link>
           <Link href="/ropa">{content.navigation.clothing}</Link>
           <Link
             href="/contacto"
@@ -434,7 +488,6 @@ export default async function CollectionPage() {
 
             <div className={styles.heroTopline}>
               <span>{content.hero.location}</span>
-              <span>{content.navigation.vehicles}</span>
             </div>
 
             <h1 id="collection-hero-title" className={styles.srOnly}>
@@ -485,10 +538,18 @@ export default async function CollectionPage() {
           ) : (
             <div className={styles.vehicleGrid}>
               {orderedVehicles.map((vehicle) => {
+                const displayModel = localizedVehicleModel(
+                  vehicle.model,
+                  language,
+                );
+                const displayVersion = localizedVehicleVersion(
+                  vehicle.version,
+                  language,
+                );
                 const vehicleName = [
                   vehicle.brand.name,
-                  vehicle.model,
-                  vehicle.version,
+                  displayModel,
+                  displayVersion,
                 ]
                   .filter(Boolean)
                   .join(" ");
@@ -550,15 +611,14 @@ export default async function CollectionPage() {
                     className={styles.vehicleCard}
                   >
                     <Link
-                      href={`/coleccion/${vehicle.id}`}
+                      href={`${collectionPath}/${encodeURIComponent(vehicle.id)}`}
                       className={styles.vehicleLink}
-                      aria-label={`${content.card.viewDetails}: ${vehicleName}`}
                     >
                       <div className={styles.vehicleMedia}>
                         {image ? (
                           <Image
                             src={image.url}
-                            alt={image.alt ?? vehicleName}
+                            alt={image.alt ? localizedVehicleImageAlt(image.alt, language) : vehicleName}
                             fill
                             sizes="(max-width: 620px) 50vw, (max-width: 1100px) 50vw, 25vw"
                             className={styles.vehicleImage}
@@ -584,8 +644,8 @@ export default async function CollectionPage() {
                       <div className={styles.vehicleContent}>
                         <div>
                           <p className={styles.vehicleBrand}>{vehicle.brand.name}</p>
-                          <h2>{vehicle.model}</h2>
-                          {vehicle.version && <p className={styles.vehicleVersion}>{vehicle.version}</p>}
+                          <h2>{displayModel}</h2>
+                          {displayVersion && <p className={styles.vehicleVersion}>{displayVersion}</p>}
                         </div>
 
                         <div className={styles.vehicleDetails}>
@@ -646,6 +706,7 @@ export default async function CollectionPage() {
         </div>
 
         <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaceslegales" : "Legal links"}>
+          <Link href="/noticias">{language === "es" ? "Noticias" : "News"}</Link>
           <Link href="/condiciones-compra">{content.footer.purchaseConditions}</Link>
           <Link href="/desistimiento">{content.footer.withdrawal}</Link>
           <Link href="/privacidad">{content.footer.privacy}</Link>

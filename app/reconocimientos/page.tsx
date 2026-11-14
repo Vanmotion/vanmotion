@@ -1,19 +1,23 @@
+import AwwwardsRibbon from "@/app/components/awwwards/AwwwardsRibbon";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { getCurrentLanguage } from "@/app/lib/language";
 import styles from "./reconocimientos.module.css";
+
+const siteUrl = "https://www.vanmotion.es";
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getCurrentLanguage();
 
   const title =
     language === "es"
-      ? "Reconocimientos | VANMOTION Automotive Culture"
+      ? "Premios y reconocimientos de VANMOTION | Automotive Culture"
       : "Awards | VANMOTION Automotive Culture";
 
   const description =
     language === "es"
-      ? "Reconocimientos digitales de VANMOTION: CSS Design Awards, WD Awards, CSS Nectar, CSS Winner y WebsiteAwards.es. Proyecto de cultura automotriz, música y streetwear nacido en Madrid."
+      ? "Premios y reconocimientos de VANMOTION en diseño web y experiencia digital: CSS Design Awards, CSS Nectar, CSS Winner y WD Awards."
       : "Digital recognition for VANMOTION from CSS Design Awards, WD Awards, CSS Nectar, CSS Winner and WebsiteAwards.es. An automotive culture, music and streetwear project born in Madrid.";
 
   return {
@@ -21,6 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords: [
       "VANMOTION awards",
+      "Awwwards",
+      "Awwwards Nominee 2026",
       "CSS Design Awards",
       "Special Kudos",
       "Best UI Design",
@@ -33,7 +39,12 @@ export async function generateMetadata(): Promise<Metadata> {
       "digital experience",
     ],
     alternates: {
-      canonical: "https://www.vanmotion.es/reconocimientos",
+      canonical: `${siteUrl}/reconocimientos`,
+      languages: {
+        "es-ES": `${siteUrl}/reconocimientos`,
+        "en-US": `${siteUrl}/en-us/reconocimientos`,
+        "x-default": `${siteUrl}/reconocimientos`,
+      },
     },
     openGraph: {
       title,
@@ -132,11 +143,11 @@ const awards: {
   },
   {
     name: {
-      es: "CSS Winner — Site of the Day Nominee 2026",
-      en: "CSS Winner — Site of the Day Nominee 2026",
+      es: "CSS Winner — Site of the Day Nomination 2026",
+      en: "CSS Winner — Site of the Day Nomination 2026",
     },
     category: {
-      es: "Site of the Day · Nominada",
+      es: "Site of the Day · Nomination",
       en: "Site of the Day · Nominee",
     },
     description: {
@@ -239,9 +250,18 @@ const awards: {
   },
 ];
 
-export default async function ReconocimientosPage() {
-  const language = await getCurrentLanguage();
+export async function ReconocimientosContent({
+  englishRoute = false,
+}: {
+  englishRoute?: boolean;
+} = {}) {
+  const language = englishRoute
+    ? "en"
+    : await getCurrentLanguage();
   const content = translations[language];
+  const pageUrl = englishRoute
+    ? `${siteUrl}/en-us/reconocimientos`
+    : `${siteUrl}/reconocimientos`;
 
   const certificates = [
     awards[3], // CSSDA Special Kudos
@@ -261,19 +281,24 @@ export default async function ReconocimientosPage() {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     name: "VANMOTION — Automotive Culture",
-    url: "https://www.vanmotion.es/reconocimientos",
-    inLanguage: language === "es" ? "es-ES" : "en-GB",
+    url: pageUrl,
+    inLanguage:
+      language === "es"
+        ? "es-ES"
+        : englishRoute
+          ? "en-US"
+          : "en-GB",
     about: [
       "Automotive culture",
       "Digital experience",
       "Brand identity",
       "Visual storytelling",
     ],
-    award: awards.map((award) => award.name[language]),
+    award: [...awards.map((award) => award.name[language]), "Awwwards Nominee 2026"],
     image: awards.map(
       (award) => `https://www.vanmotion.es${award.image}`,
     ),
-    sameAs: awards.map((award) => award.url),
+    sameAs: [...awards.map((award) => award.url), "https://www.awwwards.com/sites/vanmotion"],
   };
 
   return (
@@ -292,12 +317,12 @@ export default async function ReconocimientosPage() {
 
             <h1>
               VANMOTION
-              <span>Recognition Archive</span>
+              <span>Recognition Archive · Awwwards Nominee 2026</span>
             </h1>
           </div>
 
           <p className={styles.counter}>
-            2026 · {String(certificates.length).padStart(2, "0")}
+            2026 · {String(certificates.length + 1).padStart(2, "0")}
           </p>
         </header>
 
@@ -337,13 +362,39 @@ export default async function ReconocimientosPage() {
               </footer>
             </article>
           ))}
+
+          <article className={`${styles.certificate} ${styles.awwwardsCertificate}`}>
+            <div className={styles.document}>
+              <AwwwardsRibbon />
+            </div>
+
+            <footer className={styles.certificateMeta}>
+              <span>08</span>
+              <div>
+                <strong>Awwwards — Nominee 2026</strong>
+                <small>NOMINACIÓN · 17 SEPTIEMBRE 2026</small>
+              </div>
+            </footer>
+          </article>
         </section>
 
         <footer className={styles.footer}>
-          <span>VANMOTION</span>
+          <Link
+            href={language === "es" ? "/" : "/en-us"}
+            style={{
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            VANMOTION
+          </Link>
           <span>MADRID · 2026</span>
         </footer>
       </main>
     </>
   );
+}
+
+export default async function ReconocimientosPage() {
+  return <ReconocimientosContent />;
 }

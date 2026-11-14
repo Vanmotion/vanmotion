@@ -9,8 +9,39 @@ export type YouTubePlayerHandle = {
   pauseVideo?: () => void;
   stopVideo?: () => void;
   mute?: () => void;
+  getCurrentTime?: () => number;
+  getPlayerState?: () => number;
+  seekTo?: (seconds: number, allowSeekAhead: boolean) => void;
+  getPlaybackRate?: () => number;
+  setPlaybackRate?: (rate: number) => void;
+  getAvailablePlaybackRates?: () => number[];
   getIframe?: () => HTMLIFrameElement;
 };
+
+// VANMOTION: una sola fuente sonora; el monitor sigue su posición.
+// Los dos iframes son de YouTube: no se puede copiar su imagen al canvas.
+type MonitorSync = {
+  videoId: string;
+  seconds: number;
+  playing: boolean;
+  sentAt: number;
+};
+
+const MONITOR_SYNC_EVENT = "vanmotion:youtube-monitor-sync";
+
+function publishYouTubeSync(player: YouTubePlayerHandle | null, videoId: string) {
+  if (!player) return;
+  try {
+    const seconds = player.getCurrentTime?.();
+    const state = player.getPlayerState?.();
+    if (typeof seconds !== "number" || !Number.isFinite(seconds) || typeof state !== "number") return;
+    window.dispatchEvent(new CustomEvent<MonitorSync>(MONITOR_SYNC_EVENT, {
+      detail: { videoId, seconds, playing: state === 1, sentAt: performance.now() },
+    }));
+  } catch {
+    // YouTube puede no estar listo durante un cambio de canción.
+  }
+}
 
 type YouTubePlayerInstance = YouTubePlayerHandle;
 type YouTubeStateChangeEvent = { data: number };
@@ -102,6 +133,7 @@ type YouTubeRecommendationPlayerProps = {
   muted?: boolean;
   controls?: boolean;
   className?: string;
+  syncRole?: "source" | "projection";
 };
 
 export default function YouTubeRecommendationPlayer({
@@ -117,9 +149,14 @@ export default function YouTubeRecommendationPlayer({
   muted = false,
   controls = true,
   className,
+  syncRole,
 }: YouTubeRecommendationPlayerProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayerInstance | null>(null);
+  const playerReadyRef = useRef(false);
+  const lastProjectionSeekRef = useRef(0);
+  const safariPlayingSinceRef = useRef(0);
+  const safariInitialAlignedRef = useRef(false);
   const playingRef = useRef(playing);
   const callbacksRef = useRef({
     onPlaying,
@@ -168,15 +205,44 @@ export default function YouTubeRecommendationPlayer({
           onReady: (event) => {
             if (cancelled) return;
             playerRef.current = event.target;
+            playerReadyRef.current = true;
+            if (syncRole === "source") publishYouTubeSync(event.target, videoId);
             if (externalPlayerRef) externalPlayerRef.current = event.target;
             if (muted) event.target.mute?.();
             callbacksRef.current.onReady?.();
-            if (playingRef.current) event.target.playVideo?.();
+            if (playingRef.current && syncRole !== "projection") event.target.playVideo?.();
+
+            // Safari: reactivar la proyección silenciada al reconstruirla.
+            const safari =
+              /Safari/i.test(navigator.userAgent) &&
+              !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|Android/i.test(
+                navigator.userAgent
+              );
+
+            if (
+              safari &&
+              syncRole === "projection" &&
+              muted &&
+              playingRef.current
+            ) {
+              event.target.playVideo?.();
+            }
           },
           onStateChange: (event) => {
             if (cancelled) return;
-            if (event.data === 1) callbacksRef.current.onPlaying();
-            else if (event.data === 2) callbacksRef.current.onPaused();
+            if (syncRole === "source") publishYouTubeSync(playerRef.current, videoId);
+            if (event.data === 1) {
+              // Do not reveal a remounted projection merely because it
+              // started playing; first align it with the source position.
+              if (
+                syncRole !== "projection" ||
+                safariInitialAlignedRef.current
+              ) {
+                callbacksRef.current.onPlaying();
+              }
+            } else if (event.data === 2) {
+              callbacksRef.current.onPaused();
+            }
             else if (event.data === 0) callbacksRef.current.onEnded();
           },
           onError: (event) => {
@@ -203,6 +269,7 @@ export default function YouTubeRecommendationPlayer({
 
     return () => {
       cancelled = true;
+      playerReadyRef.current = false;
       if (externalPlayerRef && externalPlayerRef.current === instance) {
         externalPlayerRef.current = null;
       }
@@ -211,14 +278,299 @@ export default function YouTubeRecommendationPlayer({
       // React owns the host; YouTube owns its children.
       host.replaceChildren();
     };
-  }, [videoId, externalPlayerRef, muted, controls]);
+  }, [videoId, externalPlayerRef, muted, controls, syncRole]);
 
   useEffect(() => {
     const player = playerRef.current;
-    if (!player) return;
+    if (!player || syncRole === "projection") return;
     if (playing) player.playVideo?.();
     else player.pauseVideo?.();
-  }, [playing]);
+  }, [playing, syncRole]);
+
+
+  useEffect(() => {
+    if (syncRole !== "source") return;
+    const onEmbeddedPlay = () => playerRef.current?.pauseVideo?.();
+    window.addEventListener("vanmotion:embedded-video-play", onEmbeddedPlay);
+    return () => window.removeEventListener("vanmotion:embedded-video-play", onEmbeddedPlay);
+  }, [syncRole]);
+
+  // Fuente: anuncia estado y tiempo incluso después de saltar dentro del vídeo.
+  useEffect(() => {
+    if (syncRole !== "source") return;
+    const tick = () => {
+      if (playerReadyRef.current) publishYouTubeSync(playerRef.current, videoId);
+    };
+    const interval = window.setInterval(tick, 250);
+    return () => window.clearInterval(interval);
+  }, [syncRole, videoId]);
+
+  // Safari may suspend the persistent but visually hidden projection.
+  // On return, keep the SAME iframe and hide its frames until source-aligned.
+  useEffect(() => {
+    if (syncRole !== "projection") return;
+    const realign = () => {
+      safariInitialAlignedRef.current = false;
+      safariPlayingSinceRef.current = 0;
+      lastProjectionSeekRef.current = 0;
+      const player = playerRef.current;
+      if (playerReadyRef.current && player) {
+        player.mute?.();
+        if (playingRef.current) player.playVideo?.();
+      }
+    };
+    window.addEventListener("vanmotion:music-projection-return", realign);
+    return () => window.removeEventListener(
+      "vanmotion:music-projection-return", realign,
+    );
+  }, [syncRole]);
+
+  // Proyección: siempre silenciada; sigue al flotante y corrige el desfase.
+  useEffect(() => {
+    if (syncRole !== "projection") return;
+    const follow = (event: Event) => {
+      const sync = (event as CustomEvent<MonitorSync>).detail;
+      if (!sync || sync.videoId !== videoId || !playerReadyRef.current) return;
+      if (!Number.isFinite(sync.seconds) || !Number.isFinite(sync.sentAt)) return;
+      if (performance.now() - sync.sentAt > 1800) return;
+      const player = playerRef.current;
+      if (!player) return;
+      try {
+        const state = player.getPlayerState?.();
+        const actual = player.getCurrentTime?.();
+        const target = Math.max(0, sync.seconds + (sync.playing
+          ? Math.max(0, (performance.now() - sync.sentAt) / 1000)
+          : 0));
+        // Safari: permitir que YouTube estabilice la reproducción
+        // antes de corregir el tiempo. Firefox conserva su ajuste.
+        const safariProjection =
+          /Safari/i.test(navigator.userAgent) &&
+          !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|Android/i.test(
+            navigator.userAgent
+          );
+
+        // The existing Safari path already waits for first alignment.
+        // Apply the same initial gate in Firefox/Chromium, where onPlaying
+        // previously exposed a mirror still running from second zero.
+        if (!safariProjection && !safariInitialAlignedRef.current) {
+          const now = performance.now();
+          if (!sync.playing) {
+            safariPlayingSinceRef.current = 0;
+            if (state === 1 || state === 3) player.pauseVideo?.();
+            if (player.getPlaybackRate?.() !== 1) {
+              player.setPlaybackRate?.(1);
+            }
+            return;
+          }
+
+          if (typeof actual === "number" && Number.isFinite(actual)) {
+            const drift = target - actual;
+            if (Math.abs(drift) > 0.45) {
+              if (
+                lastProjectionSeekRef.current === 0 ||
+                now - lastProjectionSeekRef.current >= 1000
+              ) {
+                lastProjectionSeekRef.current = now;
+                player.seekTo?.(target, true);
+              }
+            } else if (state === 1) {
+              safariInitialAlignedRef.current = true;
+              callbacksRef.current.onPlaying();
+            }
+          }
+          if (state !== 1 && state !== 3) player.playVideo?.();
+          return;
+        }
+
+        // Reset the gate whenever the source pauses; a subsequent seek or
+        // resume must realign before its projected frames become visible.
+        if (!safariProjection && !sync.playing) {
+          safariInitialAlignedRef.current = false;
+          safariPlayingSinceRef.current = 0;
+          if (state === 1 || state === 3) player.pauseVideo?.();
+          if (player.getPlaybackRate?.() !== 1) {
+            player.setPlaybackRate?.(1);
+          }
+          return;
+        }
+
+        if (safariProjection) {
+          const now = performance.now();
+
+          if (!sync.playing) {
+            safariInitialAlignedRef.current = false;
+            safariPlayingSinceRef.current = 0;
+            if (player.getPlaybackRate?.() !== 1) {
+              player.setPlaybackRate?.(1);
+            }
+            if (state === 1 || state === 3) player.pauseVideo?.();
+            return;
+          }
+
+          if (state !== 1) {
+            safariPlayingSinceRef.current = 0;
+            if (state !== 3) player.playVideo?.();
+            return;
+          }
+
+          if (!safariInitialAlignedRef.current) {
+            if (
+              typeof actual !== "number" ||
+              !Number.isFinite(actual)
+            ) {
+              return;
+            }
+
+            const initialDrift = target - actual;
+
+            if (Math.abs(initialDrift) > 0.45) {
+              if (
+                lastProjectionSeekRef.current === 0 ||
+                now - lastProjectionSeekRef.current > 1000
+              ) {
+                lastProjectionSeekRef.current = now;
+                player.seekTo?.(target, true);
+              }
+              return;
+            }
+
+            safariInitialAlignedRef.current = true;
+            safariPlayingSinceRef.current = now;
+            callbacksRef.current.onPlaying();
+            return;
+          }
+
+          if (safariPlayingSinceRef.current === 0) {
+            // Recuperar inmediatamente un desfase grande tras navegar.
+            // Los ajustes pequeños mantienen la estrategia suave.
+            if (
+              typeof actual === "number" &&
+              Number.isFinite(actual) &&
+              Math.abs(target - actual) > 1.25 &&
+              (
+                lastProjectionSeekRef.current === 0 ||
+                now - lastProjectionSeekRef.current > 1500
+              )
+            ) {
+              lastProjectionSeekRef.current = now;
+              player.seekTo?.(target, true);
+            }
+
+            safariPlayingSinceRef.current = now;
+            return;
+          }
+
+          const stableFor = now - safariPlayingSinceRef.current;
+          const sinceSeek = now - lastProjectionSeekRef.current;
+
+          if (
+            stableFor >= 1600 &&
+            typeof actual === "number" &&
+            Number.isFinite(actual)
+          ) {
+            const drift = target - actual;
+            const rates = player.getAvailablePlaybackRates?.() ?? [1];
+            const reportedRate = player.getPlaybackRate?.();
+            const currentRate =
+              typeof reportedRate === "number" &&
+              Number.isFinite(reportedRate) ? reportedRate : 1;
+
+            const canSpeedUp = rates.includes(1.25);
+            const canSlowDown = rates.includes(0.75);
+            let nextRate = currentRate;
+
+            if (drift > 0.5 && drift < 2.2 && canSpeedUp) {
+              nextRate = 1.25;
+            } else if (
+              drift < -0.5 && drift > -1.5 && canSlowDown
+            ) {
+              nextRate = 0.75;
+            } else if (
+              Math.abs(drift) < 0.2 ||
+              drift >= 2.2 || drift <= -1.5
+            ) {
+              nextRate = 1;
+            }
+
+            if (nextRate !== currentRate) {
+              player.setPlaybackRate?.(nextRate);
+            }
+
+            const needsSeek =
+              drift > (canSpeedUp ? 2.2 : 1.1) ||
+              drift < (canSlowDown ? -1.5 : -1.1);
+
+            if (
+              needsSeek &&
+              (lastProjectionSeekRef.current === 0 ||
+                sinceSeek >= 6000)
+            ) {
+              lastProjectionSeekRef.current = now;
+              player.seekTo?.(target, true);
+            }
+          }
+
+          return;
+        }
+
+        // Espejo adaptativo: ajustar velocidad si YouTube lo permite.
+        if (typeof actual === "number" && Number.isFinite(actual)) {
+          const drift = target - actual;
+          const difference = Math.abs(drift);
+          const now = performance.now();
+          const rates = player.getAvailablePlaybackRates?.() ?? [1];
+
+          const smoothCorrection =
+            sync.playing &&
+            state === 1 &&
+            difference > 0.25 &&
+            difference < 1;
+
+          const desiredRate = smoothCorrection
+            ? drift > 0 && rates.includes(1.25)
+              ? 1.25
+              : drift < 0 && rates.includes(0.75)
+                ? 0.75
+                : 1
+            : 1;
+
+          const currentRate = player.getPlaybackRate?.();
+
+          if (
+            typeof currentRate === "number" &&
+            Math.abs(currentRate - desiredRate) > 0.01
+          ) {
+            player.setPlaybackRate?.(desiredRate);
+          }
+
+          const tolerance = !sync.playing
+            ? 0.2
+            : desiredRate === 1 ? 0.55 : 1;
+
+          const cooldown = difference > 2 ? 900 : 1700;
+
+          const enoughTime =
+            lastProjectionSeekRef.current === 0 ||
+            now - lastProjectionSeekRef.current > cooldown;
+
+          if (difference > tolerance && enoughTime) {
+            lastProjectionSeekRef.current = now;
+            player.seekTo?.(target, true);
+          }
+        }
+
+        if (sync.playing) {
+          if (state !== 1 && state !== 3) player.playVideo?.();
+        } else if (state === 1 || state === 3) {
+          player.pauseVideo?.();
+        }
+      } catch {
+        // En Safari/Firefox el iframe puede tardar en admitir comandos.
+      }
+    };
+    window.addEventListener(MONITOR_SYNC_EVENT, follow);
+    return () => window.removeEventListener(MONITOR_SYNC_EVENT, follow);
+  }, [syncRole, videoId]);
 
   return (
     <div

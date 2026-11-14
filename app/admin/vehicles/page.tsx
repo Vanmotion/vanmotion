@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- Raw img is intentional here for dynamic/external/preview media. */
 import Link from "next/link";
 
 import { prisma } from "@/app/lib/prisma";

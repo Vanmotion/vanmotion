@@ -30,6 +30,41 @@ function optionalString(
   return value || null;
 }
 
+function extractYouTubeVideoId(value: string): string | null {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (host === "youtu.be") {
+      return url.pathname.split("/").filter(Boolean)[0] ?? null;
+    }
+
+    if (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "music.youtube.com"
+    ) {
+      if (url.pathname === "/watch") {
+        return url.searchParams.get("v");
+      }
+
+      const parts = url.pathname.split("/").filter(Boolean);
+
+      if (
+        parts[0] === "embed" ||
+        parts[0] === "shorts" ||
+        parts[0] === "live"
+      ) {
+        return parts[1] ?? null;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function refreshMusicPages(): void {
   revalidatePath("/admin");
   revalidatePath("/admin/music");
@@ -40,6 +75,8 @@ function refreshMusicPages(): void {
 export async function initializeMusicLibrary(
   _formData: FormData,
 ): Promise<void> {
+  void _formData;
+
   await requireAdminSession();
   const defaultTracks = [
     {
@@ -364,129 +401,6 @@ export async function moveMusicTrack(
     );
   }
 }
-function youtubeVideoIdFromInput(value: string): string {
-  const input = value.trim();
-
-  if (!input) {
-    return "";
-  }
-
-  if (/^[A-Za-z0-9_-]{11}$/.test(input)) {
-    return input;
-  }
-
-  try {
-    const url = new URL(input);
-
-    if (url.hostname === "youtu.be") {
-      return url.pathname.split("/").filter(Boolean)[0] ?? "";
-    }
-
-    if (
-      url.hostname.includes("youtube.com") ||
-      url.hostname.includes("youtube-nocookie.com")
-    ) {
-      const watchId = url.searchParams.get("v");
-
-      if (watchId) {
-        return watchId;
-      }
-
-      const parts = url.pathname.split("/").filter(Boolean);
-      const markerIndex = parts.findIndex(
-        (part) =>
-          part === "embed" ||
-          part === "shorts" ||
-          part === "live",
-      );
-
-      if (markerIndex >= 0) {
-        return parts[markerIndex + 1] ?? "";
-      }
-    }
-  } catch {
-    return "";
-  }
-
-  return "";
-}
-
-export async function createMusicRecommendation(
-  formData: FormData,
-): Promise<void> {
-  await requireAdminSession();
-
-  const title = requiredString(formData, "title");
-  const artist = requiredString(formData, "artist");
-  const youtubeInput = requiredString(
-    formData,
-    "youtube",
-  );
-  const youtubeVideoId =
-    youtubeVideoIdFromInput(youtubeInput);
-
-  const editorialHeading = optionalString(
-    formData,
-    "editorialHeading",
-  );
-  const editorialTextEs = optionalString(
-    formData,
-    "editorialTextEs",
-  );
-  const editorialTextEn = optionalString(
-    formData,
-    "editorialTextEn",
-  );
-  const editorialCredit = optionalString(
-    formData,
-    "editorialCredit",
-  );
-  const editorialStyle = optionalString(
-    formData,
-    "editorialStyle",
-  );
-  const documentSourceUrl = optionalString(
-    formData,
-    "documentSourceUrl",
-  );
-  const documentAuthentic =
-    formData.get("documentAuthentic") === "on";
-
-  if (!title || !artist || !youtubeVideoId) {
-    throw new Error(
-      "Título, artista y un enlace válido de YouTube son obligatorios.",
-    );
-  }
-
-  const last = await prisma.musicRecommendation.findFirst({
-    orderBy: {
-      sortOrder: "desc",
-    },
-    select: {
-      sortOrder: true,
-    },
-  });
-
-  await prisma.musicRecommendation.create({
-    data: {
-      title,
-      artist,
-      youtubeVideoId,
-      editorialHeading,
-      editorialTextEs,
-      editorialTextEn,
-      editorialCredit,
-      editorialStyle,
-      documentSourceUrl,
-      documentAuthentic,
-      active: true,
-      sortOrder: (last?.sortOrder ?? -1) + 1,
-    },
-  });
-
-  refreshMusicPages();
-}
-
 export async function saveMusicRecommendation(
   formData: FormData,
 ): Promise<void> {
@@ -495,12 +409,14 @@ export async function saveMusicRecommendation(
   const id = requiredString(formData, "id");
   const title = requiredString(formData, "title");
   const artist = requiredString(formData, "artist");
-  const youtubeInput = requiredString(
+  const videoUrl = requiredString(
     formData,
-    "youtube",
+    "videoUrl",
   );
-  const youtubeVideoId =
-    youtubeVideoIdFromInput(youtubeInput);
+  const coverUrl = optionalString(
+    formData,
+    "coverUrl",
+  );
 
   const editorialHeading = optionalString(
     formData,
@@ -538,11 +454,43 @@ export async function saveMusicRecommendation(
     );
   }
 
-  if (!title || !artist || !youtubeVideoId) {
+  if (!title || !artist || !videoUrl) {
     throw new Error(
-      "Título, artista y un enlace válido de YouTube son obligatorios.",
+      "Título, artista y la URL del vídeo son obligatorios.",
     );
   }
+
+  try {
+    const parsedVideoUrl = new URL(videoUrl);
+
+    if (
+      parsedVideoUrl.protocol !== "https:" &&
+      parsedVideoUrl.protocol !== "http:"
+    ) {
+      throw new Error();
+    }
+  } catch {
+    throw new Error(
+      "La URL directa del vídeo no es válida.",
+    );
+  }
+
+  const existingRecommendation =
+    await prisma.musicRecommendation.findUnique({
+      where: { id },
+      select: {
+        youtubeVideoId: true,
+      },
+    });
+
+  if (!existingRecommendation) {
+    throw new Error(
+      "No se ha encontrado el tema recomendado.",
+    );
+  }
+
+  const detectedYouTubeId =
+    extractYouTubeVideoId(videoUrl);
 
   await prisma.musicRecommendation.update({
     where: {
@@ -551,7 +499,11 @@ export async function saveMusicRecommendation(
     data: {
       title,
       artist,
-      youtubeVideoId,
+      videoUrl,
+      youtubeVideoId:
+        detectedYouTubeId ??
+        existingRecommendation.youtubeVideoId,
+      coverUrl,
       editorialHeading,
       editorialTextEs,
       editorialTextEn,

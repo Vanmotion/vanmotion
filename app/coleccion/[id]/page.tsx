@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createContactRequest } from "@/actions/contactActions";
-import type { Language } from "@/app/language";
+import {
+  ROUTE_LANGUAGE_HEADER,
+  type Language,
+} from "@/app/language";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
 
 import VehicleGallery from "./VehicleGallery";
+import { localizedVehicleModel, localizedVehicleVersion, localizedVehicleImageAlt } from "../vehicle-display";
 import styles from "./vehicle.module.css";
 
 export const dynamic = "force-dynamic";
@@ -25,26 +30,36 @@ function absoluteUrl(value: string): string {
 
 const fuelLabels: Record<Language, Record<string, string>> = {
   es: {
+    DIESEL: "Diésel",
     Diesel: "Diésel",
     Diésel: "Diésel",
+    GASOLINE: "Gasolina",
     Gasoline: "Gasolina",
     Petrol: "Gasolina",
     Gasolina: "Gasolina",
+    HYBRID: "Híbrido",
+    PLUG_IN_HYBRID: "Híbrido enchufable",
     Hybrid: "Híbrido",
     Híbrido: "Híbrido",
+    ELECTRIC: "Eléctrico",
     Electric: "Eléctrico",
     Eléctrico: "Eléctrico",
     LPG: "GLP",
     GLP: "GLP",
   },
   en: {
+    DIESEL: "Diesel",
     Diesel: "Diesel",
     Diésel: "Diesel",
+    GASOLINE: "Petrol",
     Gasoline: "Petrol",
     Petrol: "Petrol",
     Gasolina: "Petrol",
+    HYBRID: "Hybrid",
+    PLUG_IN_HYBRID: "Plug-in hybrid",
     Hybrid: "Hybrid",
     Híbrido: "Hybrid",
+    ELECTRIC: "Electric",
     Electric: "Electric",
     Eléctrico: "Electric",
     LPG: "LPG",
@@ -54,6 +69,8 @@ const fuelLabels: Record<Language, Record<string, string>> = {
 
 const transmissionLabels: Record<Language, Record<string, string>> = {
   es: {
+    MANUAL: "Manual",
+    AUTOMATIC: "Automática",
     Manual: "Manual",
     Automatic: "Automática",
     Automática: "Automática",
@@ -61,6 +78,8 @@ const transmissionLabels: Record<Language, Record<string, string>> = {
     Semiautomática: "Semiautomática",
   },
   en: {
+    MANUAL: "Manual",
+    AUTOMATIC: "Automatic",
     Manual: "Manual",
     Automatic: "Automatic",
     Automática: "Automatic",
@@ -71,24 +90,50 @@ const transmissionLabels: Record<Language, Record<string, string>> = {
 
 const drivetrainLabels: Record<Language, Record<string, string>> = {
   es: {
+    FRONT: "Delantera",
     FWD: "Delantera",
     Delantera: "Delantera",
+    delantera: "Delantera",
+
+    REAR: "Trasera",
     RWD: "Trasera",
     Trasera: "Trasera",
-    AWD: "Integral AWD",
-    "Integral AWD": "Integral AWD",
+    trasera: "Trasera",
+
+    AWD: "Integral (AWD)",
+    "Integral AWD": "Integral (AWD)",
+    "Tracción total AWD": "Integral (AWD)",
+    "Tracción integral (AWD)": "Integral (AWD)",
+
+    FOUR_WHEEL_DRIVE: "4x4",
     "4WD": "4x4",
     "4x4": "4x4",
+    "4×4": "4x4",
+    "Integral / 4x4": "Integral / 4x4",
+    "ntegral / 4x4": "Integral / 4x4",
   },
   en: {
+    FRONT: "Front-wheel drive",
     FWD: "Front-wheel drive",
     Delantera: "Front-wheel drive",
+    delantera: "Front-wheel drive",
+
+    REAR: "Rear-wheel drive",
     RWD: "Rear-wheel drive",
     Trasera: "Rear-wheel drive",
+    trasera: "Rear-wheel drive",
+
     AWD: "All-wheel drive",
     "Integral AWD": "All-wheel drive",
+    "Tracción total AWD": "All-wheel drive",
+    "Tracción integral (AWD)": "All-wheel drive",
+
+    FOUR_WHEEL_DRIVE: "Four-wheel drive",
     "4WD": "Four-wheel drive",
     "4x4": "Four-wheel drive",
+    "4×4": "Four-wheel drive",
+    "Integral / 4x4": "Four-wheel drive",
+    "ntegral / 4x4": "Four-wheel drive",
   },
 };
 
@@ -245,11 +290,11 @@ const translations = {
     },
     back: "Back to collection",
     success: {
-      title: "Enquiry sent successfully",
+      title: "Inquiry sent successfully",
       description: "VANMOTION will contact you shortly.",
-      deliveryWarningTitle: "Enquiry registered",
+      deliveryWarningTitle: "Inquiry registered",
       deliveryWarningDescription:
-        "Your enquiry is safely stored by VANMOTION, but we could not send the automatic confirmation. You do not need to submit it again.",
+        "Your inquiry is safely stored by VANMOTION, but we could not send the automatic confirmation. You do not need to submit it again.",
     },
     photoSoon: "Photography coming soon",
     selectImage: "Show photograph",
@@ -266,7 +311,7 @@ const translations = {
       drivetrain: "Drivetrain",
       power: "Power",
       engine: "Engine",
-      color: "Colour",
+      color: "Color",
       unspecified: "Not specified",
     },
     contact: {
@@ -281,9 +326,9 @@ const translations = {
       phonePlaceholder: "",
       message: "Message *",
       messagePlaceholder: "I am interested in the",
-      submit: "Send enquiry",
+      submit: "Send inquiry",
       privacy:
-        "VANMOTION will only use your details to reply to this enquiry.",
+        "VANMOTION will only use your details to reply to this inquiry.",
       privacyLink: "Privacy",
     },
     emblem: {
@@ -310,7 +355,7 @@ const translations = {
   },
 } as const;
 
-interface PublicVehiclePageProps {
+export interface PublicVehiclePageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ enviado?: string; error?: string }>;
 }
@@ -320,6 +365,7 @@ function formatPrice(price: unknown, locale: string): string {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
+    useGrouping: true,
   }).format(Number(price));
 }
 
@@ -340,8 +386,9 @@ export async function generateMetadata({
 }: Pick<PublicVehiclePageProps, "params">): Promise<Metadata> {
   const { id } = await params;
 
-  const [language, vehicle] = await Promise.all([
+  const [language, requestHeaders, vehicle] = await Promise.all([
     getCurrentLanguage(),
+    headers(),
     prisma.vehicle.findFirst({
       where: {
         id,
@@ -375,11 +422,19 @@ export async function generateMetadata({
     };
   }
 
-  const locale = language === "es" ? "es-ES" : "en-GB";
-  const vehicleName = [vehicle.brand.name, vehicle.model, vehicle.version]
+  const isEnglishRoute =
+    requestHeaders.get(ROUTE_LANGUAGE_HEADER) === "en";
+  const locale = language === "es" ? "es-ES" : "en-US";
+  const vehicleName = [
+    vehicle.brand.name,
+    localizedVehicleModel(vehicle.model, language),
+    localizedVehicleVersion(vehicle.version, language),
+  ]
     .filter(Boolean)
     .join(" ");
-  const canonicalUrl = `${SITE_URL}/coleccion/${id}`;
+  const spanishUrl = `${SITE_URL}/coleccion/${encodeURIComponent(id)}`;
+  const englishUrl = `${SITE_URL}/en-us/coleccion/${encodeURIComponent(id)}`;
+  const canonicalUrl = isEnglishRoute ? englishUrl : spanishUrl;
   const mileage = `${vehicle.mileage.toLocaleString(locale)} km`;
   const fuel =
     fuelLabels[language][vehicle.fuel] ??
@@ -387,22 +442,24 @@ export async function generateMetadata({
     (language === "es" ? "combustible sin especificar" : "fuel not specified");
   const price = formatPrice(vehicle.price, locale);
 
+  // Un título legible en Google: modelo/año/estado, sin perder el detalle en la descripción.
+  const compactVehicleName = vehicleName.split(" · ")[0].trim();
   const title =
     language === "es"
       ? vehicle.status === "EMBLEM"
-        ? `${vehicleName} ${vehicle.year} · Vehículo emblema`
+        ? `${compactVehicleName} ${vehicle.year} · Emblema`
         : vehicle.status === "RESERVED"
-          ? `${vehicleName} ${vehicle.year} reservado`
+          ? `${compactVehicleName} ${vehicle.year} reservado`
           : vehicle.status === "SOLD"
-            ? `${vehicleName} ${vehicle.year} vendido`
-            : `${vehicleName} ${vehicle.year} de ocasión en Madrid`
+            ? `${compactVehicleName} ${vehicle.year} vendido`
+            : `${compactVehicleName} ${vehicle.year} de ocasión`
       : vehicle.status === "EMBLEM"
-        ? `${vehicleName} ${vehicle.year} · VANMOTION icon`
+        ? `${compactVehicleName} ${vehicle.year} · Icon`
         : vehicle.status === "RESERVED"
-          ? `${vehicleName} ${vehicle.year} reserved`
+          ? `${compactVehicleName} ${vehicle.year} reserved`
           : vehicle.status === "SOLD"
-            ? `${vehicleName} ${vehicle.year} sold`
-            : `${vehicleName} ${vehicle.year} used vehicle in Madrid`;
+            ? `${compactVehicleName} ${vehicle.year} sold`
+            : `${compactVehicleName} ${vehicle.year} used`;
 
   const description =
     language === "es"
@@ -430,6 +487,11 @@ export async function generateMetadata({
     description,
     alternates: {
       canonical: canonicalUrl,
+      languages: {
+        "es-ES": spanishUrl,
+        "en-US": englishUrl,
+        "x-default": spanishUrl,
+      },
     },
     robots: {
       index: true,
@@ -463,14 +525,25 @@ export default async function PublicVehiclePage({
   params,
   searchParams,
 }: PublicVehiclePageProps) {
-  const [{ id }, { enviado, error }, language] = await Promise.all([
+  const [{ id }, { enviado, error }, language, requestHeaders] =
+    await Promise.all([
     params,
     searchParams,
     getCurrentLanguage(),
+    headers(),
   ]);
 
+  const isEnglishRoute =
+    requestHeaders.get(ROUTE_LANGUAGE_HEADER) === "en";
+  const collectionPath = isEnglishRoute
+    ? "/en-us/coleccion"
+    : "/coleccion";
+  const homePath = isEnglishRoute ? "/en-us" : "/";
+  const musicPath = isEnglishRoute
+    ? "/en-us/musica"
+    : "/musica";
   const content = translations[language];
-  const locale = language === "es" ? "es-ES" : "en-GB";
+  const locale = language === "es" ? "es-ES" : "en-US";
 
   const vehicle = await prisma.vehicle.findFirst({
     where: {
@@ -496,7 +569,11 @@ export default async function PublicVehiclePage({
       : vehicle.status === "SOLD"
         ? content.status.sold
         : null;
-  const vehicleName = [vehicle.brand.name, vehicle.model, vehicle.version]
+  const vehicleName = [
+    vehicle.brand.name,
+    localizedVehicleModel(vehicle.model, language),
+    localizedVehicleVersion(vehicle.version, language),
+  ]
     .filter(Boolean)
     .join(" ");
 
@@ -528,7 +605,6 @@ export default async function PublicVehiclePage({
   const vehicleDescription =
     language === "en"
       ? vehicle.descriptionEn ??
-        vehicle.description ??
         content.information.fallback
       : vehicle.description ?? content.information.fallback;
 
@@ -555,7 +631,9 @@ export default async function PublicVehiclePage({
     { label: content.details.color, value: translatedColor },
   ];
 
-  const canonicalUrl = `${SITE_URL}/coleccion/${vehicle.id}`;
+  const spanishUrl = `${SITE_URL}/coleccion/${encodeURIComponent(vehicle.id)}`;
+  const englishUrl = `${SITE_URL}/en-us/coleccion/${encodeURIComponent(vehicle.id)}`;
+  const canonicalUrl = isEnglishRoute ? englishUrl : spanishUrl;
   const vehicleImages = vehicle.images.map((image) => absoluteUrl(image.url));
   const schemaAvailability =
     vehicle.status === "AVAILABLE"
@@ -571,6 +649,7 @@ export default async function PublicVehiclePage({
     url: canonicalUrl,
     image: vehicleImages.length > 0 ? vehicleImages : undefined,
     description: vehicleDescription,
+    inLanguage: language === "es" ? "es-ES" : "en-US",
     sku: vehicle.id,
     brand: {
       "@type": "Brand",
@@ -612,6 +691,7 @@ export default async function PublicVehiclePage({
     name: `${vehicleName} ${vehicle.year}`,
     image: vehicleImages,
     description: vehicleDescription,
+    inLanguage: language === "es" ? "es-ES" : "en-US",
     brand: {
       "@type": "Brand",
       name: vehicle.brand.name,
@@ -640,13 +720,13 @@ export default async function PublicVehiclePage({
         "@type": "ListItem",
         position: 1,
         name: "VANMOTION",
-        item: SITE_URL,
+        item: isEnglishRoute ? `${SITE_URL}/en-us` : SITE_URL,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: language === "es" ? "Colección" : "Collection",
-        item: `${SITE_URL}/coleccion`,
+        item: `${SITE_URL}${collectionPath}`,
       },
       {
         "@type": "ListItem",
@@ -658,12 +738,14 @@ export default async function PublicVehiclePage({
   };
   return (
     <div className={styles.page}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
-        }}
-      />
+      {!isEmblem ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(vehicleStructuredData).replace(/</g, "\\u003c"),
+          }}
+        />
+      ) : null}
 
       {!isEmblem ? (
         <script
@@ -682,7 +764,11 @@ export default async function PublicVehiclePage({
       />
 
       <header className={styles.header}>
-        <Link href="/" className={styles.brand} aria-label="Vanmotion">
+        <Link
+          href={homePath}
+          className={styles.brand}
+          aria-label="Vanmotion"
+        >
           <Image
             src="/brand/vanmotion-mark.webp"
             alt=""
@@ -698,10 +784,10 @@ export default async function PublicVehiclePage({
           className={styles.navigation}
           aria-label={language === "es" ? "Navegación principal" : "Main navigation"}
         >
-          <Link href="/coleccion" aria-current="page">
+          <Link href={collectionPath} aria-current="page">
             {content.navigation.vehicles}
           </Link>
-          <Link href="/musica">{content.navigation.music}</Link>
+          <Link href={musicPath}>{content.navigation.music}</Link>
           <Link href="/ropa">{content.navigation.clothing}</Link>
           <Link
             href="/contacto"
@@ -738,14 +824,14 @@ export default async function PublicVehiclePage({
             </span>
           </div>
 
-          <Link href="/coleccion" className={styles.backLink}>
+          <Link href={collectionPath} className={styles.backLink}>
             ← {content.back}
           </Link>
 
           <div className={styles.heroCopy}>
             <p>{vehicle.brand.name}</p>
-            <h1>{vehicle.model}</h1>
-            {vehicle.version && <span>{vehicle.version}</span>}
+            <h1>{localizedVehicleModel(vehicle.model, language)}</h1>
+            {vehicle.version && <span>{localizedVehicleVersion(vehicle.version, language)}</span>}
           </div>
 
           <div className={styles.heroMeta}>
@@ -790,7 +876,7 @@ export default async function PublicVehiclePage({
               images={vehicle.images.map((image) => ({
                 id: image.id,
                 url: image.url,
-                alt: image.alt,
+                alt: image.alt ? localizedVehicleImageAlt(image.alt, language) : image.alt,
               }))}
               vehicleName={vehicleName}
               emptyLabel={content.photoSoon}
@@ -801,8 +887,8 @@ export default async function PublicVehiclePage({
           <aside className={styles.infoPanel}>
             <div className={styles.infoHeading}>
               <p>{vehicle.brand.name}</p>
-              <h2>{vehicle.model}</h2>
-              {vehicle.version && <span>{vehicle.version}</span>}
+              <h2>{localizedVehicleModel(vehicle.model, language)}</h2>
+              {vehicle.version && <span>{localizedVehicleVersion(vehicle.version, language)}</span>}
             </div>
 
             <div className={styles.priceBlock}>

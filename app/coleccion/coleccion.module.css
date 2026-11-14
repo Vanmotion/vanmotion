@@ -365,7 +365,7 @@
 
 .detailItem p {
   margin: 0;
-  color: rgba(242, 239, 232, 0.36);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 8px;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -636,7 +636,7 @@
 
 .footerBrand span,
 .copyright {
-  color: var(--paper-dim);
+  color: rgba(242, 239, 232, 0.50);
 }
 
 .footerNav {
@@ -648,7 +648,7 @@
 }
 
 .footerNav a {
-  color: var(--paper-dim);
+  color: rgba(242, 239, 232, 0.50);
   font-size: 10px;
   transition: color 180ms ease;
 }
@@ -944,7 +944,7 @@
 
 .heroImage {
   object-fit: cover;
-  object-position: 58% 42%;
+  object-position: 62% center;
   transform: none;
   filter: saturate(0.9) contrast(1.02) brightness(0.9);
 }
@@ -1257,5 +1257,228 @@
     height: 64px;
     min-width: 64px;
     flex-basis: 64px;
+  }
+}
+
+
+/* VANMOTION · GLASS UNIFICADO FINAL */
+.heroNews,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.72) !important;
+  border: 1px solid rgba(242, 239, 232, 0.20) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+.heroNews:hover {
+  background: rgba(6, 6, 6, 0.80) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+
+/* VANMOTION · NEWS GLASS DEFINITIVO V3 */
+.heroNews,
+.heroNews:hover,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.68) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18) !important;
+
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+
+/* VANMOTION · GLASS CROSS-BROWSER V4 */
+.heroNews,
+.heroNews:hover,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.68) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 12px !important;
+
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.18) !important;
+
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+/* Fallback para navegadores sin backdrop-filter */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-within {
+    background: rgba(6, 6, 6, 0.78) !important;
+  }
+}
+
+/* TABLET */
+@media (min-width: 721px) and (max-width: 1024px) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-within {
+    border-radius: 11px !important;
+    -webkit-backdrop-filter: blur(9px) !important;
+    backdrop-filter: blur(9px) !important;
+  }
+}
+
+/* MÓVIL */
+@media (max-width: 720px) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-within {
+    border-radius: 10px !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+}
+
+
+/* VANMOTION · FIREFOX MUSIC TONE FINAL V5 */
+.heroNews,
+.heroNews:hover,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.80) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+
+/* VANMOTION · FIREFOX MUSIC EXACT V6 */
+.heroNews,
+.heroNews:hover,
+.heroNews:focus,
+.heroNews:focus-within {
+  background: rgba(6, 6, 6, 0.80) !important;
+  border: 1px solid rgba(242, 239, 232, 0.20) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
+
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+
+  opacity: 1 !important;
+}
+
+/* VANMOTION · MOBILE VISUAL PARITY FINAL */
+@media (max-width: 1024px) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-visible,
+  .heroNews:focus-within,
+  .heroNews:active {
+    background: rgba(6, 6, 6, 0.58) !important;
+    border: 1px solid rgba(242, 239, 232, 0.20) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* VANMOTION · HERO NEWS INTERACTION FINAL */
+.heroNews {
+  overflow: hidden;
+  transition:
+    border-color 260ms ease,
+    transform 420ms cubic-bezier(.2,.7,.2,1),
+    box-shadow 420ms cubic-bezier(.2,.7,.2,1) !important;
+}
+
+.heroNewsThumb {
+  overflow: hidden;
+}
+
+.heroNewsThumb img {
+  transition: transform 850ms cubic-bezier(.2,.7,.2,1) !important;
+  will-change: transform;
+}
+
+/* Desktop · Safari · Firefox · Chrome */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    border-color: rgba(242, 239, 232, 0.46) !important;
+    transform: translateY(-3px) scale(1.012) !important;
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.30),
+      inset 0 0 0 1px rgba(242, 239, 232, 0.10) !important;
+  }
+
+  .heroNews:hover .heroNewsThumb img {
+    transform: scale(1.065) !important;
+  }
+}
+
+/* iPhone · Android · tablet */
+@media (hover: none), (pointer: coarse) {
+  .heroNews,
+  .heroNews:hover,
+  .heroNews:focus,
+  .heroNews:focus-visible,
+  .heroNews:focus-within {
+    background: rgba(6, 6, 6, 0.58) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .heroNews:active {
+    border-color: rgba(242, 239, 232, 0.46) !important;
+    transform: scale(.988) !important;
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.28),
+      inset 0 0 0 1px rgba(242, 239, 232, 0.10) !important;
+  }
+
+  .heroNews:active .heroNewsThumb img {
+    transform: scale(1.045) !important;
+  }
+}
+
+/* VANMOTION · HERO NEWS ACCENT · VEHÍCULOS */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    border-color: rgba(212, 119, 40, 0.78) !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .heroNews:active {
+    border-color: rgba(212, 119, 40, 0.78) !important;
+  }
+}
+
+/* VANMOTION · SAFARI NEWS ACCENT · VEHÍCULOS */
+@media (hover: hover) and (pointer: fine) {
+  .heroNews:hover {
+    border-color: rgba(212, 119, 40, 0.88) !important;
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, 0.30),
+      inset 0 0 0 1px rgba(212, 119, 40, 0.32) !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .heroNews:active {
+    border-color: rgba(212, 119, 40, 0.88) !important;
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.28),
+      inset 0 0 0 1px rgba(212, 119, 40, 0.32) !important;
   }
 }
