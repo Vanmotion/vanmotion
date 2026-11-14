@@ -1144,10 +1144,15 @@
 
 
 /* VANMOTION FIX CONTRASTE NAVEGADORES */
+/* Enlaces del final siempre visibles */
 .endingLinks,
-.endingNav,
+.endingLinks *,
 .endingBottom,
-.endingSocials a {
+.endingBottom * {
   animation: none !important;
-  opacity: 1;
+  opacity: 1 !important;
+  color: #111111 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  visibility: visible !important;
 }
