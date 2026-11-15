@@ -126,6 +126,8 @@ export default function CommunityForum({ language: initialLanguage }: { language
   };
   const [activeForum, setActiveForum] =
     useState<ForumKey | null>(null);
+  // En móvil, tocar la ficha muestra la cortina; solo ENTRAR abre el foro.
+  const [highlightedForum, setHighlightedForum] = useState<ForumKey | null>(null);
 
   const [showComposer, setShowComposer] =
     useState(false);
@@ -343,6 +345,12 @@ export default function CommunityForum({ language: initialLanguage }: { language
     setLoading(false);
   }
 
+  function openForum(forum: ForumKey) {
+    setActiveForum(forum);
+    setHighlightedForum(null);
+    resetComposer();
+  }
+
   function closePanel() {
     setActiveForum(null);
     resetComposer();
@@ -500,17 +508,22 @@ export default function CommunityForum({ language: initialLanguage }: { language
     <>
       <section className={styles.forums}>
         {forums.map((forum) => (
-          <button
-            type="button"
+          <article
             key={forum.title}
-            className={styles.card}
-            onClick={() => {
-              setActiveForum(
-                forum.title,
-              );
-              resetComposer();
-            }}
+            className={`${styles.card} ${highlightedForum === forum.title ? styles.cardHighlighted : ""}`}
           >
+            <button
+              type="button"
+              className={styles.cardTouchSurface}
+              aria-label={t(`Preview ${categoryLabel(forum.title)}`, `Mostrar efecto de ${categoryLabel(forum.title)}`)}
+              onClick={() => {
+                if (window.matchMedia("(max-width: 800px)").matches) {
+                  setHighlightedForum((current) => current === forum.title ? null : forum.title);
+                } else {
+                  openForum(forum.title);
+                }
+              }}
+            />
             <div
               className={styles.cardImage}
               style={{
@@ -540,11 +553,15 @@ export default function CommunityForum({ language: initialLanguage }: { language
                 <p>{forum.text[language]}</p>
               </div>
 
-              <span className={styles.cardAction}>
+              <button
+                type="button"
+                className={styles.cardAction}
+                onClick={() => openForum(forum.title)}
+              >
                 {t("ENTER", "ENTRAR")}
-              </span>
+              </button>
             </div>
-          </button>
+          </article>
         ))}
       </section>
 
@@ -681,7 +698,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
                       type="button"
                       onClick={sendReply}
                     >
-                      {t("SEND ↗", "ENVIAR ↗")}
+                      {t("SEND", "ENVIAR")}
                     </button>
                   </div>
                 </div>
@@ -889,7 +906,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
                     <h3>
                       {authStep ===
                       "topic"
-                        ? t('SHARE YOUR PROJECT ↗', 'COMPARTE TU PROYECTO ↗')
+                        ? t('SHARE YOUR PROJECT', 'COMPARTE TU PROYECTO')
                         : authStep ===
                             "identity"
                           ? t('JOIN COMMUNITY', 'ÚNETE A LA COMUNIDAD')
@@ -1074,7 +1091,6 @@ export default function CommunityForum({ language: initialLanguage }: { language
                         }}
                       >
                         {t("CONTINUE", "CONTINUAR")}
-                        <span>↗</span>
                       </button>
                     </div>
                   </>
@@ -1150,7 +1166,6 @@ export default function CommunityForum({ language: initialLanguage }: { language
                         {loading
                           ? t('SENDING...', 'ENVIANDO...')
                           : t('SEND CODE', 'ENVIAR CÓDIGO')}
-                        <span>↗</span>
                       </button>
                     </div>
                   </>
@@ -1225,7 +1240,6 @@ export default function CommunityForum({ language: initialLanguage }: { language
                         {loading
                           ? t('VERIFYING...', 'VERIFICANDO...')
                           : t('VERIFY & CONTINUE', 'VERIFICAR Y CONTINUAR')}
-                        <span>↗</span>
                       </button>
                     </div>
                   </>
@@ -1348,7 +1362,6 @@ export default function CommunityForum({ language: initialLanguage }: { language
                         {loading
                           ? t('PUBLISHING...', 'PUBLICANDO...')
                           : t('PUBLISH NEXT', 'PUBLICAR AHORA')}
-                        <span>↗</span>
                       </button>
                     </div>
                   </>

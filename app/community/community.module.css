@@ -1666,3 +1666,147 @@
   .cardAction { font-size: 9px; }
   .cardInfo { gap: 7px; }
 }
+
+
+/* VANMOTION_COMMUNITY_MOBILE_ENTER_ONLY_V4
+   Solo tocar ENTRAR abre una sección en móviles.
+   La zona restante de la ficha muestra cortina y contorno cobre;
+   en escritorio se conserva la apertura al hacer clic en cualquier zona.
+   Los dos botones son hermanos, nunca botones anidados. */
+.cardTouchSurface {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.cardTouchSurface:focus-visible {
+  outline: 2px solid rgba(212, 119, 40, .92);
+  outline-offset: -3px;
+}
+/* El texto no intercepta el toque: ENTRAR sí, con área táctil de 44 px. */
+.cardInfo {
+  z-index: 6;
+  pointer-events: none;
+}
+.cardAction {
+  position: relative;
+  z-index: 7;
+  min-height: 44px;
+  padding: 9px 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #c9a86a;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.cardAction:focus-visible {
+  outline: 1px solid rgba(212, 119, 40, .92);
+  outline-offset: 1px;
+}
+.card:focus-within {
+  border-color: rgba(212, 119, 40, .78);
+}
+
+/* Formulario: misma línea editorial que las tarjetas, sin flechas. */
+.composer .field input,
+.composer .field textarea {
+  border: 1px solid rgba(242, 239, 232, .24);
+  border-radius: 0;
+  background: rgba(6, 6, 6, .48);
+  color: #f3f0ea;
+  padding: 12px 14px;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.composer .field input:focus,
+.composer .field textarea:focus {
+  border-color: rgba(212, 119, 40, .88);
+  background: rgba(12, 12, 12, .82);
+  outline: none;
+}
+.composer .field input::placeholder,
+.composer .field textarea::placeholder {
+  color: rgba(242, 239, 232, .50);
+}
+.composer .imageUploader {
+  border: 1px solid rgba(242, 239, 232, .24);
+  background: rgba(6, 6, 6, .48);
+}
+.composer .imageUploader label {
+  min-height: 44px;
+  align-items: center;
+  border: 1px solid rgba(242, 239, 232, .24);
+  background: rgba(6, 6, 6, .80);
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.composer .imageUploader label:hover,
+.composer .imageUploader label:focus-within {
+  border-color: rgba(212, 119, 40, .88);
+  background: rgba(255, 255, 255, .035);
+}
+.composer .composerFoot button {
+  min-height: 44px;
+  gap: 0;
+  padding: 11px 17px;
+  border: 1px solid rgba(242, 239, 232, .24);
+  background: rgba(6, 6, 6, .80);
+  color: #f3f0ea;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.composer .composerFoot button:hover,
+.composer .composerFoot button:focus-visible {
+  border-color: rgba(212, 119, 40, .88);
+  background: rgba(255, 255, 255, .035);
+}
+.composer .replyComposer button {
+  min-height: 44px;
+  border-color: rgba(242, 239, 232, .24);
+}
+
+@media (max-width: 800px) {
+  /* Contorno visible incluso sin hover; toque no abre el panel. */
+  .card {
+    border: 1px solid rgba(242, 239, 232, .34);
+  }
+  .cardHighlighted {
+    border-color: rgba(212, 119, 40, .92) !important;
+    background: #0b0b0b;
+    box-shadow: inset 0 0 0 1px rgba(212, 119, 40, .18);
+  }
+  .cardHighlighted .reveal {
+    transform: translateX(105%);
+  }
+  .cardHighlighted .cardImage::after {
+    transform: rotate(20deg) translateX(330px);
+    opacity: .7;
+  }
+  .cardInfo { grid-template-columns: minmax(0, 1fr) auto; }
+  .cardAction { font-size: 10px; padding-inline: 6px; }
+  .composer .composerFoot {
+    gap: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cardHighlighted .reveal,
+  .cardHighlighted .cardImage::after,
+  .cardTouchSurface,
+  .cardAction,
+  .composer .field input,
+  .composer .field textarea,
+  .composer .imageUploader label,
+  .composer .composerFoot button { transition: none !important; }
+}
