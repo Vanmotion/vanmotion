@@ -3953,3 +3953,54 @@ button.recommendationMusicMenuToggle {
     backdrop-filter: none !important;
   }
 }
+
+/* VANMOTION_COMMUNITY_PANEL_PRESERVE_V5
+   Los controles completos de radio se ven solo en /community y /en-us/community.
+   No se modifican las pistas, vídeos recomendados ni los demás reproductores. */
+:global([data-music-player-mode="community"]) .player:not(.expanded) {
+  width: min(368px, calc(100vw - 28px)) !important;
+}
+:global([data-music-player-mode="community"]) .player:not(.expanded) .mainRow {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 112px 28px !important;
+  gap: 7px !important;
+  align-items: center !important;
+}
+:global([data-music-player-mode="community"]) .player:not(.expanded) .centerLogo {
+  display: none !important;
+}
+:global([data-music-player-mode="community"]) .player:not(.expanded) .trackButton,
+:global([data-music-player-mode="community"]) .player:not(.expanded) .expandButton {
+  display: inline-flex !important;
+}
+:global([data-music-player-mode="community"]) .player:not(.expanded) .controls {
+  display: flex !important;
+  gap: 5px !important;
+  justify-content: center !important;
+}
+:global([data-music-player-mode="community"]) .player:not(.expanded) .controls button:first-child,
+:global([data-music-player-mode="community"]) .player:not(.expanded) .controls button:last-child {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 27px !important;
+  height: 27px !important;
+}
+:global([data-music-player-mode="community"]) .player:not(.expanded) .controls .playButton {
+  display: inline-flex !important;
+  width: 33px !important;
+  height: 33px !important;
+}
+@media (max-width: 640px) {
+  :global([data-music-player-mode="community"]) .player:not(.expanded) {
+    width: min(330px, calc(100vw - 24px)) !important;
+  }
+  :global([data-music-player-mode="community"]) .player:not(.expanded) .mainRow {
+    grid-template-columns: minmax(0, 1fr) 102px 26px !important;
+    padding: 6px 8px !important;
+    gap: 5px !important;
+  }
+  :global([data-music-player-mode="community"]) .player:not(.expanded) .controls {
+    gap: 2px !important;
+  }
+}

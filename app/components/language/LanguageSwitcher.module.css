@@ -527,3 +527,76 @@
     right: 120px !important;
   }
 }
+
+/* COMMUNITY: selector bilingüe, misma estética que portada, colocado arriba */
+.switcher.communityPage {
+  top: 20px !important;
+  right: 28px !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: none !important;
+}
+@media (max-width: 720px) {
+  .switcher.communityPage {
+    top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+    right: 14px !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}
+
+/* VANMOTION_COMMUNITY_DIRECT_LINKS_V4: apariencia original con enlaces. */
+.switcher.communityPage a {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 22px !important;
+  min-width: 22px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  color: inherit !important;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+.switcher.communityPage a > span {
+  opacity: .58;
+  filter: grayscale(.45) saturate(.7);
+}
+.switcher.communityPage a:hover > span,
+.switcher.communityPage a[aria-current="page"] > span {
+  opacity: 1;
+  filter: none;
+}
+.switcher.communityPage a:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+@media (max-width: 720px) {
+  .switcher.communityPage a { width: 20px !important; min-width: 20px !important; height: 32px !important; }
+}
+
+/* VANMOTION_COMMUNITY_PANEL_PRESERVE_V5: banderas de color en las dos opciones. */
+.switcher.communityPage a > span,
+.switcher.communityPage a:hover > span,
+.switcher.communityPage a[aria-current="page"] > span {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+.switcher.communityPage a {
+  border-bottom: 2px solid transparent !important;
+}
+.switcher.communityPage a[aria-current="page"] {
+  border-bottom-color: #c9a86a !important;
+}
+
+/* VANMOTION COMMUNITY V6 — misma forma, dimensiones y posición que la portada.
+   Solo evita desaturar las banderas en COMMUNITY. */
+.switcher.communityFlags button > span,
+.switcher.communityFlags button:not(.active) > span,
+.switcher.communityFlags button.active > span {
+  filter: none !important;
+  -webkit-filter: none !important;
+  opacity: 1 !important;
+}

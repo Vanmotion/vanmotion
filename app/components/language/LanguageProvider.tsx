@@ -35,7 +35,7 @@ export function LanguageProvider({
     useState<Language>(initialLanguage);
   const syncRequestRef = useRef(0);
   const activeLanguage =
-    pathname === "/"
+    (pathname === "/" || pathname === "/community")
       ? "es"
       : pathname === "/en-us" ||
           pathname.startsWith("/en-us/")
@@ -52,6 +52,7 @@ export function LanguageProvider({
 
     if (
       pathname === "/" ||
+      pathname === "/community" ||
       pathname === "/en-us" ||
       pathname.startsWith("/en-us/")
     ) {

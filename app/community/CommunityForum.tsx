@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import styles from "./community.module.css";
+import { useLanguage } from "@/app/components/language/LanguageProvider";
+import type { Language } from "@/app/language";
 
 type ForumKey =
   | "MUSIC"
@@ -62,44 +64,58 @@ const forums = [
   {
     number: "01",
     title: "MUSIC" as ForumKey,
-    image: "/images/community/music.png",
-    text: "Emerging artists · New releases · Submissions",
+    image: "/images/community/music-optimized.jpg",
+    text: { es: "Artistas emergentes · Estrenos · Propuestas", en: "Emerging artists · New releases · Submissions" },
   },
   {
     number: "02",
     title: "FASHION" as ForumKey,
-    image: "/images/community/fashion.png",
-    text: "Streetwear · Independent fashion creators · Ideas",
+    image: "/images/community/fashion-optimized.jpg",
+    text: { es: "Ropa urbana · Diseñadores independientes · Ideas", en: "Streetwear · Independent fashion creators · Ideas" },
   },
   {
     number: "03",
     title: "AUTOMOTIVE" as ForumKey,
-    image: "/images/community/automotive.png",
-    text: "4x4 · Camper builds · Restorations · Conversions",
+    image: "/images/community/automotive-optimized.jpg",
+    text: { es: "4x4 · Camperizaciones · Restauraciones · Transformaciones", en: "4x4 · Camper builds · Restorations · Conversions" },
   },
 ];
 
 const forumContent = {
   MUSIC: {
-    intro:
-      "A community for emerging artists, musicians and creators. Present your latest tracks, share your projects and introduce your sound to a new audience. A space to discover new talent, promote your creations and connect with other artists.",
+    intro: {
+      es: "Una comunidad para artistas emergentes, músicos y creadores. Presenta tus nuevas canciones, comparte tus proyectos y da a conocer tu sonido. Un espacio para descubrir talento, promocionar tus creaciones y conectar con otros artistas.",
+      en: "A community for emerging artists, musicians and creators. Present your latest tracks, share your projects and introduce your sound to a new audience. A space to discover new talent, promote your creations and connect with other artists.",
+    },
     topics: [],
   },
 
   FASHION: {
-    intro:
-      "A community for independent designers, fashion creators and emerging brands. Showcase your collections, share your designs and reveal the creative process behind every piece. A space to discover new ideas, talent and unique fashion proposals.",
+    intro: {
+      es: "Una comunidad para diseñadores independientes, creadores de moda y marcas emergentes. Muestra tus colecciones, comparte tus diseños y enseña el proceso creativo de cada pieza. Un espacio para descubrir ideas, talento y nuevas propuestas de moda.",
+      en: "A community for independent designers, fashion creators and emerging brands. Showcase your collections, share your designs and reveal the creative process behind every piece. A space to discover new ideas, talent and unique fashion proposals.",
+    },
     topics: [],
   },
 
   AUTOMOTIVE: {
-    intro:
-      "A community for vehicle builders, creators and enthusiasts. Share camper conversions, 4x4 projects, unique builds and custom transformations. A space to showcase ideas, processes and experiences behind every vehicle.",
+    intro: {
+      es: "Una comunidad para creadores, preparadores y aficionados al motor. Comparte camperizaciones, proyectos 4x4, vehículos especiales y transformaciones a medida. Un espacio para mostrar ideas, procesos y experiencias detrás de cada vehículo.",
+      en: "A community for vehicle builders, creators and enthusiasts. Share camper conversions, 4x4 projects, unique builds and custom transformations. A space to showcase ideas, processes and experiences behind every vehicle.",
+    },
     topics: [],
   },
 };
 
-export default function CommunityForum() {
+export default function CommunityForum({ language: initialLanguage }: { language: Language }) {
+  // V6: cambiar ES/EN sin desmontar este componente ni perder panel, texto o fotos.
+  const { language: selectedLanguage } = useLanguage();
+  const language: Language = selectedLanguage || initialLanguage;
+  const t = (en: string, es: string) => language === "es" ? es : en;
+  const categoryLabel = (category: ForumKey) => {
+    if (language !== "es") return category;
+    return category === "MUSIC" ? "MÚSICA" : category === "FASHION" ? "MODA" : "MOTOR";
+  };
   const [activeForum, setActiveForum] =
     useState<ForumKey | null>(null);
 
@@ -281,7 +297,7 @@ export default function CommunityForum() {
       !username.trim()
     ) {
       setError(
-        "Enter your email and community name.",
+        t('Enter your email and community name.', 'Introduce tu correo y tu nombre de usuario.'),
       );
       return;
     }
@@ -308,7 +324,7 @@ export default function CommunityForum() {
       if (!response.ok) {
         setError(
           data.error ||
-            "We could not send the access code.",
+            t('We could not send the access code.', 'No hemos podido enviarte el código de acceso.'),
         );
         return;
       }
@@ -316,7 +332,7 @@ export default function CommunityForum() {
       setAuthStep("code");
     } catch {
       setError(
-        "Connection error. Please try again.",
+        t('Connection error. Please try again.', 'Error de conexión. Inténtalo de nuevo.'),
       );
     } finally {
       setLoading(false);
@@ -328,7 +344,7 @@ export default function CommunityForum() {
 
     if (!/^\d{6}$/.test(code.trim())) {
       setError(
-        "Enter the 6-digit code.",
+        t('Enter the 6-digit code.', 'Introduce el código de seis cifras.'),
       );
       return;
     }
@@ -357,7 +373,7 @@ export default function CommunityForum() {
       if (!response.ok) {
         setError(
           data.error ||
-            "We could not verify the code.",
+            t('We could not verify the code.', 'No hemos podido verificar el código.'),
         );
         return;
       }
@@ -365,7 +381,7 @@ export default function CommunityForum() {
       setAuthStep("authenticated");
     } catch {
       setError(
-        "Connection error. Please try again.",
+        t('Connection error. Please try again.', 'Error de conexión. Inténtalo de nuevo.'),
       );
     } finally {
       setLoading(false);
@@ -392,7 +408,7 @@ export default function CommunityForum() {
                 src={forum.image}
                 alt={forum.title}
                 fill
-                quality={95}
+                quality={75}
                 sizes="33vw"
                 className={styles.forumImage}
               />
@@ -414,10 +430,10 @@ export default function CommunityForum() {
                 className={styles.cardText}
               >
                 <h2>
-                  {forum.title}
+                  {categoryLabel(forum.title)}
                 </h2>
 
-                <p>{forum.text}</p>
+                <p>{forum.text[language]}</p>
               </div>
 
               <span
@@ -463,7 +479,7 @@ export default function CommunityForum() {
                       styles.topicBack
                     }
                   >
-                    ← BACK
+                    {t("← BACK", "← VOLVER")}
                   </button>
 
                   <h2>
@@ -493,7 +509,7 @@ export default function CommunityForum() {
                       styles.topicRepliesTitle
                     }
                   >
-                    REPLIES
+                    {t("REPLIES", "RESPUESTAS")}
                   </div>
 
                   <div
@@ -535,7 +551,7 @@ export default function CommunityForum() {
                           event.target.value,
                         )
                       }
-                      placeholder="Write your opinion..."
+                      placeholder={t('Write your opinion...', 'Escribe tu opinión...')}
                       rows={4}
                     />
 
@@ -543,7 +559,7 @@ export default function CommunityForum() {
                       type="button"
                       onClick={sendReply}
                     >
-                      SEND ↗
+                      {t("SEND ↗", "ENVIAR ↗")}
                     </button>
                   </div>
                 </div>
@@ -562,11 +578,11 @@ export default function CommunityForum() {
                       }
                     >
                       COMMUNITY /{" "}
-                      {activeForum}
+                      {categoryLabel(activeForum)}
                     </span>
 
                     <h3>
-                      {activeForum}
+                      {categoryLabel(activeForum)}
                     </h3>
                   </div>
 
@@ -576,7 +592,7 @@ export default function CommunityForum() {
                     }
                   >
                     <p>
-                      {content.intro}
+                      {content.intro[language]}
                     </p>
 
                     <button
@@ -587,7 +603,7 @@ export default function CommunityForum() {
                       onClick={
                         closePanel
                       }
-                      aria-label="Close"
+                      aria-label={t('Close', 'Cerrar')}
                     >
                       ×
                     </button>
@@ -656,7 +672,7 @@ export default function CommunityForum() {
                         >
                           <span>0</span>
                           <small>
-                            REPLIES
+                            {t("REPLIES", "RESPUESTAS")}
                           </small>
                         </div>
 
@@ -679,7 +695,7 @@ export default function CommunityForum() {
                     }
                   >
                     <span>
-                      RECENT COMMUNITY PROJECTS
+                      {t("RECENT COMMUNITY PROJECTS", "PROYECTOS RECIENTES DE LA COMUNIDAD")}
                     </span>
 
                     {topics
@@ -701,7 +717,7 @@ export default function CommunityForum() {
 
                         <small>
                           {item.author?.username ||
-                            "COMMUNITY USER"}
+                            t('COMMUNITY USER', 'USUARIO DE LA COMUNIDAD')}
                         </small>
 
                         {item.attachments?.map(
@@ -726,7 +742,7 @@ export default function CommunityForum() {
                   }
                 >
                   <span>
-                    OPEN COMMUNITY
+                    {t("OPEN COMMUNITY", "COMUNIDAD ABIERTA")}
                   </span>
 
                   <button
@@ -740,7 +756,7 @@ export default function CommunityForum() {
                       );
                     }}
                   >
-                    SHARE YOUR PROJECT ↗
+                    {t(t('SHARE YOUR PROJECT ↗', 'COMPARTE TU PROYECTO ↗'), "COMPARTE TU PROYECTO ↗")}
                     <span>↗</span>
                   </button>
                 </div>
@@ -763,20 +779,20 @@ export default function CommunityForum() {
                       }
                     >
                       COMMUNITY /{" "}
-                      {activeForum}
+                      {categoryLabel(activeForum)}
                     </span>
 
                     <h3>
                       {authStep ===
                       "topic"
-                        ? "SHARE YOUR PROJECT ↗"
+                        ? t('SHARE YOUR PROJECT ↗', 'COMPARTE TU PROYECTO ↗')
                         : authStep ===
                             "identity"
-                          ? "JOIN COMMUNITY"
+                          ? t('JOIN COMMUNITY', 'ÚNETE A LA COMUNIDAD')
                           : authStep ===
                               "code"
-                            ? "CHECK YOUR EMAIL"
-                            : "WELCOME"}
+                            ? t('CHECK YOUR EMAIL', 'REVISA TU CORREO')
+                            : t('WELCOME', 'BIENVENIDO')}
                     </h3>
                   </div>
 
@@ -798,7 +814,7 @@ export default function CommunityForum() {
                         setError("");
                       }
                     }}
-                    aria-label="Back"
+                    aria-label={t('Back', 'Volver')}
                   >
                     ×
                   </button>
@@ -812,7 +828,7 @@ export default function CommunityForum() {
                         styles.field
                       }
                     >
-                      <span>TITLE</span>
+                      <span>{t("TITLE", "TÍTULO")}</span>
 
                       <input
                         type="text"
@@ -823,7 +839,7 @@ export default function CommunityForum() {
                               .value,
                           )
                         }
-                        placeholder="Give your topic a clear title"
+                        placeholder={t('Give your topic a clear title', 'Pon un título claro a tu tema')}
                         maxLength={120}
                       />
                     </label>
@@ -834,7 +850,7 @@ export default function CommunityForum() {
                       }
                     >
                       <span>
-                        MESSAGE
+                        {t("MESSAGE", "MENSAJE")}
                       </span>
 
                       <textarea
@@ -846,7 +862,7 @@ export default function CommunityForum() {
                               .value,
                           )
                         }
-                        placeholder="Share your idea, project or question"
+                        placeholder={t('Share your idea, project or question', 'Comparte tu idea, proyecto o pregunta')}
                         maxLength={5000}
                       />
                     </label>
@@ -858,7 +874,7 @@ export default function CommunityForum() {
                     >
                       <label>
                         <span>
-                          + ADD IMAGE
+                          {t("+ ADD IMAGE", "+ AÑADIR IMAGEN")}
                         </span>
 
                         <input
@@ -884,7 +900,7 @@ export default function CommunityForum() {
                       {images.length > 0 && (
                         <>
                           <small>
-                            {images.length} / 5 IMAGES READY
+                            {images.length} / 5 {t("IMAGES READY", "IMÁGENES LISTAS")}
                           </small>
 
                           <div
@@ -938,7 +954,7 @@ export default function CommunityForum() {
                               3
                           ) {
                             setError(
-                              "Add a title and message first.",
+                              t('Add a title and message first.', 'Primero añade un título y un mensaje.'),
                             );
                             return;
                           }
@@ -948,7 +964,7 @@ export default function CommunityForum() {
                           );
                         }}
                       >
-                        CONTINUE
+                        {t("CONTINUE", "CONTINUAR")}
                         <span>↗</span>
                       </button>
                     </div>
@@ -987,7 +1003,7 @@ export default function CommunityForum() {
                       }
                     >
                       <span>
-                        COMMUNITY NAME
+                        {t("COMMUNITY NAME", "NOMBRE EN LA COMUNIDAD")}
                       </span>
 
                       <input
@@ -1000,7 +1016,7 @@ export default function CommunityForum() {
                               .value,
                           )
                         }
-                        placeholder="How should we call you?"
+                        placeholder={t('How should we call you?', '¿Cómo quieres que te llamemos?')}
                         maxLength={40}
                       />
                     </label>
@@ -1023,8 +1039,8 @@ export default function CommunityForum() {
                         disabled={loading}
                       >
                         {loading
-                          ? "SENDING..."
-                          : "SEND CODE"}
+                          ? t('SENDING...', 'ENVIANDO...')
+                          : t('SEND CODE', 'ENVIAR CÓDIGO')}
                         <span>↗</span>
                       </button>
                     </div>
@@ -1039,9 +1055,7 @@ export default function CommunityForum() {
                         styles.authMessage
                       }
                     >
-                      We sent a
-                      six-digit access code
-                      to{" "}
+                      {t("We sent a six-digit access code to", "Hemos enviado un código de acceso de seis cifras a")}{" "}
                       <strong>
                         {email}
                       </strong>
@@ -1052,7 +1066,7 @@ export default function CommunityForum() {
                       className={`${styles.field} ${styles.codeField}`}
                     >
                       <span>
-                        ACCESS CODE
+                        {t("ACCESS CODE", "CÓDIGO DE ACCESO")}
                       </span>
 
                       <input
@@ -1089,7 +1103,7 @@ export default function CommunityForum() {
                         }
                         disabled={loading}
                       >
-                        SEND AGAIN
+                        {t("SEND AGAIN", "REENVIAR")}
                       </button>
 
                       <button
@@ -1100,8 +1114,8 @@ export default function CommunityForum() {
                         disabled={loading}
                       >
                         {loading
-                          ? "VERIFYING..."
-                          : "VERIFY & CONTINUE"}
+                          ? t('VERIFYING...', 'VERIFICANDO...')
+                          : t('VERIFY & CONTINUE', 'VERIFICAR Y CONTINUAR')}
                         <span>↗</span>
                       </button>
                     </div>
@@ -1117,18 +1131,15 @@ export default function CommunityForum() {
                       }
                     >
                       <span>
-                        ACCESS CONFIRMED
+                        {t("ACCESS CONFIRMED", "ACCESO CONFIRMADO")}
                       </span>
 
                       <p>
-                        You are now signed
-                        in to VANMOTION
-                        Community.
+                        {t("You are now signed in to VANMOTION Community.", "Has iniciado sesión en la comunidad VANMOTION.")}
                       </p>
 
                       <small>
-                        Your topic is ready
-                        for the next step.
+                        {t("Your topic is ready for the next step.", "Tu publicación está lista para el siguiente paso.")}
                       </small>
                     </div>
 
@@ -1138,7 +1149,7 @@ export default function CommunityForum() {
                       }
                     >
                       <span>
-                        SESSION ACTIVE
+                        {t("SESSION ACTIVE", "SESIÓN ACTIVA")}
                       </span>
 
                       <button
@@ -1172,7 +1183,7 @@ export default function CommunityForum() {
                               if (!uploadResponse.ok) {
                                 throw new Error(
                                   uploadData.error ||
-                                    "Image upload failed",
+                                    t('Image upload failed', 'No se pudo subir la imagen'),
                                 );
                               }
 
@@ -1204,19 +1215,19 @@ export default function CommunityForum() {
                             if (!response.ok) {
                               throw new Error(
                                 data.error ||
-                                  "Could not publish topic",
+                                  t('Could not publish topic', 'No se pudo publicar el tema'),
                               );
                             }
 
                             setError(
-                              "TOPIC PUBLISHED",
+                              t('TOPIC PUBLISHED', 'TEMA PUBLICADO'),
                             );
 
                           } catch (error) {
                             setError(
                               error instanceof Error
                                 ? error.message
-                                : "Could not publish topic",
+                                : t('Could not publish topic', 'No se pudo publicar el tema'),
                             );
                           } finally {
                             setLoading(false);
@@ -1225,8 +1236,8 @@ export default function CommunityForum() {
                         disabled={loading}
                       >
                         {loading
-                          ? "PUBLISHING..."
-                          : "PUBLISH NEXT"}
+                          ? t('PUBLISHING...', 'PUBLICANDO...')
+                          : t('PUBLISH NEXT', 'PUBLICAR AHORA')}
                         <span>↗</span>
                       </button>
                     </div>
