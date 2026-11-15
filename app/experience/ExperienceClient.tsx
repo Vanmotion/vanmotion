@@ -797,6 +797,27 @@ export default function ExperienceClient({
         </section>
       ))}
 
+      <section
+        className={styles.communityTeaser}
+        aria-labelledby="vanmotion-community-title"
+      >
+        <div className={styles.communityTeaserCopy}>
+          <span className={styles.communityTeaserEyebrow}>VANMOTION / COMMUNITY</span>
+          <h2 id="vanmotion-community-title">
+            {language === "es" ? "Conversaciones abiertas." : "Open conversations."}
+          </h2>
+          <p>
+            {language === "es"
+              ? "Música, streetwear y máquinas. Ideas y proyectos para compartir."
+              : "Music, streetwear and machines. Ideas and projects worth sharing."}
+          </p>
+        </div>
+        <Link href={language === "es" ? "/community" : "/en-us/community"} className={styles.communityTeaserLink}>
+          {language === "es" ? "Explorar la comunidad" : "Explore community"}
+          <span aria-hidden="true">↗</span>
+        </Link>
+      </section>
+
       <section className={styles.ending}>
         <div className={styles.endingSmall}>
           VANMOTION · AUTOMOTIVE CULTURE

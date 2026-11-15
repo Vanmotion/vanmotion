@@ -22,8 +22,11 @@ export default function LanguageSwitcher() {
 
   const hidden =
     pathname.startsWith("/admin") ||
-    pathname.startsWith("/login-admin") ||
-    pathname.startsWith("/community");
+    pathname.startsWith("/login-admin");
+  const isCommunityPage =
+    pathname === "/community" ||
+    pathname === "/en-us/community";
+  const isEnglishCommunityPage = pathname === "/en-us/community";
   const isClothingPage =
     pathname.startsWith("/ropa");
   const isSpanishPilotHome =
@@ -57,17 +60,20 @@ export default function LanguageSwitcher() {
     isEnglishPilotHome ||
     isEnglishAwardsPage ||
     isEnglishMusicPage ||
-    isEnglishCollectionPage
+    isEnglishCollectionPage ||
+    isEnglishCommunityPage
       ? "en"
       : isSpanishPilotHome ||
           isSpanishCollectionPage ||
           (isAwardsPage && !isEnglishAwardsPage) ||
-          (isMusicPage && !isEnglishMusicPage)
+          (isMusicPage && !isEnglishMusicPage) ||
+          (isCommunityPage && !isEnglishCommunityPage)
         ? "es"
         : currentLanguage;
 
   const isAwardsHome =
     isPilotHome ||
+    isCommunityPage ||
     pathname.startsWith("/experience");
 
   if (hidden) {
@@ -86,6 +92,26 @@ export default function LanguageSwitcher() {
       language === selectedLanguage ||
       isPending
     ) {
+      return;
+    }
+
+    if (isCommunityPage) {
+      // V6: sin router.push ni recarga. Conserva exactamente el panel abierto.
+      setLanguage(language);
+      window.history.replaceState(
+        null,
+        "",
+        language === "es" ? "/community" : "/en-us/community",
+      );
+      // Persistencia aislada, sin una Server Action que vuelva a renderizar la página.
+      void fetch("/api/community/language", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language }),
+        credentials: "same-origin",
+      }).catch((error: unknown) => {
+        console.error("VANMOTION_COMMUNITY_LANGUAGE_SAVE_ERROR", error);
+      });
       return;
     }
 
@@ -168,7 +194,7 @@ export default function LanguageSwitcher() {
         isAwardsHome
           ? styles.awardsHome
           : ""
-      }`}
+      } ${isCommunityPage ? styles.communityFlags : ""}`}
       aria-label={selectorLabel}
       role="group"
       aria-busy={isPending}

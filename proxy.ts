@@ -129,6 +129,7 @@ function continueWithRouteLanguage(
     pathname === "/" ||
     pathname === "/coleccion" ||
     pathname.startsWith("/coleccion/") ||
+    pathname === "/community" ||
     pathname === "/musica" ||
     pathname.startsWith("/musica/") ||
     pathname === "/reconocimientos"

@@ -1225,3 +1225,191 @@
   border-color: #ff7a00;
   color: #ff7a00;
 }
+
+
+/* ==============================================================
+   VANMOTION COMMUNITY V6 — estabilidad visual por dispositivo.
+   Solo afecta a este foro; no modifica la portada, música ni ropa.
+   ============================================================== */
+@media (min-width: 801px) {
+  .forumPanel {
+    bottom: 90px; /* despeja los controles del reproductor */
+    max-height: min(66dvh, 650px);
+    overscroll-behavior: contain;
+  }
+}
+@media (min-width: 801px) and (max-width: 1180px) {
+  .page { padding-inline: 24px; }
+  .top { grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); gap: 18px; }
+  .forums { padding-inline: 0; gap: 12px; }
+  .cardInfo { padding-inline: 8px; grid-template-columns: 17px minmax(0, 1fr) 15px; gap: 5px; }
+  .card h2 { font-size: clamp(17px, 2vw, 24px); }
+  .card p { white-space: normal; overflow-wrap: anywhere; }
+  .forumPanel { left: 24px; right: 24px; }
+}
+@media (max-width: 800px) {
+  .page { height: auto; min-height: 100dvh; padding: 20px 16px 92px; overflow-x: clip; }
+  .top { min-height: 0; display: flex; flex-direction: column; gap: 18px; padding-top: 48px; }
+  .identity { align-self: stretch; }
+  .identity h1 { font-size: clamp(48px, 13vw, 82px); overflow-wrap: anywhere; }
+  .identity > span { margin-top: 16px; }
+  .collage { min-height: clamp(240px, 58vw, 450px); flex: 0 0 auto; }
+  .forums { margin-top: 20px; grid-template-columns: 1fr; padding: 0; gap: 12px; }
+  .card { min-height: 136px; }
+  .card p { overflow: hidden; text-overflow: ellipsis; }
+  .footer { gap: 18px; flex-wrap: wrap; line-height: 1.5; }
+  .forumPanel {
+    left: 12px; right: 12px; bottom: calc(79px + env(safe-area-inset-bottom, 0px));
+    max-height: min(72dvh, calc(100dvh - 115px));
+    padding: 20px 16px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .forumPanelHead { grid-template-columns: 1fr; gap: 14px; }
+  .forumPanelHead h3 { font-size: clamp(32px, 8vw, 54px); overflow-wrap: anywhere; }
+  .forumPanelHead p { font-size: 12px; }
+  .topic { gap: 9px; }
+  .topicMain strong, .topicMain span { overflow-wrap: anywhere; }
+  .composerFoot { flex-wrap: wrap; gap: 10px; }
+}
+@media (max-width: 410px) {
+  .page { padding-inline: 12px; }
+  .identity h1 { font-size: clamp(42px, 12.2vw, 54px); }
+  .collage { min-height: 230px; }
+  .card { grid-template-columns: 31% 69%; }
+  .cardInfo { grid-template-columns: 16px minmax(0, 1fr) 18px; gap: 5px; padding-inline: 9px; }
+  .card h2 { font-size: 19px; }
+  .card p { white-space: normal; font-size: 7px; }
+  .forumPanel { left: 8px; right: 8px; padding: 15px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page .photo, .page .photo .image, .page .card,
+  .page .reveal, .page .cardArrow { transition: none !important; }
+}
+
+
+/* VANMOTION_COMMUNITY_BRAND_V1
+   Marca consistente con la cabecera principal: siempre visible durante el scroll
+   y al abrir conversaciones, sin interferir con el selector ES/EN. */
+.communityBrand {
+  position: fixed;
+  z-index: 100;
+  top: calc(25px + env(safe-area-inset-top, 0px));
+  left: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 28px;
+  padding: 4px 0;
+  background: transparent;
+  border: 0;
+  color: #f3f0ea;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  opacity: .94;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity .24s ease;
+}
+.communityBrand:hover { opacity: 1; }
+.communityBrand:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 5px;
+}
+.communityBrandWordmark {
+  display: inline-block;
+  animation: vmCommunityBrandDrift 6.8s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes vmCommunityBrandDrift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -2.5px, 0); }
+}
+@media (max-width: 1024px) {
+  .communityBrand { left: 24px; top: calc(22px + env(safe-area-inset-top, 0px)); }
+}
+@media (max-width: 800px) {
+  .communityBrand {
+    left: 16px;
+    top: calc(14px + env(safe-area-inset-top, 0px));
+    min-height: 30px;
+    font-size: 11px;
+  }
+}
+@media (max-width: 400px) {
+  .communityBrand { left: 12px; letter-spacing: .1em; font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .communityBrandWordmark { animation: none !important; will-change: auto; }
+}
+
+
+/* VANMOTION_COMMUNITY_REAL_LOGO_V2
+   Logo oficial de VANMOTION + wordmark con microanimacion.
+   Solo modifica la cabecera de COMMUNITY; evita cambios globales. */
+.communityBrand {
+  gap: 9px;
+  min-height: 38px;
+  max-width: calc(100vw - 155px);
+  white-space: nowrap;
+  opacity: 1;
+  z-index: 110;
+}
+.communityBrandEmblem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 57px;
+  height: 25px;
+  flex: 0 0 57px;
+  overflow: visible;
+}
+.communityBrandIcon {
+  display: block;
+  width: 57px;
+  height: auto;
+  max-height: 25px;
+  object-fit: contain;
+  animation: vanmotionLogoDrive 5s ease-in-out infinite;
+  transform-origin: 50% 65%;
+}
+.communityBrandWordmark {
+  color: #f3f0ea;
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+/* VANMOTION_COMMUNITY_LOGO_ANIMACION_ORIGINAL_V3
+   Exactamente la misma secuencia de Vehículos, Música y Ropa. */
+@keyframes vanmotionLogoDrive {
+  0%, 72%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  78% {
+    transform: translateX(3px) rotate(-1deg);
+  }
+  84% {
+    transform: translateX(11px) rotate(1.5deg) scale(1.04);
+  }
+  90% {
+    transform: translateX(0) rotate(0deg);
+  }
+}
+@media (max-width: 800px) {
+  .communityBrand { gap: 6px; max-width: calc(100vw - 112px); }
+  .communityBrandEmblem { width: 47px; height: 22px; flex-basis: 47px; }
+  .communityBrandIcon { width: 47px; max-height: 22px; }
+  .communityBrandWordmark { font-size: 10px; letter-spacing: .09em; }
+}
+@media (max-width: 360px) {
+  .communityBrandEmblem { width: 40px; flex-basis: 40px; }
+  .communityBrandIcon { width: 40px; }
+  .communityBrandWordmark { font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .communityBrandIcon,
+  .communityBrandWordmark { animation: none !important; transform: none !important; }
+}
