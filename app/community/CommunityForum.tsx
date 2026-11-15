@@ -73,22 +73,19 @@ type TranslationResult = {
 
 const forums = [
   {
-    number: "01",
     title: "MUSIC" as ForumKey,
     image: "/images/community/music-optimized.jpg",
     text: { es: "Artistas emergentes · Estrenos · Propuestas", en: "Emerging artists · New releases · Submissions" },
   },
   {
-    number: "02",
     title: "FASHION" as ForumKey,
     image: "/images/community/fashion-optimized.jpg",
     text: { es: "Ropa urbana · Diseñadores independientes · Ideas", en: "Streetwear · Independent fashion creators · Ideas" },
   },
   {
-    number: "03",
     title: "AUTOMOTIVE" as ForumKey,
     image: "/images/community/automotive-optimized.jpg",
-    text: { es: "4x4 · Camperizaciones · Restauraciones · Transformaciones", en: "4x4 · Camper builds · Restorations · Conversions" },
+    text: { es: "4x4 · Camperizaciones · Restauraciones", en: "4x4 · Camper builds · Restorations" },
   },
 ];
 
@@ -162,6 +159,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
 
   const [topics, setTopics] =
     useState<CommunityTopic[]>([]);
+  const [topicsLoaded, setTopicsLoaded] = useState(false);
 
   const [selectedTopic, setSelectedTopic] =
     useState<CommunityTopic | null>(null);
@@ -277,9 +275,9 @@ export default function CommunityForum({ language: initialLanguage }: { language
         const data =
           await response.json();
 
-        setTopics(
-          data.topics || [],
-        );
+        if (!response.ok) throw new Error("No se pudieron cargar los temas");
+        setTopics(data.topics || []);
+        setTopicsLoaded(true);
       } catch (error) {
         console.error(
           "COMMUNITY_LOAD_TOPICS_ERROR",
@@ -531,11 +529,6 @@ export default function CommunityForum({ language: initialLanguage }: { language
             </div>
 
             <div className={styles.cardInfo}>
-              <span
-                className={styles.number}
-              >
-                {forum.number}
-              </span>
 
               <div
                 className={styles.cardText}
@@ -547,12 +540,8 @@ export default function CommunityForum({ language: initialLanguage }: { language
                 <p>{forum.text[language]}</p>
               </div>
 
-              <span
-                className={
-                  styles.cardArrow
-                }
-              >
-                ↗
+              <span className={styles.cardAction}>
+                {t("ENTER", "ENTRAR")}
               </span>
             </div>
           </button>
@@ -710,8 +699,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
                         styles.forumPanelLabel
                       }
                     >
-                      COMMUNITY /{" "}
-                      {categoryLabel(activeForum)}
+                      VANMOTION COMMUNITY
                     </span>
 
                     <h3>
@@ -749,7 +737,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
                   }
                 >
                   {[...realTopics, ...content.topics].map(
-                    (topic, index) => (
+                    (topic) => (
                       <button
                         type="button"
                         className={
@@ -770,18 +758,6 @@ export default function CommunityForum({ language: initialLanguage }: { language
                           }
                         }}
                       >
-                        <span
-                          className={
-                            styles.topicNumber
-                          }
-                        >
-                          {String(
-                            index + 1,
-                          ).padStart(
-                            2,
-                            "0",
-                          )}
-                        </span>
 
                         <div
                           className={
@@ -793,35 +769,27 @@ export default function CommunityForum({ language: initialLanguage }: { language
                           </strong>
 
                           <span>
-                            COMMUNITY ·{" "}
-                             {displayPart(topic.body, "topic-body", topic.id)}
+                            {displayPart(topic.body, "topic-body", topic.id)}
                           </span>
                         </div>
 
-                        <div
-                          className={
-                            styles.topicReplies
-                          }
-                        >
-                          <span>0</span>
-                          <small>
-                            {t("REPLIES", "RESPUESTAS")}
-                          </small>
-                        </div>
 
-                        <span
-                          className={
-                            styles.topicArrow
-                          }
-                        >
-                          ↗
-                        </span>
+
                       </button>
                     ),
                   )}
                 </div>
 
-                {topics.length > 0 && (
+                {topicsLoaded && realTopics.length === 0 && (
+                  <p className={styles.emptyForum}>
+                    {t(
+                      "No projects published yet. Be the first to share yours.",
+                      "Aún no hay proyectos publicados. Sé el primero en compartir el tuyo.",
+                    )}
+                  </p>
+                )}
+
+                {realTopics.length > 0 && (
                   <div
                     className={
                       styles.communityPosts
@@ -883,10 +851,6 @@ export default function CommunityForum({ language: initialLanguage }: { language
                     styles.forumPanelFoot
                   }
                 >
-                  <span>
-                    {t("OPEN COMMUNITY", "COMUNIDAD ABIERTA")}
-                  </span>
-
                   <button
                     type="button"
                     onClick={() => {
@@ -898,8 +862,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
                       );
                     }}
                   >
-                    {t(t('SHARE YOUR PROJECT ↗', 'COMPARTE TU PROYECTO ↗'), "COMPARTE TU PROYECTO ↗")}
-                    <span>↗</span>
+                    {t("PUBLISH PROJECT", "PUBLICAR PROYECTO")}
                   </button>
                 </div>
               </>
@@ -920,8 +883,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
                         styles.forumPanelLabel
                       }
                     >
-                      COMMUNITY /{" "}
-                      {categoryLabel(activeForum)}
+                      VANMOTION COMMUNITY
                     </span>
 
                     <h3>
