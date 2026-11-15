@@ -1413,3 +1413,13 @@
   .communityBrandIcon,
   .communityBrandWordmark { animation: none !important; transform: none !important; }
 }
+
+/* VANMOTION_SAFARI_CARD_BACKGROUNDS */
+.cardImage {
+  align-self: stretch;
+  min-height: 120px;
+  background-color: #111;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

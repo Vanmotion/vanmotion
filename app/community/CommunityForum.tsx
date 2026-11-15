@@ -403,15 +403,16 @@ export default function CommunityForum({ language: initialLanguage }: { language
               resetComposer();
             }}
           >
-            <div className={styles.cardImage}>
-              <Image
-                src={forum.image}
-                alt={forum.title}
-                fill
-                quality={75}
-                sizes="33vw"
-                className={styles.forumImage}
-              />
+            <div
+              className={styles.cardImage}
+              style={{
+                backgroundImage: `url("${forum.image}")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            >
+
 
               <div
                 className={styles.reveal}
