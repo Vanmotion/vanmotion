@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import styles from "./community.module.css";
 import { useLanguage } from "@/app/components/language/LanguageProvider";
@@ -40,6 +40,7 @@ type CommunityTopic = {
   category: ForumKey;
   title: string;
   body: string;
+  allowAutoTranslation: boolean;
   status:
     | "OPEN"
     | "LOCKED"
@@ -55,9 +56,19 @@ type CommunityReply = {
   id: string;
   body: string;
   topicId: string;
+  allowAutoTranslation: boolean;
   author: CommunityAuthor;
   createdAt: string;
   updatedAt: string;
+};
+
+type TranslationKind = "topic-title" | "topic-body" | "reply-body";
+type TranslationPart = { kind: TranslationKind; id: string; source: string };
+type TranslationResult = {
+  kind: TranslationKind;
+  id: string;
+  text: string;
+  sourceLanguage: string | null;
 };
 
 const forums = [
@@ -157,9 +168,104 @@ export default function CommunityForum({ language: initialLanguage }: { language
 
   const [replyText, setReplyText] =
     useState("");
+  const [allowTopicTranslation, setAllowTopicTranslation] = useState(false);
+  const [allowReplyTranslation, setAllowReplyTranslation] = useState(false);
 
   const [replies, setReplies] =
     useState<CommunityReply[]>([]);
+
+  // Se conserva siempre el original. La cache de servidor está en PostgreSQL.
+  const [translatedParts, setTranslatedParts] = useState<Record<string, TranslationResult>>({});
+  const [showOriginal, setShowOriginal] = useState<Record<string, boolean>>({});
+  const requestedTranslations = useRef(new Set<string>());
+
+  const partKey = (kind: TranslationKind, id: string) => `${language}:${kind}:${id}`;
+  const originalKey = (kind: "topic" | "reply", id: string) => `${kind}:${id}`;
+  const displayPart = (source: string, kind: TranslationKind, id: string) => {
+    const original = originalKey(kind === "reply-body" ? "reply" : "topic", id);
+    return showOriginal[original] ? source : translatedParts[partKey(kind, id)]?.text ?? source;
+  };
+  const isTranslated = (source: string, kind: TranslationKind, id: string) => {
+    const result = translatedParts[partKey(kind, id)];
+    return Boolean(result && result.text !== source && result.sourceLanguage?.toLowerCase() !== language);
+  };
+  const toggleOriginal = (kind: "topic" | "reply", id: string) => {
+    const key = originalKey(kind, id);
+    setShowOriginal((previous) => ({ ...previous, [key]: !previous[key] }));
+  };
+
+  useEffect(() => {
+    if (!activeForum) return;
+
+    const parts: TranslationPart[] = [];
+    for (const topic of topics) {
+      if (topic.category !== activeForum || !topic.allowAutoTranslation) continue;
+      parts.push({ kind: "topic-title", id: topic.id, source: topic.title });
+      parts.push({ kind: "topic-body", id: topic.id, source: topic.body });
+    }
+    if (selectedTopic && selectedTopic.category === activeForum) {
+      for (const reply of replies) {
+        if (!reply.allowAutoTranslation) continue;
+        parts.push({ kind: "reply-body", id: reply.id, source: reply.body });
+      }
+    }
+
+    const pending = parts.filter((part) => {
+      const key = `${language}:${part.kind}:${part.id}`;
+      if (requestedTranslations.current.has(key)) return false;
+      requestedTranslations.current.add(key);
+      return true;
+    });
+    if (!pending.length) return;
+
+    // Lotes reducidos para mantener tiempos de respuesta y controlar consumo.
+    const batches: TranslationPart[][] = [];
+    let batch: TranslationPart[] = [];
+    let length = 0;
+    for (const part of pending) {
+      if (batch.length >= 5 || (batch.length && length + part.source.length > 9500)) {
+        batches.push(batch);
+        batch = [];
+        length = 0;
+      }
+      batch.push(part);
+      length += part.source.length;
+    }
+    if (batch.length) batches.push(batch);
+
+    async function translate() {
+      for (const group of batches) {
+        try {
+          const response = await fetch("/api/community/translations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              target: language,
+              entries: group.map(({ kind, id }) => ({ kind, id })),
+            }),
+          });
+          if (!response.ok) throw new Error(`Traducción no disponible (${response.status})`);
+          const data: { translations?: TranslationResult[] } = await response.json();
+          if (Array.isArray(data.translations)) {
+            setTranslatedParts((previous) => {
+              const next = { ...previous };
+              for (const item of data.translations || []) {
+                next[`${language}:${item.kind}:${item.id}`] = item;
+              }
+              return next;
+            });
+          }
+        } catch {
+          // Si MyMemory falla o se agota la cuota, se mantiene el texto original.
+          for (const item of group) {
+            requestedTranslations.current.delete(`${language}:${item.kind}:${item.id}`);
+          }
+          break;
+        }
+      }
+    }
+    void translate();
+  }, [activeForum, language, replies, selectedTopic, topics]);
 
   useEffect(() => {
     async function loadTopics() {
@@ -231,6 +337,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
     setTitle("");
     setMessage("");
     setImages([]);
+    setAllowTopicTranslation(false);
     setEmail("");
     setUsername("");
     setCode("");
@@ -245,6 +352,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
   }
 
   function closeTopic() {
+    setAllowReplyTranslation(false);
     setSelectedTopic(null);
   }
 
@@ -265,6 +373,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
           body: JSON.stringify({
             body: replyText,
             topicId: selectedTopic.id,
+            allowAutoTranslation: allowReplyTranslation,
           }),
         },
       );
@@ -279,6 +388,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
         ]);
 
         setReplyText("");
+        setAllowReplyTranslation(false);
       }
 
     } catch (error) {
@@ -483,13 +593,22 @@ export default function CommunityForum({ language: initialLanguage }: { language
                     {t("← BACK", "← VOLVER")}
                   </button>
 
-                  <h2>
-                    {selectedTopic.title}
-                  </h2>
+                   <h2>
+                     {displayPart(selectedTopic.title, "topic-title", selectedTopic.id)}
+                   </h2>
 
-                  <p>
-                    {selectedTopic.body}
-                  </p>
+                   <p>
+                     {displayPart(selectedTopic.body, "topic-body", selectedTopic.id)}
+                   </p>
+                   {(isTranslated(selectedTopic.title, "topic-title", selectedTopic.id) ||
+                     isTranslated(selectedTopic.body, "topic-body", selectedTopic.id)) && (
+                     <button type="button" className={styles.translationToggle}
+                       onClick={() => toggleOriginal("topic", selectedTopic.id)}>
+                       {showOriginal[originalKey("topic", selectedTopic.id)]
+                         ? t("View translation", "Ver traducción")
+                         : t("Automatically translated · View original", "Traducido automáticamente · Ver original")}
+                     </button>
+                   )}
 
                   {selectedTopic.attachments?.map(
                     (image: CommunityAttachment) => (
@@ -532,9 +651,17 @@ export default function CommunityForum({ language: initialLanguage }: { language
                             {reply.author?.username}
                           </strong>
 
-                          <p>
-                            {reply.body}
-                          </p>
+                           <p>
+                             {displayPart(reply.body, "reply-body", reply.id)}
+                           </p>
+                           {isTranslated(reply.body, "reply-body", reply.id) && (
+                             <button type="button" className={styles.translationToggle}
+                               onClick={() => toggleOriginal("reply", reply.id)}>
+                               {showOriginal[originalKey("reply", reply.id)]
+                                 ? t("View translation", "Ver traducción")
+                                 : t("Automatically translated · View original", "Traducido automáticamente · Ver original")}
+                             </button>
+                           )}
                         </article>
                       ),
                     )}
@@ -556,6 +683,11 @@ export default function CommunityForum({ language: initialLanguage }: { language
                       rows={4}
                     />
 
+                    <label style={{ display: "flex", gap: 9, alignItems: "flex-start", fontSize: 12, lineHeight: 1.5, cursor: "pointer" }}>
+                      <input type="checkbox" checked={allowReplyTranslation}
+                        onChange={(event) => setAllowReplyTranslation(event.target.checked)} />
+                      <span>{t("Allow translation of this reply using MyMemory (external service that may retain and share the text).", "Permito traducir esta respuesta mediante MyMemory (servicio externo que puede conservar y compartir el texto).")}</span>
+                    </label>
                     <button
                       type="button"
                       onClick={sendReply}
@@ -657,12 +789,12 @@ export default function CommunityForum({ language: initialLanguage }: { language
                           }
                         >
                           <strong>
-                            {topic.title}
+                             {displayPart(topic.title, "topic-title", topic.id)}
                           </strong>
 
                           <span>
                             COMMUNITY ·{" "}
-                            {topic.body}
+                             {displayPart(topic.body, "topic-body", topic.id)}
                           </span>
                         </div>
 
@@ -708,18 +840,27 @@ export default function CommunityForum({ language: initialLanguage }: { language
                       <article
                         key={item.id}
                       >
-                        <strong>
-                          {item.title}
-                        </strong>
+                         <strong>
+                           {displayPart(item.title, "topic-title", item.id)}
+                         </strong>
 
-                        <p>
-                          {item.body}
-                        </p>
+                         <p>
+                           {displayPart(item.body, "topic-body", item.id)}
+                         </p>
 
-                        <small>
-                          {item.author?.username ||
-                            t('COMMUNITY USER', 'USUARIO DE LA COMUNIDAD')}
-                        </small>
+                         <small>
+                           {item.author?.username ||
+                             t('COMMUNITY USER', 'USUARIO DE LA COMUNIDAD')}
+                         </small>
+                         {(isTranslated(item.title, "topic-title", item.id) ||
+                           isTranslated(item.body, "topic-body", item.id)) && (
+                           <button type="button" className={styles.translationToggle}
+                             onClick={() => toggleOriginal("topic", item.id)}>
+                             {showOriginal[originalKey("topic", item.id)]
+                               ? t("View translation", "Ver traducción")
+                               : t("Automatically translated · View original", "Traducido automáticamente · Ver original")}
+                           </button>
+                         )}
 
                         {item.attachments?.map(
                           (image: CommunityAttachment) => (
@@ -868,6 +1009,11 @@ export default function CommunityForum({ language: initialLanguage }: { language
                       />
                     </label>
 
+                    <label style={{ display: "flex", gap: 9, alignItems: "flex-start", fontSize: 12, lineHeight: 1.5, cursor: "pointer" }}>
+                      <input type="checkbox" checked={allowTopicTranslation}
+                        onChange={(event) => setAllowTopicTranslation(event.target.checked)} />
+                      <span>{t("Allow translation of this post with MyMemory (external service that may retain and share the text).", "Permito traducir esta publicación con MyMemory (servicio externo que puede conservar y compartir el texto).")}</span>
+                    </label>
                     <div
                       className={
                         styles.imageUploader
@@ -1206,6 +1352,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
                                   title,
                                   message,
                                   attachments: uploadedImages,
+                                  allowAutoTranslation: allowTopicTranslation,
                                 }),
                               },
                             );

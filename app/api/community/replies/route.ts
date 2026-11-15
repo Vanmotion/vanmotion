@@ -15,6 +15,7 @@ const replySelect = {
   id: true,
   body: true,
   topicId: true,
+  allowAutoTranslation: true,
   createdAt: true,
   updatedAt: true,
   author: {
@@ -237,6 +238,7 @@ export async function POST(
           data: {
             body,
             topicId,
+            allowAutoTranslation: data.allowAutoTranslation === true,
             authorId: user.id,
           },
           select: replySelect,

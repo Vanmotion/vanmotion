@@ -1423,3 +1423,23 @@
   background-position: center;
   background-repeat: no-repeat;
 }
+
+/* VANMOTION COMMUNITY — Traducido automáticamente, sin tocar el diseño Safari */
+.translationToggle {
+  display: inline-flex;
+  align-self: flex-start;
+  width: fit-content;
+  margin: 6px 0;
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: #c9a86a;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .025em;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+}
+.translationToggle:hover { text-decoration: underline; }
+.translationToggle:focus-visible { outline: 1px solid #c9a86a; outline-offset: 4px; }

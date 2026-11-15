@@ -492,6 +492,7 @@ model CommunityTopic {
 
   title String
   body  String
+  allowAutoTranslation Boolean @default(false)
 
   status CommunityTopicStatus @default(OPEN)
 
@@ -527,6 +528,7 @@ model CommunityReply {
   id String @id @default(cuid())
 
   body String
+  allowAutoTranslation Boolean @default(false)
 
   topicId String
   topic   CommunityTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
@@ -569,4 +571,27 @@ model CommunitySession {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+// Traducciones guardadas sin alterar el texto original del usuario.
+model CommunityTranslation {
+  id              String   @id @default(cuid())
+  resourceType    String
+  resourceId      String
+  targetLanguage  String
+  sourceHash      String
+  translatedText  String   @db.Text
+  detectedLanguage String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([resourceType, resourceId, targetLanguage])
+  @@index([updatedAt])
+}
+
+// Reserva atomica diaria para limitar el gasto de traducciones de COMMUNITY.
+model CommunityTranslationBudget {
+  day            String   @id
+  usedCharacters Int      @default(0)
+  updatedAt      DateTime @updatedAt
 }

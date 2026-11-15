@@ -26,7 +26,7 @@ const translations = {
       title: "Política de privacidad",
       subtitle:
         "Información clara sobre el uso y la protección de los datos personales en VANMOTION.",
-      updated: "Última actualización: 5 de agosto de 2026",
+      updated: "Última actualización: 15 de noviembre de 2026",
       legalFramework: "RGPD · LOPDGDD",
     },
     summary: {
@@ -39,6 +39,10 @@ const translations = {
       legalValue: "Disponible en el aviso legal",
     },
     sections: [
+      {
+        title: "Traducción en COMMUNITY",
+        text: "Solo si el autor lo autoriza al publicar, el título o texto público puede enviarse a MyMemory para traducirse. MyMemory es un servicio externo que puede conservar los segmentos de texto a largo plazo y compartirlos con colaboradores. Las publicaciones anteriores no se envían automáticamente. La autorización es opcional y publicar sin traducción sigue siendo posible.",
+      },
       {
         title: "Datos que tratamos",
         text:
@@ -101,7 +105,7 @@ const translations = {
       title: "Privacy policy",
       subtitle:
         "Clear information about the use and protection of personal data at VANMOTION.",
-      updated: "Last updated: 5 August 2026",
+      updated: "Last updated: 15 November 2026",
       legalFramework: "GDPR · Spanish data protection law",
     },
     summary: {
@@ -114,6 +118,10 @@ const translations = {
       legalValue: "Available in the legal notice",
     },
     sections: [
+      {
+        title: "COMMUNITY translations",
+        text: "Only when the author opts in while posting may the public title or text be sent to MyMemory for translation. MyMemory is an external service that may retain text segments long-term and share them with partners. Existing posts are not automatically transmitted. Opt-in is optional and publishing without translation remains available.",
+      },
       {
         title: "Data we process",
         text:
