@@ -570,3 +570,19 @@ model CommunitySession {
   @@index([userId])
   @@index([expiresAt])
 }
+
+// Traducciones guardadas sin alterar el texto original del usuario.
+model CommunityTranslation {
+  id              String   @id @default(cuid())
+  resourceType    String
+  resourceId      String
+  targetLanguage  String
+  sourceHash      String
+  translatedText  String   @db.Text
+  detectedLanguage String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([resourceType, resourceId, targetLanguage])
+  @@index([updatedAt])
+}
