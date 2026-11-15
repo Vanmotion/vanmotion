@@ -29,6 +29,16 @@ const staticPages: MetadataRoute.Sitemap = [
     priority: 0.9,
   },
   {
+    url: `${siteUrl}/community`,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  },
+  {
+    url: `${siteUrl}/en-us/community`,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  },
+  {
     url: `${siteUrl}/ropa`,
     changeFrequency: "daily",
     priority: 0.9,
