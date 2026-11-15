@@ -62,7 +62,7 @@ function hash(text: string): string {
   return createHash("sha256").update(text).digest("hex");
 }
 
-// Se admiten solo IDs de textos ya publicados: el navegador nunca elige qué texto enviar a DeepL.
+// Solo se aceptan IDs de publicaciones públicas que autorizan la traducción.
 export async function POST(request: NextRequest) {
   const length = Number(request.headers.get("content-length") ?? "0");
   if (length > MAX_BODY_BYTES) return NextResponse.json({ error: "Too large" }, { status: 413 });
@@ -90,11 +90,11 @@ export async function POST(request: NextRequest) {
     const [topics, replies] = await Promise.all([
       topicIds.length ? prisma.communityTopic.findMany({
         where: { id: { in: topicIds }, status: { not: "HIDDEN" } },
-        select: { id: true, title: true, body: true },
+        select: { id: true, title: true, body: true, allowAutoTranslation: true },
       }) : Promise.resolve([]),
       replyIds.length ? prisma.communityReply.findMany({
         where: { id: { in: replyIds }, topic: { is: { status: { not: "HIDDEN" } } } },
-        select: { id: true, body: true },
+        select: { id: true, body: true, allowAutoTranslation: true },
       }) : Promise.resolve([]),
     ]);
 
@@ -104,6 +104,8 @@ export async function POST(request: NextRequest) {
     for (const entry of unique) {
       const topic = topicsById.get(entry.id);
       const reply = repliesById.get(entry.id);
+      // Nunca traducir publicaciones antiguas ni contenidos sin autorización del autor.
+      if (entry.kind === "reply-body" ? !reply?.allowAutoTranslation : !topic?.allowAutoTranslation) continue;
       const source = entry.kind === "topic-title" ? topic?.title :
         entry.kind === "topic-body" ? topic?.body : reply?.body;
       if (source) parts.push({ ...entry, source, hash: hash(source) });

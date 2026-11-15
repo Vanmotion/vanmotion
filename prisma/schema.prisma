@@ -492,6 +492,7 @@ model CommunityTopic {
 
   title String
   body  String
+  allowAutoTranslation Boolean @default(false)
 
   status CommunityTopicStatus @default(OPEN)
 
@@ -527,6 +528,7 @@ model CommunityReply {
   id String @id @default(cuid())
 
   body String
+  allowAutoTranslation Boolean @default(false)
 
   topicId String
   topic   CommunityTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)

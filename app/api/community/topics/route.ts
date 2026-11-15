@@ -78,6 +78,7 @@ const topicSelect = {
   title: true,
   body: true,
   status: true,
+  allowAutoTranslation: true,
   createdAt: true,
   updatedAt: true,
   author: {
@@ -310,6 +311,7 @@ export async function POST(
           title,
           body: message,
           status: "OPEN",
+          allowAutoTranslation: body.allowAutoTranslation === true,
           authorId: user.id,
 
           attachments:

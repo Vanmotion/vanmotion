@@ -40,6 +40,7 @@ type CommunityTopic = {
   category: ForumKey;
   title: string;
   body: string;
+  allowAutoTranslation: boolean;
   status:
     | "OPEN"
     | "LOCKED"
@@ -55,6 +56,7 @@ type CommunityReply = {
   id: string;
   body: string;
   topicId: string;
+  allowAutoTranslation: boolean;
   author: CommunityAuthor;
   createdAt: string;
   updatedAt: string;
@@ -166,6 +168,8 @@ export default function CommunityForum({ language: initialLanguage }: { language
 
   const [replyText, setReplyText] =
     useState("");
+  const [allowTopicTranslation, setAllowTopicTranslation] = useState(false);
+  const [allowReplyTranslation, setAllowReplyTranslation] = useState(false);
 
   const [replies, setReplies] =
     useState<CommunityReply[]>([]);
@@ -195,12 +199,13 @@ export default function CommunityForum({ language: initialLanguage }: { language
 
     const parts: TranslationPart[] = [];
     for (const topic of topics) {
-      if (topic.category !== activeForum) continue;
+      if (topic.category !== activeForum || !topic.allowAutoTranslation) continue;
       parts.push({ kind: "topic-title", id: topic.id, source: topic.title });
       parts.push({ kind: "topic-body", id: topic.id, source: topic.body });
     }
     if (selectedTopic && selectedTopic.category === activeForum) {
       for (const reply of replies) {
+        if (!reply.allowAutoTranslation) continue;
         parts.push({ kind: "reply-body", id: reply.id, source: reply.body });
       }
     }
@@ -251,7 +256,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
             });
           }
         } catch {
-          // Si DeepL no está configurado o falla, se mantiene el texto original.
+          // Si MyMemory falla o se agota la cuota, se mantiene el texto original.
           for (const item of group) {
             requestedTranslations.current.delete(`${language}:${item.kind}:${item.id}`);
           }
@@ -332,6 +337,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
     setTitle("");
     setMessage("");
     setImages([]);
+    setAllowTopicTranslation(false);
     setEmail("");
     setUsername("");
     setCode("");
@@ -346,6 +352,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
   }
 
   function closeTopic() {
+    setAllowReplyTranslation(false);
     setSelectedTopic(null);
   }
 
@@ -366,6 +373,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
           body: JSON.stringify({
             body: replyText,
             topicId: selectedTopic.id,
+            allowAutoTranslation: allowReplyTranslation,
           }),
         },
       );
@@ -380,6 +388,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
         ]);
 
         setReplyText("");
+        setAllowReplyTranslation(false);
       }
 
     } catch (error) {
@@ -674,6 +683,11 @@ export default function CommunityForum({ language: initialLanguage }: { language
                       rows={4}
                     />
 
+                    <label style={{ display: "flex", gap: 9, alignItems: "flex-start", fontSize: 12, lineHeight: 1.5, cursor: "pointer" }}>
+                      <input type="checkbox" checked={allowReplyTranslation}
+                        onChange={(event) => setAllowReplyTranslation(event.target.checked)} />
+                      <span>{t("Allow translation of this reply using MyMemory (external service that may retain and share the text).", "Permito traducir esta respuesta mediante MyMemory (servicio externo que puede conservar y compartir el texto).")}</span>
+                    </label>
                     <button
                       type="button"
                       onClick={sendReply}
@@ -995,6 +1009,11 @@ export default function CommunityForum({ language: initialLanguage }: { language
                       />
                     </label>
 
+                    <label style={{ display: "flex", gap: 9, alignItems: "flex-start", fontSize: 12, lineHeight: 1.5, cursor: "pointer" }}>
+                      <input type="checkbox" checked={allowTopicTranslation}
+                        onChange={(event) => setAllowTopicTranslation(event.target.checked)} />
+                      <span>{t("Allow translation of this post with MyMemory (external service that may retain and share the text).", "Permito traducir esta publicación con MyMemory (servicio externo que puede conservar y compartir el texto).")}</span>
+                    </label>
                     <div
                       className={
                         styles.imageUploader
@@ -1333,6 +1352,7 @@ export default function CommunityForum({ language: initialLanguage }: { language
                                   title,
                                   message,
                                   attachments: uploadedImages,
+                                  allowAutoTranslation: allowTopicTranslation,
                                 }),
                               },
                             );
