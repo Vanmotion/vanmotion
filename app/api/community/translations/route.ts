@@ -13,6 +13,8 @@ const KINDS: Kind[] = ["topic-title", "topic-body", "reply-body"];
 const MAX_ENTRIES = 6;
 const MAX_CHARS = 12000;
 const MAX_BODY_BYTES = 3000;
+// Limite global y atomico por dia UTC, compartido entre instancias de Vercel.
+const DAILY_TRANSLATION_CHARACTER_LIMIT = 12000;
 
 function isEntry(input: unknown): input is Entry {
   if (!input || typeof input !== "object" || Array.isArray(input)) return false;
@@ -97,6 +99,25 @@ export async function POST(request: NextRequest) {
 
     const secret = process.env.DEEPL_API_KEY?.trim();
     if (!secret) return NextResponse.json({ error: "Translation not configured" }, { status: 503 });
+    // Reservamos cuota ANTES de llamar a DeepL. Si la tabla o la BD fallan,
+    // la peticion se detiene: no se gasta cuota sin control.
+    const requestedCharacters = pending.reduce((sum, part) => sum + part.source.length, 0);
+    if (requestedCharacters > DAILY_TRANSLATION_CHARACTER_LIMIT) {
+      return NextResponse.json({ error: "Daily translation limit reached" }, { status: 429 });
+    }
+    const day = new Date().toISOString().slice(0, 10);
+    const reserved = await prisma.$executeRaw`
+      INSERT INTO "CommunityTranslationBudget" ("day", "usedCharacters", "updatedAt")
+      VALUES (${day}, ${requestedCharacters}, NOW())
+      ON CONFLICT ("day") DO UPDATE SET
+        "usedCharacters" = "CommunityTranslationBudget"."usedCharacters" + EXCLUDED."usedCharacters",
+        "updatedAt" = NOW()
+      WHERE "CommunityTranslationBudget"."usedCharacters" + EXCLUDED."usedCharacters" <= ${DAILY_TRANSLATION_CHARACTER_LIMIT}
+    `;
+    if (reserved !== 1) {
+      return NextResponse.json({ error: "Daily translation limit reached" }, { status: 429 });
+    }
+
     const host = secret.endsWith(":fx") ? "https://api-free.deepl.com" : "https://api.deepl.com";
 
     // Solo se envían mensajes públicos: nunca nombres, emails, sesiones ni archivos.

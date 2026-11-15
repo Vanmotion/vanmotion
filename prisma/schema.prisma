@@ -586,3 +586,10 @@ model CommunityTranslation {
   @@unique([resourceType, resourceId, targetLanguage])
   @@index([updatedAt])
 }
+
+// Reserva atomica diaria para limitar el gasto de traducciones de COMMUNITY.
+model CommunityTranslationBudget {
+  day            String   @id
+  usedCharacters Int      @default(0)
+  updatedAt      DateTime @updatedAt
+}
