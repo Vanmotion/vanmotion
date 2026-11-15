@@ -4004,3 +4004,14 @@ button.recommendationMusicMenuToggle {
     gap: 2px !important;
   }
 }
+
+/* VANMOTION COMMUNITY · radio compacta; no afecta a recomendados ni a otras páginas.
+   Mantiene visibles los botones ya configurados por COMMUNITY_PANEL_PRESERVE_V5. */
+:global([data-music-player-mode="community"]) .player:not(.expanded):not(.recommendationActive) {
+  width: min(300px, calc(100vw - 28px)) !important;
+}
+@media (max-width: 640px) {
+  :global([data-music-player-mode="community"]) .player:not(.expanded):not(.recommendationActive) {
+    width: min(300px, calc(100vw - 24px)) !important;
+  }
+}

@@ -600,3 +600,21 @@
   -webkit-filter: none !important;
   opacity: 1 !important;
 }
+
+/* VANMOTION COMMUNITY · flags: misma intensidad activa/inactiva que el resto del sitio.
+   Las reglas antiguas communityFlags forzaban ambas al 100%; esto las ajusta. */
+.switcher.communityFlags button:not(.active) > span {
+  opacity: 0.68 !important;
+  filter: grayscale(0.35) saturate(0.65) !important;
+  -webkit-filter: grayscale(0.35) saturate(0.65) !important;
+}
+.switcher.communityFlags button:not(.active):hover > span {
+  opacity: 0.82 !important;
+  filter: grayscale(0.2) saturate(0.8) !important;
+  -webkit-filter: grayscale(0.2) saturate(0.8) !important;
+}
+.switcher.communityFlags button.active > span {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
