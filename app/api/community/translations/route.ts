@@ -13,8 +13,43 @@ const KINDS: Kind[] = ["topic-title", "topic-body", "reply-body"];
 const MAX_ENTRIES = 6;
 const MAX_CHARS = 12000;
 const MAX_BODY_BYTES = 3000;
+
+// MyMemory es únicamente un piloto: 500 bytes por consulta y cuota anónima limitada.
+// Nunca enviamos dos párrafos en una sola petición.
+function splitForMyMemory(source: string): string[] {
+  const chunks: string[] = [];
+  for (const paragraph of source.split(/(\n+)/u)) {
+    if (!paragraph) continue;
+    if (/^\s+$/u.test(paragraph)) {
+      chunks.push(paragraph);
+      continue;
+    }
+    let current = "";
+    const tokens = paragraph.match(/\S+\s*|\s+/gu) ?? [paragraph];
+    for (const token of tokens) {
+      if (Buffer.byteLength(token, "utf8") <= 450) {
+        if (current && Buffer.byteLength(current + token, "utf8") > 450) {
+          chunks.push(current);
+          current = "";
+        }
+        current += token;
+      } else {
+        for (const character of token) {
+          if (current && Buffer.byteLength(current + character, "utf8") > 450) {
+            chunks.push(current);
+            current = "";
+          }
+          current += character;
+        }
+      }
+    }
+    if (current) chunks.push(current);
+  }
+  return chunks;
+}
+
 // Limite global y atomico por dia UTC, compartido entre instancias de Vercel.
-const DAILY_TRANSLATION_CHARACTER_LIMIT = 12000;
+const DAILY_TRANSLATION_CHARACTER_LIMIT = 4000;
 
 function isEntry(input: unknown): input is Entry {
   if (!input || typeof input !== "object" || Array.isArray(input)) return false;
@@ -97,9 +132,7 @@ export async function POST(request: NextRequest) {
     }
     if (!pending.length) return NextResponse.json({ translations: results });
 
-    const secret = process.env.DEEPL_API_KEY?.trim();
-    if (!secret) return NextResponse.json({ error: "Translation not configured" }, { status: 503 });
-    // Reservamos cuota ANTES de llamar a DeepL. Si la tabla o la BD fallan,
+    // Reservamos cuota ANTES de llamar a MyMemory. Si la tabla o la BD fallan,
     // la peticion se detiene: no se gasta cuota sin control.
     const requestedCharacters = pending.reduce((sum, part) => sum + part.source.length, 0);
     if (requestedCharacters > DAILY_TRANSLATION_CHARACTER_LIMIT) {
@@ -118,24 +151,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Daily translation limit reached" }, { status: 429 });
     }
 
-    const host = secret.endsWith(":fx") ? "https://api-free.deepl.com" : "https://api.deepl.com";
-
-    // Solo se envían mensajes públicos: nunca nombres, emails, sesiones ni archivos.
-    const response = await fetch(`${host}/v2/translate`, {
-      method: "POST",
-      headers: { "Authorization": `DeepL-Auth-Key ${secret}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ text: pending.map((p) => p.source), target_lang: target.toUpperCase() }),
-      signal: AbortSignal.timeout(12000),
-      cache: "no-store",
-    });
-    if (!response.ok) {
-      console.error("COMMUNITY_TRANSLATION_PROVIDER_ERROR", response.status);
-      return NextResponse.json({ error: "Translation unavailable" }, { status: 503 });
-    }
-    const output: unknown = await response.json();
-    const entries = (output as { translations?: unknown[] })?.translations;
-    if (!Array.isArray(entries) || entries.length !== pending.length) {
-      return NextResponse.json({ error: "Invalid translation response" }, { status: 502 });
+    // MyMemory: solo mensajes públicos; no se envían nombres, correos ni sesiones.
+    // Prototipo sin clave. Si falla, se muestra el texto original.
+    const entries: { text: string; detected_source_language: null }[] = [];
+    for (const part of pending) {
+      const translatedChunks: string[] = [];
+      for (const chunk of splitForMyMemory(part.source)) {
+        if (!chunk.trim()) {
+          translatedChunks.push(chunk);
+          continue;
+        }
+        const leading = chunk.match(/^\s*/u)?.[0] ?? "";
+        const trailing = chunk.match(/\s*$/u)?.[0] ?? "";
+        const query = new URL("https://api.mymemory.translated.net/get");
+        query.searchParams.set("q", chunk.trim());
+        query.searchParams.set("langpair", `autodetect|${target}`);
+        const response = await fetch(query.toString(), {
+          signal: AbortSignal.timeout(12000),
+          cache: "no-store",
+        });
+        if (!response.ok) {
+          console.error("COMMUNITY_TRANSLATION_PROVIDER_ERROR", response.status);
+          return NextResponse.json({ error: "Translation unavailable" }, { status: 503 });
+        }
+        const data: unknown = await response.json();
+        const parsed = data as {
+          responseStatus?: unknown;
+          responseData?: { translatedText?: unknown };
+        } | null;
+        const translated = parsed?.responseData?.translatedText;
+        if (Number(parsed?.responseStatus) !== 200 ||
+            typeof translated !== "string" ||
+            /^MYMEMORY WARNING/i.test(translated)) {
+          return NextResponse.json({ error: "Translation unavailable" }, { status: 503 });
+        }
+        translatedChunks.push(leading + translated + trailing);
+      }
+      entries.push({ text: translatedChunks.join(""), detected_source_language: null });
     }
     const updates: Promise<unknown>[] = [];
     for (let i = 0; i < pending.length; i++) {
