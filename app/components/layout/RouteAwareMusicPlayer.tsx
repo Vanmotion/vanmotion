@@ -36,10 +36,7 @@ export default function RouteAwareMusicPlayer({
       "/condiciones-compra",
       "/desistimiento",
     ].some((path) => matchesPath(pathname, path));
-  // VANMOTION_COMMUNITY_PANEL_PRESERVE_V5: el reproductor está disponible en ambos idiomas.
-  const isCommunity =
-    matchesPath(pathname, "/community") ||
-    matchesPath(pathname, "/en-us/community");
+  // COMMUNITY utiliza el mismo modo compacto que Colección; conserva la radio global.
   const isExperience = matchesPath(pathname, "/experience");
 
   // Never conditionally remove children: doing so destroys the YouTube iframe.
@@ -57,7 +54,7 @@ export default function RouteAwareMusicPlayer({
             }
           : undefined
       }
-      data-music-player-mode={isCommunity ? "community" : isExperience ? "experience" : "compact"}
+      data-music-player-mode={isExperience ? "experience" : "compact"}
       data-music-video-active={videoSessionActive ? "true" : "false"}
     >
       {children}

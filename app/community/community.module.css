@@ -1443,3 +1443,17 @@
 }
 .translationToggle:hover { text-decoration: underline; }
 .translationToggle:focus-visible { outline: 1px solid #c9a86a; outline-offset: 4px; }
+
+/* VANMOTION_COMMUNITY_FOOTER_PLAYER_CLEARANCE_20261115 */
+/* El reproductor flotante es el mismo de Colección. Dejamos libre su zona
+   en el pie, únicamente en COMMUNITY, sin mover ni alterar la propia radio. */
+@media (min-width: 801px) {
+  .footer > span:last-child {
+    margin-right: 250px;
+  }
+}
+@media (max-width: 800px) {
+  .footer {
+    padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+  }
+}
