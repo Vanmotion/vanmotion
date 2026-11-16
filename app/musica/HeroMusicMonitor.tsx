@@ -1104,7 +1104,23 @@ export default function HeroMusicMonitor({
       return;
     }
 
-    const updateGeometry = () => {
+    // Sincronizar el vídeo con la foto EN EL MISMO evento táctil.
+    // React sigue gestionando la geometría inicial y los cambios de tamaño,
+    // pero no interviene durante el arrastre horizontal.
+    const updateGeometry = (event?: Event | ResizeObserverEntry[]) => {
+      const immediatePan = event instanceof Event &&
+        event.type === "vanmotion:hero-image-pan";
+
+      const placeGeometry = (next: MonitorGeometry) => {
+        if (immediatePan && monitorRef.current) {
+          // Mover solo el eje horizontal: perspectiva, tamaño, top y vídeo
+          // permanecen idénticos. Se ejecuta antes del pintado del fotograma.
+          monitorRef.current.style.left = `${next.left}px`;
+        } else {
+          setGeometry(next);
+        }
+      };
+
       if (!hero.isConnected) {
         setGeometry(null);
         return;
@@ -1187,7 +1203,7 @@ export default function HeroMusicMonitor({
             y - minY,
           ]);
 
-        setGeometry({
+        placeGeometry({
           left: documentLeft + imageLeft + minX,
           top: documentTop + imageTop + minY,
           width: boxWidth,
@@ -1217,7 +1233,7 @@ export default function HeroMusicMonitor({
       const baseHeight =
         renderedHeight * (calibration.height / 100);
 
-      setGeometry({
+      placeGeometry({
         left: documentLeft + baseLeft,
         top: documentTop + baseTop,
         width: baseWidth,
