@@ -109,17 +109,17 @@ function normaliseText(
 }
 
 /** Validación antibots en servidor: imprescindible ANTES de escribir en BD o enviar correo. */
-async function verifyContactTurnstile(formData: FormData): Promise<void> {
+async function verifyContactTurnstile(formData: FormData): Promise<"ok" | "bot" | "invalid"> {
   // Los bots suelen rellenar esta casilla oculta: nunca llega al contacto real.
   if (getText(formData, "companyWebsite")) {
-    throw new Error("No se ha podido validar la solicitud.");
+    return "bot";
   }
 
   const secret = process.env.TURNSTILE_SECRET_KEY?.trim();
   const token = getText(formData, "cf-turnstile-response");
   // Fail closed en producción: nunca aceptar solicitudes sin captcha.
   if (!secret || !token || token.length > 2048) {
-    throw new Error("Completa la verificación de seguridad antes de enviar el mensaje.");
+    return "invalid";
   }
 
   let verified = false;
@@ -144,9 +144,7 @@ async function verifyContactTurnstile(formData: FormData): Promise<void> {
   } catch {
     // Fallos de red: rechazar en vez de aceptar sin comprobar.
   }
-  if (!verified) {
-    throw new Error("No se ha podido completar la verificación. Actualiza la página e inténtalo de nuevo.");
-  }
+  return verified ? "ok" : "invalid";
 }
 
 function isValidEmail(email: string): boolean {
@@ -290,6 +288,17 @@ export async function createContactRequest(
     3000,
   );
 
+  // Rechazar bots sin almacenar nada ni lanzar errores de servidor.
+  const securityCheck = await verifyContactTurnstile(formData);
+  if (securityCheck === "bot") {
+    return;
+  }
+  if (securityCheck !== "ok") {
+    redirect(vehicleId
+      ? `/coleccion/${encodeURIComponent(vehicleId)}?enviado=0&error=verificacion#confirmacion`
+      : "/contacto?enviado=0&error=verificacion#formulario");
+  }
+
   if (!name || !email || !message) {
     throw new Error(
       content.requiredFields,
@@ -302,9 +311,6 @@ export async function createContactRequest(
     );
   }
 
-  // Verificación de Turnstile y filtro honeypot antes de tocar la base de datos.
-  await verifyContactTurnstile(formData);
-
   // Límite persistente: una solicitud cada 10 minutos por correo.
   const recentRequest = await prisma.contactRequest.findFirst({
     where: {
@@ -314,7 +320,9 @@ export async function createContactRequest(
     select: { id: true },
   });
   if (recentRequest) {
-    throw new Error("Ya tenemos una solicitud reciente desde este correo. Espera 10 minutos.");
+    redirect(vehicleId
+      ? `/coleccion/${encodeURIComponent(vehicleId)}?enviado=0&error=limite#confirmacion`
+      : "/contacto?enviado=0&error=limite#formulario");
   }
 
   let vehicle: {

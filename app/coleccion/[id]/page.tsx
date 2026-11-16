@@ -871,6 +871,15 @@ export default async function PublicVehiclePage({
           </div>
         )}
 
+        {!isEmblem && enviado === "0" && (error === "verificacion" || error === "limite") && (
+          <div id="confirmacion" className={styles.successMessage} role="alert">
+            <strong>{error === "limite" ? "Demasiadas solicitudes" : "Verificación necesaria"}</strong>
+            <span>{error === "limite"
+              ? "Ya recibimos una consulta reciente desde ese correo. Vuelve a intentarlo en 10 minutos."
+              : "Actualiza la página y completa el control de seguridad antes de enviar."}</span>
+          </div>
+        )}
+
         <section className={styles.productSection}>
           <div className={styles.galleryColumn}>
             <VehicleGallery

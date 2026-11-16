@@ -393,6 +393,15 @@ export default async function ContactoPage({
               </div>
             )}
 
+            {enviado === "0" && (error === "verificacion" || error === "limite") && (
+              <div className={styles.success} role="alert" id="formulario">
+                <strong>{error === "limite" ? "Demasiados envíos" : "Verificación necesaria"}</strong>
+                <p>{error === "limite"
+                  ? "Ya recibimos una consulta reciente desde ese correo. Vuelve a intentarlo en 10 minutos."
+                  : "No hemos podido verificar la solicitud. Actualiza la página y completa el control de seguridad antes de enviar."}</p>
+              </div>
+            )}
+
             <form action={createContactRequest} className={styles.form}>
               <div className={styles.fieldFull}>
                 <label htmlFor="topic">{content.form.topic}</label>
