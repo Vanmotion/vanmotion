@@ -115,14 +115,20 @@ async function verifyContactTurnstile(formData: FormData): Promise<"ok" | "bot" 
     return "bot";
   }
 
+  // Solo se registran códigos de error: NUNCA claves, tokens ni datos personales.
+  const fail = (reason: string, details: Record<string, unknown> = {}) => {
+    console.warn("VANMOTION_TURNSTILE_VERIFICATION_FAILED", { reason, ...details });
+    return "invalid" as const;
+  };
+
   const secret = process.env.TURNSTILE_SECRET_KEY?.trim();
   const token = getText(formData, "cf-turnstile-response");
-  // Fail closed en producción: nunca aceptar solicitudes sin captcha.
-  if (!secret || !token || token.length > 2048) {
-    return "invalid";
-  }
 
-  let verified = false;
+  // Fail closed: nunca aceptar solicitudes sin captcha validado.
+  if (!secret) return fail("missing-secret-key");
+  if (!token) return fail("missing-token");
+  if (token.length > 2048) return fail("invalid-token-length");
+
   try {
     const response = await fetch(
       "https://challenges.cloudflare.com/turnstile/v0/siteverify",
@@ -133,18 +139,31 @@ async function verifyContactTurnstile(formData: FormData): Promise<"ok" | "bot" 
         signal: AbortSignal.timeout(8000),
       },
     );
-    if (response.ok) {
-      const data = (await response.json()) as {
-        success?: boolean;
-        hostname?: string;
-      };
-      verified = data.success === true &&
-        (data.hostname === "www.vanmotion.es" || data.hostname === "vanmotion.es");
+
+    if (!response.ok) {
+      return fail("siteverify-http-error", { status: response.status });
     }
-  } catch {
-    // Fallos de red: rechazar en vez de aceptar sin comprobar.
+
+    const data = (await response.json()) as {
+      success?: boolean;
+      hostname?: string;
+      "error-codes"?: string[];
+    };
+
+    if (data.success !== true) {
+      return fail("siteverify-rejected", { codes: data["error-codes"] ?? [] });
+    }
+
+    if (data.hostname !== "www.vanmotion.es" && data.hostname !== "vanmotion.es") {
+      return fail("hostname-mismatch", { hostname: data.hostname ?? "unknown" });
+    }
+
+    return "ok";
+  } catch (error) {
+    return fail("siteverify-request-failed", {
+      type: error instanceof Error ? error.name : "unknown",
+    });
   }
-  return verified ? "ok" : "invalid";
 }
 
 function isValidEmail(email: string): boolean {
