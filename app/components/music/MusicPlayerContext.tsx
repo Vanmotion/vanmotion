@@ -10,6 +10,8 @@ import {
   useState,
 } from "react";
 
+import { usePathname } from "next/navigation";
+
 import type { PublicMusicTrack } from "@/app/lib/music-library";
 
 type PlaybackError = "activation" | "missing-audio" | null;
@@ -58,6 +60,8 @@ export default function MusicPlayerProvider({
   tracks,
   children,
 }: MusicPlayerProviderProps) {
+  const pathname = usePathname();
+  const isContactPage = pathname === "/contacto" || pathname.startsWith("/contacto/");
   const audioRef = useRef<HTMLAudioElement>(null);
   const resumeAfterChangeRef = useRef(false);
   const autoplayPendingRef = useRef(false);
@@ -223,10 +227,15 @@ export default function MusicPlayerProvider({
     setIsPlaying(false);
   }, []);
 
+  // Contacto no debe reproducir ni restaurar audio oculto.
+  useEffect(() => {
+    if (isContactPage) pausePlayback();
+  }, [isContactPage, pausePlayback]);
+
   async function togglePlayback() {
     const audio = audioRef.current;
 
-    if (!audio || !currentTrack) {
+    if (!audio || !currentTrack || isContactPage) {
       return;
     }
 
@@ -330,6 +339,10 @@ export default function MusicPlayerProvider({
   );
 
   function playPendingTrack(audio: HTMLAudioElement) {
+    if (isContactPage) {
+      autoplayPendingRef.current = false;
+      return;
+    }
     if (!autoplayPendingRef.current) {
       return;
     }
@@ -424,7 +437,7 @@ export default function MusicPlayerProvider({
             event.currentTarget.currentTime = safeTime;
             setCurrentTime(safeTime);
 
-            const shouldPlay = restorePlayingRef.current;
+            const shouldPlay = restorePlayingRef.current && !isContactPage;
 
             restoreTimeRef.current = null;
             restorePlayingRef.current = false;
@@ -461,6 +474,10 @@ export default function MusicPlayerProvider({
           );
         }}
         onPlay={() => {
+          if (isContactPage) {
+            pausePlayback();
+            return;
+          }
           audioStartHandlerRef.current?.();
           window.sessionStorage.setItem(
             "vanmotion-global-playing",
