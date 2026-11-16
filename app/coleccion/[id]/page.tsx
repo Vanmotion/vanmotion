@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createContactRequest } from "@/actions/contactActions";
+import ContactBotCheck from "@/components/ContactBotCheck";
 import {
   ROUTE_LANGUAGE_HEADER,
   type Language,
@@ -983,6 +984,8 @@ export default async function PublicVehiclePage({
                   {content.contact.privacy}{" "}
                   <Link href="/privacidad">{content.contact.privacyLink}</Link>
                 </p>
+
+                <ContactBotCheck siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""} />
 
                 <button type="submit" className={styles.submitButton}>
                   {content.contact.submit}

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { createContactRequest } from "@/actions/contactActions";
+import ContactBotCheck from "@/components/ContactBotCheck";
 import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
 
@@ -456,6 +457,8 @@ export default async function ContactoPage({
                   placeholder={content.form.messagePlaceholder}
                 />
               </div>
+
+              <ContactBotCheck siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""} />
 
               <div className={styles.formFooter}>
                 <p>

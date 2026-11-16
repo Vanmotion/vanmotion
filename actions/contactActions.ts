@@ -108,6 +108,47 @@ function normaliseText(
     .slice(0, maximumLength);
 }
 
+/** Validación antibots en servidor: imprescindible ANTES de escribir en BD o enviar correo. */
+async function verifyContactTurnstile(formData: FormData): Promise<void> {
+  // Los bots suelen rellenar esta casilla oculta: nunca llega al contacto real.
+  if (getText(formData, "companyWebsite")) {
+    throw new Error("No se ha podido validar la solicitud.");
+  }
+
+  const secret = process.env.TURNSTILE_SECRET_KEY?.trim();
+  const token = getText(formData, "cf-turnstile-response");
+  // Fail closed en producción: nunca aceptar solicitudes sin captcha.
+  if (!secret || !token || token.length > 2048) {
+    throw new Error("Completa la verificación de seguridad antes de enviar el mensaje.");
+  }
+
+  let verified = false;
+  try {
+    const response = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        body: new URLSearchParams({ secret, response: token }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(8000),
+      },
+    );
+    if (response.ok) {
+      const data = (await response.json()) as {
+        success?: boolean;
+        hostname?: string;
+      };
+      verified = data.success === true &&
+        (data.hostname === "www.vanmotion.es" || data.hostname === "vanmotion.es");
+    }
+  } catch {
+    // Fallos de red: rechazar en vez de aceptar sin comprobar.
+  }
+  if (!verified) {
+    throw new Error("No se ha podido completar la verificación. Actualiza la página e inténtalo de nuevo.");
+  }
+}
+
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
     email,
@@ -259,6 +300,21 @@ export async function createContactRequest(
     throw new Error(
       content.invalidEmail,
     );
+  }
+
+  // Verificación de Turnstile y filtro honeypot antes de tocar la base de datos.
+  await verifyContactTurnstile(formData);
+
+  // Límite persistente: una solicitud cada 10 minutos por correo.
+  const recentRequest = await prisma.contactRequest.findFirst({
+    where: {
+      email,
+      createdAt: { gte: new Date(Date.now() - 10 * 60 * 1000) },
+    },
+    select: { id: true },
+  });
+  if (recentRequest) {
+    throw new Error("Ya tenemos una solicitud reciente desde este correo. Espera 10 minutos.");
   }
 
   let vehicle: {

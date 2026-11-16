@@ -23,12 +23,22 @@ function formatDate(date: Date) {
   }).format(date);
 }
 
-export default async function ContactosAdminPage() {
-  const solicitudes =
-    await prisma.contactRequest.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
+export default async function ContactosAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const pageValue = Number(params.page);
+  const page = Number.isInteger(pageValue) && pageValue > 0
+    ? Math.min(pageValue, 10000) : 1;
+  const perPage = 50;
+  const [totalSolicitudes, solicitudes] = await Promise.all([
+    prisma.contactRequest.count(),
+    prisma.contactRequest.findMany({
+      orderBy: { createdAt: "desc" },
+      take: perPage,
+      skip: (page - 1) * perPage,
 
       include: {
         vehicle: {
@@ -37,7 +47,8 @@ export default async function ContactosAdminPage() {
           },
         },
       },
-    });
+    }),
+  ]);
 
   return (
     <main className={styles.page}>
@@ -88,15 +99,25 @@ export default async function ContactosAdminPage() {
         </div>
 
         <div className={styles.counter}>
-          <strong>{solicitudes.length}</strong>
+          <strong>{totalSolicitudes}</strong>
 
           <span>
-            {solicitudes.length === 1
+            {totalSolicitudes === 1
               ? "Solicitud registrada"
               : "Solicitudes registradas"}
           </span>
         </div>
       </section>
+
+      <nav aria-label="Paginación de contactos" className="flex items-center justify-between gap-3 border border-white/15 bg-black p-4 text-sm text-white">
+        {page > 1 ? (
+          <Link href={`/admin/contactos?page=${page - 1}`}>← Anterior</Link>
+        ) : <span />}
+        <span>Página {page} de {Math.max(1, Math.ceil(totalSolicitudes / perPage))} · 50 por página</span>
+        {page * perPage < totalSolicitudes ? (
+          <Link href={`/admin/contactos?page=${page + 1}`}>Siguiente →</Link>
+        ) : <span />}
+      </nav>
 
       <section className={styles.content}>
         {solicitudes.length === 0 ? (
