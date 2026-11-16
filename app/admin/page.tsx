@@ -346,6 +346,13 @@ export default async function AdminDashboardPage() {
         "Gestionar productos, precios, tallas, stock y visibilidad.",
     },
     {
+      number: "08",
+      href: "/admin/community",
+      title: "Comunidad",
+      description:
+        "Moderar publicaciones, respuestas y usuarios.",
+    },
+    {
       number: "07",
       href: "/admin/settings",
       title: "Configuración",
