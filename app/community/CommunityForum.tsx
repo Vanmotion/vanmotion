@@ -1347,9 +1347,19 @@ export default function CommunityForum({ language: initialLanguage }: { language
                               );
                             }
 
-                            setError(
-                              t('TOPIC PUBLISHED', 'TEMA PUBLICADO'),
-                            );
+                            if (!data.topic?.id) {
+                              throw new Error("El servidor no confirmó el artículo.");
+                            }
+
+                            setTopics((previous) => [
+                              data.topic as CommunityTopic,
+                              ...previous.filter((item) => item.id !== data.topic.id),
+                            ]);
+                            setTopicsLoaded(true);
+                            setSelectedTopic(data.topic as CommunityTopic);
+                            setShowComposer(false);
+                            setAuthStep("topic");
+                            setError("");
 
                           } catch (error) {
                             setError(
