@@ -8,13 +8,13 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "frame-ancestors 'self'",
   "form-action 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.youtube.com https://www.googletagmanager.com`,
+  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://www.youtube.com https://www.googletagmanager.com https://challenges.cloudflare.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https: https://*.blob.vercel-storage.com https://www.googletagmanager.com https://*.google-analytics.com",
   "media-src 'self' blob: https:",
   "font-src 'self' data:",
-  "frame-src https://www.youtube-nocookie.com https://player.vimeo.com",
-  "connect-src 'self' https://vercel.com https://blob.vercel-storage.com https://*.blob.vercel-storage.com https://api.open-meteo.com https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com",
+  "frame-src https://www.youtube-nocookie.com https://player.vimeo.com https://challenges.cloudflare.com",
+  "connect-src 'self' https://vercel.com https://blob.vercel-storage.com https://*.blob.vercel-storage.com https://api.open-meteo.com https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com https://challenges.cloudflare.com",
   "worker-src 'self' blob:",
 ].join("; ");
 
