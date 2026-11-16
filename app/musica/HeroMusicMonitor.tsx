@@ -1138,9 +1138,20 @@ export default function HeroMusicMonitor({
       /*
        * Reproduce object-position: 58% 42%.
        */
+      // En móvil la foto se desplaza con el dedo. Mantener el vídeo
+      // proyectado en el mismo punto de la imagen, también al arrastrar.
+      const panImage = hero.querySelector<HTMLImageElement>(
+        "[data-vanmotion-mobile-hero-pan-image]",
+      );
+      const rawMobilePan = Number.parseFloat(
+        panImage?.style.objectPosition ?? "",
+      );
+      const imagePositionX = Number.isFinite(rawMobilePan)
+        ? Math.max(0, Math.min(1, rawMobilePan / 100))
+        : OBJECT_POSITION_X;
       const imageLeft =
         (containerWidth - renderedWidth) *
-        OBJECT_POSITION_X;
+        imagePositionX;
 
       const imageTop =
         (containerHeight - renderedHeight) *
@@ -1220,10 +1231,12 @@ export default function HeroMusicMonitor({
     const observer = new ResizeObserver(updateGeometry);
     observer.observe(hero);
     window.addEventListener("resize", updateGeometry);
+    window.addEventListener("vanmotion:hero-image-pan", updateGeometry);
 
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", updateGeometry);
+      window.removeEventListener("vanmotion:hero-image-pan", updateGeometry);
     };
   }, [heroImage, heroAnchorVersion]);
 

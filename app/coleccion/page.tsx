@@ -1,3 +1,4 @@
+import MobileHeroPan from "@/app/components/MobileHeroPan";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Image from "next/image";
@@ -471,7 +472,8 @@ export default async function CollectionPage() {
       </header>
 
       <main>
-        <section className={styles.hero} aria-labelledby="collection-hero-title">
+        <section className={styles.hero} aria-labelledby="collection-hero-title" data-vanmotion-mobile-hero-pan="true">
+          <MobileHeroPan />
           <Image
             src={heroImage}
             alt={
@@ -483,6 +485,7 @@ export default async function CollectionPage() {
             priority
             sizes="100vw"
             className={styles.heroImage}
+            data-vanmotion-mobile-hero-pan-image="true"
           />
           <div className={styles.heroShade} aria-hidden="true" />
 

@@ -1,3 +1,4 @@
+import MobileHeroPan from "@/app/components/MobileHeroPan";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -328,7 +329,8 @@ export default async function RopaPage() {
         </nav>
       </header>
 
-      <section className={styles.hero} aria-labelledby="clothing-title">
+      <section className={styles.hero} aria-labelledby="clothing-title" data-vanmotion-mobile-hero-pan="true">
+        <MobileHeroPan />
         <Image
           src={heroImage}
           alt={
@@ -340,6 +342,7 @@ export default async function RopaPage() {
           priority
           sizes="100vw"
           className={styles.heroImage}
+          data-vanmotion-mobile-hero-pan-image="true"
         />
         <div className={styles.heroShade} aria-hidden="true" />
 

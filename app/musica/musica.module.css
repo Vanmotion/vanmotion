@@ -2901,3 +2901,8 @@
   clip-path: none !important;
   transform-origin: 0 0 !important;
 }
+
+/* VANMOTION MOBILE HERO PAN V1: arrastre sin alterar la proyección musical. */
+@media (max-width: 720px) {
+  .hero { touch-action: pan-y; }
+}

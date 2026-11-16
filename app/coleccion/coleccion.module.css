@@ -1482,3 +1482,15 @@
       inset 0 0 0 1px rgba(212, 119, 40, 0.32) !important;
   }
 }
+
+/* VANMOTION MOBILE HERO PAN V1
+   Permite desplazar con un dedo las fotografías panorámicas de las cabeceras.
+   El texto, las noticias y los demás elementos no se desplazan. */
+@media (max-width: 720px) {
+  .hero {
+    touch-action: pan-y;
+  }
+  .heroImage {
+    transform: none !important;
+  }
+}

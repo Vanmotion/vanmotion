@@ -1,3 +1,4 @@
+import MobileHeroPan from "@/app/components/MobileHeroPan";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Image from "next/image";
@@ -380,7 +381,9 @@ export default async function MusicPage({
           className={styles.hero}
           aria-labelledby="music-hero-title"
           data-vanmotion-music-monitor-anchor={heroImage}
+          data-vanmotion-mobile-hero-pan="true"
         >
+          <MobileHeroPan />
           <div className={styles.heroMedia} aria-hidden="true">
             <Image
               src={heroImage}
@@ -389,6 +392,7 @@ export default async function MusicPage({
               priority
               sizes="100vw"
               className={styles.heroArtwork}
+              data-vanmotion-mobile-hero-pan-image="true"
             />
             <div className={styles.heroShade} />
           </div>
