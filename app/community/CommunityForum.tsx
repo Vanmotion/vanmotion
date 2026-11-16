@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 import styles from "./community.module.css";
+import { useMusicPlayer } from "@/app/components/music/MusicPlayerContext";
 import { useLanguage } from "@/app/components/language/LanguageProvider";
 import type { Language } from "@/app/language";
 
@@ -118,6 +119,7 @@ const forumContent = {
 export default function CommunityForum({ language: initialLanguage }: { language: Language }) {
   // V6: cambiar ES/EN sin desmontar este componente ni perder panel, texto o fotos.
   const { language: selectedLanguage } = useLanguage();
+  const { videoSessionActive } = useMusicPlayer();
   const language: Language = selectedLanguage || initialLanguage;
   const t = (en: string, es: string) => language === "es" ? es : en;
   const categoryLabel = (category: ForumKey) => {
@@ -506,7 +508,9 @@ export default function CommunityForum({ language: initialLanguage }: { language
 
   return (
     <>
-      <section className={styles.forums}>
+      <section className={`${styles.forums} ${
+        videoSessionActive ? styles.forumsVideoActive : ""
+      }`}>
         {forums.map((forum) => (
           <article
             key={forum.title}

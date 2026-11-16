@@ -38,6 +38,9 @@ export default function RouteAwareMusicPlayer({
     ].some((path) => matchesPath(pathname, path));
   // COMMUNITY utiliza el mismo modo compacto que Colección; conserva la radio global.
   const isExperience = matchesPath(pathname, "/experience");
+  const isCommunity =
+    matchesPath(pathname, "/community") ||
+    matchesPath(pathname, "/en-us/community");
 
   // Never conditionally remove children: doing so destroys the YouTube iframe.
   // A selected video remains available on public pages, including legal pages.
@@ -55,6 +58,7 @@ export default function RouteAwareMusicPlayer({
           : undefined
       }
       data-music-player-mode={isExperience ? "experience" : "compact"}
+      data-vanmotion-community-player={isCommunity ? "true" : "false"}
       data-music-video-active={videoSessionActive ? "true" : "false"}
     >
       {children}

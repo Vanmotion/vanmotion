@@ -4015,3 +4015,25 @@ button.recommendationMusicMenuToggle {
     width: min(300px, calc(100vw - 24px)) !important;
   }
 }
+
+
+/* VANMOTION_COMMUNITY_VIDEO_INTEGRADO_V1
+   Reproductor de vídeo compacto, alineado a la derecha.
+   No altera radio, vista ampliada ni otras rutas. */
+@media (min-width: 1181px) {
+  :global([data-vanmotion-community-player="true"])
+  .player.recommendationActive.recommendationMinimized:not(.expanded):not(.audioLibraryMode) {
+    position: fixed !important;
+    top: auto !important;
+    left: auto !important;
+    right: max(58px, calc((100vw - 1500px) / 2 + 20px)) !important;
+    bottom: 64px !important;
+    width: clamp(245px, calc(21vw - 24px), 306px) !important;
+    border: 1px solid rgba(255,255,255,.20) !important;
+    border-radius: 12px !important;
+    background: #090909 !important;
+    box-shadow: 0 10px 26px rgba(0,0,0,.32) !important;
+    overflow: hidden !important;
+    z-index: 60 !important;
+  }
+}

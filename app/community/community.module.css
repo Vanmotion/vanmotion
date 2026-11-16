@@ -1810,3 +1810,31 @@
   .composer .imageUploader label,
   .composer .composerFoot button { transition: none !important; }
 }
+
+
+/* VANMOTION_COMMUNITY_VIDEO_INTEGRADO_V1
+   Tres tarjetas + espacio reservado para el vídeo.
+   Solo escritorio y solo cuando hay vídeo activo. */
+@media (min-width: 1181px) {
+  .forumsVideoActive {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(245px, 21%);
+    gap: 14px;
+  }
+
+  .forumsVideoActive .cardInfo {
+    padding: 12px 9px;
+    gap: 6px;
+  }
+
+  .forumsVideoActive .card h2 {
+    font-size: clamp(18px, 1.8vw, 25px);
+  }
+
+  .forumsVideoActive .card p {
+    font-size: 9px;
+  }
+
+  .forumsVideoActive .cardAction {
+    font-size: 9px;
+  }
+}
