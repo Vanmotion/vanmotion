@@ -882,24 +882,24 @@ export default function GlobalMusicPlayer({
 
               <button
                 type="button"
+                className={styles.recommendationNextButton}
                 onClick={() => {
-                  const activeIndex = recommendations.findIndex(
-                    (recommendation) =>
-                      recommendation.id ===
-                      activeRecommendationData.id,
+                  // Avanzar entre vídeos reproducibles; volver al primero al final.
+                  const playable = recommendations.filter(
+                    (recommendation) => Boolean(recommendation.videoUrl),
                   );
-
-                  const nextRecommendation =
-                    recommendations[
-                      (activeIndex + 1) % recommendations.length
-                    ];
-
-                  if (nextRecommendation) {
-                    selectRecommendation(
-                      nextRecommendation.id,
-                    );
-                  }
+                  const currentIndex = playable.findIndex(
+                    (recommendation) =>
+                      recommendation.id === activeRecommendationData.id,
+                  );
+                  if (playable.length < 2 || currentIndex < 0) return;
+                  selectRecommendation(
+                    playable[(currentIndex + 1) % playable.length].id,
+                  );
                 }}
+                disabled={
+                  recommendations.filter((item) => Boolean(item.videoUrl)).length < 2
+                }
                 aria-label={
                   language === "es"
                     ? "Siguiente recomendado"
