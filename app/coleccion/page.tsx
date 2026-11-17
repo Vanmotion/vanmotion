@@ -708,8 +708,9 @@ export default async function CollectionPage() {
           <span>{content.footer.city}</span>
         </div>
 
-        <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaceslegales" : "Legal links"}>
+        <nav className={styles.footerNav} aria-label={language === "es" ? "Enlaces de VANMOTION" : "VANMOTION links"}>
           <Link href="/noticias">{language === "es" ? "Noticias" : "News"}</Link>
+          <Link href={language === "es" ? "/community" : "/en-us/community"}>{language === "es" ? "Comunidad" : "Community"}</Link>
           <Link href="/condiciones-compra">{content.footer.purchaseConditions}</Link>
           <Link href="/desistimiento">{content.footer.withdrawal}</Link>
           <Link href="/privacidad">{content.footer.privacy}</Link>

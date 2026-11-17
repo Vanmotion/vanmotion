@@ -652,10 +652,12 @@ export default async function MusicPage({
           className={styles.footerNav}
           aria-label={
             language === "es"
-              ? "Enlaces legales"
-              : "Legal links"
+              ? "Enlaces de VANMOTION"
+              : "VANMOTION links"
           }
         >
+          <Link href="/noticias">{language === "es" ? "Noticias" : "News"}</Link>
+          <Link href={language === "es" ? "/community" : "/en-us/community"}>{language === "es" ? "Comunidad" : "Community"}</Link>
           <Link href="/aviso-legal">Legal</Link>
         </nav>
 
