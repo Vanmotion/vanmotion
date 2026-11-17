@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
+import { usePathname } from "next/navigation";
 
 /**
- * Desplaza horizontalmente una fotografía de cabecera con un gesto táctil.
- * No cambia su escala ni arrastra la página, los textos o los enlaces.
- * La foto sigue usando object-fit: cover, mostrando sus extremos al deslizar.
+ * Permite explorar las cabeceras con el dedo sin desplazar textos ni enlaces.
+ * Conserva el encuadre al navegar entre /seccion y /en-us/seccion.
+ * Solo restaura una posición si se trata de LA MISMA fotografía.
  */
 export default function MobileHeroPan() {
-  useEffect(() => {
+  const pathname = usePathname();
+
+  useLayoutEffect(() => {
     const hero = document.querySelector<HTMLElement>(
       "[data-vanmotion-mobile-hero-pan]",
     );
@@ -18,10 +21,59 @@ export default function MobileHeroPan() {
     if (!hero || !image) return;
 
     const mobile = window.matchMedia("(max-width: 720px)");
+    const section = pathname.replace(/^\/en-us(?=\/|$)/, "");
+    const storageKey = `vanmotion:mobile-hero-pan:v2:${section}`;
+    const rawSource = image.getAttribute("src") || "";
+    const imageSource = (() => {
+      try {
+        const url = new URL(rawSource, window.location.origin);
+        // Next/Image puede cambiar el ancho optimizado entre idiomas;
+        // usamos la ruta de la fotografía original para identificarla.
+        return url.searchParams.get("url") || url.pathname;
+      } catch {
+        return rawSource;
+      }
+    })();
+
+    // Antes del primer pintado, recuperar el desplazamiento de esta sección.
+    // Si la estación, el clima o la hora han cambiado la escena, no forzarlo.
+    if (mobile.matches) {
+      try {
+        const savedRaw = window.sessionStorage.getItem(storageKey);
+        if (savedRaw) {
+          const saved = JSON.parse(savedRaw) as {
+            src?: unknown;
+            x?: unknown;
+            y?: unknown;
+            savedAt?: unknown;
+          };
+          const fresh = typeof saved.savedAt === "number" &&
+            Date.now() >= saved.savedAt &&
+            Date.now() - saved.savedAt < 10 * 60 * 1000;
+          if (
+            fresh && saved.src === imageSource &&
+            typeof saved.x === "number" &&
+            Number.isFinite(saved.x) &&
+            saved.x >= 0 && saved.x <= 100 &&
+            typeof saved.y === "string" &&
+            /^(?:center|top|bottom|\d+(?:\.\d+)?%)$/.test(saved.y)
+          ) {
+            image.style.objectPosition = `${saved.x}% ${saved.y}`;
+            // Mantiene la sincronización ya conseguida con el monitor musical.
+            window.dispatchEvent(new Event("vanmotion:hero-image-pan"));
+          }
+        }
+      } catch {
+        // El deslizamiento sigue funcionando aunque sessionStorage no exista.
+      }
+    }
+
     let startX = 0;
     let startY = 0;
     let originalPositionX = 50;
     let verticalPosition = "center";
+    let lastPositionX: number | null = null;
+    let moved = false;
     let gesture: "idle" | "pending" | "horizontal" | "vertical" = "idle";
 
     const start = (event: TouchEvent) => {
@@ -38,6 +90,8 @@ export default function MobileHeroPan() {
       verticalPosition = position[1] || "center";
       startX = event.touches[0].clientX;
       startY = event.touches[0].clientY;
+      lastPositionX = null;
+      moved = false;
       gesture = "pending";
     };
 
@@ -66,12 +120,31 @@ export default function MobileHeroPan() {
         originalPositionX - (dx / hiddenWidth) * 100,
       ));
       image.style.objectPosition = `${x}% ${verticalPosition}`;
-      // Mantener la proyección de vídeo en el monitor de la foto de Música.
+      lastPositionX = x;
+      moved = true;
+      // La proyección del vídeo de Música se mueve simultáneamente.
       window.dispatchEvent(new Event("vanmotion:hero-image-pan"));
       if (event.cancelable) event.preventDefault();
     };
 
-    const end = () => { gesture = "idle"; };
+    const end = () => {
+      if (mobile.matches && gesture === "horizontal" && moved &&
+        lastPositionX !== null) {
+        try {
+          window.sessionStorage.setItem(storageKey, JSON.stringify({
+            src: imageSource,
+            x: lastPositionX,
+            y: verticalPosition,
+            savedAt: Date.now(),
+          }));
+        } catch {
+          // Las cookies, el idioma y el reproductor son independientes.
+        }
+      }
+      gesture = "idle";
+      moved = false;
+    };
+
     hero.addEventListener("touchstart", start, { passive: true });
     hero.addEventListener("touchmove", move, { passive: false });
     hero.addEventListener("touchend", end, { passive: true });
@@ -83,6 +156,7 @@ export default function MobileHeroPan() {
       hero.removeEventListener("touchend", end);
       hero.removeEventListener("touchcancel", end);
     };
-  }, []);
+  }, [pathname]);
+
   return null;
 }
