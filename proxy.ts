@@ -130,6 +130,7 @@ function continueWithRouteLanguage(
     pathname === "/coleccion" ||
     pathname.startsWith("/coleccion/") ||
     pathname === "/community" ||
+    pathname === "/noticias" ||
     pathname === "/musica" ||
     pathname.startsWith("/musica/") ||
     pathname === "/reconocimientos"

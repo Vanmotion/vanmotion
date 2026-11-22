@@ -421,6 +421,8 @@ model NewsArticle {
   category       String
   title          String
   summary        String
+  translatedTitle   String?
+  translatedSummary String?
   source         String
   sourceUrl      String   @unique
   imageUrl       String?

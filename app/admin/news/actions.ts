@@ -13,6 +13,7 @@ export async function toggleNewsAction(formData: FormData) {
   await setNewsActive(id, isActive);
   revalidatePath("/admin/news");
   revalidatePath("/noticias");
+  revalidatePath("/en-us/noticias");
 }
 
 export async function refreshNewsAction() {
@@ -20,4 +21,5 @@ export async function refreshNewsAction() {
   await ingestNews();
   revalidatePath("/admin/news");
   revalidatePath("/noticias");
+  revalidatePath("/en-us/noticias");
 }

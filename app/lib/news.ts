@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import { prisma } from "@/app/lib/prisma";
+import { translateNewsBatch } from "@/app/lib/news-translation";
 
 export const NEWS_LOCALES = ["es", "en"] as const;
 export const NEWS_REGIONS = ["ES", "NY"] as const;
@@ -222,12 +223,17 @@ function duplicateOf(candidate: Candidate, existing: Candidate[]): boolean {
   });
 }
 
-function summaryFor(feed: Feed, title: string): string {
-  if (feed.locale === "es") {
-    return `${feed.name} pone el foco en ${title}. Una lectura breve para seguir de cerca la cultura del motor, la música y el diseño urbano, con el contexto original y la mirada editorial de un medio especializado.`;
-  }
-
-  return `${feed.name} leads with ${title}. A concise pointer for following the city’s wider conversation around vehicles, music, design and street culture, keeping the original reporting and its editorial context in view.`;
+function summaryFor(_feed: Feed, title: string, description: string): string {
+  // Texto descriptivo específico suministrado por la fuente RSS (no un resumen genérico inventado).
+  const clean = description.replace(/\s+/g, " ").trim();
+  if (!clean || normalize(clean) === normalize(title)) return title;
+  const withoutTitle = clean.toLowerCase().startsWith(title.toLowerCase())
+    ? clean.slice(title.length).replace(/^[\s:;.,–—-]+/, "").trim()
+    : clean;
+  if (!withoutTitle) return title;
+  if (withoutTitle.length <= 240) return withoutTitle;
+  const cut = withoutTitle.slice(0, 240);
+  return `${cut.slice(0, Math.max(1, cut.lastIndexOf(" "))).trim()}…`;
 }
 
 function countMatches(text: string, terms: string[]): number {
@@ -352,7 +358,7 @@ function parseFeed(xml: string, feed: Feed): Evaluation[] {
       region: feed.region,
       category: feed.category,
       title: title.replace(/\s+-\s+[^-]+$/, "").trim(),
-      summary: summaryFor(feed, title),
+      summary: summaryFor(feed, title, description),
       source: feed.name,
       sourceUrl,
       description,
@@ -564,6 +570,19 @@ export async function ingestNews(): Promise<{ fetched: number; saved: number; ac
     selected.map(enrichCandidateImage),
   );
 
+  // Solo pretraducir las tres candidatas más recientes de cada sección.
+  const featured = NEWS_LOCALES.flatMap((locale) =>
+    NEWS_REGIONS.flatMap((region) =>
+      NEWS_CATEGORIES.flatMap((category) =>
+        selectedWithImages
+          .filter((article) => article.locale === locale && article.region === region && article.category === category)
+          .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime() || b.editorialScore - a.editorialScore)
+          .slice(0, 3),
+      ),
+    ),
+  );
+  const translations = await translateNewsBatch(featured);
+
   let saved = 0;
   for (const candidate of selectedWithImages) {
     await prisma.newsArticle.upsert({
@@ -574,6 +593,8 @@ export async function ingestNews(): Promise<{ fetched: number; saved: number; ac
         category: candidate.category,
         title: candidate.title,
         summary: candidate.summary,
+        translatedTitle: translations.get(candidate.sourceUrl)?.title ?? null,
+        translatedSummary: translations.get(candidate.sourceUrl)?.summary ?? null,
         source: candidate.source,
         sourceUrl: candidate.sourceUrl,
         imageUrl: candidate.imageUrl,
@@ -581,7 +602,18 @@ export async function ingestNews(): Promise<{ fetched: number; saved: number; ac
         editorialScore: candidate.editorialScore,
         slug: slugFor(candidate.title, candidate.sourceUrl),
       },
-      update: { title: candidate.title, summary: candidate.summary, imageUrl: candidate.imageUrl, publishedAt: candidate.publishedAt, fetchedAt: new Date(), editorialScore: candidate.editorialScore },
+      update: {
+        title: candidate.title,
+        summary: candidate.summary,
+        imageUrl: candidate.imageUrl,
+        publishedAt: candidate.publishedAt,
+        fetchedAt: new Date(),
+        editorialScore: candidate.editorialScore,
+        ...(translations.has(candidate.sourceUrl) ? {
+          translatedTitle: translations.get(candidate.sourceUrl)!.title,
+          translatedSummary: translations.get(candidate.sourceUrl)!.summary,
+        } : {}),
+      },
     });
     saved += 1;
   }
@@ -623,11 +655,89 @@ export async function ingestNews(): Promise<{ fetched: number; saved: number; ac
       active += ids.length;
     }
   }
+  // Recupera traducciones de artículos ya activos que no llegaron en el RSS reciente.
+  const pending = await prisma.newsArticle.findMany({
+    where: { isActive: true, OR: [{ translatedTitle: null }, { translatedSummary: null }] },
+    select: { id: true, sourceUrl: true, locale: true, title: true, summary: true },
+    take: 50,
+  });
+  const validPending = pending.filter((article) => article.locale === "es" || article.locale === "en");
+  const backfill = await translateNewsBatch(validPending.map((article) => ({
+    sourceUrl: article.sourceUrl,
+    locale: article.locale as "es" | "en",
+    title: article.title,
+    summary: article.summary,
+  })));
+  for (const article of validPending) {
+    const translation = backfill.get(article.sourceUrl);
+    if (!translation) continue;
+    await prisma.newsArticle.update({
+      where: { id: article.id },
+      data: { translatedTitle: translation.title, translatedSummary: translation.summary },
+    });
+  }
+
   return { fetched: fetched.length, saved, active };
 }
 
 export async function getPublishedNews(locale: NewsLocale, region: NewsRegion) {
   return prisma.newsArticle.findMany({ where: { locale, region, isActive: true, editorialScore: { gte: 70 } }, orderBy: [{ category: "asc" }, { editorialScore: "desc" }, { publishedAt: "desc" }] });
+}
+
+/**
+ * Completa las traducciones de las noticias visibles sin esperar al cron RSS.
+ * Solo consulta DeepL para los registros que aún no tienen ambos campos.
+ * La traducción se guarda en PostgreSQL, evitando repetirla en visitas posteriores.
+ */
+export async function ensurePublishedNewsTranslations(
+  articles: Awaited<ReturnType<typeof getPublishedNews>>,
+): Promise<Awaited<ReturnType<typeof getPublishedNews>>> {
+  const pending = articles.filter(
+    (article) =>
+      (article.locale === "es" || article.locale === "en") &&
+      (!article.translatedTitle || !article.translatedSummary),
+  );
+  if (pending.length === 0) return articles;
+
+  const translations = await translateNewsBatch(
+    pending.map((article) => ({
+      sourceUrl: article.sourceUrl,
+      locale: article.locale as "es" | "en",
+      title: article.title,
+      summary: article.summary,
+    })),
+  );
+  if (translations.size === 0) return articles;
+
+  const results = await Promise.allSettled(
+    pending.flatMap((article) => {
+      const translation = translations.get(article.sourceUrl);
+      return translation
+        ? [prisma.newsArticle.update({
+            where: { id: article.id },
+            data: {
+              translatedTitle: translation.title,
+              translatedSummary: translation.summary,
+            },
+          })]
+        : [];
+    }),
+  );
+  for (const result of results) {
+    if (result.status === "rejected") {
+      console.error("VANMOTION_NEWS_TRANSLATION_SAVE_ERROR", result.reason);
+    }
+  }
+  return articles.map((article) => {
+    const translation = translations.get(article.sourceUrl);
+    return translation
+      ? {
+          ...article,
+          translatedTitle: translation.title,
+          translatedSummary: translation.summary,
+        }
+      : article;
+  });
 }
 
 export async function setNewsActive(id: string, isActive: boolean) {

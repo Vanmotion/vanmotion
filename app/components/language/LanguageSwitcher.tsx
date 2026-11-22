@@ -44,6 +44,9 @@ export default function LanguageSwitcher() {
     pathname === "/en-us/musica";
   const isEnglishMusicPage =
     pathname === "/en-us/musica";
+  const isNewsPage =
+    pathname === "/noticias" || pathname === "/en-us/noticias";
+  const isEnglishNewsPage = pathname === "/en-us/noticias";
   const isSpanishCollectionPage =
     pathname === "/coleccion" ||
     pathname.startsWith("/coleccion/");
@@ -61,13 +64,15 @@ export default function LanguageSwitcher() {
     isEnglishAwardsPage ||
     isEnglishMusicPage ||
     isEnglishCollectionPage ||
-    isEnglishCommunityPage
+    isEnglishCommunityPage ||
+    isEnglishNewsPage
       ? "en"
       : isSpanishPilotHome ||
           isSpanishCollectionPage ||
           (isAwardsPage && !isEnglishAwardsPage) ||
           (isMusicPage && !isEnglishMusicPage) ||
-          (isCommunityPage && !isEnglishCommunityPage)
+          (isCommunityPage && !isEnglishCommunityPage) ||
+          (isNewsPage && !isEnglishNewsPage)
         ? "es"
         : currentLanguage;
 
@@ -111,6 +116,23 @@ export default function LanguageSwitcher() {
         credentials: "same-origin",
       }).catch((error: unknown) => {
         console.error("VANMOTION_COMMUNITY_LANGUAGE_SAVE_ERROR", error);
+      });
+      return;
+    }
+
+    if (isNewsPage) {
+      // Cambio local, equivalente al de Community: no navegar, no saltar al inicio.
+      setLanguage(language);
+      window.history.replaceState(
+        null, "", language === "es" ? "/noticias" : "/en-us/noticias",
+      );
+      void fetch("/api/news/language", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language }),
+        credentials: "same-origin",
+      }).catch((error: unknown) => {
+        console.error("VANMOTION_NEWS_LANGUAGE_SAVE_ERROR", error);
       });
       return;
     }

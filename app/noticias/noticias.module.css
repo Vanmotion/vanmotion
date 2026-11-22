@@ -30,3 +30,265 @@
 .empty { grid-column: 1 / -1; padding: 36px; color: rgba(255,255,255,.4); font-size: 13px; }
 @media (max-width: 900px) { .page { padding: 0 24px 80px; } .grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
 @media (max-width: 600px) { .page { padding: 0 16px 64px; } .header { padding: 64px 0 48px; } .intro { font-size: 14px; } .editionHeader { align-items: start; flex-direction: column; gap: 18px; } .grid { grid-template-columns: 1fr; } .cardBody { min-height: 270px; } }
+
+/* VANMOTION SIGNATURE MOTION · START */
+/* Identidad editorial VANMOTION: foto viva, luz y línea dorada; sin emblemas superpuestos. */
+.card {
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform .44s cubic-bezier(.2, .8, .2, 1),
+    background .34s ease,
+    box-shadow .44s ease;
+}
+
+/* Firma fina que recorre el borde inferior, sin cambiar el tamaño de la ficha. */
+.card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  height: 2px;
+  background: linear-gradient(90deg, #a88951 0%, #ead6a7 47%, #a88951 100%);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .65s cubic-bezier(.2, .8, .2, 1);
+  pointer-events: none;
+}
+
+.imageFrame {
+  position: relative;
+  isolation: isolate;
+}
+.imageFrame img {
+  transition: transform .76s cubic-bezier(.2, .8, .2, 1), filter .55s ease;
+  transform: scale(1);
+}
+
+/* Barrido de luz sobre la foto; jamás oculta los textos ni el enlace. */
+.imageFrame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(115deg,
+    transparent 18%,
+    rgba(234, 214, 167, .13) 48%,
+    transparent 76%);
+  background-size: 250% 100%;
+  background-position: 150% center;
+  opacity: 0;
+  transition: opacity .35s ease, background-position .9s ease;
+  pointer-events: none;
+}
+.card h4 { transition: transform .38s ease, color .35s ease; }
+.summary { transition: color .35s ease, transform .38s ease; }
+.sourceLink span {
+  display: inline-block;
+  transition: transform .38s cubic-bezier(.2, .8, .2, 1), color .3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover,
+  .card:focus-within {
+    z-index: 2;
+    transform: translateY(-5px);
+    background: #101010;
+    box-shadow: 0 16px 38px rgba(0,0,0,.38),
+      0 0 0 1px rgba(201,168,106,.23);
+  }
+  .card:hover::after,
+  .card:focus-within::after { transform: scaleX(1); }
+  .card:hover .imageFrame img,
+  .card:focus-within .imageFrame img {
+    transform: scale(1.045);
+    filter: contrast(1.03) saturate(1.04);
+  }
+  .card:hover .imageFrame::after,
+  .card:focus-within .imageFrame::after {
+    opacity: 1;
+    background-position: -110% center;
+  }
+  .card:hover h4,
+  .card:focus-within h4 { transform: translateY(-3px); color: #fff; }
+  .card:hover .summary,
+  .card:focus-within .summary {
+    transform: translateY(-2px);
+    color: rgba(255,255,255,.63);
+  }
+  .card:hover .sourceLink span,
+  .card:focus-within .sourceLink span {
+    transform: translate(4px,-3px);
+    color: #e4c78c;
+  }
+}
+
+/* Accesibilidad: sin movimiento para quien haya pedido reducir animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card::after,
+  .imageFrame img,
+  .imageFrame::after,
+  .card h4,
+  .summary,
+  .sourceLink span {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+/* VANMOTION SIGNATURE MOTION · END */
+
+
+/* VANMOTION_NEWS_BRAND_SAME_AS_HOME_V2 — cabecera idéntica en marca al resto de VANMOTION.
+   Se usa home.module.css para color, tipografía, logo y animación original. */
+.brandBar {
+  display: flex;
+  align-items: center;
+  width: min(100%, 1400px);
+  min-height: 82px;
+  margin: 0 auto;
+  color: #f2efe8;
+  border-bottom: 1px solid rgba(242, 239, 232, .17);
+  position: relative;
+  z-index: 5;
+}
+.brandBar a:focus-visible {
+  outline: 2px solid #c9a86a;
+  outline-offset: 5px;
+}
+/* La cabecera pasa a estar precedida por la marca, sin añadir un gran salto. */
+.page .header { padding-top: 20px; }
+@media (max-width: 600px) {
+  .brandBar { min-height: 74px; }
+  .page .header { padding-top: 20px; }
+}
+
+
+/* VANMOTION_MOBILE_EDITORIAL_MOTION_V1 · Noticias táctiles
+   Desktop 3 columnas y tablet 2 columnas permanecen sin modificaciones.
+   No altera los estilos de la marca ni los contenidos bilingües. */
+.mobilePagination { display: none; }
+
+@media (max-width: 600px) {
+  .page .grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 16px;
+    scrollbar-width: none;
+    border: 0;
+    padding: 10px 16px 18px;
+    margin: 0 -16px;
+    align-items: stretch;
+  }
+  .page .grid::-webkit-scrollbar { display: none; }
+  .page .grid > .card {
+    flex: 0 0 min(82vw, 385px);
+    width: min(82vw, 385px);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    border: 1px solid rgba(255, 255, 255, .13);
+    background: #0c0c0c;
+    border-radius: 2px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .16);
+  }
+  .page .grid .cardBody { min-height: 270px; }
+  .page .grid .card h4 { font-size: clamp(18px, 5vw, 22px); }
+  .page .grid .summary { font-size: 12.5px; }
+  .page .grid .imageFrame { aspect-ratio: 16 / 9; }
+  .mobilePagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    margin: 0 auto 4px;
+    min-height: 34px;
+  }
+  .mobilePaginationButton,
+  .mobilePaginationActive {
+    appearance: none;
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    width: 40px;
+    height: 34px;
+    cursor: pointer;
+    flex: none;
+  }
+  .mobilePaginationButton::after,
+  .mobilePaginationActive::after {
+    content: "";
+    display: block;
+    width: 25px;
+    height: 2px;
+    background: rgba(242,239,232,.24);
+    transition: background .28s ease, width .28s ease, box-shadow .28s ease;
+  }
+  .mobilePaginationActive::after {
+    width: 30px;
+    background: #c9a86a;
+    box-shadow: 0 0 10px rgba(201, 168, 106, .25);
+  }
+  .mobilePaginationButton:focus-visible,
+  .mobilePaginationActive:focus-visible {
+    outline: 2px solid #c9a86a;
+    outline-offset: -1px;
+  }
+  /* La tarjeta central tiene un pequeño acento cinematográfico sin hover. */
+  .page .grid[data-active-index="0"] > .card:nth-child(1),
+  .page .grid[data-active-index="1"] > .card:nth-child(2),
+  .page .grid[data-active-index="2"] > .card:nth-child(3),
+  .page .grid > .card:focus-within {
+    box-shadow: 0 12px 28px rgba(0,0,0,.28), 0 0 0 1px rgba(201,168,106,.26);
+  }
+  .page .grid[data-active-index="0"] > .card:nth-child(1)::after,
+  .page .grid[data-active-index="1"] > .card:nth-child(2)::after,
+  .page .grid[data-active-index="2"] > .card:nth-child(3)::after,
+  .page .grid > .card:focus-within::after {
+    transform: scaleX(1);
+  }
+  .page .grid[data-active-index="0"] > .card:nth-child(1) .imageFrame img,
+  .page .grid[data-active-index="1"] > .card:nth-child(2) .imageFrame img,
+  .page .grid[data-active-index="2"] > .card:nth-child(3) .imageFrame img,
+  .page .grid > .card:focus-within .imageFrame img {
+    transform: scale(1.035);
+    filter: contrast(1.035) saturate(1.035);
+  }
+  .page .grid[data-active-index="0"] > .card:nth-child(1) h4,
+  .page .grid[data-active-index="1"] > .card:nth-child(2) h4,
+  .page .grid[data-active-index="2"] > .card:nth-child(3) h4 {
+    color: #fff;
+  }
+}
+@media (max-width: 600px) and (prefers-reduced-motion: no-preference) {
+  .page .grid > .card {
+    animation: vanmotionMobileNewsReveal .58s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .page .grid > .card:nth-child(2) { animation-delay: 65ms; }
+  .page .grid > .card:nth-child(3) { animation-delay: 130ms; }
+  @keyframes vanmotionMobileNewsReveal {
+    from { opacity: .65; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+@media (max-width: 600px) and (prefers-reduced-motion: reduce) {
+  .page .grid { scroll-behavior: auto; }
+  .page .grid > .card { animation: none !important; }
+  .mobilePaginationButton::after,
+  .mobilePaginationActive::after { transition: none !important; }
+}
+
+
+/* VANMOTION · Ocultar contador de noticias */
+.categoryHeader > span {
+  display: none;
+}
