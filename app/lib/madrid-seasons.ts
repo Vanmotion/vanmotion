@@ -28,6 +28,15 @@ export function getMadridSeason(date = new Date()): Season {
   const events = Seasons(year);
   const now = date.getTime();
 
+  // VANMOTION: adelanto excepcional del invierno 2026.
+  // Desde 2027 se mantiene el calendario astronómico.
+  if (
+    year === 2026 &&
+    now >= Date.parse("2026-11-25T00:00:00+01:00")
+  ) {
+    return "winter";
+  }
+
   if (now >= events.dec_solstice.date.getTime()) return "winter";
   if (now >= events.sep_equinox.date.getTime()) return "autumn";
   if (now >= events.jun_solstice.date.getTime()) return "summer";
