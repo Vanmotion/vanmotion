@@ -299,9 +299,9 @@ const CLOTHING_PRODUCTS = [
     colorCode: "NEGRO",
     color: "Negro",
     material: "Composición prevista · pendiente de confirmar con proveedor",
-    description: "Chaqueta acolchada de invierno con capucha fija, cierre frontal y bolsillos laterales con cremallera. Ligera, pensada para los desplazamientos diarios y las escapadas de invierno. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
-    descriptionEn: "Lightweight padded winter jacket with a fixed hood, front zip and zipped side pockets. Designed for everyday journeys and winter getaways. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
-    sizes: ["S", "M", "L", "XL", "XXL"],
+    description: "Chaqueta acolchada en negro mate, con capucha envolvente, cremallera frontal y bolsillos laterales. Una silueta sobria para los días fríos, los trayectos urbanos y las escapadas de invierno. Propuesta de colección sin logotipos exteriores, con etiqueta interior VANMOTION. Imágenes conceptuales generadas con IA; el producto final puede variar. Composición, etiquetado y tallas pendientes de confirmar antes de la venta.",
+    descriptionEn: "Matte black padded jacket with an enveloping hood, front zip and side pockets. An understated silhouette for cold days, city journeys and winter escapes. Collection concept with no external branding and a VANMOTION inner label. AI-generated concept images; the final product may differ. Composition, labelling and sizes to be confirmed before sale.",
+    sizes: ["S","M","L"],
     initialPrice: "69.90",
     sortOrder: -6,
   },
@@ -316,9 +316,9 @@ const CLOTHING_PRODUCTS = [
     colorCode: "NEGRO",
     color: "Negro",
     material: "Composición prevista · pendiente de confirmar con proveedor",
-    description: "Chaqueta de borreguito de 450 g/m², con cuello alto, cremallera frontal, bolsillos con cremallera y corte relajado. Una capa cálida de estética urbana para la ciudad y la naturaleza. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
-    descriptionEn: "Relaxed-fit 450 gsm sherpa jacket with a high collar, front zip and zipped pockets. A warm urban-inspired layer for the city and the outdoors. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    description: "Chaqueta de textura borreguito en negro, cuello alto y cierre frontal con cremallera. Una pieza de carácter natural y relajado, concebida para combinar la vida urbana con las escapadas al aire libre. Propuesta de colección sin logotipos exteriores, con etiqueta interior VANMOTION. Imágenes conceptuales generadas con IA; el producto final puede variar. Composición, etiquetado y tallas pendientes de confirmar antes de la venta.",
+    descriptionEn: "Black sherpa-textured jacket with a high collar and front zip. A relaxed piece with a natural character, designed for city life and outdoor escapes. Collection concept with no external branding and a VANMOTION inner label. AI-generated concept images; the final product may differ. Composition, labelling and sizes to be confirmed before sale.",
+    sizes: ["S","M","L"],
     initialPrice: "89.90",
     sortOrder: -5,
   },
@@ -333,9 +333,9 @@ const CLOTHING_PRODUCTS = [
     colorCode: "NEGRO",
     color: "Negro",
     material: "Composición prevista · pendiente de confirmar con proveedor",
-    description: "Sudadera de 350 g/m² con capucha, bolsillo canguro y tacto suave. Silueta de ajuste medio y estética sobria para combinar con las prendas de la colección. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
-    descriptionEn: "350 gsm hoodie with a kangaroo pocket and a soft feel. A contemporary medium fit and understated styling for everyday layering. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    description: "Sudadera negra con capucha, cordones a tono y bolsillo canguro. Líneas amplias, puños y bajo de canalé y una presencia discreta que encaja tanto en la ciudad como en carretera. Propuesta de colección sin logotipos exteriores, con etiqueta interior VANMOTION. Imágenes conceptuales generadas con IA; el producto final puede variar. Composición, etiquetado y tallas pendientes de confirmar antes de la venta.",
+    descriptionEn: "Black hoodie with tonal drawcords and a kangaroo pocket. Relaxed lines, ribbed cuffs and hem, and understated styling for the city or the open road. Collection concept with no external branding and a VANMOTION inner label. AI-generated concept images; the final product may differ. Composition, labelling and sizes to be confirmed before sale.",
+    sizes: ["S","M","L"],
     initialPrice: "59.90",
     sortOrder: -4,
   },
@@ -350,9 +350,9 @@ const CLOTHING_PRODUCTS = [
     colorCode: "NEGRO",
     color: "Negro",
     material: "Composición prevista · pendiente de confirmar con proveedor",
-    description: "Sudadera de cuello redondo de 350 g/m², de ajuste medio y acabado interior cepillado. Una pieza esencial de invierno de líneas limpias, fácil de combinar. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
-    descriptionEn: "350 gsm crewneck sweatshirt with a medium fit and brushed inner finish. A clean-lined winter essential for effortless layering. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    description: "Sudadera negra de cuello redondo, hombros relajados y remates de canalé. Una pieza esencial de líneas limpias, pensada para vestir por capas y acompañarte cada día sin estridencias. Propuesta de colección sin logotipos exteriores, con etiqueta interior VANMOTION. Imágenes conceptuales generadas con IA; el producto final puede variar. Composición, etiquetado y tallas pendientes de confirmar antes de la venta.",
+    descriptionEn: "Black crewneck sweatshirt with relaxed shoulders and ribbed trims. A clean-lined everyday essential, designed for effortless layering and understated style. Collection concept with no external branding and a VANMOTION inner label. AI-generated concept images; the final product may differ. Composition, labelling and sizes to be confirmed before sale.",
+    sizes: ["S","M","L"],
     initialPrice: "49.90",
     sortOrder: -3,
   },
@@ -367,9 +367,9 @@ const CLOTHING_PRODUCTS = [
     colorCode: "NEGRO",
     color: "Negro",
     material: "Composición prevista · pendiente de confirmar con proveedor",
-    description: "Chaqueta softshell de dos capas con cuello alto, cremallera e interior micropolar de 300 g/m². Una prenda funcional para la conducción, las rutas y el uso cotidiano. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
-    descriptionEn: "Two-layer softshell jacket with a high collar, zip fastening and a warm microfleece lining. A functional layer for driving, road trips and everyday wear. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
-    sizes: ["S", "M", "L", "XL", "XXL"],
+    description: "Chaqueta de estilo softshell en negro, con cuello alto, cremallera frontal y bolsillos laterales. Su silueta depurada conecta la estética urbana con la cultura del automóvil y los viajes. Propuesta de colección sin logotipos exteriores, con etiqueta interior VANMOTION. Imágenes conceptuales generadas con IA; el producto final puede variar. Composición, etiquetado y tallas pendientes de confirmar antes de la venta.",
+    descriptionEn: "Black softshell-style jacket with a high collar, front zip and side pockets. Its clean silhouette connects urban style with automotive culture and travel. Collection concept with no external branding and a VANMOTION inner label. AI-generated concept images; the final product may differ. Composition, labelling and sizes to be confirmed before sale.",
+    sizes: ["S","M","L"],
     initialPrice: "64.90",
     sortOrder: -2,
   },
@@ -384,8 +384,8 @@ const CLOTHING_PRODUCTS = [
     colorCode: "NEGRO",
     color: "Negro",
     material: "Composición prevista · pendiente de confirmar con proveedor",
-    description: "Gorro de punto de doble capa con vuelta y tacto suave. Un accesorio de invierno de diseño discreto para completar la colección. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
-    descriptionEn: "Soft-touch double-layer knitted beanie with a fold-up cuff. An understated winter accessory to complete the collection. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
+    description: "Gorro negro de punto acanalado con vuelta. Un accesorio sencillo y atemporal que completa la colección de invierno con una estética discreta y monocromática. Propuesta de colección sin logotipos exteriores, con etiqueta interior VANMOTION. Imágenes conceptuales generadas con IA; el producto final puede variar. Composición, etiquetado y tallas pendientes de confirmar antes de la venta.",
+    descriptionEn: "Black rib-knit beanie with a folded cuff. A simple, timeless accessory that completes the winter collection with an understated monochrome aesthetic. Collection concept with no external branding and a VANMOTION inner label. AI-generated concept images; the final product may differ. Composition, labelling and sizes to be confirmed before sale.",
     sizes: ["UNICA"],
     initialPrice: "19.90",
     sortOrder: -1,
@@ -934,12 +934,158 @@ export async function createCarpeDiemProductAction(): Promise<void> {
 
 export async function createWinterCollectionAction(): Promise<void> {
   await requireAdminSession();
+  const winterGallery: Record<string, { view: string; sortOrder: number; url: string }[]> = {
+  "urban-puffer-black-drop-02": [
+    {
+      "view": "LIFESTYLE",
+      "sortOrder": 0,
+      "url": "/ropa/drop02/urban-puffer/lifestyle-a20690d5cbb9791a4510.webp"
+    },
+    {
+      "view": "FRONT",
+      "sortOrder": 1,
+      "url": "/ropa/drop02/urban-puffer/front-aa6f97ebaebe257ac5d9.webp"
+    },
+    {
+      "view": "BACK",
+      "sortOrder": 2,
+      "url": "/ropa/drop02/urban-puffer/back-0162a72b1ce9347cfdee.webp"
+    },
+    {
+      "view": "DETAIL",
+      "sortOrder": 3,
+      "url": "/ropa/drop02/urban-puffer/detail-0e838eb1969ec9dfbd2d.webp"
+    }
+  ],
+  "polar-expedition-black-drop-02": [
+    {
+      "view": "LIFESTYLE",
+      "sortOrder": 0,
+      "url": "/ropa/drop02/polar-expedition/lifestyle-2931e9ebf57e7ab4ff22.webp"
+    },
+    {
+      "view": "FRONT",
+      "sortOrder": 1,
+      "url": "/ropa/drop02/polar-expedition/front-cf577c88ef01ac3b2808.webp"
+    },
+    {
+      "view": "BACK",
+      "sortOrder": 2,
+      "url": "/ropa/drop02/polar-expedition/back-6a0aef618bb7c139cf27.webp"
+    },
+    {
+      "view": "DETAIL",
+      "sortOrder": 3,
+      "url": "/ropa/drop02/polar-expedition/detail-7e9356648ae1e4ec3c7b.webp"
+    }
+  ],
+  "heavyweight-hoodie-black-drop-02": [
+    {
+      "view": "LIFESTYLE",
+      "sortOrder": 0,
+      "url": "/ropa/drop02/heavyweight-hoodie/lifestyle-59972330c086e22c23d3.webp"
+    },
+    {
+      "view": "FRONT",
+      "sortOrder": 1,
+      "url": "/ropa/drop02/heavyweight-hoodie/front-c1ff5a6808f1bef23d99.webp"
+    },
+    {
+      "view": "BACK",
+      "sortOrder": 2,
+      "url": "/ropa/drop02/heavyweight-hoodie/back-f20e060920db901d8b65.webp"
+    },
+    {
+      "view": "DETAIL",
+      "sortOrder": 3,
+      "url": "/ropa/drop02/heavyweight-hoodie/detail-204c32328ca5007f157a.webp"
+    }
+  ],
+  "heavyweight-crewneck-black-drop-02": [
+    {
+      "view": "LIFESTYLE",
+      "sortOrder": 0,
+      "url": "/ropa/drop02/heavyweight-crewneck/lifestyle-95c2d531f2bb7c06f1a4.webp"
+    },
+    {
+      "view": "FRONT",
+      "sortOrder": 1,
+      "url": "/ropa/drop02/heavyweight-crewneck/front-a4e9b446ae048d71a26e.webp"
+    },
+    {
+      "view": "BACK",
+      "sortOrder": 2,
+      "url": "/ropa/drop02/heavyweight-crewneck/back-31d85de214107f695401.webp"
+    },
+    {
+      "view": "DETAIL",
+      "sortOrder": 3,
+      "url": "/ropa/drop02/heavyweight-crewneck/detail-1c1e440cfd097f33a802.webp"
+    }
+  ],
+  "motion-softshell-black-drop-02": [
+    {
+      "view": "LIFESTYLE",
+      "sortOrder": 0,
+      "url": "/ropa/drop02/motion-softshell/lifestyle-cc573fe7fe9780890957.webp"
+    },
+    {
+      "view": "FRONT",
+      "sortOrder": 1,
+      "url": "/ropa/drop02/motion-softshell/front-54e57f1ae3078caa9ecf.webp"
+    },
+    {
+      "view": "BACK",
+      "sortOrder": 2,
+      "url": "/ropa/drop02/motion-softshell/back-5813b8ca5e76686125b6.webp"
+    },
+    {
+      "view": "DETAIL",
+      "sortOrder": 3,
+      "url": "/ropa/drop02/motion-softshell/detail-5014449fd58b6642f01a.webp"
+    }
+  ],
+  "urban-beanie-black-drop-02": [
+    {
+      "view": "LIFESTYLE",
+      "sortOrder": 0,
+      "url": "/ropa/drop02/urban-beanie/lifestyle-aff8bd95d3055cee3586.webp"
+    },
+    {
+      "view": "FRONT",
+      "sortOrder": 1,
+      "url": "/ropa/drop02/urban-beanie/front-371bcac682b65313d029.webp"
+    },
+    {
+      "view": "BACK",
+      "sortOrder": 2,
+      "url": "/ropa/drop02/urban-beanie/back-f771538c79615810caa3.webp"
+    },
+    {
+      "view": "DETAIL",
+      "sortOrder": 3,
+      "url": "/ropa/drop02/urban-beanie/detail-197ece129f6c45eb7231.webp"
+    }
+  ]
+};
+  const configurations = CLOTHING_PRODUCTS.filter((item) => item.slug.endsWith("-drop-02"));
+  if (configurations.length !== 6 || configurations.some((item) => winterGallery[item.slug]?.length !== 4)) {
+    throw new Error("Configuración DROP 02 incompleta.");
+  }
   await prisma.$transaction(async (tx) => {
-    for (const configuration of CLOTHING_PRODUCTS.filter((item) => item.slug.endsWith("-drop-02"))) {
-      await tx.product.upsert({
+    for (const configuration of configurations) {
+      const existing = await tx.product.findUnique({
         where: { slug: configuration.slug },
-        update: {},
-        create: {
+        include: { images: true },
+      });
+      if (existing) {
+        if (existing.collection !== configuration.collection || existing.category !== "CLOTHING" || !["LIFESTYLE", "FRONT", "BACK", "DETAIL"].every((view) => existing.images.some((image) => image.view === view))) {
+          throw new Error("Existe una ficha DROP 02 incompleta o incompatible; no se sobrescribe: " + configuration.slug);
+        }
+        continue;
+      }
+      await tx.product.create({
+        data: {
           slug: configuration.slug,
           name: configuration.name,
           subtitle: configuration.subtitle,
@@ -952,19 +1098,24 @@ export async function createWinterCollectionAction(): Promise<void> {
           color: configuration.color,
           price: configuration.initialPrice,
           currency: "EUR",
-          status: "DRAFT",
-          active: false,
+          status: "COMING_SOON",
+          active: true,
           featured: false,
           sortOrder: configuration.sortOrder,
           variants: { create: configuration.sizes.map((size, index) => ({
             size, sku: `${configuration.skuPrefix}-${size}`, stock: 0,
             active: true, sortOrder: index,
           })) },
+          images: { create: winterGallery[configuration.slug].map((image) => ({
+            ...image, alt: configuration.name + " · visualización conceptual / AI-generated concept · " + image.view,
+          })) },
         },
       });
     }
-  });
+  }, { timeout: 30000 });
   refreshClothingPages();
+  for (const configuration of configurations) revalidatePath("/ropa/" + configuration.slug);
+  revalidatePath("/sitemap.xml");
 }
 
 export async function updateProductAction(formData: FormData): Promise<void> {
