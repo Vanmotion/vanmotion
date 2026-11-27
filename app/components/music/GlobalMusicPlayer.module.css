@@ -4863,3 +4863,82 @@ button.recommendationMusicMenuToggle {
 }
 }
 @media (max-width:350px) and (min-height:500px) { .recommendationMobileInfo .recommendationMobileCover { width:44px; } .recommendationMobileInfo .recommendationMobileTitle { font-size:10px; -webkit-line-clamp:2; } .recommendationMobileInfo .recommendationMobileArtist { font-size:9px; -webkit-line-clamp:1; } }
+
+/* VANMOTION V13 — desktop panoramic video. Mobile V12 and the projected monitor are unchanged. */
+@media (min-width:1024px) {
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) {
+  width:clamp(360px,26vw,380px) !important;
+  max-width:calc(100vw - 28px) !important;
+  padding:0 !important;
+  box-shadow:none !important;
+}
+/* Community retains its dedicated position and column width. */
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage {
+  position:relative !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:0 !important;
+  padding:0 !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageHeader,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageHeader {
+  position:absolute !important;
+  inset:0 0 auto 0 !important;
+  z-index:4 !important;
+  min-height:32px !important;
+  height:32px !important;
+  width:100% !important;
+  padding:0 5px 0 9px !important;
+  border:0 !important;
+  background:linear-gradient(180deg,rgba(0,0,0,.85),rgba(0,0,0,.56)) !important;
+  pointer-events:none !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageControls,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageControls {
+  pointer-events:auto !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageControls button,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageControls button {
+  pointer-events:auto !important;
+  width:29px !important;
+  min-width:29px !important;
+  height:30px !important;
+  min-height:30px !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageLabel,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageLabel {
+  text-shadow:0 1px 3px #000;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage .youtubeEmbed,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage .youtubeEmbed {
+  display:block !important;
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:16 / 9 !important;
+  min-height:0 !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  object-fit:contain !important;
+}
+/* YouTube requires at least 200px in both dimensions. No iframe cropping. */
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded)[data-vm-video-provider="youtube"] .recommendationStage .youtubeEmbed,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded)[data-vm-video-provider="youtube"] .recommendationStage .youtubeEmbed {
+  aspect-ratio:16 / 9 !important;
+  height:auto !important;
+  min-height:200px !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage .youtubeEmbed iframe,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage .youtubeEmbed iframe {
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+}
+}
