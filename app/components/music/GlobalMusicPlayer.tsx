@@ -15,6 +15,7 @@ import { useLanguage } from "@/app/components/language/LanguageProvider";
 export type GlobalMusicRecommendation = {
   id: string;
   title: string;
+  artist?: string | null;
   videoUrl: string | null;
   coverUrl: string | null;
 };
@@ -1089,6 +1090,28 @@ export default function GlobalMusicPlayer({
               <p>{content.videoUnavailable}</p>
             </div>
           )}
+
+          {/* VANMOTION V12: metadata beside the video on portrait mobile. */}
+          <div className={styles.recommendationMobileInfo}>
+            {activeRecommendationData.coverUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={activeRecommendationData.coverUrl}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className={styles.recommendationMobileCover}
+              />
+            )}
+            <strong className={styles.recommendationMobileTitle} title={activeRecommendationData.title}>
+              {activeRecommendationData.title}
+            </strong>
+            {activeRecommendationData.artist && (
+              <span className={styles.recommendationMobileArtist} title={activeRecommendationData.artist}>
+                {activeRecommendationData.artist}
+              </span>
+            )}
+          </div>
 
           {recommendationError && (
             <div className={styles.recommendationError} role="alert">

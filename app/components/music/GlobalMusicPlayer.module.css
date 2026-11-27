@@ -4798,3 +4798,68 @@ button.recommendationMusicMenuToggle {
 .player .expandedContent:not([hidden]) .recommendedInPlayer .spotifyRecommendedTrack { color:#E5E2DC !important; }
 .player .expandedContent:not([hidden]) .recommendedInPlayer .spotifyRecommendedTrack:hover,
 .player .expandedContent:not([hidden]) .recommendedInPlayer .spotifyRecommendedTrack:focus-visible { color:#FFFFFF !important; }
+
+/* VANMOTION V11 — mobile controls above media. */
+@media (max-width:1023px) and (min-height:500px) {
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage {
+  display:grid !important; grid-template-columns:minmax(0,1fr) !important; grid-template-rows:auto auto !important; gap:4px !important; max-width:320px !important; width:100% !important; margin:0 auto !important; align-items:center !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageHeader,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageHeader {
+  grid-column:1 !important; grid-row:1 !important; flex-direction:row !important; flex-wrap:nowrap !important; justify-content:space-between !important; align-items:center !important; min-height:40px !important; padding:0 2px !important; gap:4px !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageLabel,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageLabel {
+  flex:1 1 auto !important; min-width:0 !important; white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageControls,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageControls {
+  flex:0 0 auto !important; flex-wrap:nowrap !important; width:auto !important; justify-content:flex-end !important; gap:2px !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageControls button,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageControls button {
+  flex:0 0 36px !important; width:36px !important; min-width:36px !important; height:40px !important; min-height:40px !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage .youtubeEmbed,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage .youtubeEmbed {
+  grid-column:1 !important; grid-row:2 !important; justify-self:center !important; object-fit:contain !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationError,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationError {
+  grid-column:1 !important; grid-row:auto !important;
+}
+}
+
+/* VANMOTION V12 — mobile video with editorial track card. */
+.recommendationMobileInfo { display:none !important; }
+@media (max-width:1023px) and (min-height:500px) {
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded),
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) {
+  max-height:max(45dvh, calc(262px + env(safe-area-inset-bottom, 0px))) !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage {
+  grid-template-columns:minmax(200px, 1.75fr) minmax(0,1fr) !important; grid-template-rows:auto auto !important; column-gap:10px !important; row-gap:5px !important; max-width:420px !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageHeader,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStageHeader {
+  grid-column:1 / -1 !important; grid-row:1 !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage .youtubeEmbed,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationStage .youtubeEmbed {
+  grid-column:1 !important; grid-row:2 !important; align-self:center !important;
+}
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationMobileInfo,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationMobileInfo {
+  display:flex !important; grid-column:2; grid-row:2; flex-direction:column; align-items:flex-start; justify-content:center; gap:4px; min-width:0; width:100%; padding:0 2px; overflow:hidden; text-align:left;
+}
+.recommendationMobileInfo .recommendationMobileCover { display:block; width:clamp(44px, 15vw, 68px); max-width:100%; height:auto; aspect-ratio:1; object-fit:cover; border:1px solid rgba(201,168,106,.32); border-radius:3px; }
+.recommendationMobileInfo .recommendationMobileTitle { color:#F5F2ED; font-size:11px; line-height:1.25; font-weight:700; overflow-wrap:anywhere; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; }
+.recommendationMobileInfo .recommendationMobileArtist { color:#C9A86A; font-size:10px; line-height:1.2; overflow-wrap:anywhere; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
+:global([data-vm-video-dock="standard"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationError,
+:global([data-vm-video-dock="community"]) .player.recommendationActive[data-vm-video-provider][data-vm-video-provider]:not(.audioLibraryMode):is(.recommendationMinimized,.expanded):not(.expanded) .recommendationError {
+  grid-column:1 / -1 !important; grid-row:auto !important;
+}
+}
+@media (max-width:350px) and (min-height:500px) { .recommendationMobileInfo .recommendationMobileCover { width:44px; } .recommendationMobileInfo .recommendationMobileTitle { font-size:10px; -webkit-line-clamp:2; } .recommendationMobileInfo .recommendationMobileArtist { font-size:9px; -webkit-line-clamp:1; } }
