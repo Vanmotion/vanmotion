@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   usePathname,
   useRouter,
@@ -11,6 +11,27 @@ import type { Language } from "@/app/language";
 import { useLanguage } from "./LanguageProvider";
 
 import styles from "./LanguageSwitcher.module.css";
+
+// VANMOTION_COMMUNITY_CLOCK_V08
+// Mismo formato y zona horaria que el reloj de portada, sin llamadas externas.
+function CommunityMadridClock() {
+  const [time, setTime] = useState("--:--");
+
+  useEffect(() => {
+    const formatter = new Intl.DateTimeFormat("es-ES", {
+      timeZone: "Europe/Madrid",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const update = () => setTime(formatter.format(new Date()));
+    update();
+    const interval = window.setInterval(update, 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return <span className={styles.communityMadridClock}>MADRID · {time}</span>;
+}
 
 export default function LanguageSwitcher() {
   const pathname = usePathname();
@@ -254,6 +275,8 @@ export default function LanguageSwitcher() {
       >
         <span aria-hidden="true">🇬🇧</span>
       </button>
+
+      {isCommunityPage && <CommunityMadridClock />}
     </div>
   );
 }

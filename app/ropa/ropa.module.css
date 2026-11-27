@@ -2807,3 +2807,16 @@
     transform: none !important;
   }
 }
+
+
+/* VANMOTION CONTACT ARROW V07 — el enlace conserva toda su superficie clicable. */
+.contact > a {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+}
+.contact > a > span:first-child,
+.contact > a > span:last-child {
+  flex: 0 0 auto;
+}

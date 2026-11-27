@@ -143,7 +143,7 @@ function getVimeoEmbedUrl(value: string | null): string | null {
       .find((part) => /^\d+$/.test(part));
 
     return id
-      ? `https://player.vimeo.com/video/${id}?dnt=1&autoplay=0&loop=0&autopause=0`
+      ? `https://player.vimeo.com/video/${id}?dnt=1&autoplay=0&loop=0&autopause=0&fullscreen=0`
       : null;
   } catch {
     return null;
@@ -157,6 +157,7 @@ export default function GlobalMusicPlayer({
   const content = translations[language];
   const pathname = usePathname();
   const previousPathnameRef = useRef(pathname);
+  const dockAsideRef = useRef<HTMLElement | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [audioLibraryOpen, setAudioLibraryOpen] = useState(false);
   const [activeRecommendation, setActiveRecommendation] =
@@ -206,6 +207,23 @@ export default function GlobalMusicPlayer({
     activeRecommendationData?.videoUrl?.trim() || null;
 
   const activeYouTubeId = getYouTubeVideoId(recommendationVideoUrl);
+
+  // V02: reserve only the actual dock height on narrow screens.
+  useEffect(() => {
+    const element = dockAsideRef.current;
+    if (!element || !activeRecommendationData) return;
+    const root = document.documentElement;
+    const update = () => {
+      root.style.setProperty("--vm-video-dock-height", `${Math.ceil(element.getBoundingClientRect().height)}px`);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty("--vm-video-dock-height");
+    };
+  }, [activeRecommendationData, pathname]);
 
   const [preferVp9Video, setPreferVp9Video] =
     useState(false);
@@ -360,6 +378,7 @@ export default function GlobalMusicPlayer({
       recommendationVideoRef.current?.pause();
 
       setRecommendationIsPlaying(false);
+      setAudioLibraryOpen(false);
       setActiveRecommendation(null);
       setVideoSessionActive(false);
       setRecommendationVideoState(null, false);
@@ -380,7 +399,25 @@ export default function GlobalMusicPlayer({
     }
   }, [pathname]);
 
+  // Ford LAB: native audio playback takes precedence over the recommended video.
+  useEffect(() => {
+    const route = pathname.replace(/^\/en-us(?=\/|$)/, "");
+    if (!/^\/(ford-lab(?:-3d)?(?:\/|$)|coleccion\/[^/]+)/.test(route)) return;
+    const prioritizeEngine = (event: Event) => {
+      if (!(event.target instanceof HTMLAudioElement) || !activeRecommendationData) return;
+      if (event.target.closest("aside")) return;
+      recommendationStartingRef.current = false;
+      recommendationAutoplayRef.current = false;
+      recommendationVideoRef.current?.pause();
+      if (vimeoControllerRef.current) void vimeoControllerRef.current.pause().catch(() => {});
+      setRecommendationIsPlaying(false);
+    };
+    document.addEventListener("play", prioritizeEngine, true);
+    return () => document.removeEventListener("play", prioritizeEngine, true);
+  }, [pathname, activeRecommendationData]);
+
   function closeRecommendation() {
+    setExpanded(false);
     setAudioLibraryOpen(false);
     recommendationStartingRef.current = false;
     recommendationAutoplayRef.current = false;
@@ -415,6 +452,7 @@ export default function GlobalMusicPlayer({
     recommendationStartingRef.current = true;
 
     flushSync(() => {
+      setAudioLibraryOpen(false);
       setActiveRecommendation(recommendationId);
       setRecommendationIsPlaying(
         !Boolean(getVimeoEmbedUrl(selectedRecommendation.videoUrl))
@@ -664,9 +702,12 @@ export default function GlobalMusicPlayer({
 
   return (
     <aside
+      ref={dockAsideRef}
       data-active-recommendation-id={activeRecommendationData?.id}
+      data-vm-video-provider={activeYouTubeId ? "youtube" : "other"}
+      data-vm-video-expanded={expanded ? "true" : "false"}
       className={`${styles.player} ${
-        audioLibraryOpen ? styles.audioLibraryMode : ""
+        audioLibraryOpen ? styles.libraryPopoverOpen : ""
       } ${
         expanded ? styles.expanded : ""
       } ${
@@ -705,8 +746,10 @@ export default function GlobalMusicPlayer({
         <button
           type="button"
           className={styles.switchToMusicButton}
+                aria-expanded={audioLibraryOpen}
+                aria-controls="vanmotion-recommendation-music-list"
           onClick={() => {
-            setAudioLibraryOpen(true);
+            setAudioLibraryOpen((current) => !current);
           }}
           aria-label={
             language === "es"
@@ -849,7 +892,7 @@ export default function GlobalMusicPlayer({
         <div className={styles.recommendationStage}>
           <div className={styles.recommendationStageHeader}>
             <span className={styles.recommendationStageLabel}>
-              {language === "es" ? "RECOMENDADO" : "RECOMMENDED"}
+              {language === "es" ? "SELECCIÓN VM" : "VM SELECTION"}
             </span>
 
             <div className={styles.recommendationStageControls}>
@@ -913,27 +956,24 @@ export default function GlobalMusicPlayer({
               >
                 →
               </button>
-
-
-
               <button
                 type="button"
-                className={styles.recommendationSizeToggle}
-                onClick={() => setExpanded((current) => !current)}
-                aria-expanded={expanded}
-                aria-label={
-                  expanded
-                    ? content.minimizeRecommendation
-                    : content.expandRecommendation
-                }
-                title={
-                  expanded
-                    ? content.minimizeRecommendation
-                    : content.expandRecommendation
-                }
-              >
-                {expanded ? "↙" : "⛶"}
-              </button>
+                className={styles.dockLibraryButton}
+                aria-expanded={audioLibraryOpen}
+                aria-controls="vanmotion-recommendation-music-list"
+                onClick={() => {
+                  setAudioLibraryOpen((current) => !current);
+                }}
+                aria-label={language === "es" ? "Elegir música VANMOTION" : "Choose VANMOTION music"}
+                title={language === "es" ? "Música VANMOTION" : "VANMOTION music"}
+              >♫</button>
+              <button
+                type="button"
+                className={styles.dockCloseButton}
+                onClick={closeRecommendation}
+                aria-label={content.closeRecommendation}
+                title={content.closeRecommendation}
+              >×</button>
             </div>
           </div>
 
@@ -965,8 +1005,7 @@ export default function GlobalMusicPlayer({
               src={getVimeoEmbedUrl(recommendationVideoUrl)!}
               title={activeRecommendationData.title}
               className={styles.youtubeEmbed}
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
+              allow="autoplay"
             />
           ) : recommendationPlaybackUrl ? (
             <video
@@ -1112,6 +1151,7 @@ export default function GlobalMusicPlayer({
             </div>
           )}
 
+          <h3 className={styles.librarySectionTitle}>VANMOTION ORIGINALS</h3>
           <div className={styles.trackList}>
             {tracks.map((track, index) => {
               const active = index === currentIndex;
@@ -1144,14 +1184,14 @@ export default function GlobalMusicPlayer({
 
           {recommendations.length > 0 && (
             <div className={styles.recommendedInPlayer}>
-
-              {recommendations.map((recommendation) => (
+              <h3 className={styles.librarySectionTitle}>{language === "es" ? "SELECCIÓN VANMOTION" : "VANMOTION SELECTION"}</h3>
+              {recommendations.filter((recommendation) => Boolean(recommendation.videoUrl)).map((recommendation) => (
                 <button
                   key={recommendation.id}
                   type="button"
                   className={styles.spotifyRecommendedTrack}
                   onClick={() => selectRecommendation(recommendation.id)}
-                  aria-label={`Reproducir ${recommendation.title}`}
+                  aria-label={`${language === "es" ? "Reproducir" : "Play"} ${recommendation.title}`}
                 >
                   <span className={styles.recommendedTrackLabel}>
                     <strong>{recommendation.title}</strong>

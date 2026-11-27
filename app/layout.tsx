@@ -314,7 +314,7 @@ export default async function RootLayout({
 
         <LanguageProvider initialLanguage={language}>
           <MusicPlayerProvider tracks={tracks}>
-            {children}
+            <div data-vm-page-viewport>{children}</div>
 
             <LanguageSwitcher />
 

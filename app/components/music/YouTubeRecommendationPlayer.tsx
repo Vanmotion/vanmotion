@@ -197,6 +197,7 @@ export default function YouTubeRecommendationPlayer({
         playerVars: {
           autoplay: 0,
           controls: controls ? 1 : 0,
+          fs: syncRole === "source" ? 0 : 1,
           playsinline: 1,
           rel: 0,
           origin: window.location.origin,
