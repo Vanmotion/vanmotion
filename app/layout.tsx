@@ -314,12 +314,13 @@ export default async function RootLayout({
 
         <LanguageProvider initialLanguage={language}>
           <MusicPlayerProvider tracks={tracks}>
-            <div data-vm-page-viewport>{children}</div>
+            <div data-vm-page-viewport>
+              {children}
+              {/* Persistent projector: same instance, now in the scrolling viewport. */}
+              <HeroMusicMonitor recommendations={globalRecommendations} />
+            </div>
 
             <LanguageSwitcher />
-
-            {/* Persistent projector: never unmount on route/language changes. */}
-            <HeroMusicMonitor recommendations={globalRecommendations} />
 
             <RouteAwareMusicPlayer>
               <GlobalMusicPlayer

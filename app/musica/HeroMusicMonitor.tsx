@@ -435,6 +435,7 @@ type MonitorGeometry = {
   height: number;
   calibration: Calibration;
   exactTransform?: string;
+  heroBounds?: { left: number; top: number; width: number; height: number };
 };
 
 type HeroMusicMonitorProps = {
@@ -1104,22 +1105,16 @@ export default function HeroMusicMonitor({
       return;
     }
 
+    // VANMOTION V10: projection follows the mobile scroll viewport
+    const viewport = document.querySelector<HTMLElement>("[data-vm-page-viewport]");
+    const narrow = window.matchMedia("(max-width: 1023px)");
+
     // Sincronizar el vídeo con la foto EN EL MISMO evento táctil.
     // React sigue gestionando la geometría inicial y los cambios de tamaño,
     // pero no interviene durante el arrastre horizontal.
     const updateGeometry = (event?: Event | ResizeObserverEntry[]) => {
       const immediatePan = event instanceof Event &&
         event.type === "vanmotion:hero-image-pan";
-
-      const placeGeometry = (next: MonitorGeometry) => {
-        if (immediatePan && monitorRef.current) {
-          // Mover solo el eje horizontal: perspectiva, tamaño, top y vídeo
-          // permanecen idénticos. Se ejecuta antes del pintado del fotograma.
-          monitorRef.current.style.left = `${next.left}px`;
-        } else {
-          setGeometry(next);
-        }
-      };
 
       if (!hero.isConnected) {
         setGeometry(null);
@@ -1128,10 +1123,32 @@ export default function HeroMusicMonitor({
       const rect = hero.getBoundingClientRect();
       const containerWidth = rect.width;
       const containerHeight = rect.height;
-      // Document coordinates are stable while scrolling. CSS paints the
-      // persistent projection with the photo without JS scroll updates.
-      const documentLeft = rect.left + window.scrollX;
-      const documentTop = rect.top + window.scrollY;
+      // On mobile the dock creates a real scrolling container. The projector
+      // lives inside it, so use that container's content coordinates, not window.scrollY.
+      const nested = Boolean(viewport && getComputedStyle(viewport).display !== "contents");
+      const viewportRect = nested && viewport ? viewport.getBoundingClientRect() : null;
+      const documentLeft = viewportRect && viewport
+        ? rect.left - viewportRect.left + viewport.scrollLeft - viewport.clientLeft
+        : rect.left + window.scrollX;
+      const documentTop = viewportRect && viewport
+        ? rect.top - viewportRect.top + viewport.scrollTop - viewport.clientTop
+        : rect.top + window.scrollY;
+
+      // Clip the projection at the photo's edges, also when panning sideways.
+      // Desktop retains its original geometry and stacking.
+      const heroBounds = narrow.matches
+        ? { left: documentLeft, top: documentTop, width: containerWidth, height: containerHeight }
+        : undefined;
+      const originLeft = heroBounds ? 0 : documentLeft;
+      const originTop = heroBounds ? 0 : documentTop;
+
+      const placeGeometry = (next: MonitorGeometry) => {
+        if (immediatePan && monitorRef.current) {
+          monitorRef.current.style.left = `${next.left}px`;
+          monitorRef.current.style.top = `${next.top}px`;
+        }
+        setGeometry({ ...next, heroBounds });
+      };
 
       if (containerWidth <= 0 || containerHeight <= 0) {
         return;
@@ -1159,19 +1176,32 @@ export default function HeroMusicMonitor({
       const panImage = hero.querySelector<HTMLImageElement>(
         "[data-vanmotion-mobile-hero-pan-image]",
       );
-      const rawMobilePan = Number.parseFloat(
-        panImage?.style.objectPosition ?? "",
-      );
-      const imagePositionX = Number.isFinite(rawMobilePan)
-        ? Math.max(0, Math.min(1, rawMobilePan / 100))
-        : OBJECT_POSITION_X;
+      const position = panImage && narrow.matches
+        ? getComputedStyle(panImage).objectPosition.trim().split(/\s+/)
+        : [];
+      const positionFraction = (value: string | undefined, fallback: number) => {
+        if (!value) return fallback;
+        if (value === "center") return 0.5;
+        if (value === "left" || value === "top") return 0;
+        if (value === "right" || value === "bottom") return 1;
+        if (!value.endsWith("%")) return fallback;
+        const parsed = Number.parseFloat(value);
+        return Number.isFinite(parsed) ? parsed / 100 : fallback;
+      };
+      const rawMobilePan = Number.parseFloat(panImage?.style.objectPosition ?? "");
+      const imagePositionX = narrow.matches
+        ? positionFraction(position[0], OBJECT_POSITION_X)
+        : Number.isFinite(rawMobilePan)
+          ? Math.max(0, Math.min(1, rawMobilePan / 100))
+          : OBJECT_POSITION_X;
+      const imagePositionY = positionFraction(position[1], OBJECT_POSITION_Y);
       const imageLeft =
         (containerWidth - renderedWidth) *
         imagePositionX;
 
       const imageTop =
         (containerHeight - renderedHeight) *
-        OBJECT_POSITION_Y;
+        imagePositionY;
 
       const exactCorners = getExactSceneCorners(heroImage);
 
@@ -1204,8 +1234,8 @@ export default function HeroMusicMonitor({
           ]);
 
         placeGeometry({
-          left: documentLeft + imageLeft + minX,
-          top: documentTop + imageTop + minY,
+          left: originLeft + imageLeft + minX,
+          top: originTop + imageTop + minY,
           width: boxWidth,
           height: boxHeight,
           calibration,
@@ -1234,8 +1264,8 @@ export default function HeroMusicMonitor({
         renderedHeight * (calibration.height / 100);
 
       placeGeometry({
-        left: documentLeft + baseLeft,
-        top: documentTop + baseTop,
+        left: originLeft + baseLeft,
+        top: originTop + baseTop,
         width: baseWidth,
         height: baseHeight,
         calibration,
@@ -1246,11 +1276,26 @@ export default function HeroMusicMonitor({
 
     const observer = new ResizeObserver(updateGeometry);
     observer.observe(hero);
+    if (viewport) observer.observe(viewport);
+    // A dock can open/close without changing the actual hero dimensions.
+    const dock = document.querySelector("[data-vm-video-dock]");
+    let frame = 0;
+    const onDockChange = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => updateGeometry());
+    };
+    const dockObserver = new MutationObserver(onDockChange);
+    if (dock) dockObserver.observe(dock, {
+      subtree: true, attributes: true,
+      attributeFilter: ["data-vm-video-expanded", "data-music-video-active"],
+    });
     window.addEventListener("resize", updateGeometry);
     window.addEventListener("vanmotion:hero-image-pan", updateGeometry);
 
     return () => {
       observer.disconnect();
+      dockObserver.disconnect();
+      cancelAnimationFrame(frame);
       window.removeEventListener("resize", updateGeometry);
       window.removeEventListener("vanmotion:hero-image-pan", updateGeometry);
     };
@@ -1284,13 +1329,13 @@ export default function HeroMusicMonitor({
       className={styles.page}
       style={{
         position: "absolute",
-        left: 0,
-        top: 0,
-        width: 0,
-        height: 0,
+        left: geometry?.heroBounds?.left ?? 0,
+        top: geometry?.heroBounds?.top ?? 0,
+        width: geometry?.heroBounds?.width ?? 0,
+        height: geometry?.heroBounds?.height ?? 0,
         minHeight: 0,
         zIndex: 5,
-        overflow: "visible",
+        overflow: geometry?.heroBounds ? "hidden" : "visible",
         background: "transparent",
         pointerEvents: "none",
       }}

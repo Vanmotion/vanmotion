@@ -43,6 +43,6 @@ button{
   html:has([data-vm-video-dock][data-music-video-active="true"] aside[data-vm-video-expanded="false"]),
   body:has([data-vm-video-dock][data-music-video-active="true"] aside[data-vm-video-expanded="false"]) { height:100%; overflow:hidden; }
   body:has([data-vm-video-dock][data-music-video-active="true"] aside[data-vm-video-expanded="false"]) [data-vm-page-viewport] {
-    display:block; height:calc(100dvh - var(--vm-video-dock-height, 218px)); overflow-y:auto; overflow-x:hidden; overscroll-behavior-y:contain; scroll-padding-block-end:12px;
+    position:relative; display:block; height:calc(100dvh - var(--vm-video-dock-height, 218px)); overflow-y:auto; overflow-x:hidden; overscroll-behavior-y:contain; scroll-padding-block-end:12px;
   }
 }
