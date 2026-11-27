@@ -88,6 +88,12 @@ const ENGLISH_PRODUCT_TEXT: Record<string, ProductText> = {
     color: "Washed anthracite",
     material: "Premium washed cotton · heavyweight fleece",
   },
+  "urban-puffer-black-drop-02": {"name": "VANMOTION Urban Puffer · Men · Black", "subtitle": "Winter Collection · Drop 02", "collection": "VANMOTION WINTER · Drop 02", "color": "Black", "material": "Planned composition · subject to supplier confirmation"},
+  "polar-expedition-black-drop-02": {"name": "VANMOTION Polar Expedition · Unisex · Black", "subtitle": "Winter Collection · Drop 02", "collection": "VANMOTION WINTER · Drop 02", "color": "Black", "material": "Planned composition · subject to supplier confirmation"},
+  "heavyweight-hoodie-black-drop-02": {"name": "VANMOTION Heavyweight Hoodie · Unisex · Black", "subtitle": "Winter Collection · Drop 02", "collection": "VANMOTION WINTER · Drop 02", "color": "Black", "material": "Planned composition · subject to supplier confirmation"},
+  "heavyweight-crewneck-black-drop-02": {"name": "VANMOTION Heavyweight Crewneck · Unisex · Black", "subtitle": "Winter Collection · Drop 02", "collection": "VANMOTION WINTER · Drop 02", "color": "Black", "material": "Planned composition · subject to supplier confirmation"},
+  "motion-softshell-black-drop-02": {"name": "VANMOTION Motion Softshell · Men · Black", "subtitle": "Winter Collection · Drop 02", "collection": "VANMOTION WINTER · Drop 02", "color": "Black", "material": "Planned composition · subject to supplier confirmation"},
+  "urban-beanie-black-drop-02": {"name": "VANMOTION Urban Beanie · Unisex · Black", "subtitle": "Winter Collection · Drop 02", "collection": "VANMOTION WINTER · Drop 02", "color": "Black", "material": "Planned composition · subject to supplier confirmation"},
 };
 
 export function getLocalizedProductText(

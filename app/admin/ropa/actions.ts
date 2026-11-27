@@ -54,7 +54,7 @@ const MANUAL_STATUSES = new Set([
 type ProductImageView = keyof typeof PRODUCT_IMAGE_VIEWS;
 type ClothingGender = "HOMBRE" | "MUJER" | "UNISEX";
 type ClothingColor = "NEGRO" | "AZUL_FORD_E150" | "ANTRACITA_LAVADO";
-type ClothingType = "TSHIRT" | "BOMBER" | "CARGO" | "CREWNECK";
+type ClothingType = "TSHIRT" | "BOMBER" | "CARGO" | "CREWNECK" | "PUFFER" | "SHERPA" | "HOODIE" | "SOFTSHELL" | "BEANIE";
 
 type ClothingProductConfiguration = {
   slug: string;
@@ -288,6 +288,108 @@ const CLOTHING_PRODUCTS = [
     sortOrder: 10,
   },
 
+  {
+    slug: "urban-puffer-black-drop-02",
+    skuPrefix: "VM-D02-01-BLK",
+    name: "VANMOTION Urban Puffer · Hombre · Negro",
+    subtitle: "Winter Collection · Drop 02",
+    collection: "VANMOTION WINTER · Drop 02",
+    productType: "PUFFER",
+    gender: "HOMBRE",
+    colorCode: "NEGRO",
+    color: "Negro",
+    material: "Composición prevista · pendiente de confirmar con proveedor",
+    description: "Chaqueta acolchada de invierno con capucha fija, cierre frontal y bolsillos laterales con cremallera. Ligera, pensada para los desplazamientos diarios y las escapadas de invierno. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
+    descriptionEn: "Lightweight padded winter jacket with a fixed hood, front zip and zipped side pockets. Designed for everyday journeys and winter getaways. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    initialPrice: "69.90",
+    sortOrder: -6,
+  },
+  {
+    slug: "polar-expedition-black-drop-02",
+    skuPrefix: "VM-D02-02-BLK",
+    name: "VANMOTION Polar Expedition · Unisex · Negro",
+    subtitle: "Winter Collection · Drop 02",
+    collection: "VANMOTION WINTER · Drop 02",
+    productType: "SHERPA",
+    gender: "UNISEX",
+    colorCode: "NEGRO",
+    color: "Negro",
+    material: "Composición prevista · pendiente de confirmar con proveedor",
+    description: "Chaqueta de borreguito de 450 g/m², con cuello alto, cremallera frontal, bolsillos con cremallera y corte relajado. Una capa cálida de estética urbana para la ciudad y la naturaleza. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
+    descriptionEn: "Relaxed-fit 450 gsm sherpa jacket with a high collar, front zip and zipped pockets. A warm urban-inspired layer for the city and the outdoors. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    initialPrice: "89.90",
+    sortOrder: -5,
+  },
+  {
+    slug: "heavyweight-hoodie-black-drop-02",
+    skuPrefix: "VM-D02-03-BLK",
+    name: "VANMOTION Heavyweight Hoodie · Unisex · Negro",
+    subtitle: "Winter Collection · Drop 02",
+    collection: "VANMOTION WINTER · Drop 02",
+    productType: "HOODIE",
+    gender: "UNISEX",
+    colorCode: "NEGRO",
+    color: "Negro",
+    material: "Composición prevista · pendiente de confirmar con proveedor",
+    description: "Sudadera de 350 g/m² con capucha, bolsillo canguro y tacto suave. Silueta de ajuste medio y estética sobria para combinar con las prendas de la colección. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
+    descriptionEn: "350 gsm hoodie with a kangaroo pocket and a soft feel. A contemporary medium fit and understated styling for everyday layering. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    initialPrice: "59.90",
+    sortOrder: -4,
+  },
+  {
+    slug: "heavyweight-crewneck-black-drop-02",
+    skuPrefix: "VM-D02-04-BLK",
+    name: "VANMOTION Heavyweight Crewneck · Unisex · Negro",
+    subtitle: "Winter Collection · Drop 02",
+    collection: "VANMOTION WINTER · Drop 02",
+    productType: "CREWNECK",
+    gender: "UNISEX",
+    colorCode: "NEGRO",
+    color: "Negro",
+    material: "Composición prevista · pendiente de confirmar con proveedor",
+    description: "Sudadera de cuello redondo de 350 g/m², de ajuste medio y acabado interior cepillado. Una pieza esencial de invierno de líneas limpias, fácil de combinar. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
+    descriptionEn: "350 gsm crewneck sweatshirt with a medium fit and brushed inner finish. A clean-lined winter essential for effortless layering. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    initialPrice: "49.90",
+    sortOrder: -3,
+  },
+  {
+    slug: "motion-softshell-black-drop-02",
+    skuPrefix: "VM-D02-05-BLK",
+    name: "VANMOTION Motion Softshell · Hombre · Negro",
+    subtitle: "Winter Collection · Drop 02",
+    collection: "VANMOTION WINTER · Drop 02",
+    productType: "SOFTSHELL",
+    gender: "HOMBRE",
+    colorCode: "NEGRO",
+    color: "Negro",
+    material: "Composición prevista · pendiente de confirmar con proveedor",
+    description: "Chaqueta softshell de dos capas con cuello alto, cremallera e interior micropolar de 300 g/m². Una prenda funcional para la conducción, las rutas y el uso cotidiano. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
+    descriptionEn: "Two-layer softshell jacket with a high collar, zip fastening and a warm microfleece lining. A functional layer for driving, road trips and everyday wear. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    initialPrice: "64.90",
+    sortOrder: -2,
+  },
+  {
+    slug: "urban-beanie-black-drop-02",
+    skuPrefix: "VM-D02-06-BLK",
+    name: "VANMOTION Urban Beanie · Unisex · Negro",
+    subtitle: "Winter Collection · Drop 02",
+    collection: "VANMOTION WINTER · Drop 02",
+    productType: "BEANIE",
+    gender: "UNISEX",
+    colorCode: "NEGRO",
+    color: "Negro",
+    material: "Composición prevista · pendiente de confirmar con proveedor",
+    description: "Gorro de punto de doble capa con vuelta y tacto suave. Un accesorio de invierno de diseño discreto para completar la colección. Diseño previsto sin marcas exteriores; etiqueta interior VANMOTION. Composición y tallas sujetas a confirmación antes de la venta.",
+    descriptionEn: "Soft-touch double-layer knitted beanie with a fold-up cuff. An understated winter accessory to complete the collection. Planned design with no external branding; VANMOTION inner label. Fabric composition and sizes subject to confirmation before sale.",
+    sizes: ["UNICA"],
+    initialPrice: "19.90",
+    sortOrder: -1,
+  },
 ] as const satisfies readonly ClothingProductConfiguration[];
 
 const PRODUCT_CONFIGURATION_BY_SLUG = new Map<
@@ -704,7 +806,7 @@ async function installApprovedProductImages(
 export async function createVanmotionClothingCollectionAction(): Promise<void> {
   await requireAdminSession();
 
-  for (const configuration of CLOTHING_PRODUCTS) {
+  for (const configuration of CLOTHING_PRODUCTS.filter((item) => !item.slug.endsWith("-drop-02"))) {
     const existingProduct = await prisma.product.findUnique({
       where: { slug: configuration.slug },
       select: {
@@ -828,6 +930,41 @@ export async function createVanmotionClothingCollectionAction(): Promise<void> {
  */
 export async function createCarpeDiemProductAction(): Promise<void> {
   await createVanmotionClothingCollectionAction();
+}
+
+export async function createWinterCollectionAction(): Promise<void> {
+  await requireAdminSession();
+  await prisma.$transaction(async (tx) => {
+    for (const configuration of CLOTHING_PRODUCTS.filter((item) => item.slug.endsWith("-drop-02"))) {
+      await tx.product.upsert({
+        where: { slug: configuration.slug },
+        update: {},
+        create: {
+          slug: configuration.slug,
+          name: configuration.name,
+          subtitle: configuration.subtitle,
+          collection: configuration.collection,
+          category: "CLOTHING",
+          productType: configuration.productType,
+          description: configuration.description,
+          descriptionEn: configuration.descriptionEn,
+          material: configuration.material,
+          color: configuration.color,
+          price: configuration.initialPrice,
+          currency: "EUR",
+          status: "DRAFT",
+          active: false,
+          featured: false,
+          sortOrder: configuration.sortOrder,
+          variants: { create: configuration.sizes.map((size, index) => ({
+            size, sku: `${configuration.skuPrefix}-${size}`, stock: 0,
+            active: true, sortOrder: index,
+          })) },
+        },
+      });
+    }
+  });
+  refreshClothingPages();
 }
 
 export async function updateProductAction(formData: FormData): Promise<void> {

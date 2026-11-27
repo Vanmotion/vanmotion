@@ -28,6 +28,12 @@ const MANAGED_PRODUCT_SLUGS = [
   "cargo-utility-hombre-antracita-drop-01",
   "cargo-utility-mujer-antracita-drop-01",
   "crewneck-unisex-antracita-drop-01",
+  "urban-puffer-black-drop-02",
+  "polar-expedition-black-drop-02",
+  "heavyweight-hoodie-black-drop-02",
+  "heavyweight-crewneck-black-drop-02",
+  "motion-softshell-black-drop-02",
+  "urban-beanie-black-drop-02",
 ] as const;
 
 const translations = {
@@ -90,6 +96,11 @@ const translations = {
         BOMBER: "Bomber",
         CARGO: "Pantalón cargo",
         CREWNECK: "Sudadera",
+        PUFFER: "Chaqueta acolchada",
+        SHERPA: "Chaqueta polar",
+        HOODIE: "Sudadera con capucha",
+        SOFTSHELL: "Chaqueta softshell",
+        BEANIE: "Gorro de punto",
       },
     },
     principles: {
@@ -185,6 +196,11 @@ const translations = {
         BOMBER: "Bomber",
         CARGO: "Cargo trousers",
         CREWNECK: "Crewneck sweatshirt",
+        PUFFER: "Puffer jacket",
+        SHERPA: "Sherpa fleece jacket",
+        HOODIE: "Hoodie",
+        SOFTSHELL: "Softshell jacket",
+        BEANIE: "Beanie",
       },
     },
     principles: {
@@ -269,6 +285,10 @@ export default async function RopaPage() {
         in: [...MANAGED_PRODUCT_SLUGS],
       },
       category: "CLOTHING",
+      OR: [
+        { slug: { in: MANAGED_PRODUCT_SLUGS.filter((slug) => !slug.endsWith("-drop-02")) } },
+        { slug: { in: MANAGED_PRODUCT_SLUGS.filter((slug) => slug.endsWith("-drop-02")) }, active: true, status: { notIn: ["DRAFT", "HIDDEN"] }, images: { some: { view: "LIFESTYLE" } } },
+      ],
     },
     include: {
       variants: {
@@ -384,15 +404,20 @@ export default async function RopaPage() {
       <section className={styles.collectionSection} id="coleccion">
           <h2 className={styles.srOnly}>
             {language === "es"
-              ? "Colección de ropa urbana: camisetas, bomber, pantalones cargo y sudaderas"
-              : "Urban clothing collection: T-shirts, bomber jackets, cargo trousers and sweatshirts"}
+              ? "Colecciones de ropa urbana y de invierno VANMOTION"
+              : "VANMOTION urban clothing and winter collections"}
           </h2>
 
         {products.length === 0 ? (
           <p className={styles.collectionEmpty}>{content.collection.empty}</p>
         ) : (
-          <div className={styles.collectionGrid}>
-            {products.map((product) => {
+          <>
+          {[{ id: "02", items: products.filter((p) => p.slug.endsWith("-drop-02")), title: "WINTER COLLECTION · DROP 02" },
+            { id: "01", items: products.filter((p) => !p.slug.endsWith("-drop-02")), title: "ORIGINAL COLLECTION · DROP 01" }].filter((group) => group.items.length > 0).map((group) => (
+            <div key={group.id} style={{ marginBottom: "3rem" }}>
+            <h2 style={{ margin: "1.5rem 0", letterSpacing: ".12em", fontSize: "clamp(1rem, 2vw, 1.5rem)" }}>{group.title}</h2>
+            <div className={styles.collectionGrid}>
+            {group.items.map((product) => {
               const productText = getLocalizedProductText(product, language);
               const imagesByView = new Map(
                 product.images.map((image) => [
@@ -408,14 +433,7 @@ export default async function RopaPage() {
 
                 const primaryImageIsLifestyle = imagesByView.has("LIFESTYLE");
 
-              const productType =
-                product.productType === "BOMBER"
-                  ? content.collection.productTypes.BOMBER
-                  : product.productType === "CARGO"
-                    ? content.collection.productTypes.CARGO
-                    : product.productType === "CREWNECK"
-                      ? content.collection.productTypes.CREWNECK
-                      : content.collection.productTypes.TSHIRT;
+              const productType = content.collection.productTypes[product.productType as keyof typeof content.collection.productTypes] ?? content.collection.productTypes.TSHIRT;
 
               const formattedPrice = new Intl.NumberFormat(
                 language === "es" ? "es-ES" : "en-US",
@@ -459,7 +477,7 @@ export default async function RopaPage() {
                         aria-hidden="true"
                       >
                         <div>
-                          <small>VANMOTION · DROP 01</small>
+                          <small>VANMOTION · {product.slug.endsWith("-drop-02") ? "DROP 02" : "DROP 01"}</small>
                           <strong>{productText.name}</strong>
                           <span>
                             {productType} · {productText.color ?? "VANMOTION"}
@@ -494,7 +512,9 @@ export default async function RopaPage() {
                         {productType} · {productText.color ?? "VANMOTION"}
                       </span>
                       <strong>
-                        {Number(product.price) > 0
+                        {product.slug.endsWith("-drop-02") && product.status === "COMING_SOON"
+                          ? (language === "es" ? "Próximamente" : "Coming soon")
+                          : Number(product.price) > 0
                           ? formattedPrice
                           : language === "es"
                             ? "Próximamente"
@@ -513,7 +533,10 @@ export default async function RopaPage() {
                 </article>
               );
             })}
-          </div>
+            </div>
+            </div>
+          ))}
+          </>
         )}
       </section>
 

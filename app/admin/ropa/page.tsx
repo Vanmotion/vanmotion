@@ -6,6 +6,7 @@ import { resolveProductImageUrl } from "@/app/lib/product-image-overrides";
 
 import {
   createCarpeDiemProductAction,
+  createWinterCollectionAction,
   removeProductImageAction,
   updateProductAction,
 } from "./actions";
@@ -28,9 +29,15 @@ const MANAGED_PRODUCT_SLUGS = [
   "cargo-utility-hombre-antracita-drop-01",
   "cargo-utility-mujer-antracita-drop-01",
   "crewneck-unisex-antracita-drop-01",
+  "urban-puffer-black-drop-02",
+  "polar-expedition-black-drop-02",
+  "heavyweight-hoodie-black-drop-02",
+  "heavyweight-crewneck-black-drop-02",
+  "motion-softshell-black-drop-02",
+  "urban-beanie-black-drop-02",
 ] as const;
 
-const SIZE_ORDER = ["XS", "S", "M", "L", "36", "38", "40", "44", "46", "48"] as const;
+const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL", "UNICA", "36", "38", "40", "44", "46", "48"] as const;
 
 const statusLabels: Record<string, string> = {
   DRAFT: "Borrador",
@@ -185,7 +192,7 @@ export default async function ClothingAdminPage() {
           <h1 className={styles.pageTitle}>Ropa VANMOTION</h1>
           <p className={styles.pageDescription}>
             Gestiona las imágenes, precios, estados, stock por talla y
-            visibilidad de la colección inaugural.
+            visibilidad de las colecciones Drop 01 y Drop 02.
           </p>
         </div>
 
@@ -193,7 +200,7 @@ export default async function ClothingAdminPage() {
           <form action={createCarpeDiemProductAction}>
             <SubmitButton
               idleText={
-                products.length === MANAGED_PRODUCT_SLUGS.length
+                products.filter((p) => !p.slug.endsWith("-drop-02")).length === 11
                   ? "Sincronizar colección"
                   : "Crear colección completa"
               }
@@ -202,6 +209,13 @@ export default async function ClothingAdminPage() {
             />
           </form>
 
+          <form action={createWinterCollectionAction}>
+            <SubmitButton
+              idleText="Crear DROP 02 · Invierno"
+              pendingText="Preparando DROP 02..."
+              className={styles.primaryButton}
+            />
+          </form>
           <Link href="/ropa" className={styles.publicStoreLink}>
             Ver tienda pública
           </Link>

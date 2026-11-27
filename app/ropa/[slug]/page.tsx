@@ -34,6 +34,12 @@ const MANAGED_PRODUCT_SLUGS = [
   "cargo-utility-hombre-antracita-drop-01",
   "cargo-utility-mujer-antracita-drop-01",
   "crewneck-unisex-antracita-drop-01",
+  "urban-puffer-black-drop-02",
+  "polar-expedition-black-drop-02",
+  "heavyweight-hoodie-black-drop-02",
+  "heavyweight-crewneck-black-drop-02",
+  "motion-softshell-black-drop-02",
+  "urban-beanie-black-drop-02",
 ] as const;
 
 type ProductPageProps = {
@@ -64,6 +70,11 @@ const translations = {
       BOMBER: "Bomber",
       CARGO: "Pantalón cargo",
       CREWNECK: "Sudadera",
+        PUFFER: "Chaqueta acolchada",
+        SHERPA: "Chaqueta polar",
+        HOODIE: "Sudadera con capucha",
+        SOFTSHELL: "Chaqueta softshell",
+        BEANIE: "Gorro de punto",
     },
     footer: "Madrid · España",
   },
@@ -88,6 +99,11 @@ const translations = {
       BOMBER: "Bomber",
       CARGO: "Cargo trousers",
       CREWNECK: "Crewneck sweatshirt",
+        PUFFER: "Puffer jacket",
+        SHERPA: "Sherpa fleece jacket",
+        HOODIE: "Hoodie",
+        SOFTSHELL: "Softshell jacket",
+        BEANIE: "Beanie",
     },
     footer: "Madrid · Spain",
   },
@@ -126,6 +142,7 @@ async function getProduct(slug: string) {
     where: {
       slug,
       category: "CLOTHING",
+      ...(slug.endsWith("-drop-02") ? { active: true, status: { notIn: ["DRAFT", "HIDDEN"] }, images: { some: { view: "LIFESTYLE" } } } : {}),
     },
     include: {
       variants: {
@@ -181,22 +198,7 @@ export async function generateMetadata({
     productStatus !== "HIDDEN";
 
   const locale = language === "es" ? "es-ES" : "en-GB";
-  const productType =
-    product.productType === "BOMBER"
-      ? language === "es"
-        ? "Bomber"
-        : "Bomber jacket"
-      : product.productType === "CARGO"
-        ? language === "es"
-          ? "Pantalón cargo"
-          : "Cargo trousers"
-        : product.productType === "CREWNECK"
-          ? language === "es"
-            ? "Sudadera"
-            : "Crewneck sweatshirt"
-          : language === "es"
-            ? "Camiseta"
-            : "T-shirt";
+  const productType = translations[language].productTypes[product.productType as keyof typeof translations.es.productTypes] ?? translations[language].productTypes.TSHIRT;
   const price = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: product.currency,
@@ -314,14 +316,7 @@ export default async function ProductPage({
       ? product.description ?? ""
       : product.descriptionEn ?? product.description ?? "";
 
-  const productType =
-    product.productType === "BOMBER"
-      ? content.productTypes.BOMBER
-      : product.productType === "CARGO"
-        ? content.productTypes.CARGO
-        : product.productType === "CREWNECK"
-          ? content.productTypes.CREWNECK
-          : content.productTypes.TSHIRT;
+  const productType = content.productTypes[product.productType as keyof typeof content.productTypes] ?? content.productTypes.TSHIRT;
 
   const imagesByView = new Map(
     product.images.map((image) => [
@@ -484,7 +479,7 @@ export default async function ProductPage({
             {content.back}
           </Link>
 
-          <span>{content.collection}</span>
+          <span>{product.slug.endsWith("-drop-02") ? "WINTER COLLECTION · DROP 02" : content.collection}</span>
         </div>
 
         <div className={styles.productHeading}>

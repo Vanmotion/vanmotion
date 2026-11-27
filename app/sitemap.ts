@@ -151,6 +151,10 @@ async function getProductPages(): Promise<MetadataRoute.Sitemap> {
           notIn: ["DRAFT", "HIDDEN"],
         },
         category: "CLOTHING",
+        OR: [
+          { NOT: { slug: { endsWith: "-drop-02" } } },
+          { slug: { endsWith: "-drop-02" }, images: { some: { view: "LIFESTYLE" } } },
+        ],
       },
       select: {
         slug: true,
