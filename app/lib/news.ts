@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 
 import { prisma } from "@/app/lib/prisma";
 import { translateNewsBatch } from "@/app/lib/news-translation";
+import { sourceNewsSummary } from "@/app/lib/news-summary";
 
 export const NEWS_LOCALES = ["es", "en"] as const;
 export const NEWS_REGIONS = ["ES", "NY"] as const;
@@ -224,16 +225,8 @@ function duplicateOf(candidate: Candidate, existing: Candidate[]): boolean {
 }
 
 function summaryFor(_feed: Feed, title: string, description: string): string {
-  // Texto descriptivo específico suministrado por la fuente RSS (no un resumen genérico inventado).
-  const clean = description.replace(/\s+/g, " ").trim();
-  if (!clean || normalize(clean) === normalize(title)) return title;
-  const withoutTitle = clean.toLowerCase().startsWith(title.toLowerCase())
-    ? clean.slice(title.length).replace(/^[\s:;.,–—-]+/, "").trim()
-    : clean;
-  if (!withoutTitle) return title;
-  if (withoutTitle.length <= 240) return withoutTitle;
-  const cut = withoutTitle.slice(0, 240);
-  return `${cut.slice(0, Math.max(1, cut.lastIndexOf(" "))).trim()}…`;
+  // RSS original, sin comentarios genéricos. Si la fuente no informa, solo título.
+  return sourceNewsSummary(title, description) ?? title;
 }
 
 function countMatches(text: string, terms: string[]): number {
@@ -511,10 +504,26 @@ function metaImageUrl(html: string): string | null {
   return null;
 }
 
+/** Extrae únicamente la descripción publicada por la fuente en su artículo. */
+function metaNewsDescription(html: string): string {
+  const tags = html.match(/<meta\b[^>]*>/gi) ?? [];
+  for (const target of ["og:description", "twitter:description", "description"]) {
+    for (const tag of tags) {
+      const attributes = new Map<string, string>();
+      for (const attr of tag.matchAll(/([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g)) {
+        attributes.set(attr[1].toLowerCase(), attr[2] ?? attr[3] ?? "");
+      }
+      const name = (attributes.get("property") ?? attributes.get("name") ?? "").toLowerCase();
+      if (name === target) return attributes.get("content") ?? "";
+    }
+  }
+  return "";
+}
+
 async function enrichCandidateImage(
   candidate: Candidate,
 ): Promise<Candidate> {
-  if (candidate.imageUrl) {
+  if (candidate.imageUrl && sourceNewsSummary(candidate.title, candidate.summary)) {
     return candidate;
   }
 
@@ -539,17 +548,14 @@ async function enrichCandidateImage(
       return candidate;
     }
 
-    const imageUrl = metaImageUrl(
-      await response.text(),
-    );
-
-    if (!imageUrl) {
-      return candidate;
-    }
-
+    const html = await response.text();
+    const summaryFromPage = sourceNewsSummary(candidate.title, metaNewsDescription(html));
     return {
       ...candidate,
-      imageUrl,
+      imageUrl: candidate.imageUrl ?? metaImageUrl(html),
+      summary: sourceNewsSummary(candidate.title, candidate.summary)
+        ? candidate.summary
+        : (summaryFromPage ?? candidate.title),
     };
   } catch {
     return candidate;
@@ -678,6 +684,52 @@ export async function ingestNews(): Promise<{ fetched: number; saved: number; ac
   }
 
   return { fetched: fetched.length, saved, active };
+}
+
+/** Reparación explícita, solo desde el panel admin autenticado.
+ * Mantiene título y fuente. Los metadatos OG no se redactan ni completan con IA.
+ */
+export async function repairActiveNewsSummaries(): Promise<{ repaired: number; withoutExcerpt: number }> {
+  const articles = await prisma.newsArticle.findMany({
+    where: { isActive: true },
+    select: { id: true, title: true, summary: true, sourceUrl: true },
+    take: 36,
+  });
+  const old = articles.filter((article) => !sourceNewsSummary(article.title, article.summary));
+  let repaired = 0;
+  let withoutExcerpt = 0;
+  for (let i = 0; i < old.length; i += 6) {
+    await Promise.all(old.slice(i, i + 6).map(async (article) => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 3500);
+      try {
+        const response = await fetch(article.sourceUrl, {
+          cache: "no-store", signal: controller.signal,
+          headers: { "User-Agent": "Mozilla/5.0 VANMOTION/1.0", Accept: "text/html,application/xhtml+xml" },
+        });
+        const real = response.ok
+          ? sourceNewsSummary(article.title, metaNewsDescription(await response.text()))
+          : null;
+        await prisma.newsArticle.update({
+          where: { id: article.id },
+          data: { summary: real ?? article.title, translatedSummary: null },
+        });
+        if (real) repaired += 1;
+        else withoutExcerpt += 1;
+      } catch (error) {
+        console.error("VANMOTION_NEWS_SUMMARY_REPAIR", article.sourceUrl, error instanceof Error ? error.message : String(error));
+        // Ante error de red, es preferible ocultar texto inventado.
+        await prisma.newsArticle.update({
+          where: { id: article.id },
+          data: { summary: article.title, translatedSummary: null },
+        });
+        withoutExcerpt += 1;
+      } finally {
+        clearTimeout(timer);
+      }
+    }));
+  }
+  return { repaired, withoutExcerpt };
 }
 
 export async function getPublishedNews(locale: NewsLocale, region: NewsRegion) {

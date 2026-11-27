@@ -1,0 +1,158 @@
+.page{--night:#090b0c;--panel:#15191a;--line:rgba(239,239,232,.16);--amber:#d47728;--white:#f3f1eb;--muted:#afb4b0;min-height:100vh;background:var(--night);color:var(--white);font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}
+.page *{box-sizing:border-box}.page button{font:inherit;cursor:pointer}.page a{text-decoration:none;color:inherit}.page button:focus-visible,.page a:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.header{min-height:76px;padding:16px clamp(18px,4vw,62px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:23px}.brand a{font-size:26px;font-weight:900;letter-spacing:-.07em}.brand a span{color:var(--amber)}.brand small{font-size:10px;font-weight:800;letter-spacing:.16em;color:#b2b6b0}.meta{display:flex;align-items:center;gap:20px;font-size:9px;letter-spacing:.15em}.meta>span{color:#a5aaa5}.meta a{border:1px solid var(--line);padding:10px 12px;font-weight:700}
+.heading{padding:45px clamp(18px,4vw,62px) 37px;display:flex;gap:40px;align-items:flex-end;justify-content:space-between}.overline{font-size:10px;letter-spacing:.19em;font-weight:800;color:var(--amber)}.heading h1{font-size:clamp(64px,8vw,116px);line-height:.89;letter-spacing:-.087em;margin:21px 0 24px}.heading h1>span,.panelHead h2 span{color:var(--amber)}.heading h1 em{font-style:normal;color:#a6a9a4}.heading p{font-size:13px;line-height:1.8;max-width:660px;color:var(--muted);margin:0}.vehicleSpec{border-left:1px solid var(--line);padding:0 0 4px 22px;min-width:195px;display:flex;gap:6px;flex-direction:column}.vehicleSpec strong{font-size:68px;font-weight:500;letter-spacing:-.08em;line-height:.96}.vehicleSpec span,.vehicleSpec small{font-size:9px;color:#949e98;letter-spacing:.12em}
+.workspace{display:grid;grid-template-columns:minmax(0,1.23fr) minmax(380px,.77fr);padding:0 clamp(18px,4vw,62px) 48px;gap:19px;align-items:stretch}.display,.controls{background:var(--panel);border:1px solid var(--line);min-width:0;display:flex;flex-direction:column}.displayTop{padding:20px 23px;display:flex;justify-content:space-between;align-items:center;gap:10px;color:#a3aaa5;font-size:9px;letter-spacing:.15em}.displayTop span:first-child{color:var(--amber);font-weight:800}.viewer{position:relative;height:clamp(390px,43vw,640px);background:#101316;overflow:hidden;margin:0 16px}.viewer canvas{display:block;touch-action:none}.missingModel{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;overflow:hidden}.missingModel>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.74}.missingShade{position:absolute;inset:0;background:linear-gradient(180deg,#0a0c0d50,#090b0dc9 63%,#0a0b0deb)}.missingContent{position:relative;z-index:2;width:min(480px,88%);padding:30px 23px;background:#101413d8;border:1px solid #ffffff2a;backdrop-filter:blur(10px);text-align:center}.missingContent small,.readyMark{font-size:9px;color:var(--amber);font-weight:800;letter-spacing:.17em}.missingContent strong{display:block;font-size:clamp(24px,3vw,42px);letter-spacing:-.06em;margin:12px 0}.missingContent p{font-size:12px;line-height:1.7;color:#e0ddd4;margin:0 0 20px}.orangeButton{background:var(--amber);padding:14px 22px;border:0;color:#0a0c0c;font-size:11px;font-weight:800;letter-spacing:.09em}.readyMark{position:absolute;z-index:2;bottom:15px;left:15px;background:#090b0dda;padding:9px 12px;color:#eeeee9}.liveDot{display:inline-block;width:7px;height:7px;background:#5bb47a;border-radius:50%;margin-right:8px}.views{padding:15px 16px 12px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.views button{padding:11px 4px;background:#161b1b;color:#9da79f;border:1px solid var(--line);font-size:9px;font-weight:800;letter-spacing:.06em;min-height:36px}.views button.active{border-color:var(--amber);color:#f7f5ef;background:#29261f}.viewerFooter{padding:16px 19px;border-block:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px}.viewerFooter div{display:flex;flex-direction:column;gap:4px}.viewerFooter strong{font-size:10px;letter-spacing:.13em}.viewerFooter small{font-size:11px;color:var(--muted)}.viewerFooter button{padding:11px 13px;background:#131718;color:#d4d5cf;border:1px solid var(--line);font-size:9px;font-weight:750;letter-spacing:.08em;touch-action:none}.modelFile,.error{padding:10px 19px;margin:0;font-size:11px;color:#c5c7c1}.modelFile span{color:#a6aba6}.error{color:#f2aa78}.displayBottom{margin-top:auto;padding:16px 19px;display:flex;gap:12px;justify-content:space-between;color:#858f88;font-size:8px;letter-spacing:.12em}
+.enginePicture{margin:0 16px;background:#0e1011;position:relative;min-height:360px}.enginePicture img{display:block;width:100%;max-height:610px;object-fit:contain}.enginePicture>span{position:absolute;left:15px;bottom:14px;padding:9px;background:#090b0bcc;font-size:9px;letter-spacing:.1em;color:#f3f1ec}.engineNote{padding:20px 24px;color:var(--muted);font-size:12px;line-height:1.75}.audioPane{padding:40px 22px;min-height:430px;display:flex;flex-direction:column;gap:25px}.audioPane h2{font-size:46px;letter-spacing:-.07em;margin:14px 0}.audioPane p{font-size:13px;line-height:1.75;color:var(--muted);max-width:500px}.audioPane iframe{border:0;width:100%;aspect-ratio:16/9;max-width:730px}
+.panelHead{padding:26px 24px 22px;position:relative}.panelHead h2{font-size:clamp(43px,4vw,57px);line-height:1;letter-spacing:-.07em;margin:13px 0 0}.panelHead button{position:absolute;right:20px;bottom:24px;background:none;border:0;color:#a0a8a0;font-size:9px;letter-spacing:.1em}.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-block:1px solid var(--line)}.tabs button{padding:15px 11px;min-height:67px;border:0;border-right:1px solid var(--line);background:#15191a;color:#8a958d;display:flex;flex-direction:column;text-align:left;gap:13px}.tabs button:last-child{border-right:0}.tabs button small{font-size:9px}.tabs button strong{font-size:10px;letter-spacing:.09em}.tabs button.activeTab{border-top:2px solid var(--amber);background:#262b29;color:#f0f0ec}
+.panelBody{padding:21px 24px 24px}.group{padding:17px 0 21px;border-bottom:1px solid var(--line)}.group:first-child{padding-top:2px}.groupHeading{display:flex;justify-content:space-between;align-items:center;gap:11px;margin-bottom:14px}.groupHeading strong,.sectionTitle,.panelLabel{font-size:10px;font-weight:800;letter-spacing:.13em;color:var(--amber)}.groupHeading small{font-size:9px;color:#a5aea6;letter-spacing:.06em;text-align:right}.group>p,.panelBody>p{font-size:11px;line-height:1.65;color:#aab2ab;margin:10px 0 0}.swatches{display:flex;gap:10px}.swatches button{width:37px;height:37px;border:2px solid #ffffff38;box-shadow:0 0 0 1px #0003}.swatches button.selectedPaint{outline:2px solid var(--amber);outline-offset:3px}.partList{display:flex;flex-direction:column;gap:7px}.partList button{display:grid;grid-template-columns:68px 1fr 20px;align-items:center;gap:12px;min-height:73px;background:#1b1f1f;border:1px solid var(--line);color:#eff0eb;text-align:left;padding:8px}.partList button.selectedOption{border-color:var(--amber);background:#272925}.partList button>img,.oemThumbnail{width:66px;height:58px;object-fit:contain;background:#f7f6f3;display:flex;align-items:center;justify-content:center;color:#777;font-size:14px;font-weight:800}.partList button>span:nth-of-type(1):not(.oemThumbnail){display:flex;flex-direction:column;gap:5px}.partList button strong{display:block;font-size:12px;line-height:1.3}.partList button small{display:block;color:#aeb5ae;font-size:9px}.partList button i{font-style:normal;color:var(--amber);text-align:right;font-size:13px}.inlineSelect{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;color:#afb5ae;font-size:10px;letter-spacing:.08em;font-weight:700}.inlineSelect select{max-width:66%;background:#202625;color:#f1eee8;border:1px solid var(--line);padding:9px;font-size:11px}.toggle{width:100%;border:1px solid var(--line);padding:12px 10px;background:#1b1f1e;color:#f4f2ee;display:flex;align-items:center;justify-content:space-between;gap:9px;text-align:left;margin-top:9px}.toggle span{display:flex;flex-direction:column;gap:6px}.toggle strong{font-size:12px}.toggle small{color:#a5b0a6;font-size:10px}.toggle i{font-style:normal;color:#878f89;font-size:10px;letter-spacing:.07em}.toggle.toggleOn{border-color:var(--amber)}.toggle.toggleOn i{color:var(--amber)}.advancedTrigger{width:100%;text-align:left;border:0;background:none;color:var(--amber);font-size:10px;letter-spacing:.13em;font-weight:850;padding:0}.fitControls{margin-top:18px}.fitControls p{font-size:11px;color:#aeb5ae;line-height:1.6}.fitSlider{display:flex;gap:7px;align-items:center;justify-content:space-between;margin:16px 0;color:#b3b9b0;font-size:10px}.fitSlider>span{width:34%}.fitSlider input{accent-color:var(--amber);width:44%}.fitSlider output{width:22%;text-align:right;color:#eee;font-size:10px;white-space:nowrap}
+.sources{margin-top:22px;background:#111414;border:1px solid var(--line);padding:15px}.sources>strong{display:block;font-size:10px;color:var(--amber);letter-spacing:.12em;margin:0 0 12px}.sources a{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;color:#dfded8;border-top:1px solid var(--line);padding:10px 0;font-size:11px;line-height:1.4}.sources a span{font-size:9px;color:#d47728;text-align:right;white-space:nowrap}.panelBody h3{font-size:32px;letter-spacing:-.04em;margin:18px 0}.notice{color:#d8ac87!important}.audioLink{color:var(--amber)!important;font-size:12px;letter-spacing:.1em}.panelBottom{margin-top:auto;padding:18px 24px 23px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:9px}.panelBottom button{background:var(--amber);border:0;padding:16px 20px;color:#0b0c0b;font-size:11px;font-weight:800;letter-spacing:.08em;text-align:center}.panelBottom small{color:#a1a9a1;font-size:10px;line-height:1.55}
+.modelHelp{margin:0 clamp(18px,4vw,62px) 50px;padding:27px;display:flex;justify-content:space-between;gap:20px;background:#131716;border:1px solid var(--line)}.modelHelp h2{font-size:clamp(28px,3vw,43px);letter-spacing:-.06em;margin:12px 0}.modelHelp p{font-size:12px;color:var(--muted);line-height:1.8;max-width:620px;margin:0}.modelActions{min-width:245px;display:flex;flex-direction:column;gap:10px;justify-content:center}.modelActions a,.modelActions button{padding:14px 18px;font-weight:800;letter-spacing:.07em;font-size:10px;text-align:center;border:1px solid var(--amber);color:var(--amber);background:transparent}.modelActions button{background:var(--amber);color:#101010}.modelActions small{font-size:10px;color:#a3aaa3;text-align:center}.footer{border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;padding:25px clamp(18px,4vw,62px);font-size:9px;letter-spacing:.12em;color:#8e9890}
+@media(max-width:1100px){.workspace{grid-template-columns:minmax(0,1fr)}.viewer{height:570px}.vehicleSpec{display:none}.modelHelp{flex-wrap:wrap}.modelActions{min-width:100%;display:grid;grid-template-columns:1fr 1fr}.modelActions small{grid-column:1/-1}}
+@media(max-width:700px){.header{min-height:61px;padding:12px 13px}.brand{gap:10px}.brand a{font-size:21px}.brand small{font-size:8px}.meta>span{display:none}.meta a{font-size:8px;padding:7px}.heading{padding:34px 13px 26px}.heading h1{font-size:clamp(51px,11vw,74px)}.heading p{font-size:12px}.workspace{padding:0 8px 26px;gap:12px}.viewer{height:400px;margin:0 8px}.displayTop{padding:15px 11px;font-size:7px}.views{grid-template-columns:repeat(3,minmax(0,1fr));padding:11px 8px}.viewerFooter{padding:13px 10px;flex-wrap:wrap}.viewerFooter small{font-size:10px}.missingContent{padding:17px 12px}.panelBody{padding:16px 13px}.panelHead{padding:19px 13px}.panelHead h2{font-size:43px}.panelHead button{right:13px;bottom:20px}.modelHelp{margin:0 8px 25px;padding:20px}.modelActions{display:flex}.footer{padding:20px 10px}.partList button{grid-template-columns:62px 1fr 18px}.partList button>img,.oemThumbnail{width:60px;height:54px}}
+@media(prefers-reduced-motion:reduce){.page *{transition:none!important;scroll-behavior:auto!important}}
+
+/* FORD LAB 006 — consolidated finish, local-first interactions */
+.viewerActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.viewerActions button{white-space:nowrap}
+.viewerActions button:disabled{opacity:.35;cursor:not-allowed}
+.engineExplorer{padding:16px 22px 21px;background:#111515}
+.engineTopics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.engineTopics button{background:#1a1f1e;color:#b7c0b7;border:1px solid var(--line);padding:12px 6px;font-size:9px;font-weight:850;letter-spacing:.06em;cursor:pointer}
+.engineTopics button.engineTopicActive{background:#292b26;border-color:var(--amber);color:#f9f5ed}
+.engineDetail{margin-top:12px;border:1px solid var(--line);background:#161b1a;padding:16px}
+.engineDetail strong{font-size:16px;letter-spacing:-.02em}
+.engineDetail p{color:#adb5ac;font-size:12px;line-height:1.7;margin:10px 0 0}
+.engineNote{padding:9px 0 0;margin:9px 0 0;font-size:11px;line-height:1.7;color:#9ba59e}
+.enginePartGroup{padding:19px 0 21px;border-bottom:1px solid var(--line)}
+.enginePartGroup>strong{font-size:10px;letter-spacing:.13em;color:var(--amber)}
+.sources p{font-size:11px;color:#c3c9c0;line-height:1.6;border-top:1px solid var(--line);padding:10px 0;margin:0}
+.soundWorkspace{padding:31px 22px 26px;min-height:460px}
+.soundWorkspace>h2{font-size:clamp(27px,3vw,46px);letter-spacing:-.06em;line-height:1.1;margin:17px 0 11px}
+.soundWorkspace>p{font-size:12px;line-height:1.75;max-width:600px;color:#adb7ae}
+.soundSlots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:24px}
+.soundSlot{padding:19px;background:#191d1c;border:1px solid var(--line);display:flex;flex-direction:column;align-items:stretch;gap:13px;min-width:0}
+.soundSlot h3{font-size:12px;letter-spacing:.09em;margin:0}
+.soundUpload{display:block;padding:12px 10px;border:1px solid var(--amber);color:#e3a267;text-align:center;font-size:10px;font-weight:800;letter-spacing:.05em;cursor:pointer}
+.soundUpload{position:relative}.soundUpload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.soundSlot audio{width:100%;max-width:100%;height:36px;accent-color:var(--amber)}
+.soundFilename{color:#a8b0a8;font-size:10px;overflow-wrap:anywhere}
+.noAudio{font-size:11px!important;line-height:1.5;color:#9baca1;margin:0}
+.soundDisclosure{padding-top:15px;border-top:1px solid var(--line);color:#bba48e!important;font-size:11px!important}
+@media(max-width:700px){.viewerActions{justify-content:start}.viewerActions button{padding:9px 7px;font-size:8px}.soundSlots{grid-template-columns:1fr}.soundWorkspace{padding:22px 13px}.engineExplorer{padding:12px 9px}.engineTopics button{font-size:8px}}
+
+.tireGroup{margin-top:19px}.tireGroup>strong{display:block;margin:0 0 10px;font-size:10px;color:var(--amber);letter-spacing:.13em}
+.tireChooser{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.tireChooser button{border:1px solid var(--line);background:#1b201e;text-align:left;color:#e5e6df;padding:15px 10px;display:flex;flex-direction:column;gap:8px;min-height:79px}
+.tireChooser button.tireSelected{border-color:var(--amber);background:#292b25}
+.tireChooser button b{font-size:10px;letter-spacing:.07em}.tireChooser button small{color:#a4aea3;font-size:9px;line-height:1.45}
+
+
+/* FORD LAB 007 — small-screen, tablet, and touch-first layout. */
+.mobileNav{display:none}
+.viewer canvas{touch-action:none!important;user-select:none;-webkit-user-select:none}
+.viewerActions button,.toggle,.views button,.tabs button,.tireChooser button{touch-action:manipulation}
+.swatches button{touch-action:manipulation}
+@media (max-width:1100px){
+  .workspace{grid-template-columns:minmax(0,1fr)}
+  .viewer{height:clamp(380px,52svh,610px)}
+  .heading{padding-top:35px}
+  .panelHead h2{font-size:clamp(40px,5vw,56px)}
+  .panelHead button{bottom:25px}
+}
+@media (max-width:760px){
+  .page{width:100%;max-width:100%;overflow:clip}
+  .header{min-height:64px;gap:6px;padding:10px 13px}
+  .brand{gap:7px;min-width:0}
+  .brand a{font-size:21px}
+  .brand small{font-size:8px;white-space:nowrap}
+  .meta>a{font-size:8px;padding:8px 9px;white-space:nowrap}
+  .heading{padding:23px 14px 21px}
+  .heading h1{font-size:clamp(41px,10.3vw,70px);line-height:.96;margin:15px 0 15px}
+  .heading p{font-size:12px;line-height:1.6}
+  .overline{font-size:9px;letter-spacing:.13em}
+  .mobileNav{display:grid;position:sticky;top:0;z-index:16;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:0 8px 10px;background:#141819;border:1px solid rgba(255,255,255,.16);box-shadow:0 5px 16px #0008}
+  .mobileNav button{background:#15191a;color:#bac0b8;border:0;border-right:1px solid var(--line);font-size:10px;font-weight:800;min-height:48px;line-height:1.35;letter-spacing:.04em;padding:7px 5px;touch-action:manipulation}
+  .mobileNav button:last-child{border-right:0}
+  .mobileNav button span{color:#818b83;font-size:9px;margin-right:6px}
+  .mobileNav button.mobileNavActive{border-bottom:3px solid var(--amber);color:#fff;background:#242a27}
+  .workspace{padding:0 8px 24px;gap:10px}
+  .displayTop{padding:13px 12px;line-height:1.4;gap:7px}
+  .displayTop span:last-child{text-align:right}
+  .viewer{height:clamp(305px,50svh,440px);min-height:305px;margin:0 8px}
+  .readyMark{bottom:10px;left:10px;right:10px;width:max-content;max-width:calc(100% - 20px);padding:8px 9px;line-height:1.45;font-size:8px;letter-spacing:.09em}
+  .views{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:11px 9px}
+  .views button{min-height:46px;padding:12px 5px;font-size:9px}
+  .viewerFooter{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:13px 11px}
+  .viewerFooter div:first-child{min-width:0}
+  .viewerFooter small{font-size:11px;line-height:1.4}
+  .viewerActions{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:8px}
+  .viewerActions button{min-height:46px;padding:10px 7px;font-size:9px}
+  .panelHead{padding:21px 12px 18px}
+  .panelHead h2{font-size:clamp(32px,9vw,46px);padding-right:75px;overflow-wrap:anywhere}
+  .panelHead button{bottom:22px;right:10px;font-size:9px;padding:10px 3px;min-height:44px}
+  .tabs button{min-height:54px;padding:12px 8px;gap:6px}
+  .tabs button strong{font-size:10px}
+  .panelBody{padding:16px 12px}
+  .groupHeading small{font-size:9px}
+  .swatches{display:grid;grid-template-columns:repeat(5,minmax(0,48px));gap:10px}
+  .swatches button{width:44px;height:44px}
+  .partList button{min-height:70px}
+  .partList button>img,.oemThumbnail{width:62px;height:54px}
+  .tireChooser button{min-height:84px;padding:12px 10px}
+  .toggle{min-height:60px;padding:11px}
+  .toggle span{min-width:0}
+  .toggle i{flex-shrink:0}
+  .inlineSelect select{min-height:44px}
+  .modelHelp{margin:0 8px 24px;padding:19px 15px}
+  .modelActions{gap:8px}
+  .modelActions button{min-height:46px}
+  .enginePicture{margin:0 8px;min-height:230px}
+  .enginePicture>img{max-height:420px}
+  .engineTopics button{min-height:45px}
+  .soundWorkspace{min-height:0}
+  .soundSlot{padding:15px}
+  .soundUpload{min-height:46px;display:grid;place-items:center}
+  .footer{line-height:1.7}
+}
+@media (max-width:375px){
+  .heading h1{font-size:40px}
+  .viewer{height:320px;min-height:320px}
+  .brand small{font-size:7px}
+  .panelHead h2{font-size:30px}
+  .tireChooser button b{font-size:9px}
+  .swatches{gap:6px}
+  .swatches button{width:42px;height:42px}
+}
+@media (min-width:761px) and (max-width:1100px){
+  .views button{min-height:44px}
+  .viewerFooter button{min-height:44px}
+  .tabs button{min-height:66px}
+  .tireChooser button,.partList button{min-height:74px}
+}
+@media (prefers-reduced-motion: reduce){
+  .mobileNav{scroll-behavior:auto}
+}
+
+/* Graceful no-WebGL fallback for phones, tablets, and locked-down browsers. */
+.fallbackGallery{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px}
+.fallbackGallery button{min-height:43px;background:#212725;border:1px solid #ffffff40;color:#e3e5e0;font-size:11px;font-weight:800;touch-action:manipulation}
+.fallbackGallery button.fallbackSelected{border-color:var(--amber);color:#fff;background:#29271f}
+@media (max-width:760px){
+  .viewerFooter .viewerActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px;align-items:stretch}
+  .viewerFooter .viewerActions button{width:100%;min-width:0}
+}
+
+/* FORD LAB 008 — embedded inside the official vehicle detail, no duplicate header/intro. */
+.page.embedded{min-height:0;width:100%;max-width:100%;background:#0b0e0e;overflow:clip}
+.embedded .header,.embedded .heading,.embedded .modelHelp,.embedded .footer{display:none!important}
+.embedded .workspace{padding:0;max-width:none;grid-template-columns:minmax(0,1.2fr) minmax(330px,.8fr);gap:14px}
+.embedded .viewer{height:clamp(400px,39vw,600px)}
+.embedded .display,.embedded .controls{border-color:rgba(255,255,255,.16)}
+@media(max-width:1100px){.embedded .workspace{grid-template-columns:minmax(0,1fr)}.embedded .viewer{height:clamp(370px,53svh,550px)}}
+@media(max-width:760px){.embedded .workspace{gap:10px}.embedded .viewer{height:clamp(295px,49svh,430px);margin:0 8px}.embedded .mobileNav{top:0;margin:0 0 10px}.embedded .displayTop{padding:12px 11px}.embedded .panelHead h2{font-size:clamp(30px,8.5vw,44px)}}
+@media(max-width:375px){.embedded .viewer{height:320px}}
+
+/* FORD LAB 013: dos pestañas visibles en escritorio y móvil; sin números. */
+.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:760px){.mobileNav{grid-template-columns:repeat(2,minmax(0,1fr))}}

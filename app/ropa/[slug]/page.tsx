@@ -548,10 +548,12 @@ export default async function ProductPage({
                 <dt>{content.specs.color}</dt>
                 <dd>{productText.color ?? "—"}</dd>
               </div>
+              {!(product.slug.endsWith("-drop-02") && (!productText.material || /pendiente de confirmar|subject to supplier confirmation/i.test(productText.material))) ? (
               <div>
                 <dt>{content.specs.material}</dt>
                 <dd>{productText.material ?? "—"}</dd>
               </div>
+              ) : null}
               <div>
                 <dt>{content.specs.sizes}</dt>
                 <dd>
@@ -561,6 +563,15 @@ export default async function ProductPage({
                 </dd>
               </div>
             </dl>
+
+            {/* DROP02: disclosure separate from editorial copy */}
+            {product.slug.endsWith("-drop-02") && productStatus === "COMING_SOON" ? (
+              <p style={{ fontSize: "0.75rem", lineHeight: 1.6, color: "inherit", opacity: 0.78, margin: "0.75rem 0 1rem" }}>
+                {language === "es"
+                  ? "Visualizaciones de diseño, no fotografías del producto definitivo."
+                  : "Design visualisations, not photographs of the final product."}
+              </p>
+            ) : null}
 
             <ProductPurchasePanel
               language={language}

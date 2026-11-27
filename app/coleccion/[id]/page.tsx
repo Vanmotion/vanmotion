@@ -14,6 +14,8 @@ import { getCurrentLanguage } from "@/app/lib/language";
 import { prisma } from "@/app/lib/prisma";
 
 import VehicleGallery from "./VehicleGallery";
+import FordExhaustAudio from "./FordExhaustAudio";
+import FordLabFeature from "./FordLabFeature";
 import { localizedVehicleModel, localizedVehicleVersion, localizedVehicleImageAlt } from "../vehicle-display";
 import styles from "./vehicle.module.css";
 
@@ -564,6 +566,7 @@ export default async function PublicVehiclePage({
   }
 
   const isEmblem = vehicle.status === "EMBLEM";
+  const isFordLabVehicle = vehicle.id === "cmrm2i93y0001jq04awn01yv0";
   const saleStatus =
     vehicle.status === "RESERVED"
       ? content.status.reserved
@@ -892,6 +895,7 @@ export default async function PublicVehiclePage({
               emptyLabel={content.photoSoon}
               selectImageLabel={content.selectImage}
             />
+            {isFordLabVehicle && <FordExhaustAudio language={language} />}
           </div>
 
           <aside className={styles.infoPanel}>
@@ -925,6 +929,7 @@ export default async function PublicVehiclePage({
               ))}
             </div>
 
+            {!isFordLabVehicle && (
             <section
               className={styles.sideDescription}
               aria-labelledby="vehicle-description-title"
@@ -934,6 +939,15 @@ export default async function PublicVehiclePage({
               </h3>
               <p>{vehicleDescription}</p>
             </section>
+            )}
+
+            {isFordLabVehicle && (
+              <a className={styles.fordLabJump} href="#ford-custom-lab">
+                <span><strong>{language === "es" ? "EXPLORA LA FORD EN 360°" : "EXPLORE THE FORD IN 360°"}</strong>
+                  <small>{language === "es" ? "Personaliza llantas, pintura, neumáticos y accesorios" : "Customize wheels, paint, tyres and accessories"}</small></span>
+                <i aria-hidden="true">↗</i>
+              </a>
+            )}
 
             {isEmblem ? (
               <section className={styles.emblemPanel}>
@@ -1006,6 +1020,7 @@ export default async function PublicVehiclePage({
           </aside>
         </section>
 
+        {isFordLabVehicle && <FordLabFeature />}
       </main>
 
       <footer className={styles.footer}>

@@ -6,6 +6,7 @@ import type { getPublishedNews } from "@/app/lib/news";
 import { useLanguage } from "@/app/components/language/LanguageProvider";
 import NewsBrand from "./NewsBrand";
 import NewsCarousel from "./NewsCarousel";
+import { sourceNewsSummary } from "@/app/lib/news-summary";
 import styles from "./noticias.module.css";
 
 type Article = Awaited<ReturnType<typeof getPublishedNews>>[number];
@@ -44,13 +45,17 @@ function Edition({ region, language, articles }: { region: Region; language: Lan
               {categoryArticles.length === 0 ? <p className={styles.empty}>{copy.empty}</p> : categoryArticles.map((article) => {
                 const translated = article.locale !== language;
                 const title = (translated ? article.translatedTitle : article.title) || article.title;
-                const summary = (translated ? article.translatedSummary : article.summary) || article.summary;
+                const rawSummary = (translated ? article.translatedSummary : article.summary) || article.summary;
+                // Un resumen traducido nunca valida una descripción original de relleno.
+                const summary = sourceNewsSummary(article.title, article.summary)
+                  ? sourceNewsSummary(title, rawSummary)
+                  : null;
                 return <article className={styles.card} key={article.id}>
                   {article.imageUrl ? <div className={styles.imageFrame}><img src={article.imageUrl} alt="" loading="lazy" /></div> : null}
                   <div className={styles.cardBody}>
                     <p className={styles.cardCategory}>{copy.categories[category]}</p>
                     <h4>{title}</h4>
-                    <p className={styles.summary}>{summary}</p>
+                    {summary ? <p className={styles.summary}>{summary}</p> : null}
                     <div className={styles.meta}><span>{article.source}</span><time dateTime={new Date(article.publishedAt).toISOString()}>{formatDate(article.publishedAt, language)}</time></div>
                     <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer" className={styles.sourceLink}>{copy.read}<span aria-hidden="true">↗</span></a>
                   </div>

@@ -1,0 +1,613 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import type { Build, CameraView, Fit, ModelStatus } from "./types";
+
+export type FordSceneProps = {
+  build: Build;
+  fit: Fit;
+  sourceFile: File | null;
+  cameraView: CameraView;
+  compare: boolean;
+  onStatus: (next: ModelStatus) => void;
+};
+
+type WheelAnchor = {
+  center: THREE.Vector3;
+  radius: number;
+  side: 1 | -1;
+};
+
+type TireAnchor = {
+  center: THREE.Vector3;
+  radius: number;
+  halfWidth: number;
+  side: 1 | -1;
+};
+
+type Stage = {
+  scene: THREE.Scene;
+  camera: THREE.PerspectiveCamera;
+  renderer: THREE.WebGLRenderer;
+  orbit: OrbitControls;
+  imported: THREE.Group;
+  addons: THREE.Group;
+  paintMeshes: THREE.Mesh[];
+  factoryRims: THREE.Mesh[];
+  wheelAnchors: WheelAnchor[];
+  tireAnchors: TireAnchor[];
+  cameraGoal: THREE.Vector3;
+  modelReady: boolean;
+  moveCamera: boolean;
+};
+
+function disposeGroup(group: THREE.Group): void {
+  group.traverse((obj) => {
+    if (!(obj instanceof THREE.Mesh) && !(obj instanceof THREE.LineSegments)) return;
+    obj.geometry.dispose();
+    const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+    mats.forEach((material) => material.dispose());
+  });
+  group.clear();
+}
+
+function tubeBetween(start: THREE.Vector3, end: THREE.Vector3, radius: number, material: THREE.Material): THREE.Mesh {
+  const delta = new THREE.Vector3().subVectors(end, start);
+  const tube = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, delta.length(), 12), material);
+  tube.position.copy(start).add(end).multiplyScalar(0.5);
+  tube.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), delta.normalize());
+  tube.castShadow = true;
+  return tube;
+}
+
+/**
+ * Real OBJ includes four wheel assemblies, each with its own steel rim mesh.
+ * Mount the selected manufacturer rim image on the ORIGINAL wheel hub face,
+ * retaining the original tyre, axle position, tread and ride height.
+ * This is a visual preview; it does not certify bolt pattern or load rating.
+ */
+function makeRimFace(anchor: WheelAnchor, image: THREE.Texture, wheel: Build["wheels"]): THREE.Group {
+  // The base OBJ tyre remains; this assembly covers ONLY the OEM rim at
+  // its measured hub position. The photographed face is a REAL product.
+  // Rim depth is an approximate preview, not measured manufacturer CAD.
+  const group = new THREE.Group();
+  group.position.copy(anchor.center);
+  const r=anchor.radius;
+  const side=anchor.side;
+  const isBaja=wheel==="ar172";
+  const metal=new THREE.MeshStandardMaterial({
+    color:isBaja?0x8c9194:0x72787d,
+    metalness:.52,
+    roughness:isBaja?.27:.38,
+    side:THREE.DoubleSide,
+  });
+  const barrel=new THREE.Mesh(
+    new THREE.CylinderGeometry(r*.99,r*.96,r*.035,64,1,false),
+    new THREE.MeshStandardMaterial({color:0x27292b,metalness:.44,roughness:.56})
+  );
+  barrel.rotation.z=Math.PI/2;
+  barrel.position.x=side*.004;
+  group.add(barrel);
+  const blackBacking=new THREE.Mesh(
+    new THREE.CircleGeometry(r*.977,64),
+    new THREE.MeshStandardMaterial({color:0x111315,roughness:.78,side:THREE.DoubleSide})
+  );
+  blackBacking.rotation.y=side*Math.PI/2;
+  blackBacking.position.x=side*.021;
+  group.add(blackBacking);
+  const photo=new THREE.Mesh(
+    new THREE.CircleGeometry(r*.963,64),
+    new THREE.MeshStandardMaterial({
+      map:image,
+      color:isBaja?0xa8aaab:0xc0c2c4,
+      metalness:.20,
+      roughness:.49,
+      transparent:true,
+      alphaTest:.075,
+      side:THREE.DoubleSide,
+      depthWrite:false,
+      polygonOffset:true,
+      polygonOffsetFactor:-1,
+    })
+  );
+  photo.rotation.y=side*Math.PI/2;
+  photo.position.x=side*.026;
+  group.add(photo);
+  // Slim polished outer lip creates real silhouette depth when turning 360°.
+  const lip=new THREE.Mesh(new THREE.TorusGeometry(r*.976,r*.021,10,72),metal);
+  lip.rotation.y=Math.PI/2;
+  lip.position.x=side*.028;
+  group.add(lip);
+  return group;
+}
+
+/** Visible, real-time all-terrain tread built around the FOUR original tyre surfaces.
+ *  The vehicle's tyres remain in place. Geometric tread pattern is a labelled
+ *  visual study, not a claimed CAD model of a branded commercial tyre.
+ */
+function addAllTerrainTread(group: THREE.Group, tires: TireAnchor[]): void {
+  if (!tires.length) return;
+  const radialSegments=36;
+  const rowOffsets=[-.055,0,.055];
+  const count=tires.length*radialSegments*rowOffsets.length;
+  const treadGeometry=new THREE.BoxGeometry(.058,.025,.066);
+  const treadMaterial=new THREE.MeshStandardMaterial({color:0x292d30,roughness:.98,metalness:0});
+  const tread=new THREE.InstancedMesh(treadGeometry,treadMaterial,count);
+  tread.castShadow=true;
+  tread.receiveShadow=true;
+  tread.frustumCulled=false;
+  const dummy=new THREE.Object3D();
+  let idx=0;
+  for (const tire of tires) {
+    for(let section=0;section<radialSegments;section++){
+      const angle=(section+.5)*Math.PI*2/radialSegments;
+      for(let row=0;row<rowOffsets.length;row++){
+        // Stagger the blocks in alternating rows for a real tread silhouette.
+        const a=angle+(row%2 ? .038 : -.038);
+        const r=tire.radius+.006;
+        dummy.position.set(tire.center.x+rowOffsets[row], tire.center.y+Math.sin(a)*r, tire.center.z+Math.cos(a)*r);
+        dummy.rotation.set(Math.PI/2-a,0,0);
+        dummy.scale.set(1,1,1);
+        dummy.updateMatrix();
+        tread.setMatrixAt(idx++,dummy.matrix);
+      }
+    }
+  }
+  tread.instanceMatrix.needsUpdate=true;
+  group.add(tread);
+
+  // Shoulder blocks appear on the wheel-facing tyre sidewalls, without adding
+  // a second tyre or moving the wheels outside their original arches.
+  const shoulderSegments=30;
+  const shoulderGeometry=new THREE.BoxGeometry(.019,.035,.045);
+  const shoulder=new THREE.InstancedMesh(shoulderGeometry,treadMaterial.clone(), tires.length*shoulderSegments);
+  shoulder.frustumCulled=false;
+  idx=0;
+  for(const tire of tires){
+    for(let j=0;j<shoulderSegments;j++){
+      const a=(j+.5)*Math.PI*2/shoulderSegments;
+      const r=tire.radius*.84;
+      dummy.position.set(tire.center.x+tire.side*(tire.halfWidth+.004),tire.center.y+Math.sin(a)*r,tire.center.z+Math.cos(a)*r);
+      dummy.rotation.set(Math.PI/2-a,0,0);
+      dummy.scale.set(1,1,1);
+      dummy.updateMatrix();
+      shoulder.setMatrixAt(idx++,dummy.matrix);
+    }
+  }
+  shoulder.instanceMatrix.needsUpdate=true;
+  group.add(shoulder);
+}
+
+function createAddons(stage: Stage, build: Build, fit: Fit, compare: boolean, image: THREE.Texture | null): void {
+  disposeGroup(stage.addons);
+  const changingRims=stage.modelReady && !compare && build.wheels!=="oem" && image!==null && stage.wheelAnchors.length===4;
+  for(const rim of stage.factoryRims)rim.visible=!changingRims;
+  if(!stage.modelReady||compare)return;
+
+  const bounds=new THREE.Box3().setFromObject(stage.imported);
+  const fullWidth=bounds.max.x-bounds.min.x;
+  const bodyHalfWidth=fullWidth*.5;
+  const top=bounds.max.y;
+  const rear=bounds.min.z;
+  const rearTowardsCenter=1;
+  const roofRail=new THREE.MeshStandardMaterial({color:0x6d7780,metalness:.72,roughness:.29});
+  const polishedChrome=new THREE.MeshStandardMaterial({color:0xc4ccce,metalness:.77,roughness:.24});
+  const bracket=new THREE.MeshStandardMaterial({color:0x202428,metalness:.45,roughness:.55});
+  const exhaustInterior=new THREE.MeshStandardMaterial({color:0x0a0b0c,metalness:.08,roughness:.86,side:THREE.DoubleSide});
+
+  if(build.tires==="allterrain") {
+    addAllTerrainTread(stage.addons, stage.tireAnchors);
+  }
+
+  if(changingRims && image){
+    for(const anchor of stage.wheelAnchors){
+      stage.addons.add(makeRimFace(anchor,image,build.wheels));
+    }
+  }
+
+  if(build.rack){
+    // Roof height is read from the actual imported geometry, not a fixed guess.
+    // A low 3-crossbar ladder rack replaces the former tall floating rectangle.
+    // Compact, centred ladder rack: rails remain within the actual roof edges.
+    // Mirrors and bumper can inflate Box3 width; apply a stricter roof envelope.
+    const halfWidth=Math.max(.58,Math.min(.69,bodyHalfWidth-.38));
+    const height=top+.14;
+    const bodyLength=bounds.max.z-bounds.min.z;
+    const roofSpan=Math.min(2.46,bodyLength*.46);
+    const roofCenter=(bounds.max.z+bounds.min.z)/2-.32;
+    const nose=roofCenter+roofSpan*.5;
+    const tail=roofCenter-roofSpan*.5;
+    const rails=[-halfWidth,halfWidth];
+    const mounts=[nose-.075,tail+.075];
+    for(const x of rails){
+      stage.addons.add(tubeBetween(
+        new THREE.Vector3(x,height,nose),
+        new THREE.Vector3(x,height,tail),.024,roofRail));
+      for(const z of mounts){
+        stage.addons.add(tubeBetween(
+          new THREE.Vector3(x,top+.008,z),
+          new THREE.Vector3(x,height,z),.012,roofRail));
+        const foot=new THREE.Mesh(new THREE.BoxGeometry(.095,.014,.105),bracket);
+        foot.position.set(x,top+.007,z);
+        stage.addons.add(foot);
+      }
+    }
+    for(const z of [nose-.075,(nose+tail)/2,tail+.075]){
+      stage.addons.add(tubeBetween(
+        new THREE.Vector3(-halfWidth,height,z),
+        new THREE.Vector3(halfWidth,height,z),.024,roofRail));
+    }
+  }
+
+  if(build.steps){
+    // Position each running board precisely BETWEEN the factory axle centres.
+    // The original fixed Z values made the tubes look offset in profile.
+    const out=Math.max(.91,Math.min(.98,bodyHalfWidth-.075));
+    const level=.355;
+    const zPositions=stage.wheelAnchors.map(anchor=>anchor.center.z);
+    const axleLow=zPositions.length ? Math.min(...zPositions) : -1.5;
+    const axleHigh=zPositions.length ? Math.max(...zPositions) : 1.2;
+    const axleSpan=Math.max(.8,axleHigh-axleLow);
+    const frontEnd=axleHigh-axleSpan*.24;
+    const rearEnd=axleLow+axleSpan*.24;
+    const stepMid=(frontEnd+rearEnd)/2;
+    const stepLength=Math.abs(frontEnd-rearEnd);
+    for(const side of [-1,1]){
+      stage.addons.add(tubeBetween(
+        new THREE.Vector3(side*out,level,frontEnd),
+        new THREE.Vector3(side*out,level,rearEnd),.034,polishedChrome));
+      for(const z of [stepMid-stepLength*.37,stepMid+stepLength*.37]){
+        stage.addons.add(tubeBetween(
+          new THREE.Vector3(side*(out-.12),level+.085,z),
+          new THREE.Vector3(side*out,level,z),.016,bracket));
+      }
+      for(const z of [stepMid-stepLength*.23,stepMid+stepLength*.23]){
+        const grip=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.12,16),bracket);
+        grip.rotation.x=Math.PI/2;
+        grip.position.set(side*out,level,z);
+        stage.addons.add(grip);
+      }
+    }
+  }
+
+  if(build.exhaust==="chrome"){
+    // Tip is only 22 cm long, nearly flush with the rear bumper.
+    // Actual muffler and pipe routing are not represented in this concept.
+    const x=bodyHalfWidth-.30;
+    const z1=rear+rearTowardsCenter*.24;
+    const z2=rear+rearTowardsCenter*.02;
+    const height=.36;
+    stage.addons.add(tubeBetween(new THREE.Vector3(x,height,z1),new THREE.Vector3(x,height,z2),.047,polishedChrome));
+    const endRing=new THREE.Mesh(new THREE.TorusGeometry(.047,.008,9,28),polishedChrome);
+    endRing.position.set(x,height,z2);
+    stage.addons.add(endRing);
+    const hole=new THREE.Mesh(new THREE.CircleGeometry(.039,32),exhaustInterior);
+    hole.position.set(x,height,z2-rearTowardsCenter*.003);
+    stage.addons.add(hole);
+  }
+}
+
+/**
+ * Blender 2.79 exported 4 standalone `l` edges *inside* the main body object.
+ * THREE.OBJLoader classifies the entire object as line geometry after encountering
+ * those records, even though the same object already contains thousands of valid
+ * `f` polygons. Strip only these edge records, preserving every real surface.
+ */
+function normalizeBlenderOBJ(source: string): string {
+  return source.replace(/^l[ \t]+[^\r\n]*(?:\r?\n|$)/gm, "");
+}
+
+async function parseLocalFile(file: File): Promise<THREE.Group> {
+  const lower=file.name.toLowerCase();
+  if (lower.endsWith(".obj")) return new OBJLoader().parse(normalizeBlenderOBJ(await file.text()));
+  if (lower.endsWith(".glb") || lower.endsWith(".gltf")) {
+    const buffer=await file.arrayBuffer();
+    const gltf=await new Promise<THREE.Group>((resolve,reject)=>{
+      new GLTFLoader().parse(buffer,"",data=>resolve(data.scene),reject);
+    });
+    return gltf;
+  }
+  throw new Error("El archivo debe ser .obj o .glb. Extrae primero el .rar de Free3D.");
+}
+
+async function loadBundledModel(): Promise<THREE.Group | null> {
+  for (const entry of [{url:"/ford-lab-3d/model/econoline-mobile.glb",type:"glb"},{url:"/ford-lab-3d/model/econoline.glb",type:"glb"},{url:"/ford-lab-3d/model/econoline.obj",type:"obj"}]) {
+    try {
+      const response=await fetch(entry.url,{cache:"no-store"});
+      if (!response.ok) continue;
+      if (entry.type==="obj") return new OBJLoader().parse(normalizeBlenderOBJ(await response.text()));
+      const buffer=await response.arrayBuffer();
+      return await new Promise<THREE.Group>((resolve,reject)=>{
+        new GLTFLoader().parse(buffer,"",data=>resolve(data.scene),reject);
+      });
+    } catch { /* try next path */ }
+  }
+  return null;
+}
+
+function prepareModel(model: THREE.Group, fit: Fit): {root: THREE.Group; paintable: THREE.Mesh[]; surfaceCount: number; factoryRims: THREE.Mesh[]; wheelAnchors: WheelAnchor[]; tireAnchors: TireAnchor[]} {
+  // Source has genuine polygon faces. Keep them: no edge-graph triangulation.
+  model.traverse(item => {
+    if (item instanceof THREE.Points || item instanceof THREE.LineSegments) item.visible = false;
+  });
+
+  const oriented = new THREE.Group();
+  oriented.add(model);
+  model.rotation.set(fit.orientation === "zup" ? -Math.PI / 2 : 0, 0, 0);
+  oriented.updateMatrixWorld(true);
+  let box = new THREE.Box3().setFromObject(oriented);
+  let size = box.getSize(new THREE.Vector3());
+  if (size.x > size.z) model.rotation.y = Math.PI / 2;
+  // Dirección fija: inversión del eje desactivada en el taller.
+  oriented.updateMatrixWorld(true);
+  box = new THREE.Box3().setFromObject(oriented);
+  size = box.getSize(new THREE.Vector3());
+  if (Math.max(size.x, size.z) < .001) throw new Error("El OBJ no tiene geometría visible.");
+  // Preserve the donor model's actual proportions, fit to 5.35m length.
+  const factor = 5.35 / Math.max(size.x, size.z);
+  oriented.scale.setScalar(factor);
+  oriented.updateMatrixWorld(true);
+  box = new THREE.Box3().setFromObject(oriented);
+  const center = box.getCenter(new THREE.Vector3());
+  oriented.position.x -= center.x;
+  oriented.position.z -= center.z;
+  oriented.position.y += .10 - box.min.y;
+  oriented.updateMatrixWorld(true);
+
+  const paintable: THREE.Mesh[] = [];
+  const factoryRims: THREE.Mesh[] = [];
+  const wheelAnchors: WheelAnchor[] = [];
+  const tireAnchors: TireAnchor[] = [];
+  let surfaceCount = 0;
+  model.traverse(item => {
+    if (!(item instanceof THREE.Mesh)) return;
+    surfaceCount++;
+    item.castShadow = true;
+    item.receiveShadow = true;
+    const mats = Array.isArray(item.material) ? item.material : [item.material];
+    // .mtl material assignment from the actual uploaded OBJ, verified per group:
+    // Material = main outer shell; .001 = windshield; .002 = steel rim; .003 = tire.
+    const rawName = (mats[0]?.name || "").trim().toLowerCase();
+    let material: THREE.Material;
+    if (rawName === "material.001") {
+      material = new THREE.MeshPhysicalMaterial({color:0x263744, roughness:.16, metalness:.08, transparent:true, opacity:.83, depthWrite:true, side:THREE.DoubleSide});
+    } else if (rawName === "material.003") {
+      const tyreBox=new THREE.Box3().setFromObject(item);
+      const tyreCenter=tyreBox.getCenter(new THREE.Vector3());
+      const tyreDims=tyreBox.getSize(new THREE.Vector3());
+      tireAnchors.push({center:tyreCenter,radius:Math.max(tyreDims.y,tyreDims.z)*.5,halfWidth:tyreDims.x*.5,side:tyreCenter.x>=0?1:-1});
+      material = new THREE.MeshStandardMaterial({color:0x16191c, metalness:0, roughness:.94, side:THREE.DoubleSide});
+    } else if (rawName === "material.002") {
+      // The supplied Econoline OBJ has FOUR individual rim meshes.
+      // Use their world-space bounding boxes, never guessed wheelbase/track
+      // numbers, so the aftermarket rims do not float or duplicate tyres.
+      factoryRims.push(item);
+      const rimBox=new THREE.Box3().setFromObject(item);
+      const hub=rimBox.getCenter(new THREE.Vector3());
+      const dims=rimBox.getSize(new THREE.Vector3());
+      const side:1|-1 = hub.x>=0?1:-1;
+      // Use the OEM hub position, but set the accessory rim INSIDE the wheel lip.
+      // The previous offset added nearly 6 cm of visual poke after face depth.
+      hub.x=(side>0?rimBox.max.x:rimBox.min.x)-side*.044;
+      wheelAnchors.push({center:hub,radius:Math.max(dims.y,dims.z)*.50,side});
+      material = new THREE.MeshStandardMaterial({color:0x7f8487, metalness:.67, roughness:.38, side:THREE.DoubleSide});
+    } else if (rawName === "material.004" || rawName === "material.010") {
+      material = new THREE.MeshStandardMaterial({color:0x3d4144, metalness:.04, roughness:.65, side:THREE.DoubleSide});
+    } else if (rawName === "material.005") {
+      material = new THREE.MeshStandardMaterial({color:0x101113, roughness:.71, side:THREE.DoubleSide});
+    } else if (rawName === "material.006" || rawName === "material.007" || rawName === "material.008" || rawName === "material.009") {
+      material = new THREE.MeshStandardMaterial({color:0x9ea5aa, metalness:.42, roughness:.36, side:THREE.DoubleSide});
+    } else {
+      // Main body group is Material (no suffix); a real closed polygonal shell.
+      // Softer reflections stop the painted surfaces from becoming nearly black.
+      material = new THREE.MeshPhysicalMaterial({
+        color:0x172b4d,
+        roughness:.46,
+        metalness:.07,
+        clearcoat:.42,
+        clearcoatRoughness:.32,
+        side:THREE.DoubleSide,
+      });
+      paintable.push(item);
+    }
+    item.material = material;
+  });
+  if (surfaceCount < 10 || paintable.length === 0) {
+    throw new Error("El OBJ no contiene las superficies esperadas de la carrocería.");
+  }
+  return {root:oriented, paintable, surfaceCount, factoryRims, wheelAnchors, tireAnchors};
+}
+
+function cameraCoordinates(view: CameraView): THREE.Vector3 | null {
+  switch(view){
+    case "side":return new THREE.Vector3(7.25,2.0,.05);
+    case "front":return new THREE.Vector3(0,2.2,7.45);
+    case "rear":return new THREE.Vector3(0,2.1,-7.5);
+    case "other":return new THREE.Vector3(-7.25,2.2,0);
+    case "top":return new THREE.Vector3(1.8,7.8,1.8);
+    case "threequarter":return new THREE.Vector3(5.55,2.8,6.45);
+  }
+}
+
+export default function FordScene({build,fit,sourceFile,cameraView,compare,onStatus}:FordSceneProps) {
+  const host=useRef<HTMLDivElement>(null);
+  const stageRef=useRef<Stage|null>(null);
+  const statusRef=useRef(onStatus);
+  const [sceneReady,setSceneReady]=useState(false);
+  const [modelGeneration,setModelGeneration]=useState(0);
+  const [tex,setTex]=useState<THREE.Texture|null>(null);
+  statusRef.current=onStatus;
+
+  useEffect(()=>{
+    const target=host.current;
+    if(!target)return;
+    const scene=new THREE.Scene();scene.background=new THREE.Color(0x101316);scene.fog=new THREE.Fog(0x101316,10,26);
+    const camera=new THREE.PerspectiveCamera(37,1,.08,150);camera.position.set(5.55,2.8,6.45);
+    // Some browsers (notably Firefox on systems with blocked GPU drivers) may deny WebGL.
+    // Avoid an uncaught React error that replaces the entire page with a reload screen.
+    let renderer: THREE.WebGLRenderer;
+    try {
+      const compact = window.matchMedia("(max-width: 760px)").matches;
+      renderer=new THREE.WebGLRenderer({antialias:!compact,alpha:false,preserveDrawingBuffer:true,powerPreference:"default"});
+    } catch (error) {
+      console.warn("VANMOTION_3D_WEBGL_UNAVAILABLE", error);
+      statusRef.current({
+        kind:"error",
+        message:"El navegador no ha podido iniciar el visor 3D (WebGL). Prueba Safari o Chrome actualizado y vuelve a cargar. / The browser could not start WebGL. Try an updated Safari or Chrome and reload.",
+      });
+      return;
+    }
+    renderer.outputColorSpace=THREE.SRGBColorSpace;
+    renderer.toneMapping=THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure=1.42;
+    // Evaluate the device profile before using it (avoids a JavaScript temporal-dead-zone error).
+    const mobileGPU = window.matchMedia("(max-width: 760px)").matches || (window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 1100);
+    renderer.shadowMap.enabled=!mobileGPU;
+    renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,mobileGPU?1.1:1.5));
+    target.appendChild(renderer.domElement);
+    const orbit=new OrbitControls(camera,renderer.domElement);
+    orbit.target.set(0,1.1,0);orbit.enableDamping=true;orbit.dampingFactor=.065;orbit.enablePan=false;
+    orbit.minDistance=3.4;orbit.maxDistance=18;orbit.maxPolarAngle=Math.PI*.49;
+    orbit.touches.ONE=THREE.TOUCH.ROTATE;
+    orbit.touches.TWO=THREE.TOUCH.DOLLY_PAN;
+    orbit.update();
+    renderer.domElement.tabIndex=0;
+    renderer.domElement.setAttribute("role","img");
+    renderer.domElement.setAttribute("aria-label","Ford E-150 3D: drag or swipe to rotate, pinch to zoom");
+    let visibleInViewport=true;
+    const intersection=new IntersectionObserver((entries)=>{visibleInViewport=Boolean(entries[0]?.isIntersecting);},{threshold:.02});
+    intersection.observe(target);
+    const contextLoss=(event:Event)=>{event.preventDefault();statusRef.current({kind:"error",message:"WebGL perdió la conexión gráfica. Actualiza la página para reiniciar el visor. / WebGL context lost. Reload to restart the viewer."});};
+    renderer.domElement.addEventListener("webglcontextlost",contextLoss);
+    const hemi=new THREE.HemisphereLight(0xe9f0ff,0x44423d,3.2);scene.add(hemi);
+    // Soft studio bounce fills the blue panels, without washing out the tyre rubber.
+    const ambient=new THREE.AmbientLight(0xf7f9ff,.45);scene.add(ambient);
+    const key=new THREE.DirectionalLight(0xffffff,3.55);key.position.set(4,8,6);key.castShadow=true;key.shadow.mapSize.set(1024,1024);
+    key.shadow.camera.left=-10;key.shadow.camera.right=10;key.shadow.camera.top=10;key.shadow.camera.bottom=-10;scene.add(key);
+    const fill=new THREE.DirectionalLight(0xe6ebff,2.35);fill.position.set(-5,5,-4);scene.add(fill);
+    const edgeLight=new THREE.DirectionalLight(0xffffff,.75);edgeLight.position.set(-3,5,7);scene.add(edgeLight);
+    const ground=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:0x151819,roughness:.95,metalness:.06}));
+    ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+    const grid=new THREE.GridHelper(18,36,0x363634,0x252b2b);
+    grid.position.y=.008;
+    const gridMaterials=Array.isArray(grid.material)?grid.material:[grid.material];
+    gridMaterials.forEach(mat=>{mat.transparent=true;mat.opacity=.32;});
+    scene.add(grid);
+    const imported=new THREE.Group();const addons=new THREE.Group();scene.add(imported,addons);
+    const stage:Stage={scene,camera,renderer,orbit,imported,addons,paintMeshes:[],factoryRims:[],wheelAnchors:[],tireAnchors:[],cameraGoal:camera.position.clone(),modelReady:false,moveCamera:false};
+    stageRef.current=stage;
+    // User drag interrupts preset-camera animation so orbit remains under user control.
+    orbit.addEventListener("start",()=>{stage.moveCamera=false;stage.cameraGoal.copy(camera.position);});
+    const resize=()=>{
+      const {width,height}=target.getBoundingClientRect();
+      const w=Math.max(250,width),h=Math.max(280,height);
+      renderer.setSize(w,h,false);
+      camera.aspect=w/h;
+      camera.fov = w/h < 1.25 ? Math.min(57,37 + (1.25-w/h)*26) : 37;
+      camera.updateProjectionMatrix();
+    };
+    const obs=new ResizeObserver(resize);obs.observe(target);resize();
+    let frame=0;const loop=()=>{
+      frame=requestAnimationFrame(loop);
+      if(stage.moveCamera){
+        camera.position.lerp(stage.cameraGoal,.075);
+        if(camera.position.distanceTo(stage.cameraGoal)<.015)stage.moveCamera=false;
+      }
+      if(document.visibilityState==="visible" && visibleInViewport){orbit.update();renderer.render(scene,camera);}
+    };loop();setSceneReady(true);
+    return()=>{
+      cancelAnimationFrame(frame);obs.disconnect();intersection.disconnect();orbit.dispose();
+      renderer.domElement.removeEventListener("webglcontextlost",contextLoss);
+      disposeGroup(imported);disposeGroup(addons);
+      renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();
+      stageRef.current=null;
+    };
+  },[]);
+
+  useEffect(()=>{
+    if(!sceneReady || !stageRef.current)return;
+    let cancelled=false;
+    const stage=stageRef.current;
+    statusRef.current({kind:"loading",message:"Preparando geometría 3D..."});
+    (async()=>{
+      try {
+        const raw=sourceFile ? await parseLocalFile(sourceFile) : await loadBundledModel();
+        if(cancelled)return;
+        disposeGroup(stage.imported);
+        stage.paintMeshes=[];stage.factoryRims=[];stage.wheelAnchors=[];stage.tireAnchors=[];stage.modelReady=false;
+        if(!raw){statusRef.current({kind:"missing",message:"Aún no se ha importado el OBJ/GLB de la Econoline."});setModelGeneration(g=>g+1);return;}
+        const prepared=prepareModel(raw,fit);
+        stage.imported.add(prepared.root);
+        stage.paintMeshes=prepared.paintable;
+        stage.factoryRims=prepared.factoryRims;
+        stage.wheelAnchors=prepared.wheelAnchors;
+        stage.tireAnchors=prepared.tireAnchors;
+        stage.modelReady=true;
+        setModelGeneration(g=>g+1);
+        statusRef.current({kind:"ready",message:`Ford 3D cargada · ${prepared.factoryRims.length} llantas OEM identificadas en sus bujes originales. Arrastra para girar 360°.`});
+      }catch(e){
+        if(cancelled)return;
+        stage.modelReady=false;stage.paintMeshes=[];
+        statusRef.current({kind:"error",message:e instanceof Error?e.message:"El archivo 3D no ha podido abrirse."});
+      }
+    })();
+    return()=>{cancelled=true;};
+    // Geometry must be normalized again if orientation changes.
+  },[sceneReady,sourceFile,fit.orientation,fit.invertDirection]);
+
+  useEffect(()=>{
+    if(!sceneReady)return;
+    const path=build.wheels==="ar23"?"/ford-lab-3d/rims/ar23-mounted.png":"/ford-lab-3d/rims/ar172-mounted.png";
+    const loader=new THREE.TextureLoader();let cancelled=false;
+    loader.load(path,image=>{
+      if(cancelled){image.dispose();return;}
+      image.colorSpace=THREE.SRGBColorSpace;
+      setTex(prev=>{if(prev && prev!==image)prev.dispose();return image;});
+    },undefined,()=>{if(!cancelled)setTex(null);});
+    return()=>{cancelled=true;};
+  },[build.wheels,sceneReady]);
+
+  useEffect(()=>{
+    if(!sceneReady || !stageRef.current)return;
+    const stage=stageRef.current;
+    const color=new THREE.Color(compare ? "#172b4d" : build.paint);
+    for(const mesh of stage.paintMeshes){
+      const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];
+      for(const m of materials){
+        if((m instanceof THREE.MeshPhysicalMaterial) || (m instanceof THREE.MeshStandardMaterial))m.color.copy(color);
+      }
+    }
+    createAddons(stage,build,fit,compare,tex);
+  },[sceneReady,modelGeneration,build,fit,compare,tex]);
+
+  useEffect(()=>{
+    const stage=stageRef.current;
+    if(!stage)return;
+    const newPos=cameraCoordinates(cameraView);
+    if(newPos){stage.cameraGoal.copy(newPos);stage.moveCamera=true;}
+  },[cameraView,sceneReady]);
+
+  // A synchronous event from the user's click preserves Safari's download gesture.
+  useEffect(()=>{
+    const onSave=()=>{
+      const stage=stageRef.current;
+      if(!stage?.modelReady)return;
+      try {
+        stage.renderer.render(stage.scene,stage.camera);
+        const link=document.createElement("a");
+        link.href=stage.renderer.domElement.toDataURL("image/png");
+        link.download="VANMOTION-FORD-LAB-3D.png";
+        link.click();
+      } catch(error) {console.warn("FORD_LAB_SCREENSHOT_ERROR",error);}
+    };
+    window.addEventListener("vanmotion-ford-save-image",onSave);
+    return()=>window.removeEventListener("vanmotion-ford-save-image",onSave);
+  },[]);
+
+  return <div ref={host} style={{position:"absolute",inset:0,overflow:"hidden"}} aria-label="Interactive 3D Ford E-150 viewer" />;
+}

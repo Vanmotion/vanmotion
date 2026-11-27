@@ -1546,3 +1546,10 @@
   }
 }
 
+
+
+/* FORD LAB 008 — entry point integrated exclusively into the Ford E-150 detail. */
+.fordLabJump{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:24px;padding:17px 18px;border:1px solid #d47728;background:rgba(212,119,40,.10);color:#f4f0e7;text-decoration:none!important;min-height:64px}
+.fordLabJump span{display:flex;flex-direction:column;gap:6px}.fordLabJump strong{font-size:12px;font-weight:900;letter-spacing:.1em}.fordLabJump small{font-size:11px;color:#d4b99d;line-height:1.4}.fordLabJump>i{font-style:normal;color:#d47728;font-size:27px}
+.fordLabJump:hover,.fordLabJump:focus-visible{background:rgba(212,119,40,.20)}
+@media(max-width:720px){.fordLabJump{margin-top:15px;padding:14px 11px;min-height:62px}.fordLabJump strong{font-size:10px}.fordLabJump small{font-size:10px}}

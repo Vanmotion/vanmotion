@@ -1,0 +1,4 @@
+Coloca aquí el modelo E-150 descargado de Free3D renombrado como econoline.obj,
+O abre el archivo .obj directamente con el botón de importar del prototipo.
+Modelo fuente: https://free3d.com/3d-model/ford-van-1995-607889.html
+Licencia anunciada por el autor: Personal Use License.
