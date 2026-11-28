@@ -75,17 +75,17 @@ type TranslationResult = {
 const forums = [
   {
     title: "MUSIC" as ForumKey,
-    image: "/images/community/music-optimized.jpg",
+    image: "/images/community/music-artist-v141.webp",
     text: { es: "Artistas emergentes · Estrenos · Propuestas", en: "Emerging artists · New releases · Submissions" },
   },
   {
     title: "FASHION" as ForumKey,
-    image: "/images/community/fashion-optimized.jpg",
+    image: "/ropa/drop02/heavyweight-hoodie/lifestyle-59972330c086e22c23d3.webp",
     text: { es: "Ropa urbana · Diseñadores independientes · Ideas", en: "Streetwear · Independent fashion creators · Ideas" },
   },
   {
     title: "AUTOMOTIVE" as ForumKey,
-    image: "/images/community/automotive-optimized.jpg",
+    image: "/images/community/pathfinder-expedition-v14.webp",
     text: { es: "4x4 · Camperizaciones · Restauraciones", en: "4x4 · Camper builds · Restorations" },
   },
 ];
